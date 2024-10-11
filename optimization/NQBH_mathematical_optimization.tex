@@ -5,7 +5,7 @@
 \usepackage{tocloft}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
-\usepackage{amsmath,amssymb,amsthm,float,graphicx,mathtools,tikz}
+\usepackage{amsmath,amssymb,amsthm,enumitem,float,graphicx,mathtools,tikz}
 \usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
 \allowdisplaybreaks
 \newtheorem{assumption}{Assumption}
@@ -38,6 +38,8 @@
 \DeclareRobustCommand{\divby}{%
 	\mathrel{\vbox{\baselineskip.65ex\lineskiplimit0pt\hbox{.}\hbox{.}\hbox{.}}}%
 }
+\setlist[itemize]{leftmargin=*}
+\setlist[enumerate]{leftmargin=*}
 
 \title{Mathematical Optimization -- Toán Tối Ưu}
 \author{Nguyễn Quản Bá Hồng\footnote{A Scientist {\it\&} Creative Artist Wannabe. E-mail: {\tt nguyenquanbahong@gmail.com}. Bến Tre City, Việt Nam.}}
@@ -57,7 +59,6 @@
 		PDF: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/optimization/NQBH_mathematical_optimization.pdf}.
 		
 		\TeX: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/optimization/NQBH_mathematical_optimization.tex}.
-		\item {\it }.
 	\end{itemize}
 \end{abstract}
 \tableofcontents
@@ -73,6 +74,35 @@
 %------------------------------------------------------------------------------%
 
 \section{Shape Optimization -- Tối Ưu Hình Dạng}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \cite{Allaire_Henrot2001}. {\sc Gr\'egoire Allaire, Antoine Henrot}. {\it On some recent advances in shape optimization}.
+	\item \cite{Azegami2020}. {\sc Hideyuki Azegami}. {\it Shape Optimization Problems}.
+	\item \cite{Bandle_Wagner2023}. {\sc Catherine Bandle, Alfred Wagner}. {\it Shape Optimization: Variations of Domains \& Applications}.
+	\item \cite{Delfour_Zolesio2001,Delfour_Zolesio2011}. {\sc Michael C. Delfour, Jean-Paul Zol\'{e}sio}. {\it Shapes \& Geometries}.
+	\item \cite{Haslinger_Makinen2003}. {\sc J. Haslinger, R. A. E. M\"{a}kinen}. {\it Introduction to Shape Optimization}.
+	\item \cite{Mohammadi_Pironneau2010}. {\sc Bijan Mohammadi, Olivier Pironneau}. {\it Applied Shape Optimization for Fluids}.
+	\item \cite{Moubachir_Zolesio2006}. {\sc Marwan Moubachir, Jean-Paul Zol\'{e}sio}. {\it Moving Shape Analysis \& Control}.
+	\item {\sc Stephan Schmidt}. Master course: {\it Shape \& Geometry}. Humboldt University of Berlin. [written in German, taught in English \& German].
+	\item \cite{Sokolowski_Zolesio1992}. {\sc Jan Soko\l owski, Jean-Paul Zol\'{e}sio}. {\it Introduction to Shape Optimization}.
+	\item \cite{Walker2015}. {\sc Shawn W. Walker}. {\it The Shapes of Things}.
+	
+	{\bf Differential equations on surfaces.} Differential geometry is useful for understanding mathematical models containing geometric PDEs, e.g., surface{\tt/}manifold version of the standard Laplace equation, which requires the development of the surface gradient \& surface Laplacian operators -- the usual gradient $\nabla$ \& Laplacian $\Delta = \nabla\cdot\nabla$ operators defined on a surface (manifold) instead of standard Euclidean space $\mathbb{R}^n$. {\it Advantage}: provide alternative formulas for geometric quantities, e.g., the summed (mean) curvature, that are much clearer than the usual presentation of texts on differential geometry.
+	
+	{\bf Differentiating w.r.t. Shape.} The approach to differential geometry is advantageous for developing the framework of {\it shape differential calculus} -- the study of how quantities change w.r.t. changes of independent ``shape variable''.
+\end{enumerate}
+
+\begin{example}[\cite{Walker2015}, Sect. 1.2.1, pp. 1--2]
+	Let $f = f(r,\theta)$ be a smooth function defined on the disk $B_{R,2}(0,0)$ of radius $R$ in terms of polar coordinates. The integral of $f$ over $B_{R,2}(0,0)$ $J\coloneqq\int_{B_{2,R}(0,0)} f\,{\rm d}{\bf x} = \int_0^{2\pi}\int_0^R f(r,\theta)\,{\rm d}r\,{\rm d}\theta$ depends on $R$. Assume $f$ also depends on $R$, i.e., $f = f(r,\theta,R)$ with a physical example: $J$ is the \emph{net flow rate} of liquid through a pipe with cross-section $\Omega$, then $f$ is the flow rate per unit area \& could be the solution of a PDE defined on $\Omega$, e.g., a Navier--Stokes fluid flowing in a circular pipe. Advantageous to know the \emph{sensitivity} of $J$ w.r.t. $R$, e.g., for optimization purposes. Differentiate $J$ w.r.t. $R$:
+	\begin{equation*}
+		\frac{d}{dR}J = \int_0^{2\pi}\left(\frac{d}{dR}\int_0^R f(r,\theta;R)r\,{\rm d}r\right){\rm d}\theta = \int_0^{2\pi}\int_0^R f'(r,\theta;R)r\,{\rm d}r\,{\rm d}\theta + \int_0^{2\pi} f(R,\theta;R)\,{\rm d}\theta.
+	\end{equation*}
+	The dependence of $f$ on $R$ can more generally be viewed as dependence on $B_{R,2}(0,0)$, i.e., $f(\cdot;R)\equiv f(\cdot;B_{R,2}(0,0))$. Rewriting $d/dR J$ using Cartesian coordinates ${\bf x}$:
+	\begin{equation}
+		\frac{d}{dR}J = \int_{B_{R,2}(0,0)} f'({\bf x};\Omega)\,{\rm d}{\bf x} + \int_{S_{R,2}(0,0)} f({\bf x};\Omega)\,{\rm d}S({\bf x}),
+	\end{equation}
+	where ${\rm d}{\bf x}$ is the volume measure, ${\rm d}S({\bf x})$ is the surface area masure.
+\end{example}
 
 %------------------------------------------------------------------------------%
 

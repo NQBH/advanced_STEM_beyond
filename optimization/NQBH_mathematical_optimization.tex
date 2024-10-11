@@ -98,6 +98,17 @@
 	It takes only 2 or 3 numbers to specify a point $(x,y)$ in 2D \& a point $(x,y,z)$ in 3D, whereas an ``infinite'' number of coordinate pairs is needed to specify a domain $\Omega$. $V$ is a 2D{\tt/}3D vector in the scalar function setting; for a shape functional, $V$ is a full-blown function requiring definition at every point in $\Omega$. This ``infinite dimensionality'' is the reason for using the notation $\delta J(\Omega;V)$ to denote a shape perturbation. $\delta J(\Omega;V)$ indicates how we should change $\Omega$ to decrease $J$, similarly to how $\nabla f(x,y)$ indicates how the coordinate pair $(x,y)$ should change to decrease $f$, which opens up the world of shape optimization.
 	
 	{\bf3 schools of shape optimization.} Cf. engineering shape optimization vs. applied shape optimization \cite{Mohammadi_Pironneau2010} vs. theoretical shape optimization \cite{Sokolowski_Zolesio1992,Delfour_Zolesio2011}.
+	
+	Shape perturbations allow us to ``climb down the hill'' in the infinite dimensional setting of shape, which is a powerful tool for producing sophisticated engineering designs in an automatic way.
+	
+	{\bf Extrinsic vs. intrinsic point of views.} To make the discussion as clear as possible, we adopt the {\it extrinsic} point of view: curves \& surfaces are assumed to lie in a Euclidean space of higher dimension. The ambient space is 3D Euclidean space. Alternatively, there is the {\it intrinsic} point of view, i.e., the surface is not assumed to lie in an ambient space, i.e., one is not allowed to reference anything ``outside'' of the surface when defining it. Moreover, no mathematical structures ``outside'' of the surface can be utilized. Walker \cite{Walker2015} did not adopt the intrinsic view or consider higher dimensional manifolds, general embedding dimensions, etc. for the reasons: \cite{Walker2015} is meant as a {\it practical guide} to differential geometry \& shape differentiation that can be used by researchers in other fields.
+	\begin{itemize}
+		\item \cite{Walker2015} is meant to be used as background information for deriving physical models where geometry plays a critical role. Because most physical problems of interest take place in 3D Euclidean space, the extrinsic viewpoint is sufficient.
+		\item Many of the proofs \& derivations of differential geometry relations simplify dramatically for 2D surfaces in 3D \& require only basic multivariable calculus \& linear algebra.
+		\item The concepts of {\it normal vectors} \& {\it curvature} are harder to motivate with the intrinsic viewpoint. {\it What does it meant for a surface to ``curve through space'' if you cannot talk about the ambient space?}
+		\item Walker wants to keep in mind applications of this machinery to geometric PDEs, fluid dynamics, numerical analysis, optimization, etc. An interesting application of this methodology is for the development of numerical methods for mean curvature flow \& surface tension driven fluid flow. Ergo ($=$ therefore), the extrinsic viewpoint is often more convenient for computational purposes.
+		\item Walker wants his framework to be useful for analyzing \& solving {\it shape optimization} problems, i.e., optimization problems where geometry{\tt/}shape is the control variable.
+	\end{itemize}
 \end{enumerate}
 
 \begin{example}[\cite{Walker2015}, Sect. 1.2.1, pp. 1--2]
@@ -114,6 +125,14 @@
 
 \begin{example}[Surface height function of a hill]
 	Let $f = f(x,y)$ be a function describing the surface height of the hill, where $(x,y)$ are the coordinates of our position. Then, by using basic multivariate calculus, finding a direction that will move us downhill is equivalent to computing the gradient (vector) of $f$ \& moving in the opposite direction to the gradient. In this sense, we do not need to ``see'' the whole function. We just need to \emph{locally} compute the gradient $\nabla f$, analogous to feeling the ground beneath.
+\end{example}
+
+\begin{example}[Engineering shape optimization: minimizing drag with Navier--Stokes flow of fluid past a rigid body, \cite{Walker2015}, pp. 3--5]
+	A shape functional representing the drag:
+	\begin{equation}
+		J_{\rm d}(\Omega)\coloneqq-{\bf u}_{\rm out}\cdot\int_{\Gamma_0} \boldsymbol{\sigma}({\bf u},p){\bf n}\,{\rm d}\Gamma = \frac{2}{{\rm Re}}\int_\Omega |\boldsymbol{\varepsilon}({\bf u})|^2\,{\rm d}{\bf x}\ge0,
+	\end{equation}
+	which physically represents the net force that must be applied to $\Omega_{\rm B}$ to keep it stationary while being acted upon by the imposed flow field \& represents the total amount of viscous dissipation of energy (per unit of time) in the fluid domain $\Omega$. Using the machinery of shape perturbations, $\delta J_{\rm d}(\Omega;V)$ indicates how $J_{\rm d}$ changes when we perturb $\Omega$ in the direction $V$. Hence, we can use this information to change $\Omega$ in small steps so as to slowly deform $\Omega$ into a shape that has better (lower) drag characteristics. A numerical computation: 2 large vortices appear behind the body, which indicate a large amount of viscous dissipation, i.e., large drag. The optimization process then computes $\delta J_{\rm d}(\Omega^0;V)$ for many different choices of $V$ \& chooses the one that drives down $J_{\rm d}$ the most. This choice of $V$ is used to deform $\Gamma_{\rm B}^0$ into a new shape $\Gamma_{\rm B}^1$ at iteration 1, with only a small difference between $\Gamma_{\rm B}^0$ \& $\Gamma_{\rm B}^1$. This process is repeated many times. Note how the vortices are eliminated by the more slender shape.
 \end{example}
 
 %------------------------------------------------------------------------------%

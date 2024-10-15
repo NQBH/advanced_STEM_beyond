@@ -197,6 +197,61 @@ Có thể giải 1 số bài toán quy hoạch tuyến tính dạng \eqref{linea
 	which physically represents the net force that must be applied to $\Omega_{\rm B}$ to keep it stationary while being acted upon by the imposed flow field \& represents the total amount of viscous dissipation of energy (per unit of time) in the fluid domain $\Omega$. Using the machinery of shape perturbations, $\delta J_{\rm d}(\Omega;V)$ indicates how $J_{\rm d}$ changes when we perturb $\Omega$ in the direction $V$. Hence, we can use this information to change $\Omega$ in small steps so as to slowly deform $\Omega$ into a shape that has better (lower) drag characteristics. A numerical computation: 2 large vortices appear behind the body, which indicate a large amount of viscous dissipation, i.e., large drag. The optimization process then computes $\delta J_{\rm d}(\Omega^0;V)$ for many different choices of $V$ \& chooses the one that drives down $J_{\rm d}$ the most. This choice of $V$ is used to deform $\Gamma_{\rm B}^0$ into a new shape $\Gamma_{\rm B}^1$ at iteration 1, with only a small difference between $\Gamma_{\rm B}^0$ \& $\Gamma_{\rm B}^1$. This process is repeated many times. Note how the vortices are eliminated by the more slender shape.
 \end{example}
 
+\begin{itemize}
+	\item Condition (V)***
+	\item Family of transformations $\{T_s:0\le s\le\tau\}$.
+	\item Perturbed domain $\Omega_s = \Omega_s(V) = T_s(V)(\Omega)$.
+	\item Assume that the velocity field $V$ satisfies $V_D$ and, in addition, $V\in C^0([0,\tau];C_{\rm loc}^1(\mathbb{R}^d,\mathbb{R}^d))$ and $\tau > 0$ is small enough such that the Jacobian $J_s$ is strictly positive: $J_s(X)\coloneqq\det DT_s(X) > 0$, $\forall s\in[0,\tau]$, where $DT_s(X)$ is the \textit{Jacobian matrix} of the transformation $T_s = T_s(V)$ associated with the velocity vector field $V$.
+\end{itemize}
+
+\subsection{Domain Integrals}
+
+\begin{itemize}
+	\item Given $\varphi\in W_{\rm loc}^{1,1}(\mathbb{R}^d)$, consider for $s\in[0,\tau]$ the volume integral
+	\begin{equation}
+		J(\Omega_s(V))\coloneqq\int_{\Omega_s(V)} \varphi\,{\rm d}{\bf x} = \int_\Omega \varphi\circ T_sJ_s\,{\rm d}{\bf x}.
+	\end{equation}
+	\begin{equation}
+		dJ(\Omega;V) = \frac{d}{ds}J(\Omega_s(V))|_{s = 0} = \int_\Omega \nabla\varphi\cdot V(0) + \varphi\operatorname{div}V(0)\,{\rm d}{\bf x} = \int_\Omega \operatorname{div}(\varphi V(0))\,{\rm d}{\bf x}.
+	\end{equation}
+	If $\Omega$ has a Lipschitzian boundary, by Stokes's theorem:
+	\begin{equation}
+		dJ(\Omega;V) = \int_\Gamma \varphi V(0)\cdot{\bf n}\,{\rm d}\Gamma.
+	\end{equation}
+	
+	\begin{theorem}[\cite{Delfour_Zolesio2011}, Thm. 4.1, pp. 482--483]
+		Let $\varphi\in W_{\rm loc}^{1,1}(\mathbb{R}^d)$. Assume that the vector field $V = \{V(s):0\le s\le\tau\}$ satisfies condition (V).
+		\item[(i)] For each $s\in[0,\tau]$ the map $\varphi\mapsto\varphi\circ T_s:W_{\rm loc}^{1,1}(\mathbb{R}^d)\to W_{\rm loc}^{1,1}(\mathbb{R}^d)$ and its inverse are both locally Lipschitzian and $\nabla(\varphi\circ T_s) = {}^*DT_s\nabla\varphi\circ T_s$.
+		\item[(ii)] If $V\in C^0([0,\tau];C_{\rm loc}^1(\mathbb{R}^d,\mathbb{R}^d))$, then the map $s\mapsto J_s:[0,\tau]\to C_{\rm loc}^0(\mathbb{R}^d)$ is differentiable and
+		\begin{equation}
+			\frac{dJ_s}{ds} = [\nabla\cdot V(s)]\circ T_sJ_s\in C_{\rm loc}^0(\mathbb{R}^d).
+		\end{equation}
+		Hence the map $s\mapsto J_s$ belongs to $C^1([0,\tau];C_{\rm loc}^0(\mathbb{R}^d))$.
+	\end{theorem}
+	
+	\begin{align}
+		\frac{d}{ds}DT_s(X) &= DV(s,T_s(X))DT_s(X),\ DT_0(X) = I,\\
+		\frac{d}{ds}\det DT_s(X) &= \operatorname{tr}DV(s,T_s(X))\det DT_s(X) = \nabla\cdot V(s,T_s(X))\det DT_s(X),\ \det DT_0(X) = 1.
+	\end{align}
+	
+	\begin{theorem}[\cite{Delfour_Zolesio2011}, Thm. 4.2, pp. 483--484]
+		Assume that there exists $\tau > 0$ such that the velocity field $V(t)$ satisfies conditions (V) and $V\in C^0([0,\tau];C_{\rm loc}^1(\mathbb{R}^d,\mathbb{R}^d))$. Given a function $\varphi\in C(0,\tau;W_{\rm loc}^{1,1}(\mathbb{R}^d))\cap C^1(0,\tau;L_{\rm loc}^1(\mathbb{R}^d))$ and a bounded measurable domain $\Omega$ with boundary $\Gamma$, the semiderivative of the function $J_V(s)\coloneqq\int_{\Omega_s(V)} \varphi(s)\,{\rm d}{\bf x}$ at $s = 0$ is given by
+		\begin{equation}
+			dJ_V(0) = \int_\Omega \varphi'(0) + \operatorname{div}(\varphi(0)V(0))\,{\rm d}{\bf x},
+		\end{equation}
+		where $\varphi(0)({\bf x})\coloneqq\varphi(0,{\bf x})$ and $\varphi'(0)({\bf x})\coloneqq\partial_t\varphi(0,{\bf x})$. In addition, $\Omega$ is an open domain with a Lipschitzian boundary $\Gamma$, then
+		\begin{equation}
+			dJ_V(0) = \int_\Omega \varphi'(0)\,{\rm d}{\bf x} + \int_\Gamma \varphi(0)V(0)\cdot{\bf n}\,{\rm d}{\bf x}.
+		\end{equation}
+	\end{theorem}
+	
+\end{itemize}
+
+\subsection{Boundary Integrals}
+
+\subsection{Material derivatives}
+Let $\Omega\subset D$ be a bounded domain, 
+
 %------------------------------------------------------------------------------%
 
 \section{Topology Optimization -- Tối Ưu Tôpô}

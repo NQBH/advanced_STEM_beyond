@@ -1,0 +1,924 @@
+\documentclass[letterpaper,12pt]{article}
+%\usepackage[dvips]{graphics,color}
+\usepackage{multicol}
+\usepackage{amsmath,latexsym,amsbsy,amssymb}
+\usepackage{psfrag,graphicx}
+%\usepackage{epsf} 
+\usepackage{amssymb,latexsym}
+\usepackage{mathrsfs, verbatim}
+\usepackage[body={15cm, 22.5cm}]{geometry}
+
+%\usepackage{bbold}
+%\usepackage{stmaryrd}
+%\usepackage[dvips]{graphicx}
+%\usepackage{color}
+%\usepackage{showkeys}
+\usepackage{multicol}
+\usepackage{hyperref}
+\usepackage{enumerate}
+\def\tc{\textcolor}
+\newtheorem{Theorem}{Theorem}[section]
+\newtheorem{Definition}{Definition}[section] 
+\newtheorem{Proposition}{Proposition}[section]
+\newtheorem{Corollary}{Corollary}[section]
+\newtheorem{Rem}{Remark}[section]
+\newtheorem{Lemma}{Lemma}[section] 
+\newtheorem{Remarks1}{Remark}[section]
+\newtheorem{Example}{Remarks}[section]
+\numberwithin{equation}{section}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\pd}[1]{\langle #1 \rangle}
+\newcommand{\fr}[2]{\frac{#1}{#2}}
+%\newcommand{\qed}{\hfill$\bigtriangleup$}
+\newcommand{\qed}{\hfill$\square$\vspace{0.3truecm}}
+%\newcommand{\R}{{\mathbb R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+\DeclareMathOperator{\BV}{BV}
+\DeclareMathOperator{\SBV}{SBV}
+\DeclareMathOperator{\TV}{TV}
+\DeclareMathOperator{\diver}{div}
+
+\hfuzz=10 pt
+\font\bigbf=cmbx10 at 16pt
+\font\medbf=cmbx10 at 13pt
+\def\la{\big\langle}
+\def\ra{\big\rangle}
+\def\i{\item}
+\def\ds{\displaystyle}
+\def\forall{\hbox{for all}~}
+\def\L{{\bf L}}
+\def\argmin{\hbox{arg}\!\min}
+\def\argmax{\hbox{arg}\!\max}
+\def\bfv{{\bf v}}
+\def\bfw{{\bf w}}
+\def\bfu{{\bf u}}
+\def\bfb{{\bf b}}
+\def\bfn{{\bf n}}
+\def\bfe{{\bf e}}
+\def\ve{\varepsilon}
+\def\n{\noindent}
+\def\A{{\cal A}}
+\def\P{{\cal P}}
+\def\caL{{\mathcal L}}
+\def\S{{\cal S}}
+\def\U{{\cal U}}\def\Rar{{\cal R}}
+\def\b{\bullet}
+\def\R{I\!\!R}
+\def\N{I\!\!N}
+\def\AC{{\cal AC}}
+\def\implies{\Longrightarrow}
+\def\vp{\varphi}
+\def\c{\centerline}
+\def\P{{\cal P}}
+\def\TV{\hbox{Tot.Var.}}
+\def\vs{\vskip 2em}
+\def\vsk{\vskip 4em}
+\def\v{\vskip 1em}
+\def\O{{\cal O}}
+\def\bfH{{\bf H}}
+\def\PV{\hbox{P.V.}}
+\def\C{{\cal C}}
+\def\D{{\mathcal D}}
+\def\I{{\mathcal I}}
+\def\dint{\int\!\!\int}
+\def\ov{\overline}
+\def\Tilde{\widetilde}
+\def\Hat{\widehat}
+\def\bega{\begin{array}}
+\def\enda{\end{array}}
+\def\begi{\begin{itemize}}
+\def\endi{\end{itemize}}
+\def\meas{\hbox{meas}}
+\def\bel{\begin{equation}\label}
+\def\eeq{\end{equation}}
+\def\diams{\diamondsuit}
+
+\def\sqr#1#2{\vbox{\hrule height .#2pt
+\hbox{\vrule width .#2pt height #1pt \kern #1pt
+\vrule width .#2pt}\hrule height .#2pt }}
+\def\square{\sqr74}
+\def\endproof{\hphantom{MM}\hfill\llap{$\square$}\goodbreak}
+
+\renewcommand{\theequation}{\thesection.\arabic{equation}}
+\renewcommand{\thesection}{\arabic{section}}
+\renewcommand{\div}{\mbox{div}\,}
+\def\spt{{\rm spt}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}{Proposition}[theorem]
+
+
+
+\begin{document}
+\begin{center}
+\Large{\textbf{Optimal Control Problems and Hamilton-Jacobi Equations: A Brief Tutorial}}
+\end{center}
+\begin{center}
+\large{Tien Khai Nguyen, Department of Mathematics, NCSU.}
+\end{center}
+
+\section{Basic problems} 
+\subsection{Control systems}
+{\bf 1. A brief review on ordinary differential equations.} The time evolution of a system, whose state is described by a  finite number of parameters,
+can be usually modeled by an O.D.E.
+\begin{equation}\label{ODE1}
+ \left\{\begin{array}{ll}
+\dot{x}(t)\: = \: f(x(t)),\qquad a.e.~ t\in[0,+\infty[,\\
+\\
+x(0)  \: = \:  x_0,
+\end{array}\right.
+\end{equation}
+where 
+\begin{itemize}
+\item $x: [0,+\infty)\to\R^n$ is the state variable depended on time $t$;
+\item $f:\R^n\to \R^n$ is the dynamics;
+\item $x_0$ is the initial state.
+\end{itemize}
+\begin{definition} (Absolutely continuous) A map $x:[a,b]\to\R^n$ is absolutely continuous if for every $\ve,\delta>0$ such that whenever a finite sequence of pairwise disjoint sub-intervals $(s_k,t_k)\subset [a,b]$ for $k=1,2,...n$ satisfies
+\[
+\sum_{k=1}^n~|t_k-s_k|~\leq~\delta
+\]
+then it holds
+\[
+\sum_{k=1}^n~|x(t_k)-x(s_k)|~\leq~\ve\,.
+\]
+\end{definition}
+Denote by 
+\[
+AC([a,b],R^n)~\doteq~\left\{x:[a,b]\to\R^n~|~x~\text{is absolutely continuous}\right\}\,.
+\]
+Notice that every Lipschitz function $x:[a,b]\to\R^n$ is in $AC([a,b],R^n)$. However, the converse of this statement is false in general. Indeed, the followings hold:
+
+\begin{lemma} For any $x(\cdot)\in AC([a,b],R^n)$, it holds that it derivative $\dot{x}$ is almost everywhere defined on $[a,b]$ and 
+\[
+x(t)~=~x(t_0)+\int_{t_0}^t\dot{x}(s)~ds\qquad\forall t_0,t\in [a,b]\,.
+\]
+Conversely, given a function $g\in {\bf L}^1([a,b],\R^n)$, the function $y: [a,b]\to\R^n$ which is defined by 
+\[
+y(t)~=~y(a)+\int_{a}^t~g(s)~ds\qquad\forall t\in [a,b]
+\]
+belongs to $AC([a,b],R^n)$ and 
+\[
+\dot{y}(t)~=~g(t)\qquad\mathrm{for}~a.e.~t\in [a,b]\,.
+\]
+\end{lemma}
+Roughly speaking the lemma establishes that a map is absolutely continuous if and only if it coincides with the integral of its derivative. Hence, one could provide an alternative definition for absolutely continuous functions.
+\begin{definition} (Absolutely continuous) A map $x:[a,b]\to\R^n$ is absolutely continuous if and only if $x$ is differential almost everywhere on $[a,b]$ and 
+\[
+\dot{x}(t)~=~x(a)+\int_{a}^t\dot{x}(s)~ds\,.
+\]
+\end{definition}
+In general, the continuity and the almost everywhere differentiability are not sufficient to guarantee the absolute continuity. Indeed, tt is well-known that one can
+\quad\\
+\quad\\
+{\bf Problem 1.} {\it Construct a (uniformly) continuous and strictly increasing function $z:[a,b]\to\R$ such that $z$ is differentiable and equal to zero almost everywhere.}
+\quad\\
+\quad\\
+Thus, $z(b)-z(a)~>~0=\int_{a}^{b}\dot{z}(s)~ds$ and it yields that $z$ is not absolutely continuous.
+\begin{definition} Given a vector field $f:\R^n\to\R^n$, a map $x:[a,b]\to\R^n$ is a Caratheodory solution to the ordinary differential equation
+\[
+\dot{x}(t)~=~f(x(t))
+\]
+on $[a,b]$ if $x(\cdot)$ is absolutely continuous and 
+\[
+x(t)~=~x(a)+\int_{a}^tf(x(s))~ds\qquad\forall t\in [a,b]\,.
+\]
+\end{definition}
+It is clear that if $x(\cdot)$ is a Caratheodory solution of the ODE (\ref{ODE1}) then all $a\leq t_1<t_2\leq b$, it holds
+\[
+x(t_2)~=~x(t_1)+\int_{t_1}^{t_2}~f(x(s))~ds\,.
+\]
+In particular, it yields the semigroup property
+\[
+x(t+s)~=~x(t)\circ x(s)\qquad\forall a\leq s,t\leq s+t\leq b
+\]
+where $x(t)\circ x(s)$ is the value of the solution of the ODE (\ref{ODE1}) with initial data $x(s)$ at time $t$.
+\begin{theorem}\label{E} (Existence result)
+Assume that the dynamics $f$ is uniformly Lipschitz, i.e.,
+\[
+\|f(y)-f(x)\|~\leq~L\cdot \|y-x\|\qquad\forall x,y\in\R^n
+\]
+for some constant $L>0$. For any initial data $x_0\in\R^n$, the ODE (\ref{ODE1}) admits a Caratheodory solution.
+\end{theorem}
+Let us now introduce an useful lemma which allows to derive the stability result for the ODE (\ref{ODE1}).
+\begin{lemma} (Gronwall's inequality) Let $z:[0,T]\to [0,+\infty)$ be an absolutely continuously function such that 
+\[
+\dot{z}(t)~\leq~\alpha(t)\cdot z(t)+\beta(t)\qquad\mathrm{for}~a.e.~t\in [0,T]\,.
+\]
+and $z(0)=z_0$. Then it holds
+\[
+z(t)~=~ z_0\cdot e^{\int_0^t\alpha(s)~ds}+\int_{0}^t\beta(s)\cdot e^{\int_{s}^{t}a(\tau)~d\tau}~ds\,.
+\]
+\end{lemma} 
+\quad\\
+\quad\\
+As a consequence of the above lemma, we have the following stability results of  the ODE (\ref{ODE1}).
+\begin{proposition} Under the Lipschitz continuity assumption on $f$ in theorem \ref{E}, the followings hold:
+\begin{itemize}
+\item [(i).] {(Boundedness)} For any given initial data $x_0$, let $y^{x_0}(t)$ be the solution of (\ref{ODE1}). Then 
+\[
+\left\| y^{x_0}(t)\right\|~\leq~(\|x_0\|+\|f(0)\|)\cdot e^{Lt}\,. 
+\]
+\item [(ii)] (Stability) Given any $x_1,x_2\in\R$, it holds
+\[
+\| y^{x_2}(t)- y^{x_1}(t)\|~\leq~e^{Lt}\cdot \|x_2-x_1\|
+\]
+for all $t>0$. In particular, the ODE (\ref{ODE1}) admits a unique solution.
+\end{itemize}
+\end{proposition}
+\quad\\
+{\bf The first order tangent vector.} Let $x(t)$ be the solution of the ODE
+\[
+\dot{x}(t)~=~f(x(t))
+\]
+Consider a family of nearby solutions, says $t\to x_{\ve}(t)$. Assume that a given time $t=0$, one has
+\[
+v_0~=~\lim_{\ve\to 0}~{x_{\ve}(0)-x(0)\over \ve}\,.
+\]
+\begin{proposition} In addition to the uniformly Lipschitz continuous on $f$, we assume that $f$ is also continuously differentiable. Then the first order tangent vector
+\[
+v(t)~\doteq~\lim_{\ve\to 0}~{x_{\ve}(t)-x(t)\over \ve}
+\]
+is well defined for all $t\in [0,T]$. Morever, $v(t)$ is the solution of the affine ODE
+\bel{tang}
+\dot{v}(t)~=~Df(x(t))\cdot v(t),\qquad\qquad v(0)~=~v_0\,.
+\eeq
+\end{proposition}
+\quad\\
+\quad\\
+Using the Laudau notation, we can write 
+\[
+x_{\ve}(t)~=~x(t)+\ve\cdot v(t)+o(\ve)
+\]
+where $o(\ve)$ denotes an infinitesimal of higher order with respect to $\ve$. Therefore, one can formally write
+\[
+\dot{x}_{\ve}(t)~=~\dot{x}(t)+\ve\cdot \dot{v}(t)+o(\ve)~=~f(x_{\ve}(t))~=~\dot{x}(t)+Df(x(t))\cdot \ve v(t)+o(\ve)\,.
+\]
+{\bf Adjoint system.} It is useful to consider the adjoint system of (\ref{tang})
+\bel{adj}
+\dot{p}(t)~=~-p(t) Df(x(t))
+\eeq
+where $p(t)$ is a row vector. A direct computation yields 
+\begin{eqnarray*}
+{d\over dt}~[p(t)\cdot v(t)]&=&\dot{p}(t)\cdot v(t)+p(t)\cdot \dot{v}(t)\\
+&=&-p(t)\cdot Df(x(t)) v(t)+p(t) Df(x(t)) v(t)~=~0\,.
+\end{eqnarray*}
+This implies that then the product $p(t)\cdot v(t)$ is constant in time.
+\quad\\
+\quad\\
+{\bf 2. Control systems.} In some cases, the system can be in influenced also by the external input of a controller. An appropriate model is
+then provided by a control system, having the form
+\begin{equation}\label{System0}
+ \left\{\begin{array}{ll}
+\dot{x}(t)\: = \: f(x(t),u(t)),\qquad a.e.~t\in[0,+\infty[, \\
+\\
+x(0)  \: = \:  x_0\,.
+\end{array}\right.
+\end{equation}
+Here $x_0\in\mathbb{R}^n$ is the initial state and 
+\begin{itemize}
+\item  $f:\mathbb{R}^n\times U\rightarrow\mathbb{R}^n$ is the dynamics of the control system
+\item $U\subset\mathbb{R}^m$ is the control set
+\item $u:[0,+\infty[\rightarrow U$ is a control function. 
+\end{itemize}
+\quad\\
+{\bf Remark.} {\it If we set 
+\[
+F(x)~\doteq~f(x,U)~=~\{f(x,u)~|~u\in U\}\,,
+\]
+then the control system (\ref{System0}) can be rewritten as an differential inclusion
+\[
+\dot{x}\in F(x),\qquad\qquad x(0)~=~x_0\,.
+\]}
+\noindent There are two types of control:
+\begin{definition}
+\end{definition}
+\quad\\
+\noindent\textbf{NOTATIONS:} We will write\\
+\begin{equation*}
+f(x,u)=
+\begin{pmatrix}
+f_1(x,u)\\
+\vdots\\
+f_n(x,u)
+\end{pmatrix}
+\ \quad\mathrm{and}\ \quad
+x(t)=
+\begin{pmatrix}
+x^1(t)\\
+\vdots\\
+x^n(t)
+\end{pmatrix}.
+\\
+\end{equation*}
+\quad\\
+The set of admissible controls is denoted by
+\begin{equation}
+\mathcal{U}_{ad}:=\big\lbrace{u:[0,+\infty[\rightarrow U\ |\ u\ \mathrm{is\ measurable}\ \big\rbrace},
+\end{equation}
+we will also write that 
+\quad\\
+\[
+u(t)=
+\begin{pmatrix}
+u_1(t)\\
+\vdots\\
+u_m(t)
+\end{pmatrix}
+.
+\]
+\quad\\
+Differently from ODE (\ref{ODE1}), a solution of the control system (\ref{System0}) depends on initial state $x_0$ and the choice of admissible control $u$. 
+\begin{Definition}
+Given any $x_0\in\mathbb{R}^n$ and $u\in\mathcal{U}_{ad}$, a solution of (\ref{System0}) denoted by $y^{x_0,u}(\cdot)$ is called a trajectory of $(\ref{System0})$ starting from $x_0$ associated with the control $u$.
+\end{Definition}
+In this note, we will assume that  our control system satisfies the following standard hypotheses:\\
+\quad\\
+\noindent \textbf{STANDARD HYPOTHESES (F)}  
+\begin{enumerate}
+\item[{\bf F1.}] The control set $U$ is compact.
+\item[{\bf F2.}] The function $f$ is continuous. Moreover, there exists a constant $K_1>0$ such that 
+\[
+|f(y,u)-f(x,u)|\leq L_{f}\cdot |y-x|,\quad\forall x,y\in\mathbb{R}^n, u\in U.
+\] 
+\end{enumerate}
+%\quad\\
+\begin{theorem} 
+ Under assumption {\bf (F)}, given any initial data $x_0$ and admissible control $u\in\mathcal{U}_{ad}$, the ODE (\ref{System0}) admits a unique absolute continuous solution denote by $y^{x_0,u}$ such that 
+ \[
+ y^{x_0,u}(t)~=~x_0+\int_{0}^tf(y^{x_0,u}(s),u(s))~ds\qquad\forall t\in [0,+\infty)\,.
+ \]
+ Moreover, the followings hold:
+ \begin{itemize}
+ \item [(i)] (Boundedness) For any $x_0\in\R^n$ and $t>0$, 
+ \[
+ \|y^{x_0,u}(t)\|~\leq~
+ \]
+ \item [(ii)] (Stability) For any $x_1,x_2\in\R^n$ and $t>0$, the distance between $y^{x_1,u}(t)$ and $y^{x_2,u}(t)$
+ \[
+ \|y^{x_1,u}(t)-y^{x_2,u}(t)\|~\leq~
+ \]
+ \end{itemize}
+\end{theorem}
+Let's introduce the cost function $P:\R^n\times\mathcal{U}_{ad}\times AC([0,\infty),\R^n)\to\R$ which depends on an initial data $x_0\in R^n$ and an admissible control $u\in\mathcal{U}_{ad}$.
+\quad\\
+\quad\\
+{\bf Optimization problem:} {\it Our goal is to seek for an optimal control $u^*\in\mathcal{U}_{ad}$ which minimizes the cost function among all admissible controls, i.e.,
+\[
+P\left[x_0,u^*, y^{x_0,u^*}\right]~\leq~P\left[x_0,u,y^{x_0,u}\right]\qquad\qquad u\in\mathcal{U}_{ad}\,.
+\]}
+\quad\\
+The problem of 
+\[
+Minimizing_{u\in\mathcal{U}_{ad}}~P\left[x_0,u\right]\quad\mathrm{subject~to~the~control~system}~(\ref{System0})\,.
+\]
+is called an optimal control problem.
+%\quad\\
+%\quad\\
+%{\bf Basic questions:}
+%\begin{itemize}
+%\item Does an optimal control exist?
+%\item How can we characterize an optimal control?
+%\item How can one construct an optimal control?
+%\end{itemize}
+\subsection{Classical optimal control problems.}
+{\bf 1. The minimum time problem.} The aim of this problem is to minimize the amount of time for the system to reach a given target set $\mathcal{T}$ which is closed subset of $\R^n$. More precisely, for a fixed initial data $x_0\in\R^n\backslash\mathcal{T}$, denote by 
+\[
+\theta(x_0,u)~\doteq~\min\{t\geq 0~|~y^{x_0,u}\in\mathcal{T}\}
+\]  
+Of course, $\theta(x_0,u)$ is in $[0,+\infty]$, and $\theta(x_0,u)$ is the time taken for the trajectory $y^{x_0,u}$ to reach the target $\mathcal{T}$, provided $\theta(x_0,u)<+\infty$. {\it The minimum time} $T(x_0)$ to reach the target $\mathcal{T}$ for $x_0$ is defined by 
+\bel{min-time}
+T(x_0)~=~\inf_{u\in\mathcal{U}_{ad}}~\theta(x_0,u)\,.
+\eeq
+In general, $T(x_0)$ can be $+\infty$, i.e., the point $x_0$ can not reach to the target $\mathcal{T}$ from the dynamics (\ref{System0}). For a fixed time $t>0$, denote by 
+\[
+\mathcal{R}(t)~=~\{x\in\R~|~T(x)\leq t\}
+\]
+the set of point can reach the target before time $t$. It is important to consider the {\it reachable set} 
+\[
+\mathcal{R}~=~\bigcup_{t>0}\mathcal{R}(t)
+\]
+the set of point which can reach to the target in finite time.
+\quad\\
+\quad\\
+Some basic questions:
+\begin{itemize}
+\item {\bf (Controllability)} Given a point $x_0\in\R^n\backslash\mathcal{T}$, does $x_0$ belong to $\mathcal{R}$?
+\item {\bf (Existence and uniquiness)} Given $x_0\in\mathcal{R}$, is there an admissible control $u^*$ such that 
+\[
+\theta(x_0,u)~=~T(x_0).
+\]
+If the above equality hold, $u^*$ is called an optimal control steering $x_0$ to the target $\mathcal{T}$ in a minimum amount of time. Is $u^*$ unique?
+
+\item {(\bf Necessary conditions)} Can we construct optimal controls by deriving a set of necessary conditions and compute $T$?
+\item {\bf (Regularity theory)} Study the regularity properties of the minimum time function $T$.
+\end{itemize}
+Let us consider a simple example. 
+\quad\\
+\quad\\
+\textbf{Example 1:} (Rocket railroad car) Imagine a railroad car powered by rocket engines on each side. We introduce the variables
+\begin{itemize}
+\item  $x(t)$ is the position of the rocket railroad car on the train track at time $t$
+\item  $v(t)$ is the velocity of the rocket rail road car at time $t$
+\item  $F(t)$ is the force from the rocket engines at time $t$
+\end{itemize} 
+where $-1\leq F(t)\leq 1$ and the sign of $F(t)$ depends on which engine is firing.\\
+\quad\\
+\textbf{Our goal:} \textit{is to construct $F(\cdot)$ in order to drive the rocket railroad car to the origin $0$ with zero velocity in a minimum amount of time.} \\
+\quad\\
+\textbf{Mathematical model:} Assuming that the rocket railroad car has mass $m$, the motion of law is
+\begin{equation}
+\ddot{x}(t)=\frac{F(t)}{m}:=u(t)
+\end{equation}
+where $u(\cdot)$ is understood as a control function. For simplicity, we will also assume that $m=1$. The motion equation of the rocket car is
+\begin{equation}\label{Rocket-car}
+ \left\{\begin{array}{ll}
+\ddot{x}(t)\: = \: u(t),\\
+\\
+x(0)  \: = \:  x_0\quad\mathrm{and}\quad v(0)=v_0
+\end{array}\right.
+\end{equation}
+where $u(\cdot)\in\mathcal{U}=[-1,1]$, $x_0$ is the position of the rocket railroad car at time $0$ and $v_0$ is the velocity of the rocket railroad car at $x_0$. By setting
+\begin{equation}
+z(t)=
+\begin{pmatrix}
+x(t)\\
+\\
+v(t)
+\end{pmatrix}
+,\quad
+A=
+\begin{pmatrix}
+0\qquad 1
+\\
+\\
+0\qquad 0
+\end{pmatrix}
+\quad\mathrm{and}\quad
+b=
+\begin{pmatrix}
+0
+\\
+\\
+1
+\end{pmatrix}
+\end{equation}
+we can rewrite (\ref{Rocket-car}) as the first order control system:
+\begin{equation}\label{Rocket-car-1}
+ \left\{\begin{array}{ll}
+\dot{z}(t)\: = \: A\cdot z(t)+u(t)\cdot b\\
+\\
+z(0)~=~z_0~\doteq~(x_0,v_0)^T.
+\end{array}\right.
+\end{equation}
+The cost function is 
+\[
+P[z_0,u(\cdot)]=\int_0^{\theta(z_0,u)}1\ ds=\theta
+\]
+where $\theta(z,u)$ is the first time such that $z(\theta)=(0,0)^{T}$.\\
+The goal is to find $u^*\in\mathcal{U}_{ad}$ such that
+\begin{equation*}
+P[z_0,u^*(\cdot)]~\leq~ P[z_0,u(\cdot)],\quad\forall u\in\mathcal{U}_{ad}.
+\end{equation*} 
+In this case, $P[z,u^*(\cdot)]=T(z_0)$ is the minimum time needed to stear $z_0$ to $(0,0)^{T}$.
+\quad\\
+\quad\\
+{\bf Problem 2.} Prove that the set $\mathcal{R}(t)$ is convex and compact.
+\quad\\
+\quad\\
+{\bf Problem 3.} {\it Identify the reachable set $\mathcal{R}$\,.}
+\quad\\
+\quad\\
+{\bf Problem 4.} {\it Given a point $x\in\R^2\backslash \{0\}$, is there a unique optimal control?}
+\quad\\
+\quad\\
+{\bf Problem 5.} {\it Compute the minimum time function $T$.}
+\bigskip
+\quad\\
+{\bf 2. The finite time horizon problem: Bolza and Mayer problems.} Given $x_0\in\R^n$ and control $u\in\mathcal{U}_{ad}$, consider the cost functional 
+\bel{Pay-Bolza}
+P[x_0,u,T]~\doteq~\int_{0}^Tr(u(t),y^{x_0,u}(t))~dt+g(y^{x_0,u}(T))
+\eeq
+where 
+\begin{itemize}
+\item $r:U\times\R^n\to\R$ is the running cost;
+\item  $g:\R^n\to\R$ is the terminal cost;
+\item $T$ is the terminal time.
+\end{itemize}
+The problem of 
+\begin{equation*}
+\mathrm{minimizing}_{u\in\mathcal{U}_{ad}}~P[x_0,u,T]\quad\mathrm{subjects~to~the~system~(\ref{System0})}
+\eqno{{\bf (BP)}}
+\end{equation*}
+is called a {\it Bolza problem}.
+\quad\\
+\quad\\
+In particular, if the running cost $r\equiv0$ then {\bf (BP)} becomes 
+\begin{equation*}
+\mathrm{minimizing}_{u\in\mathcal{U}_{ad}}~g(y^{x_0,u}(T))\quad\mathrm{subjects~to~the~system~(\ref{System0})}
+\eqno{{\bf(MP)}}
+\end{equation*}
+and is called a {\it Mayer problem}.
+\quad\\
+\quad\\
+{\bf Problem 6.} {\it Can one rewrite a Bolza problem as a Mayer problem?}
+\quad\\
+\quad\\
+{\bf Goal:} {\it For an given initial data $x_0$ and a terminal time $T>0$, a natural question is  to seek for an optimal control $u^*$ which  minimizes the cost function $P[x_0,u,T]$.}
+\\
+\quad\\
+If an optimal control $u^*$ does exist, the value function is denoted by 
+\[
+V(T,x_0)~\doteq~\inf_{u\in\mathcal{U}_{ad}}~P[x_0,u,T]~=~P[x_0,u^*,T]\,.
+\]
+\textbf{Example 2:} {\it (A classical problem in calculus of variations)} Consider a linear control system
+\begin{equation}\label{constant dynamics}
+ \left\{\begin{array}{ll}
+\dot{x}(t)\: = \: u(t)\quad a.e.\ t\in [0,T]\\
+\\
+x(0)  \: = \:  \bar{x},
+\end{array}\right.
+\end{equation}
+where $x:[0,+\infty[\rightarrow\mathbb{R}^n$ and $u(\cdot)\in\mathcal{U}_{ad}$. Here, the admissible control $\mathcal{U}^T_{ad}$ is denoted by
+\begin{equation}
+\mathcal{U}^T_{ad}=\big\lbrace{u:[0,T]\rightarrow\mathbb{R}^n\ |\ u\in {\bf L}^1_{loc}([0,T],\mathbb{R}^n)\big\rbrace}.
+\end{equation}
+In this case, the set of admissible trajectories is 
+\[
+\mathcal{A}_{T,\bar{x}}=\big\lbrace{y(\cdot)\in AC([0,T],\mathbb{R}^n)\ |\ y(0)=\bar{x}\big\rbrace}
+\]
+which is the set of all absolutely continuous functions defined on the interval  $[0,T]$ with initial state $\bar{x}$.
+\quad\\
+\quad\\
+Let us now introduce
+\begin{equation}
+L:\mathbb{R}^n\rightarrow\mathbb{R}\quad\mathrm{and}\quad g:\mathbb{R}^n\rightarrow\mathbb{R}
+\end{equation}
+are respectively the continuous \textit{running cost (Lagrangian)} and the continuous \textit{terminal cost}. A classical problem in calculus of variations
+\bel{CP}
+Minimize_{u\in\mathcal{U}^{T}_{ad}}~\int_{0}^{T}L(u(t))~dt+g(y^{u,\bar{x}}(T))\,.
+\eeq
+{\bf Problem 7.} {\it Assume that $L$ is a convex function, i.e., for any $x,y\in\R^n$
+\[
+tL(x)+(1-t)y~\geq~L(tx+(1-t)y)\qquad\forall t\in [0,1]\,.
+\]
+Then the value function of (\ref{constant dynamics})-(\ref{CP})
+\[
+V(T,\bar{x})~=~\inf_{y\in\R^n}~\left\{T\cdot L\left({y-\bar{x}\over T}\right)+g(y)\right\}\,.
+\]
+}
+In addition, if $g$ is Lipschitz and  $L$ is coercive
+\[
+\lim_{|p|\to +\infty}~{L(p)\over \|p\|}~=~+\infty\,.
+\]
+The optimization problem (\ref{CP}) admits a minimizer and the value function 
+\[
+V(T,\bar{x})~=~\min_{y\in\R^n}~\left\{T\cdot L\left({y-\bar{x}\over T}\right)+g(y)\right\}\,.
+\]
+The above formula is called {\it Hopf formula.}
+\quad\\
+\quad\\
+{\bf 3. The infinite horizon problem.} Given $x_0\in\R^n$ and control $u\in\mathcal{U}_{ad}$, consider the infinite horizon cost functional with discount 
+\bel{INF-H}
+J[x_0,u]~=~\int_{0}^{+\infty}~e^{-\lambda\cdot t}\cdot L(y^{x_0,u}(t),u(t))~dt
+\eeq
+where $\lambda>0$ is a given {\it discount rate} and $L$ is the {\it running cost} fulfills the following assumption:
+\begin{itemize}
+\item [(L1)] The function $L:\R^n\times U\to \R$ continuous bounded and continuous, more precisely there exist a modulus $\omega_{L}(\cdot)$ and a constant $M_{L}$ such that 
+\[
+|L(x,u)-L(y,u)|~\leq~\omega_{L}(|x-y|)\qquad\mathrm{and}\qquad |L(x,u)|~\leq~M_{L}
+\]
+for all $x,y\in\R^n$ and $u\in U$.
+\end{itemize}
+{\bf Our goal} {\it is seek for an optimal control $u^*$ which minimizes the cost functional. If $u^*$ does exists, one needs to calculate the value function
+\[
+V(x_0)~\doteq~minimize_{u\in \mathcal{U}_{ad}}~J[x,u]\,.
+\]
+\quad\\
+{\bf Example 3.}  (Optimal harvesting of renewable natural resources)} Denote by $x(t)$ the size of fish population at time $t$, subject to harvesting. This evolves
+according to the ODE
+\[
+\dot{x}~=~\alpha x(M-x)-bxu,\qquad u(t)\in [0,u_{\max}]\,.
+\]
+Here $\dot{x}(t)={d\over dt}x(t)$ is the derivative with respect to time $t$ and 
+\begin{itemize}
+\item $M$ describes the maximum population sustained by the habitat;
+\item $\alpha$ is is a reproduction rate;
+\item $b$ measures the efficiency the harvesting effort;
+\item The control $u(t)$ accounts for the fishing effort, while the product $bx(t)u(t)$ is the actual catch at time $t$. 
+\end{itemize}
+We consider the optimal harvesting problem in infinite time horizon, exponentially discounted:
+\[
+maximize:~\int_0^{\infty}e^{-\gamma\cdot t}\cdot [px(t)-cu(t)]~dt
+\]
+where $p$ is the market price of fish and $c$ is the unitary cost of the harvesting effort.
+\quad\\
+\quad\\
+{\bf Main questions:}
+\begin{itemize}
+\item {\it What is the best harvesting strategy? More precisely, how should the fishing effort $u=u(x)$ depend on the current population size $x$, in order to achieve the maximum profit, over time?}
+\item {\it Study what happens to the population size as $t\to\infty$, when this optimal harvesting policy is implemented, How does this limit depend on the coefficients $\alpha,\gamma$ and $c$?}\end{itemize}
+\quad\\
+{\bf Problem 8.} {\it Can one remove some of the constants by rescaling variables. Namely, assume
+\[
+y~=~c_1x,\qquad \tau~=~c_2t\qquad\mathrm{and}\qquad v~=~c_3u\,.
+\]
+Rewrite the ODE in terms of the new variables. Choose the constants $c_1,c_2,c_3$ so that the new equations become 
+\[
+{d\over d\tau}y~=~y(1-y)-yv,\qquad v\in [0,v_{\max}]=[0,c_3 u_{\max}]\,.
+\]
+}
+\quad\\
+Basing on the reformulated problem, one needs to 
+\quad\\
+\quad\\
+{\bf Problem 9.} {\it Write an ODE satisfied by the value function
+$$
+V(y)~=~\left[\text{maximum payoff that can be achieved when the initial population is}~x(0)=y\right]
+$$
+and solves it.
+}
+\newpage
+\section{Dynamic programming principle and HJB equations} In this section, we will introduce an approach to seek for an optimal feedback control. This will lead to the first order nonlinear partial differential equations of the corresponding value function. Let's recall our control system 
+\begin{equation*}
+ \left\{\begin{array}{ll}
+\dot{x}(t)\: = \: f(x(t),u(t)),\qquad a.e.~t\in[0,+\infty[, \\
+\\
+x(0)  \: = \:  x_0\,.
+\end{array}\right.
+\eqno{(CS)}
+\end{equation*}
+\subsection{Dynamic programming principle}
+The basic tool in this approach is the Dynamic Programming Principle. This principle express the
+intuitive idea that the minimum cost is achieved if one behaves as follows:
+\begin{itemize}
+\item Let the control system evolve for a small amount of time $\ve$ choosing an arbitrary control $u$ and pay the corresponding cost $J[x_0,u]$.
+\item Denote a new control $u^{\sharp}$ by 
+\[
+u^{\sharp}(s)~=~u(s)\qquad\forall s\in [0,\ve]\,,
+\]
+and $u^{\sharp}(s)=u^*(s)$ for all $s<\ve$ where $u^*(s)$ is the best possible control to minimize the cost function after time $\ve>0$.
+\item One has that 
+\[
+J[x_0,u]~\geq~J(x_0,u^{\sharp})\,.
+\]
+\end{itemize}
+The basic tool to prove this principle is the following semigroup property for the solutions of
+system (CS).
+\begin{lemma}\label{Concate} Under standard assumptions {\bf (F1)-(F2)}, for a given initial data $x_0$ and control $u\in\mathcal{U}_{ad}$, it holds
+\[
+y^{x_0,u(\cdot)}(s+t)~=~y^{x_s, u(\cdot+s)}\quad\mathrm{with}\quad x_s~=~y^{x_0,u}(s)
+\]
+for all $s,t\geq 0$.
+\end{lemma}
+{\bf Proof.} Recalling that $f$ is uniformly Lipschitz, Theorem \ref{E} implies that the system (CS) admits a unique solution $y^{x_0,u}(\cdot)$ and has an integral formulation
+\[
+y^{x_0,u}(t)~=~x_0+\int_{0}^tf(y^{x_0,u}(s),u(s))~ds\qquad\forall t\geq 0\,.
+\]
+One can write 
+\begin{multline*}
+y^{x_0,u}(t+s)~=~x_0+\int_{0}^{t+s}f(y^{x_0,u}(\tau),u(\tau))~d\tau\\
+~=~x_0+\int_{0}^{s}f(y^{x_0,u}(\tau),u(\tau))~d\tau+\int_{s}^{t+s}f(y^{x_0,u}(s+\tau),u(s+\tau))~d\tau\\
+~=~x_2+\int_{0}^tf(y^{x_s,u_s}(\tau),u_s(\tau))~d\tau
+\end{multline*}
+where we set 
+\[
+y^{x_s,u_s}(\tau)~\doteq~y^{x_0,u}(s+\tau)\qquad\mathrm{and}\qquad u_s(\tau)~\doteq~u(s+\tau)
+\]
+and can use this by the uniqueness.
+\qed
+\begin{remark} The following properties of the admissible controls hold
+\begin{itemize}
+\item [(i)] If  $u(\cdot)\in\mathcal{U}_{ad}$ then $u(t+\cdot)\in\mathcal{U}_{ad}$ for all $t\geq 0$;
+\item [(ii)] For any $u_1\in\mathcal{U}_{ad}$, $u_2(\cdot)\in\mathcal{U}_{ad}$ and time $t>0$, the concatenated control 
+\[
+u(s)~\doteq~ \left\{\begin{array}{ll}
+u_1(s)\qquad&\qquad\mathrm{for}~s\in [0,t)\,,\\
+\\
+u_2(s)\qquad&\qquad\mathrm{for}~s\in [t,+\infty)
+\end{array}\right.
+\]
+belongs to $\mathcal{U}_{ad}$.
+\end{itemize}
+\end{remark}
+\quad\\
+{\bf 1. DPP for the minimum time function.} Given a closed target set $\mathcal{T}\subset\R^d$ and initial data $x_0$, the minimum time to reach $\mathcal{T}$ from $x_0$ is denoted by 
+\[
+T(x_0)~=~\inf_{u\in\mathcal{U}_{ad}} \{t\geq 0~|~y^{x_0,u}\in\mathcal{T}\}\,.
+\]
+\begin{proposition} Under standard assumptions {\bf (F1)-(F2)}, for a given initial data $x_0$, the following holds
+\bel{DDP-T}
+T(x_0)~=~\inf_{u\in \mathcal{U}_{ad}}~\left\{s+ T(y^{x_0,u}(s))\right\}
+\eeq
+for all $s\in [0,T_0]$.
+\end{proposition}
+\quad\\
+{\it Proof.} {\bf 1.} Given $s>0$ and control $u\in\mathcal{U}_{ad}$, we first show that 
+\bel{Ups}
+T(x_0)~\leq~s+T(y^{x_0,u}(s))\,.
+\eeq
+Denote by $x_s\doteq y^{x_0,u}(s)$. One has 
+\[
+T(x_s)~=~\inf_{v\in\mathcal{U}_{ad}} \{t\geq 0~|~y^{x_s,v}\in\mathcal{T}\}\,.
+\]
+For any $v\in\mathcal{U}_{ad}$, consider the concatenated control 
+\[
+u_v(\tau)~\doteq~ \left\{\begin{array}{ll}
+u(\tau)\qquad&\qquad\mathrm{for}~\tau\in [0,s)\,,\\
+\\
+v(s+\tau)\qquad&\qquad\mathrm{for}~\tau\in [s,+\infty)\,.
+\end{array}\right.
+\]
+It is clear that $\tilde{u}$ belongs to $\mathcal{U}_{ad}$. From lemma \ref{Concate}, it holds 
+\[
+y^{x_0,u_v}(s+\tau)~=~y^{x_s,v}(\tau)\qquad\forall \tau>0\,.
+\]
+This implies that 
+\[
+s+T(x_s)~=~s+\inf_{v\in\mathcal{U}_{ad}} \{t\geq 0~|~y^{x_s,v}\in\mathcal{T}\}~=~\inf_{v\in\mathcal{U}_{ad}}\left\{t\geq 0~|~y^{x_0,u_v}\in\mathcal{T}\right\}
+\]
+and it yields (\ref{Ups}).
+\quad\\
+\quad\\
+{\bf 2.} To conclude the proof, we show that 
+\bel{Lows}
+T(x_0)~\geq~s+T(y^{x_0,u}(s))\,.
+\eeq
+Assume that $T(x_0)<+\infty$. By the definition, for any $\ve>0$, the exists a control $u_{\ve}$ such that the trajectory $y^{x,u_{\ve}}$ reach the target $\mathcal{T}$ before time $T(x_0)+\ve$. This implies that 
+\[
+T(x_0)+\ve~\geq~s+T(y^{x_0,u_{\ve}}(s))
+\]
+and it yields
+\[
+T(x_0)+\ve~\geq~s+\inf_{u\mathcal{U}_{ad}}T(y^{x_0,u}(s))\,.
+\]
+By letting $\ve\to 0^+$, we obtain (\ref{Lows})
+\qed
+\quad\\
+\quad\\
+{\bf 2. DPP for the Bolza problem.} Given a running cost $r:U\times\R^n\to\R$ and terminal cost $g:\R^n\to\R$. The value function of the Bolza problem with pay-off $P$ in (\ref{Pay-Bolza}) and control system {\it (CS)} is 
+\[
+V(t,x_0)~=~\inf_{u\in\mathcal{U}_{ad}}~\int_{0}^tr(u(t),y^{x_0,u}(\tau))~d\tau+g(y^{x_0,u}(t))
+\]
+for all given initial data $x_0\in\R^n$.
+\begin{proposition} Under standard assumptions {\bf (F1)-(F2)}, for a given initial data $x_0\in\R^n$ and time $t>0$, the following holds
+\bel{DDP-BP}
+V(t,x_0)~=~\inf_{u\in\mathcal{U}_{ad}}\left\{\int_0^{s}r(u(\tau),y^{x_0,u}(\tau))~d\tau+V(t-s,y^{x_0,u}(s))\right\}
+\eeq
+for all $s\in (0,t)$.
+\end{proposition}
+{\it Proof.} {\bf 1.} For any given $u\in\mathcal{U}_{ad}$, we show that  
+\bel{UP-Bolza}
+V(t,x_0)~\leq~\int_0^{s}r(u(\tau),y^{x_0,u}(\tau))~d\tau+V(t-s,y^{x_0,u}(s))\,.
+\eeq
+As in the previous proof, denote by $x_s\doteq y^{x_0,u}(s)$. One has 
+\[
+V(t-s,x_s)~=~\inf_{v\in\mathcal{U}_{ad}}\left\{\int_{0}^{t-s}r(v(\tau),y^{x_0,v}(\tau))~d\tau+g(y^{x_0,v}(t-s))\right\}\,.
+\]
+For any $v\in\mathcal{U}_{ad}$, consider the concatenated control 
+\[
+u_v(\tau)~\doteq~ \left\{\begin{array}{ll}
+u(\tau)\qquad&\qquad\mathrm{for}~\tau\in [0,s)\,,\\
+\\
+v(s+\tau)\qquad&\qquad\mathrm{for}~\tau\in [s,+\infty)\,.
+\end{array}\right.
+\]
+It is clear that $\tilde{u}$ belongs to $\mathcal{U}_{ad}$. From lemma \ref{Concate}, it holds 
+\[
+y^{x_0,u_v}(s+\tau)~=~y^{x_s,v}(\tau)\qquad\forall \tau>0
+\]
+and 
+\[
+y^{x_0,u_v}(\tau)~=~y^{x_0,u}(\tau)\qquad\forall \tau\in (0,t)\,.
+\]
+Thus,
+\begin{multline*}
+\int_{0}^tr(u_v(\tau),y^{x_0,u_{v}}(\tau))~d\tau+g(y^{x_0,u_v}(t))\\
+~=~\int_{0}^sr(u(\tau),y^{x_0,u}(\tau))~d\tau+\int_{0}^{t-s}r(v(\tau),y^{x_0,v}(\tau))~d\tau+g(y^{x_0,v}(t-s))
+\end{multline*}
+for all $v\in\mathcal{U}_{ad}$. Therefore,
+\begin{multline*}
+\inf_{v\in\mathcal{U}_{ad}}~\int_{0}^tr(u_v(\tau),y^{x_0,u_{v}}(\tau))~d\tau+g(y^{x_0,u_v}(t))\\
+~=~\int_{0}^sr(u(\tau),y^{x_0,u}(\tau))~d\tau+V(t-s,y^{x_0,u}(s))
+\end{multline*}
+and it yields (\ref{UP-Bolza}).
+\quad\\
+\quad\\
+{\bf 2.} To complete the proof, we show that 
+\bel{Low-Bolza}
+V(t,x_0)~\geq~\int_0^{s}r(u(\tau),y^{x_0,u}(\tau))~d\tau+V(t-s,y^{x_0,u}(s))\,.
+\eeq
+For any given $\ve>0$, there exists a control $u_{\ve}\in\mathcal{U}_{ad}$ such that 
+\begin{multline*}
+V(t,x_0)+\ve~\geq~\int_{0}^tr(u_{\ve}(\tau),y^{x_0,u_{\ve}}(\tau))~d\tau+g(y^{x_0,u_{\ve}}(t))\\
+~\geq~\int_{0}^sr(u_{\ve}(\tau),y^{x_0,u_{\ve}}(\tau))~d\tau+\int_{0}^{t-s}r(u_{\ve}(s+\tau),y^{x_s,u_{\ve}}(s+\tau))~d\tau+g(y^{x_s,u_{\ve}}(t-s))
+\end{multline*}
+where $x_s=y^{x_0,u}(s)$. This implies that 
+\begin{multline*}
+V(t,x_0)+\ve~\geq~\int_{0}^sr(u_{\ve}(\tau),y^{x_0,u_{\ve}}(\tau))~d\tau+V(t-s,y^{x_0,u_{\ve}}(s))\\
+~\geq~\inf_{v\in\mathcal{U}_{ad}}\left\{\int_{0}^{t-s}r(v(\tau),y^{x_0,v}(\tau))~d\tau+g(y^{x_0,v}(t-s))\right\}
+\end{multline*}
+and it yields \ref{Low-Bolza}.
+\qed
+\quad\\
+\quad\\
+{\bf 3. DPP for the infinite horizon problem.} Given a running cost $L:U\times\R^n\to\R$ and a discount rate $\lambda>0$, the value function of of the infinite time horizon problem with a discount rate is 
+$$
+V(x)~=~\inf_{u\in\mathcal{U}_{ad}}\left\{\int_{0}^{+\infty}~e^{-\lambda\cdot t}\cdot L(y^{x_0,u}(t),u(t))~dt\right\}\,.
+$$
+The following holds
+\begin{proposition} Under standard assumptions {\bf (F1)-(F2)}, for a given initial data $x_0\in\R^n$ and any time $t>0$. The value function $V$ satisfies
+\begin{equation}
+V(x_0)~=~\inf_{u\in\mathcal{U}_{ad}}\left\{\int_{0}^te^{-\lambda\cdot s}L(y^{x_0,u}(s),u(s))ds+e^{-\lambda\cdot t}\cdot V(y^{x_0,u}(t))\right\}\,.
+\end{equation}
+\end{proposition}
+{\bf Proof.} Fix $x_0\in\mathbb{R}^n$ and time $t>0$, for each admissible control $u\in\mathcal{U}_{ad}$, we have 
+\begin{multline*}
+P[x_0,u]~=~\int_{0}^{\infty}e^{-\lambda\cdot t}\cdot L(y^{x_0,u}(s),u(s))~ds
+\\
+~=~\int_{0}^te^{-\lambda\cdot s}\cdot L(y^{x_0,u}(s),u(s))~ds+\int_{t}^{+\infty}e^{-\lambda\cdot s}\cdot L(y^{x_0,u}(s),u(s))~ds
+\\
+~=~\int_{0}^te^{-\lambda\cdot s}\cdot L(y^{x_0,u}(s),u(s))~ds+e^{-\lambda\cdot t}\cdot \int_{t}^{+\infty}e^{-\lambda\cdot (s-t)}\cdot L(y^{x_0,u}(s),u(s))~ds\\
+~=~\int_{0}^te^{-\lambda\cdot s}\cdot L(y^{x_0,u}(s),u(s))~ds+e^{-\lambda\cdot t}\cdot \int_{0}^{+\infty}e^{-\lambda\cdot s}\cdot L(y^{x_t,u(t+\cdot)}(s),u(t+s))~ds
+\end{multline*}
+where $x_t\doteq y^{x_0,u}(t)$. This implies that 
+\[
+P[x_0,u]~\geq~\int_{0}^te^{-\lambda\cdot s}\cdot L(y^{x_0,u}(s),u(s))~ds+e^{-\lambda\cdot t}\cdot V(y^{x_0,u}(t))
+\]
+and it yields
+\[
+V(x_0)~\geq~\inf_{u\in\mathcal{U}_{ad}}\left\{\int_{0}^te^{-\lambda\cdot s}L(y^{x_0,u}(s),u(s))ds+e^{-\lambda\cdot t}\cdot V(y^{x_0,u}(t))\right\}\,.
+\]
+To complete the proof, we need to show that 
+\bel{Lbound-V}
+V(x_0)~\leq~\inf_{u\in\mathcal{U}_{ad}}\left\{\int_{0}^te^{-\lambda\cdot s}L(y^{x_0,u}(s),u(s))ds+e^{-\lambda\cdot t}\cdot V(y^{x_0,u}(t))\right\}\,.
+\eeq
+For any $u\in\mathcal{U}_{ad}$, we set $x_t=y^{x_0,u}(t)$. For every $\ve>0$, there exists an control $u_{\ve}$ such that 
+\[
+V(x_t)+\ve~\geq~\int_{0}^{+\infty}e^{-\lambda\cdot s }\cdot L(y^{x_t,u_{\ve}}(s),u_{\ve}(s))~ds\,.
+\]
+Denote by 
+\[
+\bar{u}_{\ve}(s)~\doteq~ \left\{\begin{array}{ll}
+u(s)\qquad&\qquad\mathrm{for}~\tau\in [0,t)\,,\\
+\\
+u_{\ve}(s-t)\qquad&\qquad\mathrm{for}~s\in [t,+\infty)\,.
+\end{array}\right.
+\]
+By the definition, we have 
+\begin{multline*}
+V(x_0)~\leq~\int_{0}^{+\infty}e^{-\lambda\cdot s}\cdot L(y^{x_0,u_{\ve}}(s),u_{\ve}(s))ds
+\\
+~=~\int_{0}^{t}e^{-\lambda\cdot s}\cdot L(y^{x_0,\bar{u}_{\ve}}(s),\bar{u}_{\ve}(s))ds+\int_{t}^{+\infty}e^{-\lambda\cdot s}\cdot L(y^{x_0,u_{\ve}}(s),\bar{u}_{\ve}(s))ds\\
+~=~\int_{0}^{t}e^{-\lambda\cdot s}\cdot L(y^{x_0,u}(s),u(s))ds+e^{-\lambda\cdot t}\cdot \int_{t}^{+\infty}e^{-\lambda\cdot (s-t)}L(y^{x_0,\bar{u}_{\ve}}(s),\bar{u}_{\ve}(s))ds\\
+~=~\int_{0}^{t}e^{-\lambda\cdot s}\cdot L(y^{x_0,u}(s),u(s))ds+e^{-\lambda\cdot t}\cdot\int_{0}^{+\infty}e^{-\lambda\cdot s} L(y^{x_t,u_{\ve}(s)},u_{\ve}(s))~ds\\
+~\leq~\int_{0}^{t}e^{-\lambda\cdot s}\cdot L(y^{x_0,u}(s),u(s))ds+e^{-\lambda\cdot t}\cdot[V(x_t)+\ve]\,.
+\end{multline*}
+Taking $\ve\to 0$, we obtain that 
+\[
+V(x_0)~\leq~\int_{0}^{t}e^{-\lambda\cdot s}\cdot L(y^{x_0,u}(s),u(s))ds+e^{-\lambda\cdot t}\cdot V(y^{x_0,u}(t))
+\]
+for all $u\in\mathcal{U}_{ad}$ and it yields (\ref{Lbound-V})
+\qed
+%\subsection{Recovering the optimal control from the value function}
+%{\bf 1. Infinite horizon problem.} Let $V$ be the value function of the optimization problem 
+%\[
+%V(x)~=~\inf_{u\in\mathcal{U}_{ad}}\left\{\int_{0}^{+\infty}~e^{-\lambda\cdot t}\cdot L(y^{x_0,u}(t),u(t))~dt\right\}
+%\]
+%subject to the control system (CS). Assume that $V$ is in $C^1$. Given an initial data $x_0$, the optimal control can be determined as follows:
+%\quad\\
+%\quad\\
+%{\bf 1.} For every control $u$, the function 
+%\bel{Phi}
+%\Phi^{u}(t)~=~\int_{0}^{t}e^{-\lambda\cdot s}\cdot L(y^{x_0,u}(s),u(s))~ds+ e^{-\lambda t}\cdot V(y^{x_0,u}(t))\qquad\forall t\geq 0\,.
+%\eeq
+%It is clear that $\Phi^{u}(\cdot)$ is a non-increasing function, i.e., 
+%\[
+%\Phi^{u}(t_1)~\leq~\Phi^{u}(t_2)\qquad\forall 0\leq t_1\leq t_2\,.
+%\]
+%Moreover, $u$ is an optimal control if and only if the function $\Phi^{u}(\cdot)$ is constant. In this case, 
+%\begin{eqnarray*}
+%0&=&{d\over dt}~\Phi^u(t)\\
+%&=&e^{-\lambda\cdot t}\cdot L(y^{x_0,u}(t),u(t))-\lambda e^{-\lambda t}\cdot V(y^{x_0,u}(t))+e^{-\lambda t}\cdot \nabla V(y^{x_0,u}(t))\cdot f(y^{x_0,u}(t))\,.
+%\end{eqnarray*}
+%This implies that 
+%\[
+%\lambda \cdot V(y^{x_0,u}(t))~=~L(y^{x_0,u}(t),u(t))+ \nabla V(y^{x_0,u}(t))\cdot f(y^{x_0,u}(t))\,.
+%\]
+%\subsection{Hamilton-Jacobi-Bellman equations}
+%\subsection{An idea of the technique for the uniqueness results.}
+%\subsection{Some applications}
+%\newpage
+%\section{The Pontryagin Maximum Principle}
+%\subsection{Necessary condition for Mayer problems}
+%\subsection{Necessary condition for Bolza problems}
+%\section{Linear control systems}
+%\subsection{Controllability}
+%\subsection{Bang-bang principle}
+%\subsection{Minimum time function for linear control systems}
+\end{document}

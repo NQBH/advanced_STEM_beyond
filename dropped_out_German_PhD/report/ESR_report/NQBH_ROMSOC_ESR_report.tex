@@ -1,0 +1,740 @@
+\documentclass{book}
+\usepackage[backend=biber,natbib=true,style=authoryear]{biblatex}
+\addbibresource{/home/nguyen/1_NQBH/math/bib.bib}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
+\usepackage{amsmath,amssymb,amsthm}
+\allowdisplaybreaks
+\numberwithin{equation}{section}
+\newtheorem{assumption}{Assumption}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{notation}{Notation}[section]
+\newtheorem{remark}{Remark}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{ques}{Question}[section]
+\newtheorem{problem}{Problem}[section]
+\newtheorem{conjecture}{Conjecture}[section]
+\usepackage[left=0.5in,right=0.5in,top=1.5cm,bottom=1.5cm]{geometry}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\addtolength{\headheight}{0pt}% obsolete
+\lhead{\scriptsize \chaptername~\thechapter}
+\rhead{\scriptsize \nouppercase{\leftmark}} %\nouppercase !
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\cfoot{\thepage}
+\def\labelitemii{$\circ$}
+
+\title{ROMSOC ESRs Report}
+\author{Nguyen Quan Ba Hong}
+\date{\today}
+
+\begin{document}
+\maketitle
+\setcounter{secnumdepth}{6}
+\setcounter{tocdepth}{6}
+\tableofcontents
+
+%------------------------------------------------------------------------------%
+
+\chapter*{\href{https://www.romsoc.eu/}{ROMSOC}: Reduced Order Modelling, Simulation and Optimization of Coupled Systems}
+
+\begin{itemize}
+    \item \textbf{Motivations.} Product development today is increasingly based on simulation and optimization of virtual products and processes.
+    
+    Mathematical models serve as digital twins of the real products and processes and are the basis for optimization and control of design and functionality.
+    \item \textbf{Requirements.} The models have to meet very different requirements:
+    \begin{itemize}
+        \item \textit{Deeply refined mathematical models} are required to \textit{understand} and \textit{simulate} the \textit{true physical processes},
+        \item while \textit{less refined models} are the prerequisites to handle the \textit{complexity of control and optimization}.
+    \end{itemize}
+    \item \textbf{Goal.} To achieve best performance of \textit{mathematical modeling, simulation and optimization techniques} (\textit{MSO}), in particular in the \textit{industrial environment}, it would be ideal to \textit{create a complete model hierarchy}.
+    \item \textbf{Methodology.} The currently most favored way in industrial applications to achieve such a model of hierarchy is to use a sufficiently fine parameterized model and then apply \textit{model order reduction} (\textit{MOR}) techniques to tune this fine level to the \textit{accuracy, complexity} and \textit{computational speed} needed in \textit{simulation} and \textit{parameter optimization}.
+    \item \textbf{Framework.} Although the mathematical models differ strongly in different applications and industrial sectors, there is a \textit{common framework} via an \textit{appropriate representation} of the \textit{physical model}.
+    \item \textbf{Objective.} The main objective of the ROMSOC project is to further develop this common framework and, driven by industrial applications as optical and electronic systems, material engineering, or economic processes, to lift mathematical MSO and MOR to a new level of quality.
+    
+    The development of \textit{high dimensional} and \textit{coupled systems} presents \textit{a major challenge for simulation and optimization} and \textit{requires new MOR techniques}.
+    \item ROMSOC is a European Industrial Doctorate (EID) project that will run for 4 years bringing together 15 international academic institutions and 11 industry partners.
+    
+    It supports the recruitment of eleven Early Stage Researchers (ESRs) working on individual research projects.
+    
+    In order to train the eleven young researchers for the challenges of multi-disciplinary and international co-operation, their scientific work is embedded in a jointly organized doctoral program, in which lectures and workshops address both scientific content and soft skills.
+    
+    The researchers are supervised by expert tandems, each consisting of an academic and an industrial representative.
+    
+    They spend at least half the time in a company, the rest in a research facility.
+    \item European Industrial Doctorate Programs (EIDs) are sponsored by the European Commission in the framework of Horizon 2020. They are one type of ``Innovative Training Networks'', which are part of the Marie Skłodowska-Curie Actions (MSCA) that support the carriers of scientists and encourage their transnational, intersectoral and interdisciplinary mobility.
+\end{itemize}
+
+\section*{ROMSOC blog}
+\begin{itemize}
+    \item Prof. Dr. Volker Mehrmann. \href{https://www.romsoc.eu/model-reduction-for-port-hamiltonian-systems/}{\textit{Model reduction for port-Hamiltonian systems}}. ROMSOC blog. Dec 12, 2019.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\chapter{\href{https://www.romsoc.eu/projects/real-time-computing-methods-for-adaptive-optics/}{Project 1: Real Time Computing Methods for Adaptive Optics}}
+
+\section{Project Description}
+\begin{itemize}
+    \item \textbf{Aim.} The new generation of planned earthbound Extremely Large Telescopes (ELT) aims at an excellent image quality in a large field of view.
+    
+    Such systems rely on \textit{Adaptive Optic}s (\textit{AO}) systems that correct optical distortions caused by atmospheric turbulences.
+    
+    To achieve a satisfying correction, the deformations of optical wavefronts emitted by natural or artificial guided stars are measured via \textit{wavefront sensors} and, subsequently, corrected using \textit{deformable mirrors} (DM's).
+    \item \textbf{Ill-posedness.} Additionally, several AO systems require the reconstruction of the turbulence profiles in the atmosphere, which is called \textit{atmospheric tomography}.
+    
+    Mathematically, such problems are ill-posed, i.e., the recovery from noise measurements which is done by inverting the atmospheric tomography operator. These underlying ill-posed problems have to be solved in real-time, as the atmospheric turbulences change within milliseconds.
+    \item \textbf{Aim.} The aim of the ESR is to develop atmospheric layer model reduction methods and to collaborate in the development and adaption of reconstruction algorithms.
+    
+    Finally, the algorithms have to be optimized and implemented in the \textit{Real Time Computing} and \textit{DM hardware} of the industrial partner Microgate.
+\end{itemize}
+
+\textsf{Fig. Atmospheric turbulence from the telescope's opening. The different colors correspond to the deformation of the incoming light waves. Credits: ESO.}
+
+\textsf{Fig. The future ELT centering the 40-metre-class primary mirror which will consist of almost 800 hexagonal segments, each 1.4 metres wide, but only 50 mm thick. Credits: ESO.}
+
+\section{ROMSOC blogs}
+\begin{itemize}
+    \item Bernadett Stadler. \href{https://www.romsoc.eu/what-makes-a-solver-a-good-one/}{\textit{What makes a solver a good one? Solving large linear systems in real-time applications}}. ROMSOC blog. Jan 19, 2021.
+    \item Bernadett Stadler. \href{https://www.romsoc.eu/how-fast-can-we-get-for-the-european-extremely-large-telescope-performance-optimizations-on-real-time-hardware/}{\textit{How fast can we get for the European Extremely Large Telescope? Performance optimizations on real-time hardware}}. ROMSOC blog. Jan 29, 2020.
+    \item Bernadett Stadler. \href{https://www.romsoc.eu/a-new-year-has-started-lets-look-into-the-stars/}{\textit{A new year has started. Let's look into the stars!}} ROMSOC blog. Jan 16, 2019.
+\end{itemize}
+
+\section{ROMSOC ESR's Seminar}
+\begin{itemize}
+    \item \textbf{Title.} \textsc{Real time computing methods for Adaptive Optics.}
+    \item \textbf{Objectives.} In this talk, we take a closer look onto \textit{Adaptive Optics} for the \textit{Extremely Large Telescope} (ELT) and the mathematics behind this technique.
+    
+    In particular, we will focus on solving the \textit{atmospheric tomography problem} for the ELT in \textit{real-time}.
+    \item Existing solvers as well as novel ones will be presented and analyzed regarding their \textit{computational efficiency}.
+    \item Moreover, we will look at the \fbox{\textit{parallel implementation}} of a specific \textit{iterative solver} on certain \textit{real-time hardware}.
+    
+    This \textit{iterative algorithm} is then extended by a \textit{Krylov subspace recycling approach} in order to fulfill the \textit{real-time requirement}s of the ELT.
+    \item The authors provide results on the \textit{quality} and \textit{performance} of this extended algorithm for a specific instrument of the ELT, called \textit{MAORY}.
+    
+    Finally, they will discuss a variety of ideas regarding the \textit{optimization} of the \textit{simulation environment}, the \textit{implementation} and the \textit{approach} itself.
+\end{itemize}
+
+\section{Bernadett Stadler, Ronny Ramlau, Roberto Biasi. \textit{Performance of an iterative solver for atmospheric tomography on real-time hardware}. 2020}
+\begin{itemize}
+    \item \textbf{Reference.}  Bernadett Stadler, Ronny Ramlau, and Roberto Biasi. ``Performance of an iterative solver for atmospheric tomography on real-time hardware''. \textit{Proc. SPIE 11448, Adaptive Optics Systems VII}, 114481S (Dec 13, 2020); \url{https://doi.org/10.1117/12.2560217}.
+\end{itemize}
+
+\subsection*{Abstract}
+\begin{itemize}
+    \item \textbf{Problem.} The \textit{new generation} of \textit{ground-based extremely large telescopes} rely on \textit{adaptive optics} (AO).
+    
+    Many \textit{AO systems} require the \textit{reconstruction} of the \textit{turbulence profile}, which is called \textit{atmospheric tomography}.
+    \item \textbf{Challenge.} Due to the \textit{growth} of \textit{telescope sizes} the \textit{computational load} for this problem is increasing drastically.
+    
+    Thus, the \textit{collaboration} of \textit{state-of-the-art real-time hardware} with an \textit{efficient solver} that take advantage of the available hardware resources is of great importance.
+    \item \textbf{Content.} In this talk, look at an \textit{iterative approach} called FEWHA and its adaption to perform best on \textit{real-time hardware}.
+    
+    Conclude the talk with a \textit{comparison} between FEWHA and the frequently used MVM within the framework of MAORY.
+\end{itemize}
+
+\section{Ronny Ramlau, Bernadett Stadler. \textit{An augmented wavelet reconstructor for atmospheric tomography}. 2020}
+
+\subsection*{Abstract}
+\begin{itemize}
+    \item \textit{Atmospheric tomography}, i.e. the reconstruction of the \textit{turbulence profile} in the atmosphere, is a challenging task for \textit{adaptive optics} (AO) \textit{systems} of the next generation of extremely large telescopes.
+    
+    Within the community of AO the 1st choice solver is the so called \textit{Matrix Vector Multiplication} (\textit{MVM}), which directly applies the (regularized) generalized inverse of the system operator to the data.
+    \item  For small telescopes this approach is feasible, however, for larger systems such as the \textit{European Extremely Large Telescope} (\textit{ELT}), the atmospheric tomography problem is considerably more complex and the computational efficiency becomes an issue.    
+    \item Iterative methods, such as the \textit{Finite Element Wavelet Hybrid Algorithm} (\textit{FEWHA}), are a promising alternative.
+    
+    FEWHA is a \textit{wavelet based reconstructor} that uses the well-known iterative \textit{preconditioned conjugate gradient} (\textit{PCG}) method as a solver.
+    
+    The number of floating point operations and memory usage are decreased significantly by using a matrix-free representation of the forward operator.    
+    \item A crucial indicator for the real-time performance are the number of PCG iterations.    
+    \item In this paper, the authors propose an augmented version of FEWHA, where the number of iterations is decreased by 50\% using a Krylov subspace recycling technique.
+    
+    They demonstrate that  a parallel implementation of augmented FEWHA allows the fulfilment of the real-time requirements of the ELT.
+\end{itemize}
+\textbf{Keywords.}
+\begin{itemize}
+    \item adaptive optics
+    \item atmospheric tomography
+    \item Krylov subspace recycling
+    \item inverse problems
+    \item real-time computing
+\end{itemize}
+
+\section{Bernadett Stadler, Roberto Biasi, Mauro Manetti, and Ronny Ramlau. \textit{Real-time Implementation of an Iterative Solver for Atmospheric Tomography}. 2020}
+
+\subsection*{Abstract}
+\begin{itemize}
+    \item The image quality of the new generation of earthbound Extremely Large Telescopes (ELTs) is heavily influenced by atmospheric turbulences.
+    
+    To compensate these optical distortions a technique called adaptive optics (AO) is used.
+    
+    Many AO systems require the reconstruction of the refractive index fluctuations in the atmosphere, called \textit{atmospheric tomography}.
+    \item The standard way of solving this problem is the \textit{Matrix Vector Multiplication}, i.e., the direct application of a (regularized) generalized inverse of the system operator.
+    
+    However, over the last years the telescope sizes have increased significantly and the computational efficiency become an issue.
+    \item Promising alternatives are iterative methods such as the Finite Element Wavelet Hybrid Algorithm (FEWHA), which is based on wavelets.
+    
+    Due to its efficient matrix-free representation of the underlying operators, the number of floating point operations and memory usage decreases significantly.
+    \item In this paper, the authors focus on performance optimization techniques, such as parallel programming models, for the implementation of this iterative method on CPUs and GPUs.
+    
+    They evaluate the computational performance of our optimized, parallel version of FEWHA for ELT-sized test configurations.
+\end{itemize}
+\textbf{Keywords.}
+\begin{itemize}
+    \item inverse problems
+    \item iterative solver
+    \item real-time computing
+    \item adaptive optics
+    \item atmospheric tomography
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\chapter{\href{https://www.romsoc.eu/mathematical-modelling-and-numerical-simulation-of-coupled-thermo-acoustic-multi-layer-systems-for-enabling-particle-velocity-measurements-in-the-presence-of-airflow/}{Project 2: Mathematical Modeling \& Numerical Simulation of Coupled Thermo-Acoustic Multi-Layer Systems for Enabling Particle Velocity Measurements in the Presence of Airflow}}
+
+\section{Project Description}
+\begin{itemize}
+    \item \textbf{Problem.} Microflown USP probes, which are able to \textit{measure particle velocity} and \textit{acoustic pressure fields simultaneously}, are \textit{sensitive} to the effect of wind, since they are based on \textit{thermal transducers} and hence highly dependent on the \textit{variations} of \textit{thermal flow velocity}.
+    \item \textbf{Objectives.} Objectives of this research project are the mathematical modelling and numerical simulation of thermo-acoustic coupled Systems (involving USP probes, the compressible fluid in the presence of flow, and the multilayer windscreen).
+    \item \textbf{Output.} The numerical results will play a key role in the \textit{design of novel windscreens} to mitigate the flow effects on the measures of acoustic probes.
+\end{itemize}
+
+\section{ROMSOC blog}
+\begin{itemize}
+    \item Ashwin Sadanand Nayak. \href{https://www.romsoc.eu/mathematical-modelling-acoustic-measurements/}{\textit{Mathematical modelling acoustic measurements}}. ROMSOC blog. Apr 17, 2020.
+    \item Ashwin Sadanand Nayak. \href{https://www.romsoc.eu/origin-and-need-for-coupled-models-in-acoustics/}{\textit{Origin and need for coupled models in acoustics}}. ROMSOC blog. Mar 13, 2019.
+\end{itemize}
+
+\section{ROMSOC ESR's Seminar}
+\begin{itemize}
+    \item \textbf{Title.} \textsc{Model coupling for acoustic particle-velocity sensors in layered media}.
+    \item \textbf{Problem.} The \textit{acoustic particle velocity sensor}, Microflown is known to exhibit sensitivity to airflow perturbations. Typically, it is enclosed within a wire mesh for protection and makes use of single or multi-layer porous windscreens to reduce the impact of noise in windy conditions.
+    \item \textbf{Objective.} The objective of the study is to model mathematically the acoustic coupled phenomena between the acoustic device and its multi-layer windscreens, and to quantify numerically the effects of such layers on the incident acoustic signal.
+    
+    A comprehensive mathematical model to \textit{predict} the \textit{acoustic response} of \textit{multi-layered media} is developed by establishing a \textit{model hierarchy approach}.
+    \item \textbf{Content.} The \textit{coupled acoustic problem} involves \textit{3 key vibro-acoustic components}:
+    \begin{itemize}
+        \item the \textit{compressible unbounded fluid domain} surrounding the \textit{transducer};
+        \item a \textit{metallic wire mesh layer}, which is modeled as a \textit{locally reacting panel} with a \textit{wall-impedance condition}; and
+        \item the \textit{porous windscreen}, which is modeled as an equivalent fluid layer with dissipative properties in order to capture the acoustical behavior of the porous material with arbitrarily shaped pores.
+    \end{itemize}
+    Additionally, the \textit{Perfectly Matched Layer technique} is utilized to \textit{replicate free-field conditions} in the \textit{acoustic fields}.
+    
+    The entire configuration is coupled by establishing \textit{kinetic} and \textit{kinematic conditions} on the \textit{common interfaces} of the different mechanical components and solved using \textit{standard finite element discretization} based on \textit{Raviart-Thomas elements}.
+    
+    To illustrate the \textit{reliability} of the \textit{numerical approximations}, they will be compared w.r.t. \textit{laboratory experimental data}.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\chapter{\href{https://www.romsoc.eu/an-optimal-transportation-computational-approach-of-inverse-free-form-optical-surfaces-design-for-extended-sources/}{Project 3: An Optimal Transportation Computational Approach of Inverse Free-Form Optical Surfaces Design for Extended Sources}}
+
+\section{Project Description}
+\begin{itemize}
+    \item \textbf{Problem.} In \textit{illumination optics free-form optical designs} are now frequently used.
+    
+    To design these \textit{optical components Optimal Transport} (\textit{OT}) based methods are becoming more and more popular.
+    
+    But in these methods it is assumed that the source has an infinitesimal size, which is not realistic and is solved in practice with \textit{tedious iterative methods}.
+    
+    Significant progress has been recently achieved on the \textit{numerical resolution of OT problems}.
+    \item \textbf{Methodology.} \textit{Free-form} (\textit{FF}) \textit{Reflectors} for idealized collimated source of illumination can be computed rapidly with resolutions of millions of points.
+    \item \textbf{Challenge.} \textit{More realistic point source} and \textit{extended illumination resolution}, which are important for applications, are \underline{still open} as the \textit{available OT solvers} are \underline{unable to deal efficiently} with the \textit{more complicated structure} of these problems.
+    \item \textbf{Approach.} It is well known that these more complicated problems can be relaxed into \textit{huge linear program}.
+    
+    A \textit{numerical approach} called \textit{Sinkhorn iterations} and popularized recently by Cuturi for OT relies on the \textit{``entropic'' regularization} of these linear program and \textit{alternate projection solver}.
+    
+    Using \textit{GPU parallelization} this again allows to \textit{solve regularized OT problems} with millions of points.
+    \item \textbf{Objectives.} Within the research project the following objectives will be addressed:
+    \begin{itemize}
+        \item the \textit{developmen}t of \textit{numerical algorithms} for the \textit{finite source OT problem}
+        \item the \textit{evaluation} of the \textit{Sinkhorn iterations method}
+        \item the \textit{implementation} of the algorithms on \textit{GPU}
+    \end{itemize}
+    \item \textbf{Expectations.} The authors expect that the research results in new methods to \textit{iteratively move from a point source to an extended source efficiently} together with \textit{error estimations} on the \textit{achieved target distribution} compared to the \textit{desired target distribution}.
+    
+    All obtained results will be verified with \textit{available commercial software tools}.
+\end{itemize}
+
+\section{ROMSOC blog}
+\begin{itemize}
+    \item Giorgi Rukhaia. \href{https://www.romsoc.eu/how-simple-can-a-hard-problem-be/}{\textit{How simple can a hard problem be?}}. Apr 10, 2019.
+\end{itemize}
+
+\section{ROMSOC ESR's Seminar}
+
+\section{Jean-David Benamou, Wilbert Ijzerman, Giorgi Rukhaia. \textit{An Entropic Optimal Transport Numerical Approach to the Reflector Problem}. 2020}
+\begin{itemize}
+    \item \textbf{Reference.} Jean-David Benamou, Wilbert Ijzerman, Giorgi Rukhaia. ``An Entropic Optimal Transport Numerical Approach to the Reflector Problem''. 2020. \textsc{hal-02539799}
+\end{itemize}
+
+\subsection*{Abstract}
+\begin{itemize}
+    \item \textbf{Problem.} The \textit{point source far field reflector design problem} is 1 of the \textit{main classic optimal transport problems} with a \textit{non-euclidean displacement cost} [Wang, 2004] [Glimm and Oliker, 2003].
+    \item \textbf{Content.} This work describes the use of \textit{Entropic Optimal Transport} and the associated \textit{Sinkhorn algorithm} [Cuturi, 2013] to solve it numerically.
+    \item \textbf{Challenges.} As the \textit{reflector modeling} is based on the \textit{Kantorovich potentials}, several questions arise. 
+    
+    1st, on the \textit{convergence} of the \textit{discrete entropic approximation} and here we follow the recent work of [Berman, 2017] and in particular the imposed discretization requirements therein.
+    
+    2ndly, the \textit{correction} of the \textit{Entropic bias} induced by the \textit{Entropic OT}, as discussed in particular in [Ramdas et al., 2017] [Genevay et al., 2018] [Feydy et al., 2018], is another important tool to achieve reasonable results.
+    \item \textbf{Details.} The paper reviews the necessary mathematical and numerical tools needed to produce and discuss the obtained numerical results.
+    
+    The authors find that \textit{Sinkhorn algorithm} may be adapted, at least in simple academic cases, to the resolution of the \textit{far field reflector problem}.
+    
+    \textit{Sinkhorn canonical extension to continuous potentials} is needed to generate continuous reflector approximations.
+    
+    The use of \textit{Sinkhorn divergences} [Feydy et al., 2018] is useful to \textit{mitigate} the \textit{entropic bias}.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\chapter{\href{https://www.romsoc.eu/data-driven-model-adaptions-for-coil-sensitivities-in-mr-systems/}{Project 4: Data Driven Model Adaptions for Coil Sensitivities in MR Systems}}
+
+\section{Project Description}
+\begin{itemize}
+    \item \textbf{Problem.} \textit{Magnetic Particle Imaging} (\textit{MPI}) is an evolving Technology aiming at \textit{non-radiative, non-invasive imaging} of \textit{functional parameters} such as \textit{blood flow} or targeted \textit{metabolic processes}.
+    
+    In particular, \textit{reconstruction quality} is \textit{limited} due to the \textit{restricted approximation Quality of PDE-based models}.
+    \item \textbf{Approaches.} \textit{Data-driven approaches}, based on \textit{neural network}s and \textit{deep learning}, would allow to incorporate expert information obtained from \textit{experimental measurements} and to improve \textit{diagnostic potential of MPI technology}.
+    \item \textbf{Objectives.} Objectives of this research project are the \textit{analysis of limitations of PDE-based models} (\textit{Maxwell} and \textit{derived models}) for \textit{coil sensitivities} with a wide range of further applications.
+    
+    The work comprises development of concepts for \textit{data-driven operator adaptions} under \textit{efficiency constraints} as well as the implementation of \textit{deep learning methods} for \textit{model adaptions}.
+\end{itemize}
+
+\section{ROMSOC blog}
+\begin{itemize}
+    \item José Carlos Gutiérrez Pérez. \href{https://www.romsoc.eu/the-closure-problem-explained-in-a-daily-life-application/}{\textit{The closure problem explained in a daily life application}}. ROMSOC blog. May 16, 2019.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\chapter{\href{https://www.romsoc.eu/coupling-of-model-order-reduction-and-multirate-techniques-for-coupled-heterogeneous-time-dependent-systems-in-an-industrial-optimization-flow/}{Project 5: Coupling of Model Order Reduction \& Multirate Techniques for Coupled Heterogeneous Time-Dependent Systems in an Industrial Optimization Flow}}
+
+\section{Project Description}
+\begin{itemize}
+    \item \textbf{Problem.} In \textit{industrial circuit} and \textit{device simulation}, e.g. for \textit{estimating failure probabilities} due to \textit{aging}, simulation problems have to be run many times in the loop of an \textit{optimization flow}.
+    
+    This can only be done by drastically reducing simulation costs via \textit{model order reduction} (\textit{MOR}).
+    \item \textbf{Challenge.} This is particularly challenging for \textit{coupled systems} of various \textit{simulation packages} for the different \textit{subcomponents} and \textit{physical domains}.
+    
+    For efficiency, MOR and multirate error estimates have to be linked to define \textit{overall error estimates}, balanced to the accuracy requirements of the \textit{iteration level} of the \textit{optimization flow}.
+    \item \textbf{Objectives.} Objectives of this research project are the \underline{combination} of \textit{advanced concepts of model order reduction} and \textit{multirating on hierarchies of submodels}, the \textit{preservation of overall properties of the system} (e.g., passivity, energy conservation etc.) and \textit{stability of the dynamic iteration process}, as well as the \textit{incorporation of manifold mapping techniques}.
+\end{itemize}
+
+\section{ROMSOC blog}
+\begin{itemize}
+    \item Marcus Bannenberg. \href{https://www.romsoc.eu/reduced-order-multirate-schemes/}{\textit{Reduced Order Multirate Schemes}}. ROMSOC blog. Jun 21, 2020.
+    \item Marcus Bannenberg. \href{https://www.romsoc.eu/under-the-volcano-heat-in-microchips/}{\textit{Under the Volcano -- Heat in Microchips}}. Jun 13, 2019.
+\end{itemize}
+
+\section{ROMSOC ESR's Seminar}
+\begin{itemize}
+    \item \textbf{Title.} \textsc{Numerical simulation of integrated circuits}.
+    \item \textbf{Problem.} In the context of \textit{time-domain simulatio}n of \textit{integrated circuits}, one often encounters \textit{large systems} of \textit{coupled differential-algebraic equations}.
+    \item \textbf{Challenge.} \textit{Simulation costs} of these systems can become \textit{prohibitively large} as the number of components keeps increasing.
+    \item \textbf{Content.} In an effort to \textit{reduce these simulation costs} a twofold approach is presented in this talk.
+    
+    The authors combine \textit{maximum entropy snapshot sampling method} and a \textit{nonlinear model order reduction technique}, with \textit{multirate time integration}.
+    
+    The obtained \textit{model order reduction basis} is applied using the \textit{Gauss-Newton method} with \textit{approximated tensors reduction}.
+    
+    This \textit{reduction framework} is then integrated using a \textit{coupled-slowest-first multirate integration scheme}.
+    
+    The convergence of this combined method verified numerically.
+    
+    Lastly it is shown that the new method results in a \textit{reduction} of the \textit{computational effort without significant loss of accuracy}.
+    \item \textbf{Techniques.} Reduced Order Multirate coupled with Maximum Entropy Snapshot Sampling (MESS).
+    \item \textbf{Tools.} Singular Value Decomposition (SVD)
+    \item 2nd-order R\'eny entropy of a sample
+    \item Couple a big system of ODEs with DAEs
+    \item POD method, MESS method/framework
+    \item Deal with overdetermined systems
+    \item Detailed algorithms for MESS framework.
+    \item Marcus Bannenberg presented several numerical results, mainly on the computational time versus the error to indicate the effectiveness of his coupling approach.
+    \item \textbf{Stability.} Unconditionally A-stable
+    \item \textit{Transient analysis}
+    \item I asked Marcus Bannenberg: Since he used the assumption that the main Jacobian is regular to apply the inverse function theorem for his algebraic systems, but I wonder if he already considered the effect of the \textit{condition number} $\kappa$ of that Jacobian to the convergence rates of his algorithms.
+    
+    Marcus Bannenberg confirmed no, that assumption is only used for invoking inverse function theorem. He will investigate convergence rate on future work.
+    \item Prof. Volker Mehrmann and ESR06 Onkar Sandip Jadhav have a lot of doubts and concerns about the theoretical motivations and stability of the coupling between these multirate and sampling frameworks together: ``I want to understand the pitfall why you can get through''. He suggested Marcus Bannenberg to use port-Hamiltonian framework to obtain stability for free.
+    \item Prof. Volker Mehrmann suggested Marcus Bannenberg to investigate on theoretic motivations although the numerical results seems persuaded.
+    
+    \item Michael Günther said that that idea will be beyond Marcus Bannenberg's PhD work.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\chapter{\href{https://www.romsoc.eu/model-order-reduction-for-parametric-high-dimensional-models-in-the-analysis-of-financial-risk/}{Project 6: Model Order Reduction for Parametric High Dimensional Models in the Analysis of Financial Risk}}
+
+\section{Project Description}
+\begin{itemize}
+    \item \textbf{Problem.} In \textit{Computational Finance potential developments} of \textit{assets} and/or \textit{liabilities} are usually modeled via \textit{Monte Carlo} (\textit{MC}) \textit{simulation} of the underlying \textit{risk factors}.
+    
+    For the \textit{valuation} of \textit{financial instruments}, however, techniques based on \textit{discretized convection-diffusion-reaction PDEs} are often superior.
+    
+    The solution of these high-dimensional problems requires \textit{sparse representations in tensor formats} and an \textit{adaptation} of the \textit{iterative solvers} to this format.
+    \item \textbf{Objectives.} Objectives of this research project are the \textit{development} of \textit{hierarchical} and \textit{data sparse tensor representations} for MC and PDE methods arising in the \textit{valuation} of \textit{financial risk}.
+    
+    \textsf{Fig. Possible paths of a stock price obtained by \textit{Monte Carlo Simulation}. Credits: \textsc{MathConsult GmbH}.}
+    
+    The objectives of the research also include the \textit{comparison of MC and PDE techniques} and the \textit{implementation} of \textit{efficient algorithms}.
+    \item \textbf{Methodology.} Moreover, \textit{model order reduction methods for high-dimensional systems} in \textit{tensor format} have to be derived.
+    
+    These will include \textit{projection based reduced order modeling techniques} based on \textit{adaptive eigenvalue/singular value techniques} with \textit{error estimates} in \textit{tensor formats} and for \textit{model hierarchies}.
+\end{itemize}
+
+\section{ROMSOC blog}
+\begin{itemize}
+    \item Onkar Sandip Jadhav. \href{https://www.romsoc.eu/model-hierarchy-for-the-reduced-order-modelling/}{\textit{Model hierarchy for the reduced order modeling}}. ROMSOC blog. Jul 22, 2020.
+    \item Onkar Sandip Jadhav. \href{https://www.romsoc.eu/lets-break-the-curse-of-dimensionality/}{\textit{Let's Break the Curse of Dimensionality}}. Jul 3, 2019.
+\end{itemize}
+
+\section{ROMSOC ESR's Seminar}
+\begin{itemize}
+    \item \textbf{Title.} \textsc{A model order reduction framework for financial risk analysis.}
+    \item \textbf{Financial models.} 1-factor \& 2-factor Hull-White model
+    \item High dimensional parameter space.
+    \item Full Order Model (FOM).
+    \item \textbf{Numerics.} FDM, FEM.
+    \item Reduced Order Model (ROM), POD (Proper Orthogonal Decomposition).
+    \item Snapshots matrix $\to$ truncated SVD.
+    \item Cf.
+    \begin{itemize}
+        \item Classical Greedy Sampling Algorithm (CG) $\to$ some drawbacks.
+        \item Adaptive Greedy Sampling Algorithm (AG) $\to$ use a surrogate model $\to$ locate parameters faster.
+    \end{itemize}
+    \item \textbf{Surrogate model.}
+    \begin{itemize}
+        \item Simple multiple regression model
+        \item Principal Component Regression.
+    \end{itemize}
+    \item \textbf{Error analysis.} 3 major errors:
+    \begin{itemize}
+        \item Discretization error $\to$ use Richardson extrapolation.
+        \item ROM error.
+        \item Sampling error.
+    \end{itemize}
+    \item \textbf{ROM error.} $\to$ truncated SVD, see [Kunisch et al. 2001], based on randomized algorithm: speed up.
+    \begin{itemize}
+        \item Complexity of a simple/series of SVDs.
+        \item Compute a compact SVD, draw Gaussian random vectors.
+        \item Gram-Schmidt like algorithm/QR factorization.
+    \end{itemize}
+    \item \textbf{Sampling error.}
+    \begin{itemize}
+        \item Projection error due to the PCA.
+        \item Error of prediction.
+    \end{itemize}
+    \item \textbf{Numerics.}
+    \begin{itemize}
+        \item $k$-fold cross validation $\to$ training and test sets.
+        \item Numerical example of a putable steepener.
+        \item \textbf{Test example.} 2-factor Hull-White.
+        \item Drawbacks of Classical Greedy Sampling.
+        \item Cf. CG vs. AG.
+        \item \textbf{Computational Cost.} $\to$ SVD vs. Randomized SVD.
+        \item Reduced model approach is at least 8-10 times faster than the full model approach.
+        \item Potential applications in the historical/Monte-Carlo value at risk calculations.
+    \end{itemize}
+    \item \textbf{Outlook.} Machine Learning.\hfill$\square$
+\end{itemize}
+
+\section{Andreas Binder, Onkar Jadha, Volker Mehrman. \textit{Model Order Reduction for Parametric High Dimensional Interest Rate Models in the Analysis of Financial Risk}. 2020}
+
+\subsection*{Abstract}
+\begin{itemize}
+    \item \textbf{Objective.} This paper presents a \textit{model order reduction} (MOR) \textit{approach} for \textit{high dimensional problems} in the analysis of \textit{financial risk}.
+    \item \textbf{Challenge.} To understand the \textit{financial risks} and \textit{possible outcomes}, the authors have to \textit{perform several thousand simulations} of the \textit{underlying product}.
+    
+    These simulations are \textit{expensive} and create a need for \textit{efficient computational performance}.
+    \item \textbf{Methodology.} Thus, to tackle this problem, the authors establish a \textit{MOR approach} based on a \textit{proper orthogonal decomposition} (POD) \textit{method}.
+    
+    The study involves the computations of \textit{high dimensional parametric convection-diffusion reaction partial differential equations} (PDEs).
+    
+    POD requires to solve the \textit{high dimensional model} at some parameter values to generate a \textit{reduced-order basis}.
+    
+    The authors propose an \textit{adaptive greedy sampling technique} based on \textit{surrogate modeling} for the selection of the \textit{sample parameter set} that is analyzed, implemented, and tested on the \textit{industrial data}.
+    
+    The results obtained for the numerical example of a \textit{floater} with a \textit{cap} and \textit{floor} under the \textit{Hull-White model} indicate that \fbox{\textit{the MOR approach works well for short-rate models}.}
+\end{itemize}
+\textbf{Keywords.}
+\begin{itemize}
+    \item Financial risk analysis
+    \item short-rate models
+    \item convection-diffusion reaction equation
+    \item finite difference method
+    \item parametric model order reduction
+    \item proper orthogonal decomposition
+    \item adaptive greedy sampling
+    \item Packaged retail investment and insurance-based products (PRIIPs).
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\chapter{\href{https://www.romsoc.eu/integrated-optimization-of-international-transportation-networks/}{Project 7: Integrated Optimization of International Transportation Networks}}
+
+\section{Project Description}
+\begin{itemize}
+    \item \textbf{Problem.} \textit{Transportation networks} have an \textit{increasing share} of \textit{border-crossing services}.
+    
+    The conditions to implement such services are often different in neighboring countries.
+    
+    For \textit{resource planning}, this may make it necessary to change between resources at the border.
+    
+    In the case of \textit{railway networks}, e.g., this might apply to different \textit{electricity systems}, which require a change of \textit{locomotive, different track gauges}, which require \textit{suitable wagons}, or \textit{labor agreements} as well as different technical skills, which might require staff changes.
+    \item \textbf{Challenge.} The challenge in this project is to \textit{provide decision makers} with suggestions on how to find \textit{optimal resource allocation} to deal with these differing regulations in the best possible way.
+    \item \textbf{Intrinsic.} From the mathematical side, the topic of this project is \textit{mixed-integer optimization models} for an \textit{optimal resource allocation} and \textit{investment} for \textit{border-crossing transport services}.
+    \item \textbf{Requirements.} This will require the consideration of a \textit{hierarchy of optimization models} w.r.t. the \textit{planning horizon} (strategic, tactical or operational view), and w.r.t. \textit{time and space resolution}.
+    
+    This enables the development of \textit{solution algorithms} based on \textit{adaptive refinement} or \textit{suitable decomposition approaches}.
+    
+    \textit{Data uncertainties}, e.g. in \textit{demand forecasts} or in the form of \textit{delays}, might require \textit{robust} or \textit{stochastic model extensions}.
+\end{itemize}
+
+\section{ROMSOC blog}
+\begin{itemize}
+    \item Jonasz Marek Staszek. \href{https://www.romsoc.eu/applications-of-mathematical-optimization-in-railway-planning/}{\textit{Applications of mathematical optimization in railway planning}}. ROMSOC blog. Aug 31, 2020.
+    \item Jonasz Marek Staszek. \href{https://www.romsoc.eu/some-lessons-in-mathematical-optimization-at-the-university-of-erlangen/}{\textit{Some lessons in Mathematical Optimization at the University of Erlangen}}. ROMSOC blog. Aug 27, 2019.
+    \item Jonasz Marek Staszek. \href{https://www.romsoc.eu/a-trace-of-christmas/}{\textit{A Trace of Christmas}}. ROMSOC blog. Dec 20, 2018.
+\end{itemize}
+
+\section{ROMSOC ESR's Seminar}
+\begin{itemize}
+    \item \textbf{Problem.} In this talk, the problem of a \textit{joint locomotive} and \textit{driver scheduling} at a \textit{rail freight carrier}, together with its \textit{industrial setting}, will be presented.
+    
+    A \textit{binary programming model} which covers all of the requirements set by the \textit{industrial partner} will be introduced.
+    
+    Also, a \textit{decomposition approach} (into separate ``driver'' and ``locomotive'' subproblem) to solving the studied model will be discussed.
+    \item \textbf{Content.} For that end, the author will introduce 2 \textit{reformulations} of the ``locomotive'' subproblem into a \textit{multicommodity flow problem}, allowing for \textit{significant speedups} in the \textit{model solution times}.
+    
+    The author will also show a \textit{class of cutting plane inequalities}, which allow the \textit{locomotive subproblem} to yield solutions that are feasible also for the ``driver'' subproblem.
+    
+    Finally, initial results will be presented, and future research directions will be discussed.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\chapter{\href{https://www.romsoc.eu/efficienct-computational-strategies-for-complex-coupled-flow-thermal-and-structural-phenomena-in-parametrized-settings/}{Project 8: Efficient Computational Strategies for Complex Coupled Flow, Thermal \& Structural Phenomena in Parametrized Settings}}
+
+\section{Project Description}
+\begin{itemize}
+    \item \textbf{Problem.} Present and future efforts in \textit{simulation-based sciences} are dedicated to \textit{hierarchies of complex multi-physics problems}, as well as \textit{parameterized systems} characterized by \textit{multiple spatial} and \textit{temporal scales}.
+    \item \textbf{Methodologies.} \textit{New ROM methodologies} are required for \textit{coupled} and \textit{parameterized problems} in \textit{industrial} and \textit{medical sciences}.
+    
+    This concerns in particular \textit{fluid-structure interactions} and \textit{thermo-fluid-dynamics} and the use of these reduced models for \textit{Fluid-thermal phenomena}.
+    \item \textbf{Objective.} Objective of this research project are the \textit{numerical simulation} of the \textit{evolution} of the fluid using a \textit{turbulence} and \textit{multi-phase model}.
+    
+    A \textit{transport passive scalar phenomenon} will also be modeled in the problem.
+    
+    Moreover, \textit{modeling} and \textit{simulation} of \textit{3D thermal-fluid-structure phenomena} will be developed.
+    
+    Numerical simulation will be performed on \textit{free/commercial software packages} of proven quality.
+    
+    The objectives of the research also include \textit{reduced order modeling} (computational, geometrical and parametric) for \textit{hierarchies of coupled multi-physics problems} and the \textit{construction of test cases} as well as carrying out \textit{numerical experiments}.
+    
+    \textsf{Figs. Fluid-structure interaction simulations.}    
+\end{itemize}
+
+\section{ROMSOC blog}
+\begin{itemize}
+    \item Umberto Emil Morelli. \href{https://www.romsoc.eu/bardonecchia-otranto-stories-of-a-romsoc-fellow-in-cycling-across-italy/}{\textit{Bardonecchia -- Otranto, stories of a ROMSOC fellow in cycling across Italy}}. Sep 8, 2020.
+    \item Umberto Emil Morelli. \href{https://www.romsoc.eu/continuous-casting-modern-techniques-to-solve-an-old-industrial-problem/}{\textit{Continuous casting -- Modern techniques to solve an old industrial problem}}. Sep 4, 2019.
+\end{itemize}
+
+\section{ROMSOC ESR's Seminar}
+\begin{itemize}
+    \item \textbf{Problem.} In \textit{continuous casting} of \textit{steel}, the most critical component is the \textit{mold}.
+    
+    In the mold, the steel begins its \textit{solidification}, and several \textit{complex physical phenomena} happen.
+    \item \textbf{Challenge.} To ensure a \textit{proper control} of the process, it is necessary to know how the steel is behaving inside the mold.
+    
+    However, it is not possible to make \textit{measurements} inside the \textit{solidifying steel} and the only \textit{available data} are \textit{pointwise temperature measurements} in the interior of the \textit{mold plates}.
+    \item \textbf{Content.} To provide a tool for the \textit{proper control} of the process, the authors developed a methodology for the  \textit{real-time estimation} of the \textit{heat flux} at the \textit{steel-mold interface} given the \textit{temperature measurements}.
+    
+    With this tool, the authors allow the \textit{caster operator} to \textit{quickly detect} any \textit{malfunctioning} in the casting increasing the \textit{safety} and the \textit{productivity} of \textit{continuous casters}.
+\end{itemize}
+
+\section{Umberto Emil Morelli, Patricia Barral, Peregrina Quintela, Gianluigi Rozza, Giovanni Stabile. \textit{A Numerical Approach for Heat Flux Estimation in Thin Slabs Continuous Casting Molds using Data Assimilation}. 2021}
+
+\subsection*{Abstract}
+\begin{itemize}
+    \item \textbf{Problem.} In the present work, we consider the \textit{industrial problem} of \textit{estimating in real-time the mold-steel heat flux in continuous casting mold}.
+    \item \textbf{Methodology.} The authors approach this problem by 1st considering the \textit{mold modeling problem} (\textit{direct problem}). 
+    
+    Then, they plant the \textit{heat flux estimation problem} as the \textit{inverse problem} of \textit{estimating a Neumann boundary condition} having as \textit{data pointwise temperature measurements} in the interior of the \textit{mold domain}.
+    
+    The authors also consider the case of having a \textit{total heat flux measurement} together with the \textit{temperature measurements}.
+    
+    The authors develop 2 methodologies for solving this inverse problem.
+    \begin{itemize}
+        \item The 1st one is the \textit{traditional Alifanov's regularization},
+        \item the 2nd one exploits the \textit{parameterization} of the \textit{heat flux}.
+    \end{itemize}
+    The authors develop the latter method to have an \textit{offline-online decomposition} with a \textit{computationally efficient online part} to be performed in real-time.
+    \item \textbf{Numerics.} In the last part of this work, the authors test these methods on \textit{academic} and \textit{industrial benchmarks}.
+    
+    The results show that the \textit{\fbox{parameterization method outclasses Alifanov's regularization} both in performance and computational cost}.
+    
+    Moreover, it proves to be \textit{robust} w.r.t. the \textit{measurements noise}.
+    
+    Finally, the tests confirm that the computational cost is suitable for \textit{real-time estimation} of the \textit{heat flux}.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\chapter{\href{https://www.romsoc.eu/numerical-simulations-and-reduced-models-of-the-fluid-structure-interaction-arising-in-blood-pumps-based-on-wave-membranes/}{Project 9: Numerical Simulations \& Reduced Models of the Fluid-Structure Interaction Arising in Blood Pumps Based on Wave Membranes}}
+
+\section{Project Description}
+\begin{itemize}
+    \item \textbf{Problem.} \textit{Blood pumps assist} the \textit{ventricles} when \textit{end-stage heart failure occurs}.
+    
+    \textit{Pulsatile pumps} are rarely used due to the \textit{inertia} of their \textit{rotors} and \textit{low frequency pulsation}, not like the \textit{native heart}.
+    \item \textbf{Motivations.} This motivates the development of \textit{new pulsatile pumps} that are able to replace the \textit{high speed} and \textit{shear impeller} of \textit{current continuous flow rotary pumps}.
+    
+    The result is much less trauma to the blood, \textit{reducing clotting} and \textit{bleeding complications}.
+    \item \textbf{Aim.} Aim of this ESR is to implement a computational methodology to solve the \textit{fluid-structure interaction} arising between the \textit{pulsatile membrane} and the \textit{blood}.
+    
+    The optimization of the pump w.r.t. many possible scenarios and to better design the pump in view of some \textit{clinical objective} will be addressed.
+    \item \textbf{Challenges.} A challenging issue will be the modeling and simulation of the \textit{contact} occurring between the \textit{membrane} and the \textit{external support of the pump}.
+    
+    Finally, the \textit{implementation} of \textit{reduced models} based on \textit{simplified fluid} and/or \textit{structure models} leading to \textit{efficient numerical schemes} will be studied.
+\end{itemize}
+
+\section{ROMSOC blog}
+\begin{itemize}
+    \item Marco Martinolli. \href{https://www.romsoc.eu/whats-the-extension-in-the-extended-finite-element-method/}{\textit{What's the Extension in the Extended Finite Element Method?}}. ROMSOC blog. Sep 30, 2020.
+    \item Marco Martinolli. \href{https://www.romsoc.eu/halfway-through-my-ph-d-the-experience-of-a-msca-fellow/}{\textit{Halfway through my Ph.D.: the experience of a MSCA Fellow}}. Oct 3, 2019.
+\end{itemize}
+
+\section{ROMSOC ESR's Seminar}
+\begin{itemize}
+    \item \textbf{Title.} \textsc{Numerical Study of Fluid-Structure Interaction in Wave Membrane Blood Pumps}.
+    \item \textbf{Problem.} \textit{Numerical simulations} of \textit{blood pump systems} can support \textit{device design} in view of the \textit{optimization} of \textit{hemodynamic performance} and \textit{hemocompatibility}.
+    \item \textbf{Content.} In this talk, the authors will describe the \textit{cutting-edge technology} employed in \textit{Wave Membrane Blood Pumps} (WMBP) at CorWave SA and propose a numerical approach to perform \textit{3D simulations} of the \textit{Fluid-Structure Interaction} (FSI) between the \textit{blood} and the \textit{immersed wave membrane}.
+    
+    In particular, the authors will have a \textit{deeper insight} in the \textit{unfitted Extended Finite Element Method} (XFEM), describing its advantages w.r.t. \textit{standard fitted methods} for FSI problems.
+    
+    Computational results will be presented for different \textit{operating conditions} and geometries of the \textit{WMBP device}, including their \textit{validation against in-vitro experimental data}.
+    
+    Finally, the authors will discuss their ongoing work to model the \textit{potential impact} between the \textit{wave membrane} and the \textit{pump housing}.
+\end{itemize}
+
+\section{Marco Martinolli, Wulfram Gerstner, Aditya Gilra. \textit{Multi-timescale Memory Dynamics in a Reinforcement Learning Network with Attention-Gated Memory}}
+
+\subsection*{Abstract}
+\begin{itemize}
+    \item \textit{Learning} and \textit{memory} are intertwined in our brain and their relationship is at the core of several recent \textit{neural network models}.
+    
+    In particular, the \textit{Attention-Gated MEmory Tagging model} (\texttt{AuGMEnT}) is a \textit{reinforcement learning network} with an emphasis on biological plausibility of memory dynamics and learning.
+    \item The authors find that the \texttt{AuGMEnT} \textit{network} does not solve some \textit{hierarchical tasks}, where \textit{higher-level stimuli} have to be maintained over a long time, while \textit{lower-level stimuli} need to be remembered and forgotten over a \textit{shorter timescale}.
+    \item To overcome this limitation, we introduce \textit{hybrid} \texttt{AuGMEnT}, with \textit{leaky} or \textit{short-timescale} and \textit{non-leaky} or \textit{long-timescale units} in \textit{memory}, that allow to \textit{exchange lower-level information} while maintaining \textit{higher-level one}, thus solving both \textit{hierarchical} and \textit{distractor tasks}.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\chapter{\href{https://www.romsoc.eu/coupled-parameterized-reduced-order-modelling-of-thermo-hydro-mechanical-phenomena-arising-in-blast-furnaces/}{Project 10: Coupled Parametrized Reduced Order Modeling of Thermo-Hydro-Mechanical Phenomena Arising in Blast Furnaces}}
+
+\section{Project Description}
+\begin{itemize}
+    \item \textbf{Problem.} In the \textit{blast furnace process} knowing the \textit{thermo-mechanical behavior} of the \textit{fluid-channel ensemble} or of its \textit{hearth walls} improves \textit{process efficiency}.
+    
+    The parameterization of developed models w.r.t. \textit{geometry design} of several \textit{channels} or \textit{hearth walls} and to their \textit{material types} is essential in order to quickly transfer the results to the \textit{design of new blast furnaces}.
+    \item \textbf{Goals.} The project focuses on mathematical modeling of \textit{thermo-hydro-mechanical phenomena} arising in \textit{blast furnaces} during the casting.
+    
+    When \textit{fine coupled models} are available then for the simulation \textit{reduced order models} are needed.
+    
+    These have to be constructed with efficient methods that \textit{preserve} the \textit{coupling} and the \textit{parameter structure}.
+    
+    The project focuses on \textit{model reduction} and \textit{numerical simulation} of \textit{thermo-hydro-mechanical effects}.
+\end{itemize}
+
+\section{ROMSOC blog}
+\begin{itemize}
+    \item Nirav Vasant Shah. \href{https://www.romsoc.eu/artificial-neural-network-and-data-driven-techniques-scientific-computing-in-the-era-of-emerging-technologies/}{\textit{Artificial Neural Network and Data-driven techniques: Scientific Computing in the era of emerging technologies}}. ROMSOC blog. Nov 12, 2020.
+    \item Nirav Vasant Shah. \href{https://www.romsoc.eu/thermo-mechanical-modeling-of-blast-furnace-hearth-for-ironmaking/}{\textit{Thermo-mechanical modeling of blast furnace hearth for ironmaking}}. Nov 5, 2020.
+\end{itemize}
+
+\section{ROMSOC ESR's Seminar}
+\begin{itemize}
+    \item \textbf{Title.} \textsc{Finite element based parametric model order reduction for one-way coupled thermomechanical problem arising in blast furnaces}.
+    \item \textbf{Problem.} The processes inside \textit{blast furnace hearth} are characterized by \textit{high temperatures} up to 1500 degree Celsius.
+    
+    \textit{Thermal stresses} created due to such high temperature reduce the \textit{hearth lifetime} and in turn \textit{blast furnace hearth campaign period}.
+    \item \textbf{Content.} The authors investigate the corresponding \textit{temperature field} and \textit{thermal stresses} using \textit{finite element simulation} and \textit{model order reduction} of \textit{one-way coupled linear thermomechanical problem}.
+    
+    The relevant parameters of the mathematical model are related to the \textit{hearth geometry} and \textit{mechanical properties} of the \textit{material}.
+    
+    In this context, \textit{model order reduction} is used to \textit{accelerate} the computations at a given parameter.
+    
+    The authors construct the r\textit{educed basis space} using \textit{Proper Orthogonal Decomposition}.
+    
+    On the other hand, to \textit{evaluate} the \textit{reduced degrees of freedom}, the authors compare 2 different approaches: \textit{Galerkin projection} and \textit{Artificial Neural Network}.
+    
+    The comparison is based on \textit{error} and \textit{speedup analysis}.
+    
+    Finally, the authors introduce \textit{possible future extension} of the present work to a more complex framework, involving \textit{non-linearity, anisotropy} and \textit{heterogeneity}.
+\end{itemize}
+
+\section{Nirav Vasant Shah, Martin Wilfried Hess, Gianluigi Rozza. \textit{Chap. 1: Discontinuous Galerkin Model Order Reduction of Geometrically Parametrized Stokes Equation}. 2019}
+
+\subsection*{Abstract}
+\begin{itemize}
+    \item The present work focuses on the \textit{geometric parametrization} and the \textit{reduced order modeling} of the \textit{Stokes equation}.
+    \item Discuss the concept of a \textit{parametrized
+    geometry} and its application within a \textit{reduced order modeling technique}.
+    
+    The \textit{full order model} is based on the \textit{discontinuous Galerkin method} with an \textit{interior penalty formulation}.
+    \item Introduce the \textit{broken Sobolev spaces} as well as the \textit{weak formulation} required for an \textit{affine parameter dependency}.
+    \item The operators are transformed from a
+    \textit{fixed domain} to a \textit{parameter dependent domain} using the \textit{affine parameter dependency}.
+    
+    The \textit{proper orthogonal decomposition} is used to obtain the basis of functions of the \textit{reduced order model}.
+    
+    By using the \textit{Galerkin projection} the linear system is projected onto the \textit{reduced space}.
+    
+    During this process, the \textit{offline-online decomposition} is used to \textit{separate parameter dependent operations} from \textit{parameter independent operations}.
+    \item Finally this technique is applied to an \textit{obstacle test problem}
+    
+    The numerical outcomes presented include \textit{experimental error analysis}, \textit{eigenvalue decay} and \textit{measurement of online simulation time}.
+\end{itemize}
+\textbf{Keywords.}
+\begin{itemize}
+    \item Discontinuous Galerkin method
+    \item Stokes flow
+    \item Geometric parametrization
+    \item Proper orthogonal decomposition
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\chapter{\href{https://www.romsoc.eu/optimal-shape-design-of-air-ducts-in-combustion-engines/}{Project 11: Optimal Shape Design of Air Ducts in Combustion Engines}}
+
+\section{Project Description}
+\begin{itemize}
+    \item \textbf{Problem.} Many \textit{optimal design problems} in \textit{engineering} or \textit{biomedical sciences} require to \textit{determine an optimal shape} of a region of interest in order to minimize a number of \textit{suitable objectives} subject to fluid flow.
+    
+    Often \textit{additional geometric constraints} impose further restrictions on the possible design.
+    \item \textbf{Intrinsic.} Mathematically, this problem results in a \textit{constrained multi-objective free form shape optimization problem} subject to the \textit{Navier-Stokes system}.
+    \item \textbf{Goals.} The goal of this project is the \textit{derivation of adjoint based representations} of \textit{shape  gradient-related descent directions} and the \textit{numerical realization} of associated \textit{minimization schemes}.
+    
+    For this purpose and for reasons of \textit{efficiency reduced order models} (e.g. based on \textit{shape-aware adaptive discretization}) need to be developed, appropriate \textit{primal} and \textit{dual turbulence models} need to be implemented and \textit{proper preconditioning} of \textit{saddle point problems} has to be developed.
+    \item \textbf{Applications.} In this context, applications in the \textit{automotive industry} and \textit{quantitative biomedicine} will be addressed.
+\end{itemize}
+
+\section{ROMSOC Blog}
+\begin{itemize}
+    \item Hong Nguyen. \href{https://www.romsoc.eu/optimal-shape-design-of-air-ducts/}{\textit{Optimal shape design of air ducts}}. ROMSOC blog. Nov 30, 2020.
+\end{itemize}
+
+\section{ROMSOC ESR's Seminar}
+
+%------------------------------------------------------------------------------%
+
+\printbibliography[heading=bibintoc]
+\end{document}

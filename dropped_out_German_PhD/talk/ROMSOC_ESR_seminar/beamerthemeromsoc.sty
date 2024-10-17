@@ -1,0 +1,303 @@
+%
+% LaTeX-beamer class beamerromsoc
+%
+% ----------------------------------------------------------------------
+% Version 1.0    03/2018 (Lena Scholz)
+%   first version
+%
+% ----------------------------------------------------------------------
+% To create a titlepage do the following:
+%
+% - Insert information with the following commands:
+%   + \title{}       define title
+%   + \subtitle{}    define a subtitle
+%   + \author{}      define author(s)
+%   + \institute{}   define institution
+%   + \jointwork{}   sets additional information
+%   + \date{}        sets date (and place)
+%
+% With the command:
+%   \footinformation{...}
+% you can define a text that is typeset on every slide
+% ----------------------------------------------------------------------
+% To add logos to the titlepage use one or more of the following commands:
+%   \insertLogoMatheon
+%   \insertLogoTUB
+%   \insertLogoWIAS
+%   \insertLogoHUB
+%   \insertLogoMathLab
+%   \insertLogoSISSA
+%   \insertLogoITMATI
+%   \insertLogoMOX
+%   \insertLogoPoliMi
+%   \insertLogoUHB
+%   \insertLogoINRIA
+%   \insertLogoBUW
+%   \insertLogoSTM
+%   \insertLogoMathConsult
+%   \insertLogoUSC
+%   \insertLogoDanieli
+%   \insertLogoMathTec
+%   \insertLogoFAU   % not available yet
+%
+% To insert other logos use:
+%   \pgfdeclareimage[height=1cm]{name}{filename}
+%   \insertLogo{name}
+%
+% Please note:
+% - "height" should be at most 1.25cm
+% - "name" is an arbitrary name
+% - the filename should not include extensions like ".png", ".pdf", ...
+% ----------------------------------------------------------------------
+%
+%
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemeromsoc}
+
+% Redefine maketitle command:
+\def\maketitle{%
+  \ifbeamer@inframe%
+  \PackageError{beamerthemeromsoc}{maketitle should be called outside a frame.}{}%
+  \else%
+  \frame[plain]{\titlepage}
+  \fi%
+}
+
+% new command to typeset information on every slide
+\newcommand{\insert@footinfo}{}
+\newcommand{\footinformation}[1]{\renewcommand{\insert@footinfo}{#1}}
+
+% new command to typeset joint work
+\newcommand{\insert@jointwork}{}
+\newcommand{\jointwork}[1]{\renewcommand{\insert@jointwork}{#1}}
+
+%----------------------------------------------------------------------------------
+% declare logos
+\pgfdeclareimage[height=1cm]{TULogo}{logos/tulogo_rot}
+\pgfdeclareimage[height=1.1cm]{ROMSOCLogo}{logos/romsoclogo}
+\pgfdeclareimage[height=1.1cm]{EULogo}{logos/EU_Flag}
+\pgfdeclareimage[height=1.1cm]{MatheonLogo}{logos/matheon-logo-color}
+\pgfdeclareimage[height=1.1cm]{WIASLogo}{logos/wiaslogo}
+\pgfdeclareimage[height=1.1cm]{HULogo}{logos/hulogo}
+\pgfdeclareimage[height=1.1cm]{MathLabLogo}{logos/logo_Mathlab}
+\pgfdeclareimage[height=1.1cm]{SISSALogo}{logos/SISSA-LOGO}
+\pgfdeclareimage[height=1.1cm]{ITMATILogo}{logos/itmati_logo}
+\pgfdeclareimage[height=1.1cm]{MOXLogo}{logos/MOX_logo}
+\pgfdeclareimage[height=1.1cm]{PoliMiLogo}{logos/PoliMi_logo}
+\pgfdeclareimage[height=0.7cm,width=3.0cm]{UHBLogo}{logos/UniBremen_logo}
+\pgfdeclareimage[height=1.1cm]{INRIALogo}{logos/inria_logo}
+\pgfdeclareimage[height=1.0cm]{BUWLogo}{logos/BUW_Logo-schwarz}
+\pgfdeclareimage[height=1.1cm]{STMLogo}{logos/stlogo}
+\pgfdeclareimage[height=0.9cm]{MathConsultLogo}{logos/logo_mathconsult}
+\pgfdeclareimage[height=1.0cm]{USCLogo}{logos/USC_logo}
+\pgfdeclareimage[height=1.1cm]{DanieliLogo}{logos/Danieli_logo}
+\pgfdeclareimage[height=1.5cm]{MathTecLogo}{logos/mathTec_logo}
+%\pgfdeclareimage[height=1.1cm]{FAULogo}{logos/FAUlogo}
+
+% define spacing between logos
+\newdimen\beamerromsocLogoSpacing
+\beamerromsocLogoSpacing=2mm
+
+% temporary variable for computing the width of a logo
+\newdimen\romsoc@logoWidth
+
+% command to set a logo (used by the titlepage)
+\def\romsoc@setLogo#1{%
+  \settowidth{\romsoc@logoWidth}{\hspace{\beamerromsocLogoSpacing}\pgfuseimage{#1}}
+  \begin{minipage}[b][1.25cm][c]{\romsoc@logoWidth}%
+    \hspace{\beamerromsocLogoSpacing}\pgfuseimage{#1}%
+  \end{minipage}%
+}
+
+% macro that stores the commands to set the logos on the titlepage
+\def\romsoc@insertLogos{}
+
+% temporary register
+\newtoks\romsoc@tmp
+
+% new macro for inserting a logo:
+\def\insertLogo#1{%
+  \romsoc@tmp=\expandafter{\romsoc@insertLogos}%
+  \edef\romsoc@insertLogos{\the\romsoc@tmp\noexpand\romsoc@setLogo{#1}}%
+}
+\def\insertLogoTUB{\insertLogo{TULogo}}
+\def\insertLogoEU{\insertLogo{EULogo}}
+\def\insertLogoMatheon{\insertLogo{MatheonLogo}}
+\def\insertLogoWIAS{\insertLogo{WIASLogo}}
+\def\insertLogoHUB{\insertLogo{HULogo}}
+\def\insertLogoMathLab{\insertLogo{MathLabLogo}}
+\def\insertLogoSISSA{\insertLogo{SISSALogo}}
+\def\insertLogoITMATI{\insertLogo{ITMATILogo}}
+\def\insertLogoMOX{\insertLogo{MOXLogo}}
+\def\insertLogoPoliMi{\insertLogo{PoliMiLogo}}
+\def\insertLogoUHB{\insertLogo{UHBLogo}}
+\def\insertLogoINRIA{\insertLogo{INRIALogo}}
+\def\insertLogoBUW{\insertLogo{BUWLogo}}
+\def\insertLogoSTM{\insertLogo{STMLogo}}
+\def\insertLogoMathConsult{\insertLogo{MathConsultLogo}}
+\def\insertLogoUSC{\insertLogo{USCLogo}}
+\def\insertLogoDanieli{\insertLogo{DanieliLogo}}
+\def\insertLogoMathTec{\insertLogo{MathTecLogo}}
+%\def\insertLogoFAU{}   % not available yet
+
+% ----------------------------------------------------------------------------------
+% declare other images
+\pgfdeclareimage[height=0.65cm]{romsocLogoImage}{logos/romsoclogo}
+\pgfdeclareimage[width=3.00cm]{romsocLogoImageBig}{logos/romsoclogo}
+\pgfdeclareimage[height=0.5cm]{EULogoImage}{logos/EU_Flag}
+
+% ----------------------------------------------------------------------------------
+% we only define the presentation part
+\mode<presentation>
+
+\usecolortheme{romsoc}
+\useinnertheme{default}
+\useoutertheme{romsoc}
+
+% ----------------------------------------------------------------------
+% ---------------------- Set Colors ------------------------------------
+% ----------------------------------------------------------------------
+%\definecolor{romsocblue}{RGB}{63,162,255}
+\definecolor{romsocred}{RGB}{255,0,70}
+%\definecolor{romsocviolet}{RGB}{89,0,159}
+\definecolor{romsocblue}{rgb}{0.15,0.35,0.65}
+
+
+
+% Set color of separating line (used by beameroutthemeromsoc)
+\setbeamercolor{separation line}{fg=romsocblue,bg=black}
+% Set color for text
+\setbeamercolor*{normal text}{fg=black,bg=white}
+% set colors for title and title page 
+\setbeamercolor{title page}{fg=black,bg=white}
+\setbeamercolor{title}{fg=black,bg=white}
+\setbeamercolor{frametitle}{fg=romsocblue!80!black,bg=white}%
+\setbeamercolor{romsoc footline}{fg=black,bg=white}%
+\setbeamercolor{section in toc}{fg=romsocblue!80!black,bg=white}
+\setbeamercolor{subsection in toc}{fg=black!70,bg=white}
+
+% ----------------------------------------------------------------------
+% ---------------------- Set Fonts -------------------------------------
+% ----------------------------------------------------------------------
+\setbeamerfont{title}{series=\bfseries,size=\Large,parent=structure}
+\setbeamerfont{date}{size=\scriptsize,parent=structure}
+\setbeamerfont{joint work}{size=\normalsize,parent=structure}
+\setbeamerfont{page number in head/foot}{size=\tiny,parent=structure}
+\setbeamerfont{information in head/foot}{size=\tiny,parent=structure}
+\setbeamerfont{EUfunding}{size=\tiny,parent=structure}
+\setbeamerfont{section in toc}{series=\bfseries,size=\normalsize,parent=structure}
+
+
+% ----------------------------------------------------------------------
+% ---------------------- Set Block Style -------------------------------------
+% ----------------------------------------------------------------------
+\setbeamertemplate{blocks}[rounded][shadow=true]
+
+
+% ----------------------------------------------------------------------
+% ---------------------- Set Styles ------------------------------------
+% ----------------------------------------------------------------------
+\setlength{\leftmargini}{1.1em}
+\setlength{\leftmarginii}{1em}
+\setlength{\leftmarginiii}{0.9em}
+\setlength{\leftmarginiv}{0.9em}
+\setlength{\labelsep}{.5em}
+
+% ----------------------------------------------------------------------
+% ---------------------- Define New Titlepage --------------------------
+% ----------------------------------------------------------------------
+% Note: we do not allow a titlegraphic
+\defbeamertemplate{title page}{romsoc title}{%
+   % make sure that pagestyle is empty [if the title page is accidently
+   % called in a frame and not by \maketile this is needed.]
+   \thispagestyle{empty}
+   % put everything in a large box with the corresponding colors
+   \begin{beamercolorbox}[wd=\paperwidth,dp=0pt,ht=\paperheight,sep=0pt,colsep=0pt,colsep*=0pt]{title page}%
+     \centering%
+     % to get correct spacing (e.g. \textwidth) put everything in a minipage
+      \begin{minipage}[b][0.85\textheight][b]{\textwidth}
+        % set romsoc logo
+        \begin{minipage}[b][3cm][c]{3cm}
+          \pgfuseimage{romsocLogoImageBig}
+        \end{minipage}
+        \hfill
+        % set title and subtitle
+        \newdimen\my@tempDim%
+        \my@tempDim=\textwidth%
+        \advance\my@tempDim by -3.5cm%
+        \begin{minipage}[b][3cm][c]{\my@tempDim}
+         \centering
+         \usebeamerfont{title}\inserttitle\par%
+         \ifx\insertsubtitle\@empty%
+         \else%
+         \vskip0.25em%
+         {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle\par}%
+         \fi%
+        \end{minipage}
+        \vskip1em\par
+        % set author
+        \begin{beamercolorbox}[sep=0pt,right]{author}
+          \usebeamerfont{author}\insertauthor
+        \end{beamercolorbox}
+        % set institute
+        \begin{beamercolorbox}[sep=0pt,right]{institute}
+          \usebeamerfont{institute}\insertinstitute
+        \end{beamercolorbox}\vskip1em\par
+        % set joint work
+        \begin{beamercolorbox}[sep=0pt,right]{joint work}
+          \usebeamerfont{joint work}\insert@jointwork
+        \end{beamercolorbox}
+      \end{minipage}
+    \vspace{2ex}
+
+    % set white bar accross the page (need minipage around and inside the beamercolorbox)
+    \begin{minipage}[b][1.25cm][b]{\paperwidth}
+      \begin{beamercolorbox}[sep=0pt,wd=\paperwidth,dp=0pt,ht=1.25cm,colsep=0pt,colsep*=0pt,left]{normal text}
+        \begin{minipage}[b][1.25cm][b]{\paperwidth}
+          % set romsoc text
+          \hspace*{1.75ex}%
+          \begin{minipage}[b][1.25cm][c]{6.2cm}%
+            \raggedright\footnotesize\bf%
+            \textcolor{romsocblue!80!black}{%
+              Reduced Order Modelling, Simulation and Optimization of Coupled Systems (ROMSOC)
+            }%
+          \end{minipage}%
+          % set logos (if present)
+          \hfill\romsoc@insertLogos\hspace*{2ex}
+        \end{minipage}
+      \end{beamercolorbox}
+    \end{minipage}
+    % set date (and place)
+    \begin{beamercolorbox}[sep=0pt,left]{date}%
+      \usebeamerfont{date}\insertdate
+    \end{beamercolorbox}
+    % set information on EU funding
+    \begin{beamercolorbox}[sep=0pt,left]{EUfunding}
+      \usebeamerfont{EUfunding}
+       \begin{minipage}[t][0.6cm][b]{0.07\textwidth}
+         \pgfuseimage{EULogoImage} 
+       \end{minipage}
+       \begin{minipage}[t][0.6cm][b]{0.9\textwidth}
+         Funded by the European Union's Horizon 2020 research and innovation programme under the Marie Sk\l odowska-Curie Grant Agreement No. 765374.
+       \end{minipage}
+    \end{beamercolorbox}
+     % to move minipage to correct position (a bit ugly)
+     \vspace{1ex}
+   \end{beamercolorbox}%
+}
+
+\setbeamertemplate{title page}[romsoc title]%
+\setbeamertemplate{frametitle}[romsoc frametitle]%
+\setbeamertemplate{footline}[romsoc footline]%
+
+% choose ball style for table of contents:
+% sections get numbers in balls, subsections only balls
+\setbeamertemplate{sections/subsections in toc}[ball]
+\setbeamertemplate{subsection in toc}[ball]
+
+% set margins
+\setbeamersize{text margin left=2ex}
+\setbeamersize{text margin right=2ex}
+
+\mode
+<all>

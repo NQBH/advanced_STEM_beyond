@@ -1,0 +1,89 @@
+%-----------------------------------------------------------------------------%
+% ATTRIBUTE ERROR ON FENICS: AttributeError: 'dolfin.cpp.la.PETScVector' object has no attribute 'array'
+%-----------------------------------------------------------------------------%
+
+%-----------------------------------------------------------------------------%
+%    Error
+%-----------------------------------------------------------------------------%
+
+When run ft3_heat.py, get the following error:
+
+hong@dell:~/1_PROJECTS/GitHub/softwares/FEniCS_Examples/FEniCS_Tutorial_3_Heat$ python3 heat.py 
+Solving linear variational problem.
+Traceback (most recent call last):
+  File "heat.py", line 65, in <module>
+    error = np.abs(u_e.vector().array() - u.vector().array()).max()
+AttributeError: 'dolfin.cpp.la.PETScVector' object has no attribute 'array'
+
+%-----------------------------------------------------------------------------%
+%    Issue
+%-----------------------------------------------------------------------------%
+
+Link: https://github.com/hplgit/fenics-tutorial/issues/52
+
+%-----------------------------------------------------------------------------%
+%    Solution 1
+%-----------------------------------------------------------------------------%
+
+For the .array() problem, change to X.vector().array() to np.array(X.vector()), X means u or other variables:
+
+hong@dell:~/1_PROJECTS/GitHub/softwares/FEniCS_Examples/FEniCS_Tutorial_3_Heat$ python3 heat.py
+Solving linear variational problem.
+t = 0.20: error = 3.11e-15
+Solving linear variational problem.
+t = 0.40: error = 2.66e-15
+Solving linear variational problem.
+t = 0.60: error = 3.55e-15
+Solving linear variational problem.
+t = 0.80: error = 3.55e-15
+Solving linear variational problem.
+t = 1.00: error = 3.55e-15
+Solving linear variational problem.
+t = 1.20: error = 4e-15
+Solving linear variational problem.
+t = 1.40: error = 4.44e-15
+Solving linear variational problem.
+t = 1.60: error = 3.55e-15
+Solving linear variational problem.
+t = 1.80: error = 4.44e-15
+Solving linear variational problem.
+t = 2.00: error = 4.44e-15
+
+%-----------------------------------------------------------------------------%
+%    Solution 2
+%-----------------------------------------------------------------------------%
+
+Link: https://stackoverflow.com/questions/51763982/solving-the-heat-equation-by-fenics
+
+array() has been replaced by get_local(). So in lines 62-65 of the third fenics tutorial, the following works:
+
+# Compute error at vertices
+    u_e = interpolate(u_D, V)
+    error = np.abs(u_e.vector().get_local() - u.vector().get_local()).max()
+    print('t = %.2f: error = %.3g' % (t, error))
+
+hong@dell:~/1_PROJECTS/GitHub/softwares/FEniCS_Examples/FEniCS_Tutorial_3_Heat$ python3 heat.py 
+Solving linear variational problem.
+t = 0.20: error = 3.11e-15
+Solving linear variational problem.
+t = 0.40: error = 2.66e-15
+Solving linear variational problem.
+t = 0.60: error = 3.55e-15
+Solving linear variational problem.
+t = 0.80: error = 3.55e-15
+Solving linear variational problem.
+t = 1.00: error = 3.55e-15
+Solving linear variational problem.
+t = 1.20: error = 4e-15
+Solving linear variational problem.
+t = 1.40: error = 4.44e-15
+Solving linear variational problem.
+t = 1.60: error = 3.55e-15
+Solving linear variational problem.
+t = 1.80: error = 4.44e-15
+Solving linear variational problem.
+t = 2.00: error = 4.44e-15
+
+Link: https://bitbucket.org/fenics-project/dolfin/issues/1063/running-the-example-of-tutorial-book-fails
+
+Link: https://fenicsproject.discourse.group/t/convert-dolfin-vector-to-numpy-array/77/3

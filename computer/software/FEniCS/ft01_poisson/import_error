@@ -1,0 +1,59 @@
+%-----------------------------------------------------------------------------%
+% ERROR WHEN EXECUTE FENICS SCRIPTS: ImportError: /lib/x86_64-linux-gnu/libfftw3_mpi.so.3: undefined symbol: fftw_taint
+%-----------------------------------------------------------------------------%
+
+%-----------------------------------------------------------------------------%
+%    Error
+%-----------------------------------------------------------------------------%
+
+Run the 1st time get failure:
+
+hong@dell:~/1_PROJECTS/GitHub/softwares/FEniCS_Examples/FEniCS_Tutorial_1_Poisson$ python3 poisson.py
+Traceback (most recent call last):
+  File "poisson.py", line 11, in <module>
+    from fenics import *
+  File "/usr/lib/python3/dist-packages/fenics/__init__.py", line 7, in <module>
+    from dolfin import *
+  File "/usr/lib/python3/dist-packages/dolfin/__init__.py", line 34, in <module>
+    from .cpp import __version__
+ImportError: /lib/x86_64-linux-gnu/libfftw3_mpi.so.3: undefined symbol: fftw_taint
+
+Similar when run:
+
+hong@dell:~/1_PROJECTS/GitHub/softwares/FEniCS_Examples/FEniCS_Tutorial_1_Poisson$ python3 -c "from fenics import *"
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3/dist-packages/fenics/__init__.py", line 7, in <module>
+    from dolfin import *
+  File "/usr/lib/python3/dist-packages/dolfin/__init__.py", line 34, in <module>
+    from .cpp import __version__
+ImportError: /lib/x86_64-linux-gnu/libfftw3_mpi.so.3: undefined symbol: fftw_taint
+
+%-----------------------------------------------------------------------------%
+%    Solution
+%-----------------------------------------------------------------------------%
+
+Link: https://fenicsproject.discourse.group/t/installing-fenics-on-ubuntu/1960/16
+
+Need to export LD_LIBRARY_PATH:
+
+hong@dell:~/1_PROJECTS/GitHub/softwares/FEniCS_Examples/FEniCS_Tutorial_1_Poisson$ export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu
+
+Then the FEniCS script Poisson.py runs normally:
+
+hong@dell:~/1_PROJECTS/GitHub/softwares/FEniCS_Examples/FEniCS_Tutorial_1_Poisson$ python3 poisson.py 
+Solving linear variational problem.
+*** Warning: Degree of exact solution may be inadequate for accurate result in errornorm.
+Calling FFC just-in-time (JIT) compiler, this may take some time.
+Calling FFC just-in-time (JIT) compiler, this may take some time.
+Calling FFC just-in-time (JIT) compiler, this may take some time.
+error_L2  = 0.008235098073354943
+error_max = 1.3322676295501878e-15
+
+Note that you should not have to add /usr/lib/x86_64-linux-gnu to your LD library path.
+
+It's a symptom that something is wrong with your system's configuration.
+
+You might want to inspect your value of LD_LIBRARY_PATH in a fresh login.
+
+Perhaps something is interfering with it.

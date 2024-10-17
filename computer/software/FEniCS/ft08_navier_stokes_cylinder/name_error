@@ -1,0 +1,66 @@
+%--------------------------------------------------%
+% NAME ERROR ON FENICS: NameError: name 'PROGRESS' is not defined
+%--------------------------------------------------%
+
+%--------------------------------------------------%
+%    Error 1
+%--------------------------------------------------%
+
+When run ft2_navier_stokes_cylinder.py, get the following error:
+
+hong@dell:~/1_PROJECTS/GitHub/softwares/FEniCS_Examples/FEniCS_Tutorial_8_Navier_Stokes_Cylinder$ python3 navier_stokes_cylinder.py
+Traceback (most recent call last):
+  File "navier_stokes_cylinder.py", line 115, in <module>
+    set_log_level(PROGRESS)
+NameError: name 'PROGRESS' is not defined
+
+%--------------------------------------------------%
+%    Solution
+%--------------------------------------------------%
+
+Link: https://groups.google.com/forum/#!topic/fenics-support/H8C-UE0dNXU
+
+PROGRESS is now LogLevel.PROGRESS.
+
+Change set_log_level(PROGRESS) to set_log_level(LogLevel.PROGRESS)
+
+Link: https://fenicsproject.org/docs/dolfin/1.5.0/python/programmers-reference/cpp/common/Progress.html
+
+%--------------------------------------------------%
+%    Error 2
+%--------------------------------------------------%
+
+Run again & another error pops up:
+
+hong@dell:~/1_PROJECTS/GitHub/softwares/FEniCS_Examples/FEniCS_Tutorial_8_Navier_Stokes_Cylinder$ python3 navier_stokes_cylinder.py
+Applying boundary conditions to linear system.
+Applying boundary conditions to linear system.
+Applying boundary conditions to linear system.
+PETSc Krylov solver starting to solve 18954 x 18954 system.
+Applying boundary conditions to linear system.
+PETSc Krylov solver starting to solve 2446 x 2446 system.
+PETSc Krylov solver starting to solve 18954 x 18954 system.
+Adding mesh to node "/Xdmf/Domain/Grid"
+Adding mesh to node "/Xdmf/Domain/Grid"
+Traceback (most recent call last):
+  File "navier_stokes_cylinder.py", line 156, in <module>
+    progress.update(t / T)
+AttributeError: 'dolfin.cpp.log.Progress' object has no attribute 'update'
+
+%--------------------------------------------------%
+%    Solution
+%--------------------------------------------------%
+
+Link: https://fenicsproject.discourse.group/t/how-to-update-the-progress-bar-in-fenics/90
+
+The progressbar can be updated as follows in dolfin python layer:
+
+steps = 10000
+p = Progress("Looping", steps)
+for i in range(steps):
+    set_log_level(LogLevel.PROGRESS)
+    p+=1
+    set_log_level(LogLevel.ERROR)
+    
+    
+

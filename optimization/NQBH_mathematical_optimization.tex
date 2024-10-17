@@ -131,7 +131,132 @@ Có thể giải 1 số bài toán quy hoạch tuyến tính dạng \eqref{linea
 %------------------------------------------------------------------------------%
 
 \section{Optimal Control -- Điều Khiển Tối Ưu}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \cite{Lions1969}. {\sc Jacques-Louis Lions}. {\it Quelques m\'{e}thodes de r\'{e}solution des probl\`emes aux limites nonlin\'{e}aires} -- Some Methods for Solving Nonlinear Boundary Problems.
+	\item \cite{Lions1971}. {\sc Jacques-Louis Lions}. {\it Optimal control of systems governed by PDEs}.
+	\item \cite{Troltzsch2010}. {\sc Fredi Tr\"{o}ltzsch}. {\it Optimal Control of PDEs}.
+\end{enumerate}
 
+\begin{definition}[Optimal control theory]
+	``\emph{Optimal control theory} is a branch of \href{https://en.wikipedia.org/wiki/Control_theory}{control theory} that deals with finding a \href{https://en.wikipedia.org/wiki/Control_(optimal_control_theory)}{control} for a \href{https://en.wikipedia.org/wiki/Dynamical_system}{dynamical system} over a period of time s.t. an \href{https://en.wikipedia.org/wiki/Objective_function}{objective function} is optimized. It has numerous applications in science, engineering, \& operational research. E.g., the dynamical system might be a \href{https://en.wikipedia.org/wiki/Spacecraft}{spacecraft} with controls corresponding to rocket thrusters, \& the objective might be to reach the Moon with minimum fuel expenditure. Or the dynamical system could be a nation's \href{https://en.wikipedia.org/wiki/Economy}{economy}, with the objective to minimize \href{https://en.wikipedia.org/wiki/Unemployment}{unemployment}; the controls in this case could be \href{https://en.wikipedia.org/wiki/Fiscal_policy}{fiscal} \& \href{https://en.wikipedia.org/wiki/Monetary_policy}{monetary policy}. A dynamical system may also be introduced to embed \href{https://en.wikipedia.org/wiki/Operations_research}{operations research problems} within the framework of optimal control theory.'' -- \href{https://en.wikipedia.org/wiki/Optimal_control}{Wikipedia{\tt/}optimal control}
+\end{definition}
+``Optimal control is an extension of the \href{https://en.wikipedia.org/wiki/Calculus_of_variations}{calculus of variations}, \& is a mathematical optimization method for deriving \href{https://en.wikipedia.org/wiki/Control_theory}{control policies}. The method is largely due to the work of \href{https://en.wikipedia.org/wiki/Lev_Pontryagin}{Lev Pontryagin} \& \href{https://en.wikipedia.org/wiki/Richard_Bellman}{Richard Bellman} in the 1950s, after contributions to calculus of variations by \href{https://en.wikipedia.org/wiki/Edward_J._McShane}{Edward J. McShane}. Optimal control can be seen as a \href{https://en.wikipedia.org/wiki/Control_strategy}{control strategy} in \href{https://en.wikipedia.org/wiki/Control_theory}{control theory}.'' -- \href{https://en.wikipedia.org/wiki/Optimal_control}{Wikipedia{\tt/}optimal control}
+
+\paragraph{General method.} Optimal control deals with the problem of finding a control law for a given system s.t. a certain \href{https://en.wikipedia.org/wiki/Optimality_criterion}{optimality criterion} is achieved. A control problem includes a \href{https://en.wikipedia.org/wiki/Cost_functional}{cost functional} that is a function of state \& control variables. An {\it optimal control} is a set of \href{https://en.wikipedia.org/wiki/Differential_equation}{differential equations} describing the paths of the control variables that minimize the cost function. The optimal control can be derived using \href{https://en.wikipedia.org/wiki/Pontryagin%27s_maximum_principle}{Pontryagin's maximum principle} (a \href{https://en.wikipedia.org/wiki/Necessary_condition}{necessary condition} also known as Pontryagin's minimum principle or simply Pontryagin's principle), or by solving the \href{https://en.wikipedia.org/wiki/Hamilton%E2%80%93Jacobi%E2%80%93Bellman_equation}{Hamilton--Jacobi--Bellman equation0} (a \href{https://en.wikipedia.org/wiki/Sufficient_condition}{sufficient condition}).
+
+\begin{example}
+	Consider a car traveling in a straight line on a hilly road. Question: How should the driver press the accelerator pedal in order to minimize the total traveling time? The term \emph{control law} refers specifically to the way in which the driver presses the accelerator \& shifts the gears. The \emph{system} consists of both the car \& the road, \& the \emph{optimality criterion} is the minimization of the total traveling time. Control problems usually include ancillary \href{https://en.wikipedia.org/wiki/Constraint_(mathematics)}{constraints}. E.g., the amount of available fuel might be limited, the accelerator pedal cannot be pushed through the floor of the car, speed limits, etc.
+\end{example}
+A proper cost function will be a mathematical expression giving the traveling time as a function of the speed, geometrical considerations, \& \href{https://en.wikipedia.org/wiki/Initial_condition}{initial conditions} of the system. \href{https://en.wikipedia.org/wiki/Constraint_(mathematics)}{Constraints} are often interchangeable with the cost function.
+
+Another related optimal control problem may be to find the way to drive the car so as to minimize its fuel consumption, given that it must complete a given course in a time not exceeding some amount. Yet another related control problem may be to minimize the total monetary cost of completing the trip, given assumed monetary prices for time \& fuel.
+
+\paragraph{An abstract framework.} Minimize the continuous-time cost functional
+\begin{equation}
+	J(t_0,t_{\rm f},{\bf x}(\cdot),{\bf u}(\cdot))\coloneqq E({\bf x}(t_0),t_0,{\bf x}(t_{\rm f}),t_{\rm f}) + \int_{t_0}^{t_{\rm f}} F(t,{\bf x}(t),{\bf u}(t))\,{\rm d}t,
+\end{equation}
+subject to the 1st-order dynamic constraints (the {\it state equation})
+\begin{equation}
+	\dot{\bf x}(t) = {\bf f}(t,{\bf x}(t),{\bf u}(t)),
+\end{equation}
+the algebraic {\it path constraints}
+\begin{equation}
+	{\bf h}(t,{\bf x}(t),{\bf u}(t))\le{\bf 0},
+\end{equation}
+\& the \href{https://en.wikipedia.org/wiki/Boundary_condition}{endpoint conditions}
+\begin{equation}
+	{\bf e}(t_0,{\bf x}(t_0),t_{\rm f},{\bf x}(t_{\rm f})) = {\bf 0},
+\end{equation}
+where ${\bf x}(t)$: the {\it state}, ${\bf u}(t)$ is the {\it control}, $t$: the independent variable (generally speaking, time), $t_0$: the initial time, \& $t_{\rm f}$: the terminal time. The terms $E,F$ are called the {\it endpoint cost} \& {\it running cost}, respectively. In the calculus of variations, $E,F$ are referred to as the Mayer term \& the \href{https://en.wikipedia.org/wiki/Lagrange_multiplier}{Lagrangian}, respectively. Furthermore, it is noted that the path constraints are in general {\it inequality} constraints \& thus may not be active (i.e., $= 0$) at the optimal solution. It is also noted that the optimal control problem as stated above may have multiple solutions (i.e., the solution may not be unique). Thus, it is most often the case that any solution $(t_0^\star,t_{\rm f}^\star,{\bf x}^\star(t),{\bf u}^\star(t))$ to the optimal control problem is {\it locally minimizing{\tt/}minimizer}.
+
+\subsection{Linear Quadratic Control}
+A special case of the general nonlinear optimal control problem is the \href{https://en.wikipedia.org/wiki/Linear-quadratic_regulator}{linear quadratic (LQ) optimal control problem}. The LQ problem is stated as follows. Minimize the {\it quadratic} continuous-time cost functional
+\begin{equation}
+	J = \frac{1}{2}{\bf x}^\top(t_{\rm f})S_{\rm f}{\bf x}(t_{\rm f}) + \frac{1}{2}\int_{t_0}^{t_{\rm f}} {\bf x}^\top(t)Q(t){\bf x}(t) + {\bf u}^\top(t)R(t){\bf u}(t)\,{\rm d}t,
+\end{equation}
+subject to the linear 1st-order dynamic constraints
+\begin{equation}
+	\left\{\begin{split}
+		\dot{\bf x}(t) &= A(t){\bf x}(t) + B(t){\bf u}(t),\\
+		{\bf x}(t_0) &= {\bf x}_0.
+	\end{split}\right.	
+\end{equation}
+A particular form of the LQ problem arising in many control system problems is that of the {\it linear quadratic regulator} (LQR) where all of the matrices (i.e., $A,B,Q,R$) are constant, the initial time is arbitrarily set to 0, \& the terminal time is taken in the limit $t_{\rm f}\to0$ (this last assumption is what is known as {\it infinite horizon}). The LQR problem is stated as follows. Minimize the infinite horizon quadratic continuous-time cost functional
+\begin{equation}
+	J = \frac{1}{2}\int_0^\infty {\bf x}^\top(t)Q{\bf x}(t) + {\bf u}^\top(t)R{\bf u}(t)\,{\rm d}t,
+\end{equation}
+subject to the {\it linear time-invariant} 1st-order dynamic constraints
+\begin{equation}
+	\left\{\begin{split}
+		\dot{\bf x}(t) &= A{\bf x}(t) + B{\bf u}(t),\\
+		{\bf x}(t_0) &= {\bf x}_0.
+	\end{split}\right.
+\end{equation}
+In the finite-horizon case the matrices are restricted in that $Q,R$ are positive semi-definite \& positive definite, respectively. In the infinite-horizon case, however, the matrices $Q,R$ are not only positive-semidefinite \& positive-definite, respectively, but are also constant. These additional restrictions on $Q,R$ in the infinite-horizon case are enforced to ensure that the cost functional remains positive. Furthermore, in order to ensure that the cost function is {\it bounded}, the additional restriction is imposed that the pair $(A,B)$ is \href{https://en.wikipedia.org/wiki/Controllability}{\it controllable}. Note that the LQ or LQR cost functional can be thought of physically as attempting to minimize the {\it control energy} (measured as a quadratic form).
+
+The infinite horizon problem, i.e., LQR, may seem overly restrictive \& essentially useless because it assumes that the operator is driving the system to 0-state \& hence driving the output of the system to 0. This is indeed correct. However the problem of driving the output to a desired nonzero level can be solved {\it after} the zero output one is. In fact, can prove that this secondary LQR problem can be solved in a very straightforward manner. It has been shown in classical optimal control theory that the LQ (or LQR) optimal control has the feedback form
+\begin{equation}
+	{\bf u}(t) = -K(t){\bf x}(t),
+\end{equation}
+where $K(t)$ is a properly dimensioned matrix, given as
+\begin{equation}
+	K(t) = R^{-1}B^\top S(t),
+\end{equation}
+\& $S(t)$ is the solution of the differential \href{https://en.wikipedia.org/wiki/Riccati_equation}{Riccati equation}. The differential Riccati equation is given as
+\begin{equation}
+	\dot S(t) = -S(t)A - A^\top S(t) + S(t)BR^{-1}B^\top S(t) - Q.
+\end{equation}
+For the finite horizon LQ problem, the Riccati equation is integrated backward in time using the terminal boundary condition
+\begin{equation}
+	S(t_{\rm f}) = S_{\rm f}.
+\end{equation}
+For the infinite horizon LQR problem, the differential Riccati equation is replaced with the {\it algebraic} Riccati equation (ARE) given as
+\begin{equation}
+	-SA - A^\top S + SBR^{-1}B^\top S - Q = {\bf 0}.
+\end{equation}
+Understanding that the ARE arises from infinite horizon problem, the matrices $A,B,Q,R$ are all constant. It is noted that there are in general multiple solutions to the algebraic Riccati equation \& the {\it positive definite} (or positive semi-definite) solution is the one that is used to compute the feedback again. The LQ (LQR) problem was elegantly solved by \href{https://en.wikipedia.org/wiki/Rudolf_E._K%C3%A1lm%C3%A1n}{Rudolf E. K\'alm\'an}.
+
+\subsection{Numerical Methods for Optimal Control}
+``Optimal control problems are generally nonlinear \& therefore, generally do not have analytic solutions, e.g., like the linear-quadratic optimal control problem. As a result, it is necessary to employ numerical methods to solve optimal control problems. In the early years of optimal control (c. 1950s--1980s) the favored approach for solving optimal control problems was that of {\it indirect methods}. In an indirect method, the calculus of variations is employed to obtain the 1st-order optimality conditions. These conditions result in a 2-point (or, in the case of a complex problem, a multi-point) \href{https://en.wikipedia.org/wiki/Boundary-value_problem}{BVP}. This BVP actually has a special structure because it arises from taking the derivative of a \href{https://en.wikipedia.org/wiki/Hamiltonian_(control_theory)}{Hamiltonian}. Thus, the resulting \href{https://en.wikipedia.org/wiki/Dynamical_system}{dynamical system} is a \href{https://en.wikipedia.org/wiki/Hamiltonian_system}{Hamiltonian system} of the form
+\begin{equation}
+	\left\{\begin{split}
+		\dot{\bf x} &= \partial_{\boldsymbol{\lambda}}H,\\
+		\dot{\boldsymbol{\lambda}} &= -\partial_{\bf x}H,
+	\end{split}\right.
+\end{equation}
+where $H = F + \boldsymbol{\lambda}^\top{\bf f} - \boldsymbol{\mu}^\top{\bf h}$ is the {\it augmented Hamiltonian} \& in an indirect method, the BVP is solved (using the appropriate boundary or {\it transversality} conditions). The beauty of using an indirect method is that the state \& adjoint, i.e., $\boldsymbol{\lambda}$, are solved for \& the resulting solution is readily verified to be an extremal trajectory. The disadvantage of indirect methods is that the BVP is often extremely difficult to solve (particularly for problems that span large time intervals or problems with interior point constraints). A well-known software program that implements direct methods is BNDSCO.
+
+The approach that has risen to prominence in numerical optimal control since the 1980s is that of so-called {\it direct methods}. In a direct method, the state or the control, or both, are approximated using an appropriate function approximation (e.g., polynomial approximation or piecewise constant parameterization). Simultaneously, the cost functional is approximated as a {\it cost function}. Then, the coefficients of the function approximations are treated as optimization variables \& the problem is ``transcribed'' to a nonlinear optimization problem of the form
+\begin{equation}
+	\min F({\bf z})
+\end{equation}
+subject to the algebraic constraints
+\begin{equation}
+	{\bf g}({\bf z}) = {\bf 0},\ {\bf h}({\bf z})\le{\bf 0}.
+\end{equation}
+Depending upon the type of direct method employed, the size of the nonlinear optimization problem can be quite small (e.g., as in a direct shooting or \href{https://en.wikipedia.org/wiki/Quasilinearization}{quasilinearization} method), moderate (e.g., \href{https://en.wikipedia.org/wiki/Pseudospectral_optimal_control}{pseudospectral optimal control}) or may be quite large (e.g., a direct \href{https://en.wikipedia.org/wiki/Collocation_method}{collocation method}). In the latter case (i.e., a collocation method), the nonlinear optimization problem may be literally thousands $a\cdot10^3$ to tens of thousands $a\cdot10^4$ of variables \& constraints. Given the size of many NLPs arising from a direct method, it may appear somewhat counter-intuitive that solving the nonlinear optimization problem is easier than solving the BVP. It is, however, the fact that the NLP is easier to solve than the BVP. The reason for the relative ease of computation, particularly of a direct collocation method, is that the NLP is {\it sparse} \& many well-known software programs exist (e.g., \href{https://en.wikipedia.org/wiki/SNOPT}{SNOPT}) to solve large sparse NLPs. As a result, the range of problems that can be solved via direct methods (particularly direct {\it collocation methods} which are very popular these days) is significantly larger than the range of problems that can be solved via indirect methods. In fact, direct methods have become so popular these days that many people have written elaborate software programs employing these methods. In particular, many such programs include DIRCOL, SOCS, OTIS, GESOP{\tt/}\href{https://en.wikipedia.org/wiki/ASTOS}{ASTOS}, DITAN., \& PyGMO{\tt/}PyKEP. In recent years, due to the advent of the \href{https://en.wikipedia.org/wiki/MATLAB}{MATLAB} programming language, optimal control software in MATLAB has become more common. Examples of academically developed MATLAB software tools implementing direct methods include RIOTs, \href{https://en.wikipedia.org/wiki/DIDO_(optimal_control)}{DIDO}, DIRECT, FALCON.m, \& GPOPs, while an example of an industry developed MATLAB tool is \href{https://en.wikipedia.org/wiki/PROPT}{PROPT}. These software tools have increased significantly the opportunity for people to explore complex optimal control problems both for academic research \& industrial problems. Finally, it is noted that general-purpose MATLAB optimization environments such as \href{https://en.wikipedia.org/wiki/TOMLAB}{TOMLAB} have made coding complex optimal control problems significantly easier than was previously possible in languages such as C \& \href{https://en.wikipedia.org/wiki/FORTRAN}{FORTRAN}.
+
+\subsection{Discrete-Time Optimal Control}
+``The examples thus far have shown \href{https://en.wikipedia.org/wiki/Continuous_time}{continuous time} systems \& control solutions. In fact, as optimal control solutions are now often implemented \href{https://en.wikipedia.org/wiki/Digital_data}{digitally}, contemporary control theory is now primarily concerned with \href{https://en.wikipedia.org/wiki/Discrete_time}{discrete time} systems \& solutions. The theory of Consistent Approximations provides conditions under which solutions to a series of increasingly accurate discretized optimal control problem converge to the solution of the original, continuous-time problem. Not all discretization methods have this property, even seemingly obvious ones. E.g., using a variable step-size routine to integrate the problem's dynamic equations may generate a gradient which does not converge to 0 (or point in the right direction) as the solution is approached. The direct method \href{http://www.schwartz-home.com/RIOTS}{RIOTS} is based on the Theory of Consistent Approximation.
+
+A common solution strategy in many optimal control problems is to solve for the costate (sometimes called the \href{https://en.wikipedia.org/wiki/Shadow_price}{shadow price}) $\lambda(t)$. The costate summaries in 1 number the marginal value of expanding or contracting the state variable next turn. The marginal value is not only the gains accruing to it next turn but associated with the duration of the program. It is nice when $\lambda(t)$ can be solved analytically, but usually, the most one can do is describe it sufficiently well that the intuition can grasp the character of the solution \& an equation solver can solve numerically for the values.
+
+Having obtained $\lambda(t)$, the turn-$t$ optimal value for the control can usually be solved as a differential equation conditional on knowledge of $\lambda(t)$. Again it is infrequent, especially in continuous-time problems, that one obtains the value of the control or the state explicitly. Usually, the strategy is to solve for thresholds \& regions that characterize the optimal control \& use a numerical solver to isolate the actual choice values in time.
+
+\begin{example}
+	``Consider the problem of a mine owner who must decide at what rate to extract ore from their mine. They own rights to the ore from date $0$ to date $T$. At date $0$ there is $x_0$ ore in the ground, \& the time-dependent amount of ore $x(t)$ left in the ground declines at the rate of $u(t)$ that the mine owner extracts it. The mine owner extracts ore at cost $\frac{u(t)^2}{x(t)}$ (the cost of extraction increasing with the square of the extraction speed \& the inverse of the amount of ore left) \& sells ore at a constant price $p$. Any ore left in the ground at time $T$ cannot be sold \& has no value (there is no ``scrap value''). The owner chooses the rate of extraction varying with time $u(t)$ to maximize profits over the period of ownership with no time discounting. See discrete-time version vs. Continuous-time version.'' -- \href{https://en.wikipedia.org/wiki/Optimal_control#Finite_time}{Wikipedia{\tt/}optimal control{\tt/}finite time}
+\end{example}
+
+\subsection{Optimal Control for PDEs -- Điều Khiển Tối Ưu Cho Phương Trình Vi Phân Đạo Hàm Riêng}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \cite{Lions1971}. {\sc Jacques-Louis Lions}. {\it Optimal control of systems governed by PDEs}.
+	\item \cite{Troltzsch2010}. {\sc Fredi Tr\"{o}ltzsch}. {\it Optimal Control of PDEs}.
+\end{enumerate}
+
+\subsubsection{Optimal Control for Navier--Stokes Equations -- Điều Khiển Tối Ưu Cho Phương Trình Navier--Stokes}
+	
 %------------------------------------------------------------------------------%
 
 \section{Shape Optimization -- Tối Ưu Hình Dạng}

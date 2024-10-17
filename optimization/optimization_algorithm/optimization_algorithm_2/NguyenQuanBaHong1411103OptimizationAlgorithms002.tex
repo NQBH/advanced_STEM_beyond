@@ -1,0 +1,990 @@
+\documentclass[a4paper]{article}
+\usepackage{longtable,float,hyperref,color,amsmath,amsxtra,amssymb,latexsym,amscd,amsthm,amsfonts,graphicx}
+\numberwithin{equation}{section}
+\allowdisplaybreaks
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[RE,LO]{\footnotesize \textsc \leftmark}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+\usepackage{imakeidx}
+\makeindex[columns=2, title=Alphabetical Index, 
+           options= -s index.ist]
+\title{\huge Optimization Algorithms Assignment 002}
+\author{\textsc{Nguyen Quan Ba Hong}\footnote{Student ID: 1411103}\\
+{\small Students at Faculty of Math and Computer Science,}\\ 
+{\small Ho Chi Minh University of Science, Vietnam} \\
+{\small \texttt{email. nguyenquanbahong@gmail.com}}\\
+{\small \texttt{blog. \url{www.nguyenquanbahong.com}} 
+\footnote{Copyright \copyright\ 2016-2018 by Nguyen Quan Ba Hong, Student at Ho Chi Minh University of Science, Vietnam. This document may be copied freely for the purposes of education and non-commercial research. Visit my site \texttt{\url{www.nguyenquanbahong.com}} to get more.}}}
+\begin{document}
+\maketitle
+\begin{abstract}
+This assignment aims at solving some selected problems for the final exam of the course \textit{Optimization Algorithms}.
+\end{abstract}
+\newpage
+\tableofcontents
+\newpage
+\section{Problems}
+\textbf{Problem 1.1.} \textit{Let $f:\mathbb{R}^2 \to \mathbb{R}$ defined by}
+\begin{align}
+f\left( {x,y} \right) = \frac{1}{2}\left( {{x^2} + 5{y^2}} \right) + x + y.
+\end{align}
+\begin{enumerate}
+\item \textit{Prove that $f$ is convex.}
+\item \textit{Find minimizer $\left(x^\star,y^\star \right)$ of $f$ in $\mathbb{R}^2$.}
+\item \textit{By the steepest descent method with exact linesearches, start at the point $\left( {{x_0},{y_0}} \right) = \left( {0,0} \right)$ and present the first iteration.}
+\item \textit{By the steepest descent method with exact linesearches, starting at the point $\left( {{x_0},{y_0}} \right) = \left( {0,0} \right)$, we obtain a sequence ${\left\{ {\left( {{x_n},{y_n}} \right)} \right\}_{n \ge 0}}$. Find the smallest $n$ such that}
+\begin{align}
+\label{1.2}
+f\left( {{x_n},{y_n}} \right) - f\left( {{x^\star},{y^\star}} \right) \le {10^{ - 2}}.
+\end{align}
+\end{enumerate}
+\textsc{Solution.}
+\begin{enumerate}
+\item The gradient and the Hessian matrix of $f$ are given by
+\begin{align}
+\nabla f\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+{x + 1}\\
+{5y + 1}
+\end{array}} \right], \hspace{0.2cm} {\nabla ^2}f\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+1&0\\
+0&5
+\end{array}} \right] ,
+\end{align}
+for all $\left( {x,y} \right) \in {\mathbb{R}^2}$. The eigenvalues of ${\nabla ^2}f\left( {x,y} \right)$ are $\lambda _1=1$ and $\lambda _2=5$. Hence ${\nabla ^2}f\left( {x,y} \right)$ is positive definite for all $\left(x,y\right)\in \mathbb{R}^2$ and thus $f$ is strictly convex.
+\item Since $f$ is convex, $\left(x^\star,y^\star\right)$ is (global) minimizer of $f$ if and only if $\nabla f\left( {{x^\star},{y^\star}} \right) = 0$. Solving the equation $\nabla f\left( {x,y} \right) = 0$ yields that $\left(x^\star,y^\star\right) = \left(-1,-\frac{1}{5}\right)$ is the unique minimizer of $f$ in $\mathbb{R}^2$.
+\item We choose the starting descent direction as
+\begin{align}
+{d_0} =  - \nabla f\left( {{x_0},{y_0}} \right) =  - \nabla f\left( {0,0} \right) = \left[ {\begin{array}{*{20}{c}}
+{ - 1}\\
+{ - 1}
+\end{array}} \right].
+\end{align}
+We will find a step size $t_0>0$ such that $f\left( {\left( {{x_0},{y_0}} \right) + {t_0}{d_0}} \right)$ attains its minimizer, i.e., ${t_0} = \arg {\min _{t > 0}}f\left( {\left( {{x_0},{y_0}} \right) + t{d_0}} \right)$. This is equivalent to ${t_0} = \arg {\min _{t > 0}}\left( {3{t^2} - 2t} \right)$, which gives us $t_0=\frac{1}{3}$. Thus, we obtain, in the first iteration of the steepest descent method with exact linesearches,
+\begin{align}
+\left( {{x_1},{y_1}} \right) = \left( {{x_0},{y_0}} \right) + {t_0}{d_0} = \left( { - \frac{1}{3}, - \frac{1}{3}} \right).
+\end{align}
+\item Similarly, for any $n\in \mathbb{Z}_+$, the $n$th descent direction is given by
+\begin{align}
+{d_n} =  - \nabla f\left( {{x_n},{y_n}} \right) =  - \left[ {\begin{array}{*{20}{c}}
+{{x_n} + 1}\\
+{5{y_n} + 1}
+\end{array}} \right].
+\end{align}
+It will be proved, after choosing a sequence $t_n$'s, that $\left( {{x_n},{y_n}} \right) \ne \left( { - 1, - \frac{1}{5}} \right)$ for all $n\in \mathbb{N}$. We also find a $n$th step size $t_n>0$ as
+\begin{align}
+{t_n} &= \arg {\min _{t > 0}}f\left( {\left( {{x_n},{y_n}} \right) + t{d_n}} \right)\\
+ &= \arg {\min _{t > 0}}f\left( {{x_n} - t\left( {{x_n} + 1} \right),{y_n} - t\left( {5{y_n} + 1} \right)} \right)\\
+ &= \arg {\min _{t > 0}}{g_n}\left( t \right),
+\end{align}
+where
+\begin{align}
+{g_n}\left( t \right) =&\ \frac{1}{2}\left( {{{\left( {{x_n} + 1} \right)}^2} + 5{{\left( {5{y_n} + 1} \right)}^2}} \right){t^2}\\
+& - \left( {{{\left( {{x_n} + 1} \right)}^2} + {{\left( {5{y_n} + 1} \right)}^2}} \right)t + \frac{1}{2}\left( {x_n^2 + 5y_n^2} \right) + {x_n} + {y_n}.
+\end{align}
+Consider the behavior of this quadratic function with respect to the variable $t$, it is easy to verify that 
+\begin{align}
+\label{1.12}
+{t_n} = \frac{{{{\left( {{x_n} + 1} \right)}^2} + {{\left( {5{y_n} + 1} \right)}^2}}}{{{{\left( {{x_n} + 1} \right)}^2} + 5{{\left( {5{y_n} + 1} \right)}^2}}}.
+\end{align}
+Hence, the iterations in the steepest descent method with exact linesearches have the following form
+\begin{align}
+\left( {{x_{n + 1}},{y_{n + 1}}} \right) = \left( {{x_n},{y_n}} \right) - \frac{{{{\left( {{x_n} + 1} \right)}^2} + {{\left( {5{y_n} + 1} \right)}^2}}}{{{{\left( {{x_n} + 1} \right)}^2} + 5{{\left( {5{y_n} + 1} \right)}^2}}} \left( {{x_n} + 1,5{y_n} + 1} \right),
+\end{align}
+for all $n\in \mathbb{N}$, or equivalently,
+\begin{align}
+\label{1.14}
+{x_{n + 1}} &= {x_n} - \frac{{{{\left( {{x_n} + 1} \right)}^2} + {{\left( {5{y_n} + 1} \right)}^2}}}{{{{\left( {{x_n} + 1} \right)}^2} + 5{{\left( {5{y_n} + 1} \right)}^2}}}\left( {{x_n} + 1} \right),\\
+{y_{n + 1}} &= {y_n} - \frac{{{{\left( {{x_n} + 1} \right)}^2} + {{\left( {5{y_n} + 1} \right)}^2}}}{{{{\left( {{x_n} + 1} \right)}^2} + 5{{\left( {5{y_n} + 1} \right)}^2}}}\left( {5{y_n} + 1} \right). \label{1.15}
+\end{align}
+Define ${a_n}: = {x_n} + 1$, ${b_n}: = 5{y_n} + 1$ for all $n\in \mathbb{N}$, then $f$ can be rewritten as 
+\begin{align}
+f\left( {{x_n},{y_n}} \right) = \frac{{5a_n^2 + b_n^2}}{{10}} - \frac{3}{5},\mbox{ for all } n \in \mathbb{N},
+\end{align}
+and \eqref{1.14}-\eqref{1.15} becomes
+\begin{align}
+\label{1.16}
+{a_{n + 1}} &= \frac{{4{a_n}b_n^2}}{{a_n^2 + 5b_n^2}},\\
+{b_{n + 1}} &=  - \frac{{4a_n^2{b_n}}}{{a_n^2 + 5b_n^2}}. \label{1.17}
+\end{align}
+Since $\left(a_0,b_0\right)=\left(1,1\right)$, \eqref{1.16}-\eqref{1.17} implies that $\left(a_n,b_n\right) \ne \left(0,0\right)$ for all $n\in \mathbb{N}$, i.e., $\left( {{x_n},{y_n}} \right) \ne \left( { - 1, - \frac{1}{5}} \right)$ for all $n\in \mathbb{N}$ as stated above. Hence, \eqref{1.12} make a sense and $t_n>0$ for all $n\in \mathbb{N}$.
+
+Run the following \textsc{Matlab} script
+\begin{verbatim}
+f = @(x,y) (x.^2 + 5*y.^2)/2 + x + y;
+d = @(x,y) -[x + 1; 5*y + 1];
+t = @(x,y) ((x+1).^2 + (5*y+1).^2)/((x+1).^2 + 5*(5*y+1).^2);
+X = [0;0]; % X_n := (x_n,y_n)
+n = 0; 
+while (abs(f(X(1),X(2)) - f(-1,-1/5)) > 1e-2)
+    Xtemp = X;
+    X = X + t(X(1),X(2))*d(X(1),X(2));
+    n = n + 1;
+end
+n
+\end{verbatim}
+yields that $n=6$ is the smallest positive integer such that \eqref{1.2} holds. \hfill $\square$
+\end{enumerate}
+\textbf{Problem 1.2.} \textit{Let $f:\mathbb{R}^3\to \mathbb{R}$ be a mapping defined by $f\left( x \right) = \frac{1}{2}{x^T}Ax - {c^T}x$, where $A=\mbox{diag}\left(1,5,25\right)$ and $c=\left[-1, -1, -1\right]^T$.}
+\begin{enumerate}
+\item \textit{Prove that $f$ is convex.}
+\item \textit{Find the minimizer $x^\star$ of $f$ in $\mathbb{R}^3$.}
+\item \textit{By the steepest descent method with exact linesearches, starting at the point $x_0=\left(0,0,0\right)$, present the first iteration.}
+\end{enumerate}
+\textsc{Solution.}
+\begin{enumerate}
+\item The eigenvalues of ${\nabla ^2}f\left( x \right)$ are $\lambda _1=1$, $\lambda _2=5$, and $\lambda _3=25$. Hence ${\nabla ^2}f\left( x \right)$ is positive definite for all $x\in \mathbb{R}^3$ and thus $f$ is strictly convex.
+\item Since $f$ is strictly convex, $x^\star$ is the unique minimizer of $f$ if and only if $\nabla f\left( {{x^\star}} \right) = 0$. Solving the equation $\nabla f\left( x \right) = 0$ yields that $x^\star = \left(-1,-\frac{1}{5},-\frac{1}{25}\right)$ is the unique minimizer of $f$ in $\mathbb{R}^3$. 
+\item We choose the starting descent direction as ${d_0} =  - \nabla f\left( {{x_0}} \right) = {\left[ { - 1, - 1, - 1} \right]^T}$. The starting step size $t_0$ is chosen as 
+\begin{align}
+{t_0}: = \arg {\min _{t > 0}}f\left( {{x_0} + t{d_0}} \right) = \arg \mathop {\min }\limits_{t > 0} \left( {\frac{{31}}{2}{t^2} - 3t} \right) = \frac{3}{{31}}.
+\end{align}
+Thus, we obtain, in the first iteration of the steepest descent method with exact linesearches, ${x_1} = {x_0} + {t_0}{d_0} = {\left[ { - \frac{3}{{31}}, - \frac{3}{{31}}, - \frac{3}{{31}}} \right]^T}$. \hfill $\square$
+\end{enumerate}
+\textbf{Problem 1.3.} \textit{Let $f,g: \mathbb{R}^2\to \mathbb{R}$ be two mappings defined by}
+\begin{align}
+f\left( {x,y} \right) &= {\left( {x - y + 1} \right)^2} + {\left( {2x - y} \right)^2},\\
+g\left( {x,y} \right) &= {\left( {x + y} \right)^2} + {\left( {y - 2x + 1} \right)^2}.
+\end{align}
+\begin{enumerate}
+\item \textit{Prove that $f$, $g$ are convex.}
+\item \textit{Find the minima of $f$ and $g$ in $\mathbb{R}^2$.}
+\item \textit{By the steepest descent method with exact linesearches, starting at the point $\left(x_0,y_0\right) =\left(0,0\right)$, which the values of $f$ or $g$ will converge to the optimal values faster?}
+\end{enumerate}
+\textsc{Solution.}
+\begin{enumerate}
+\item The gradients and the Hessian matrices of $f$ and $g$ are given by
+\begin{align}
+\nabla f\left( {x,y} \right) &= \left[ {\begin{array}{*{20}{c}}
+{10x - 6y + 2}\\
+{4y - 6x - 2}
+\end{array}} \right], \hspace*{0.2cm} {\nabla ^2}f\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+{10}&{ - 6}\\
+{ - 6}&4
+\end{array}} \right],\\
+\nabla g\left( {x,y} \right) &= \left[ {\begin{array}{*{20}{c}}
+{10x - 2y - 4}\\
+{4y - 2x + 2}
+\end{array}} \right], \hspace*{0.2cm} {\nabla ^2}g\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+{10}&{ - 2}\\
+{ - 2}&4
+\end{array}} \right],
+\end{align}
+for all $\left(x,y\right)\in \mathbb{R}^2$, respectively. The eigenvalues of $f$ and $g$ are ${\lambda _{f,1}} = 7 - 3\sqrt 5 ,{\lambda _{f,2}} = 7 + 3\sqrt 5$ and  ${\lambda _{g,1}} = 7 - \sqrt {13} ,{\lambda _{g,2}} = 7 + \sqrt {13}$, respectively. Hence, both ${\nabla ^2}f\left( {x,y} \right)$ and ${\nabla ^2}g\left( {x,y} \right)$ are positive definite for $\left(x,y\right) \in \mathbb{R}^2$ and thus $f$ and $g$ are strictly convex. 
+\item Since $f$ and $g$ are strictly convex, ${x_{f,\star}},{x_{g,\star}}$ are their unique minima if and only if $\nabla f\left( {{x_{f,*}}} \right) = 0$ and $\nabla g\left( {{x_{g,*}}} \right) = 0$, respectively. Solving the equations $\nabla f\left( {x,y} \right) = 0$, $\nabla g\left( {x,y} \right) = 0$ yields that $x_{f,\star}=\left(1,2\right)$ and $x_{g,\star} = \left(\frac{1}{3},-\frac{1}{3}\right)$ are the minima of $f$ and $g$ in $\mathbb{R}^2$, respectively. 
+\item Since $f$, $g$ are of class $C^2\left(\mathbb{R}^2\right)$ and ${\nabla ^2}f\left( {{x_{f,*}}} \right)$, ${\nabla ^2}g\left( {{x_{g,*}}} \right)$ are positive definite, we suppose that the sequences ${\left\{ {{x_{f,n}}} \right\}_{n \ge 0}}$, ${\left\{ {{x_{g,n}}} \right\}_{n \ge 0}}$ generated by the steepest descent method with exact linesearches converge to $x_{f,\star}$ and $x_{g,\star}$, respectively. Applying Theorem 3.2.1, \cite{2}, p. 31 to $f$ and $g$ yields
+\begin{align}
+\left| {f\left( {{x_{f,n + 1}}} \right) - f\left( {{x_{f,*}}} \right)} \right| &\le {\left( {\frac{{{\lambda _{f,2}} - {\lambda _{f,1}}}}{{{\lambda _{f,2}} + {\lambda _{f,1}}}}} \right)^2}\left| {f\left( {{x_{f,n}}} \right) - f\left( {{x_{f,*}}} \right)} \right|\\
+& = \frac{{45}}{{49}}\left| {f\left( {{x_{f,n}}} \right) - f\left( {{x_{f,*}}} \right)} \right|,\\
+\left| {g\left( {{x_{g,n + 1}}} \right) - g\left( {{x_{g,*}}} \right)} \right| &\le {\left( {\frac{{{\lambda _{g,2}} - {\lambda _{g,1}}}}{{{\lambda _{g,2}} + {\lambda _{g,1}}}}} \right)^2}\left| {g\left( {{x_{g,n}}} \right) - g\left( {{x_{g,*}}} \right)} \right|\\
+& = \frac{{13}}{{49}}\left| {g\left( {{x_{g,n}}} \right) - f\left( {{x_{g,*}}} \right)} \right|,
+\end{align}
+i.e., the rates of convergence of the gradient method with exact linesearches for $f$ and $g$ are $\frac{45}{49}$ and $\frac{13}{49}$, respectively. Theoretically, we predict that the values of $g$ will converge to its optimal value faster than those of $f$. \hfill $\square$
+\end{enumerate}
+\textbf{Problem 1.4.} \textit{Let $f:\mathbb{R}^2\to \mathbb{R}$ be a mapping defined by}
+\begin{align}
+f\left( {x,y} \right) = \frac{1}{2}{x^2} + \frac{a}{2}{y^2},
+\end{align}
+\textit{where $a\ge 1$. By the steepest descent method with exact linesearches, starting at the point $\left(x_0,y_0\right)=\left(a,1\right)$, prove by induction that the $n$th iteration is}
+\begin{align}
+\label{1.29}
+\left( {{x_n},{y_n}} \right) = {\left( {\frac{{a - 1}}{{a + 1}}} \right)^n}\left( {a,{{\left( { - 1} \right)}^n}} \right).
+\end{align}
+\textsc{Proof.} The gradient and the Hessian matrix of $f$ are given by
+\begin{align}
+\nabla f\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+x\\
+{ay}
+\end{array}} \right],\hspace{0.2cm} {\nabla ^2}f\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+1&0\\
+0&a
+\end{array}} \right],
+\end{align}
+for all $\left(x,y\right)\in \mathbb{R}^2$. 
+
+For arbitrary $n\in \mathbb{N}$, the $n$th descent direction is chosen as
+\begin{align}
+{d_n} =  - \nabla f\left( {{x_n},{y_n}} \right) = \left[ {\begin{array}{*{20}{c}}
+{ - {x_n}}\\
+{ - a{y_n}}
+\end{array}} \right],
+\end{align}
+and the step size $t_n$ is chosen as
+\begin{align}
+{t_n}  &= \arg \mathop {\min }\limits_{t > 0} f\left( {\left( {{x_n},{y_n}} \right) + t{d_n}} \right)\\
+ &= \arg \mathop {\min }\limits_{t > 0} \left( {\frac{1}{2}\left( {x_n^2 + {a^3}y_n^2} \right){t^2} - \left( {x_n^2 + {a^2}y_n^2} \right)t + \frac{1}{2}\left( {x_n^2 + ay_n^2} \right)} \right)\\
+ &= \frac{{x_n^2 + {a^2}y_n^2}}{{x_n^2 + {a^3}y_n^2}}, \label{1.35}
+\end{align}
+where we will prove that $\left(x_n,y_n\right)\ne \left(0,0\right)$ for all $n\in \mathbb{N}$. With the chosen $t_n$'s, the iterations of the steepest descent method with exact linesearches are
+\begin{align}
+\left( {{x_{n + 1}},{y_{n + 1}}} \right) = \left( {{x_n},{y_n}} \right) + \frac{{x_n^2 + {a^2}y_n^2}}{{x_n^2 + {a^3}y_n^2}}\left( { - {x_n}, - a{y_n}} \right),\mbox{ for all } n \in \mathbb{N},
+\end{align}
+which is equivalent to
+\begin{align}
+\label{1.37}
+{x_{n + 1}} &= \frac{{{a^2}\left( {a - 1} \right){x_n}y_n^2}}{{x_n^2 + {a^3}y_n^2}},\\
+{y_{n + 1}} &= \frac{{\left( {1 - a} \right)x_n^2{y_n}}}{{x_n^2 + {a^3}y_n^2}}, \label{1.38}
+\end{align}
+for all $n\in \mathbb{N}$. Combining the fact that $\left(x_0,y_0\right)=\left(a,1\right) \ne \left(0,0\right)$ with \eqref{1.37}-\eqref{1.38} yields that $\left(x_n,y_n\right)\ne \left(0,0\right)$ for all $n\in \mathbb{N}$. Thus $t_n$ defined by \eqref{1.35} makes sense and $t_n>0$ for all $n\in \mathbb{N}$.  
+
+We now prove \eqref{1.29} by induction. The case $n=0$ is the given starting point. Assume that \eqref{1.29} holds for some $n \ge 0$, we have
+\begin{align}
+\left( {{x_{n + 1}},{y_{n + 1}}} \right) &= \left( {{x_n},{y_n}} \right) + \frac{{x_n^2 + {a^2}y_n^2}}{{x_n^2 + {a^3}y_n^2}}\left( { - {x_n}, - a{y_n}} \right)\\
+ &= {\left( {\frac{{a - 1}}{{a + 1}}} \right)^n}\left[ {\left( {a,{{\left( { - 1} \right)}^n}} \right) + \frac{{2a}}{{1 + a}}\left( { - a,a{{\left( { - 1} \right)}^{n + 1}}} \right)} \right]\\
+ &= {\left( {\frac{{a - 1}}{{a + 1}}} \right)^n}\left( {a - \frac{{2a}}{{1 + a}},\frac{{2a}}{{1 + a}}{{\left( { - 1} \right)}^{n + 1}} - {{\left( { - 1} \right)}^{n + 1}}} \right)\\
+& = {\left( {\frac{{a - 1}}{{a + 1}}} \right)^{n + 1}}\left( {a,{{\left( { - 1} \right)}^{n + 1}}} \right).
+\end{align}
+By the principle of mathematical induction, we deduce that \eqref{1.29} holds for all $n\in \mathbb{N}$. \hfill $\square$\\
+\\
+\textbf{Problem 1.5.} \textit{Let $f:\mathbb{R}^2\to \mathbb{R}$ defined by}
+\begin{align}
+f\left( {x,y} \right) = \frac{1}{2}{\left( {y - 2x} \right)^2} + {y^4}.
+\end{align}
+\textit{Determine the Newton direction of $f$ at the point $x_0=\left(1,2\right)$.}\\
+\\
+\textsc{Solution.} The gradient and the Hessian matrix of $f$ are given by
+\begin{align}
+\nabla f\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+{4x - 2y}\\
+{4{y^3} + y - 2x}
+\end{array}} \right],\hspace{0.2cm} {\nabla ^2}f\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+4&{ - 2}\\
+{ - 2}&{12{y^2} + 1}
+\end{array}} \right],
+\end{align}
+for all $\left(x,y\right)\in \mathbb{R}^2$. 
+
+The Newton direction of $f$ at the point $\left(x,y\right) \in \mathbb{R}^2$ can be obtained by solving the equation 
+\begin{align}
+\label{1.45}
+{\nabla ^2}f\left( {x,y} \right)d\left( {x,y} \right) =  - \nabla f\left( {x,y} \right).
+\end{align}
+Solving \eqref{1.45} yields that $d\left( {x,y} \right) = \left( { - x + \frac{y}{3}, - \frac{y}{3}} \right)$ is the Newton direction of $f$ at the point $\left(x,y\right)$. In particular, $d\left( {1,2} \right) = \left( { - \frac{1}{3},\frac{2}{3}} \right)$. \hfill $\square$\\
+\\
+\textbf{Problem 1.6.} \textit{Let $f:\mathbb{R}^2\to \mathbb{R}$ be a mapping defined by}
+\begin{align}
+f\left( {x,y} \right) = {\left( {x - y} \right)^2} + {\left( {2x + y - 3} \right)^2}.
+\end{align}
+\begin{enumerate}
+\item \textit{Prove that $f$ is convex.}
+\item \textit{Find the minimizer $\left(x^\star,y^\star\right)$ of $f$ in $\mathbb{R}^2$.}
+\item \textit{By the pure Newton method, starting at the point $\left(x_0,y_0\right)=\left(0,0\right)$, present the first iteration. Comment about the point $\left(x_1,y_1\right)$.}
+\end{enumerate}
+\textsc{Solution.}
+\begin{enumerate}
+\item The gradient and the Hessian matrix of $f$ are given by
+\begin{align}
+\nabla f\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+{10x + 2y - 12}\\
+{2x + 4y - 6}
+\end{array}} \right],\hspace{0.2cm}  {\nabla ^2}f\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+{10}&2\\
+2&4
+\end{array}} \right],
+\end{align}
+for all $\left(x,y\right)\in \mathbb{R}^2$.
+
+The eigenvalues of ${\nabla ^2}f\left( {x,y} \right)$ are ${\lambda _1} = 7 - \sqrt {13}$ ,${\lambda _2} = 7 + \sqrt {13}$. Hence ${\nabla ^2}f\left( {x,y} \right)$ is positive definite for all $\left(x,y\right)\in \mathbb{R}^2$ and thus $f$ is strictly convex.
+\item Since $f$ is strictly convex, $\left(x^\star,y^\star\right)$ is the unique minimizer of $f$ in $\mathbb{R}^2$ if and only if $\nabla f\left( {{x^\star},{y^\star}} \right) = 0$. Solving the equation $\nabla f\left( {x,y} \right) = 0$ yields that $\left(x^\star,y^\star\right) =\left(1,1\right)$ is the unique (global) minimizer of $f$ in $\mathbb{R}^2$.
+\item The Newton direction of $f$ at the point $\left(x,y\right)\in \mathbb{R}^2$ can be obtained by solving the equation
+\begin{align}
+\label{1.48}
+{\nabla ^2}f\left( {x,y} \right)d\left( {x,y} \right) =  - \nabla f\left( {x,y} \right) .
+\end{align}
+Solving \eqref{1.48} yields that $d\left( {x,y} \right) = \left( {1 - x,1 - y} \right)$ is the Newton direction of $f$ at the point $\left(x,y\right)$. In particular, $d\left(0,0\right)=\left(1,1\right)$. Then the first iteration of the pure Newton method is 
+\begin{align}
+\left( {{x_1},{y_1}} \right) = \left( {{x_0},{y_0}} \right) + d\left( {{x_0},{y_0}} \right) = \left( {1,1} \right) = \left(x^\star,y^\star\right) .
+\end{align}
+Thus, we need only one iteration of the pure Newton method to obtain the minimizer. \hfill $\square$
+\end{enumerate}
+\textbf{Problem 1.7.} \textit{By the pure Newton method, select the starting point and  build an iterated sequence ${\left\{ {{x_n}} \right\}_{n \in \mathbb{N}}}$ to approximate the minimizer of the following minimization problem}
+\begin{align}
+\mbox{Min }f\left( x \right) \mbox{ s.t. } x \in \mathbb{R} \mbox{ with } f\left( x \right) = \frac{1}{4}{x^4}.
+\end{align}
+\textit{Does the sequence $x_n$'s converge quadratically to the minimizer?}\\
+\\
+\textsc{Solution.} The first and second derivatives of $f$ are $f'\left(x\right)=x^3$, $f''\left(x\right) =3x^2 \ge 0$ for all $x\in \mathbb{R}$. Hence, $f$ is convex, and its unique minimizer is $x^\star=0$ obviously. The Newton direction at an arbitrary point $x\in \mathbb{R}$ can be obtained by solving the equation $f''\left( x \right)d\left( x \right) =  - f'\left( x \right)$. Solving the last equation gives us $d\left( x \right) =  - \frac{x}{3}$. Starting at a point $x_0 \in \mathbb{R}$, the iterations of the pure Newton method are 
+\begin{align}
+\label{1.51}
+{x_{n + 1}} = {x_n} + d\left( {{x_n}} \right) = {x_n} - \frac{{{x_n}}}{3} = \frac{2}{3}{x_n}, \mbox{ for all } n \in \mathbb{N}.
+\end{align}
+We consider the following cases depending on the starting value $x_0$.
+\begin{itemize}
+\item \textit{Case $x_0=0$.} In this case, \eqref{1.51} gives us $x_n=0$ for all $n\in \mathbb{N}$. Hence, the sequence $x_n$'s converge quadratically to $x^\star$ in this case.
+\item \textit{Case $x_0\ne 0$.} In this case, \eqref{1.51} gives us the general formula of $x_n$ as ${x_n} = {\left( {\frac{2}{3}} \right)^n}{x_0}$ for all $n \in \mathbb{N}$. Then
+\begin{align}
+\frac{{\left| {{x_{n + 1}} - {x^\star}} \right|}}{{{{\left| {{x_n} - {x^\star}} \right|}^2}}} = \frac{{{{\left( {\frac{2}{3}} \right)}^{n + 1}}\left| {{x_0}} \right|}}{{{{\left( {\frac{2}{3}} \right)}^{2n}}x_0^2}} = {\left( {\frac{2}{3}} \right)^{1 - n}}{\left| {{x_0}} \right|^{ - 1}} \to  + \infty 
+\end{align}
+as $n \to  + \infty$. As a consequence, $x_n$'s does not converge quadratically to the minimizer $x^\star$ of $f$ in this case. However, $x_n$'s converges linearly to $x^\star$ since $\left| {{x_{n + 1}} - {x^\star}} \right| = \frac{2}{3}\left| {{x_n} - {x^\star}} \right|$ for all $n\in \mathbb{N}$. \hfill $\square$
+\end{itemize}
+\textbf{Problem 1.8.} \textit{Let $f:\mathbb{R}^2\to \mathbb{R}$ be a mapping defined by}
+\begin{align}
+f\left( {x,y} \right) = 2{x^2} + {y^2} - 2xy + 2{x^3} + {x^4}.
+\end{align}
+\begin{enumerate}
+\item \textit{Find all the stationary points\footnote{``Stationary points'', see \cite{2}, or ``critical points'', see \cite{1}.} of $f$ in $\mathbb{R}^2$.}
+\item \textit{By the pure Newton method, starting at the point $\left(x_0,y_0\right)=\left(-1,0\right)$, present the first iteration to obtain $\left(x_1,y_1\right)$.}
+\end{enumerate}
+\textsc{Solution.}
+\begin{enumerate}
+\item The gradient and the Hessian matrix of $f$ are given by
+\begin{align}
+\nabla f\left( {x,y} \right) &= \left[ {\begin{array}{*{20}{c}}
+{4{x^3} + 6{x^2} + 4x - 2y}\\
+{2y - 2x}
+\end{array}} \right],\\
+{\nabla ^2}f\left( {x,y} \right) &= \left[ {\begin{array}{*{20}{c}}
+{12{x^2} + 12x + 4}&{ - 2}\\
+{ - 2}&2
+\end{array}} \right],
+\end{align}
+for all $\left(x,y\right)\in \mathbb{R}^2$. Solving the equation $\nabla f\left( {x,y} \right) = 0$ yields that $\left( { - 1, - 1} \right)$, $\left( { - \frac{1}{2}, - \frac{1}{2}} \right)$, and $\left( {0,0} \right)$ are the only stationary points of $f$ in $\mathbb{R}^2$.
+\item Given $\left(x,y\right)\in \mathbb{R}^2$ arbitrarily, the Newton direction of $f$ at the point $\left(x,y\right)$ can be obtained by solving the equation ${\nabla ^2}f\left( {x,y} \right)d\left( {x,y} \right) =  - \nabla f\left( {x,y} \right)$. Solving the last equation yields that 
+\begin{align}
+d\left( {x,y} \right) =  - \frac{1}{{6{x^2} + 6x + 1}}\left[ {\begin{array}{*{20}{c}}
+{x\left( {2{x^2} + 3x + 1} \right)}\\
+{y + 6xy + 6{x^2}y - 3{x^2} - 4{x^3}}
+\end{array}} \right].
+\end{align}
+Starting at the point $\left(x_0,y_0\right)= \left(-1,0\right)$, the first iteration of the pure Newton method is 
+\begin{align}
+\left( {{x_1},{y_1}} \right) &= \left( {{x_0},{y_0}} \right) + d\left( {{x_0},{y_0}} \right)= \left( { - 1, - 1} \right),
+\end{align}
+which is one of the stationary points of $f$. \hfill $\square$
+\end{enumerate}
+\textbf{Problem 1.9.} \textit{Consider the following problem}
+\begin{align}
+\left( P \right) \mbox{ Min } x_1^2 + x_2^2\mbox{ s.t. } 2x_1 - x_2 - 1 \le 0.
+\end{align}
+\begin{enumerate}
+\item \textit{Prove that $\left(P\right)$ is a convex problem and the Slater condition is satisfied.}
+\item \textit{Use the KKT conditions (Karush-Kuhn-Tucker conditions), find optimal solution $x^\star$ of $\left(P\right)$.}
+\item \textit{Establish a barrier approximation problem for $\left(P\right)$, find the optimal value $x^\star \left(t\right)$ of that barrier approximation problem. Prove that $x^\star \left(t\right) \to x^\star$ as $t\to 0^+$.}
+\end{enumerate}
+\textsc{Solution.}
+\begin{enumerate}
+\item Set $f\left( {{x_1},{x_2}} \right) = x_1^2 + x_2^2$ and $g\left( {{x_1},{x_2}} \right) = 2{x_1} - {x_2} - 1$ for all $\left(x_1,x_2\right)\in \mathbb{R}^2$, the gradients and the Hessian matrices of $f$ and $g$ are given by
+\begin{align}
+\nabla f\left( {{x_1},{x_2}} \right) &= \left[ {\begin{array}{*{20}{c}}
+{2{x_1}}\\
+{2{x_2}}
+\end{array}} \right],\hspace{0.2cm} {\nabla ^2}f\left( {{x_1},{x_2}} \right) = \left[ {\begin{array}{*{20}{c}}
+2&0\\
+0&2
+\end{array}} \right],\\
+\nabla g\left( {{x_1},{x_2}} \right) &= \left[ {\begin{array}{*{20}{c}}
+2\\
+{ - 1}
+\end{array}} \right],\hspace{0.2cm} {\nabla ^2}g\left( {{x_1},{x_2}} \right) = \left[ {\begin{array}{*{20}{c}}
+0&0\\
+0&0
+\end{array}} \right],
+\end{align}
+for all $\left(x_1,x_2\right)\in \mathbb{R}^2$, respectively. It is clear that ${\nabla ^2}f\left( {{x_1},{x_2}} \right)$ and ${\nabla ^2}g\left( {{x_1},{x_2}} \right)$ are positive definite and semi-positive definite matrices, respectively. Thus $f$ is strictly convex and $g$ is convex. Consequently, $\left(P\right)$ is a convex problem. 
+
+Since $g\left(0,0\right)=-1<0$, the Slater condition is satisfied.
+\item The feasible set of $\left(P\right)$ is given by
+\begin{align}
+C: = \left\{ {\left( {{x_1},{x_2}} \right) \in {\mathbb{R}^2};g\left( {{x_1},{x_2}} \right)=2x_1-x_2-1 \le 0} \right\} .
+\end{align}
+The constraint qualification hypothesis $T_C\left(x^\star\right) =L_C\left(x^\star\right)$ is guaranteed by (CQ1) or (CQ2) (since $g$ is convex and affine, see, e.g., \cite{2}, pp. 89-90). Combining this with the convexity of $\left(P\right)$, applying Theorem 8.2.1, \cite{2}, p. 89, and Theorem 8.2.2, \cite{2}, p. 91 yields that $x^\star$ is an optimal solution of $\left(P\right)$ if and only if the vectors $\left(x^\star,\lambda ^\star\right)$ satisfy the KKT conditions. The KKT conditions for $\left(P\right)$ are given by
+\begin{align}
+\label{1.62}
+\left( {KKT} \right)\left\{ {\begin{array}{*{20}{l}}
+{\nabla f\left( {{x^\star}} \right) + {\lambda ^\star}\nabla g\left( {{x^\star}} \right) = 0,}\\
+{{\lambda ^\star}g\left( {{x^\star}} \right) = 0,}\\
+{{\lambda ^\star} \ge 0,}\\
+{g\left( {{x^\star}} \right) \le 0,}
+\end{array}} \right. 
+\end{align}
+which is equivalent to
+\begin{align}
+2x_1^\star + 2{\lambda ^\star} &= 0,\\
+2x_2^\star - {\lambda ^\star} &= 0,\\
+{\lambda ^\star}\left( {2x_1^\star - x_2^\star - 1} \right) &= 0,\\
+{\lambda ^\star} &\ge 0,\\
+2x_1^\star - x_2^\star - 1 &\le 0.
+\end{align}
+Solving the first two equations in this system yields $\left( {x_1^\star,x_2^\star} \right) = \left( { - {\lambda ^\star},\frac{{{\lambda ^\star}}}{2}} \right)$. Substituting these into the others gives us
+\begin{align}
+{\lambda ^\star}\left( { - \frac{{5{\lambda ^\star}}}{2} - 1} \right) = 0,\\
+{\lambda ^\star} \ge 0,\\
+\frac{{5{\lambda ^\star}}}{2} + 1 \ge 0,
+\end{align}
+which has the unique root $\lambda =0$. Then $x^\star =\left(x_1^\star,x_2^\star\right) =\left(0,0\right)$ is the unique optimal solution of $\left(P\right)$.
+\item The logarithmic barrier function of $\left(P\right)$ is 
+\begin{align}
+B\left( {{x_1},{x_2},t} \right):& = f\left( {{x_1},{x_2}} \right) - t\log \left( { - g\left( {{x_1},{x_2}} \right)} \right)\\
+ &= x_1^2 + x_2^2 - t\log \left( {1 + {x_2} - 2{x_1}} \right),
+\end{align}
+for all $\left(x_1,x_2\right)\in C_B$ and $t>0$, where $C_B$ is the feasible set of $B$ and is given by
+\begin{align}
+{C_B}: = \left\{ {\left( {{x_1},{x_2}} \right) \in {\mathbb{R}^2};g\left( {{x_1},{x_2}} \right) =2x_1-x_2-1< 0} \right\}.
+\end{align}
+We now prove that $B$ is convex.
+
+$\star$ \textit{First proof of the convexity of $B$.} We use the following two well-known properties of convex function calculus\footnote{See, e.g., \url{https://en.wikipedia.org/wiki/Convex_function}.}:
+\begin{itemize}
+\item \textit{The sum of convex functions is a convex function.}
+\item \textit{If $F$ is concave and $G$ is convex and non-increasing over a univariate domain, then $G \circ F$ is convex}.
+\end{itemize} 
+Applying the former for $f$ and $h: =  - t\log \left( { - g} \right)$, and the later for $F:= -g$ and $G=-t\log x$ yields that $B$ is convex for all $t>0$. \hfill $\triangle$
+
+$\star$ \textit{Second proof of the convexity of $B$.} The spatial gradient and the spatial Hessian matrix of $B$ are given by
+\begin{align}
+\nabla _x B\left( {{x_1},{x_2},t} \right) &= \left[ {\begin{array}{*{20}{c}}
+{2{x_1} + \frac{{2t}}{{{x_2} - 2{x_1} + 1}}}\\
+{2{x_2} - \frac{t}{{{x_2} - 2{x_1} + 1}}}
+\end{array}} \right],\\
+{\nabla _x^2}B\left( {{x_1},{x_2},t} \right) &= \left[ {\begin{array}{*{20}{c}}
+{2 + \frac{{4t}}{{{{\left( {{x_2} - 2{x_1} + 1} \right)}^2}}}}&{ - \frac{{2t}}{{{{\left( {{x_2} - 2{x_1} + 1} \right)}^2}}}}\\
+{ - \frac{{2t}}{{{{\left( {{x_2} - 2{x_1} + 1} \right)}^2}}}}&{2 + \frac{t}{{{{\left( {{x_2} - 2{x_1} + 1} \right)}^2}}}}
+\end{array}} \right],
+\end{align}
+for all $\left(x_1,x_2\right)\in C_B$ and $t>0$. The eigenvalues of ${\nabla _x^2}B\left( {{x_1},{x_2},t} \right)$ are ${\lambda _1} = 2$ and ${\lambda _2} = 2 + \frac{{5t}}{{{{\left( {y - 2x + 1} \right)}^2}}}$. Hence, ${\nabla _x^2}B\left( {{x_1},{x_2},t} \right)$ is positive definite for all $\left(x_1,x_2\right)\in C_B$ and thus $B$ is strictly convex for all $t>0$. \hfill $\triangle$
+
+Since $B$ is strictly convex, $x^\star$ is the unique minimizer of $B$ in ${C_B}$ if and only if $g\left(x^\star\right)<0$ and $\nabla _x B\left( {{x^\star},t} \right) = 0$. The roots of the equation $\nabla _x B\left( {x_1,x_2,t} \right) = 0$ are $\left( {\frac{{1 - \sqrt {10t + 1} }}{5},\frac{{ - 1 + \sqrt {10t + 1} }}{{10}}} \right)$ and $\left( {\frac{{1 + \sqrt {10t + 1} }}{5}, - \frac{{1 + \sqrt {10t + 1} }}{{10}}} \right)$. The former is taken and the later is omitted since 
+\begin{align}
+g\left( {\frac{{1 - \sqrt {10t + 1} }}{5},\frac{{ - 1 + \sqrt {10t + 1} }}{{10}}} \right) &= \frac{{1 - \sqrt {10t + 1} }}{2} - 1 < 0,\\
+g\left( {\frac{{1 + \sqrt {10t + 1} }}{5}, - \frac{{1 + \sqrt {10t + 1} }}{{10}}} \right) &= \frac{{1 + \sqrt {10t + 1} }}{2} - 1 > 0,
+\end{align}
+for all $t>0$. Thus, $x^\star \left( t \right) = \left( {\frac{{1 - \sqrt {10t + 1} }}{5},\frac{{ - 1 + \sqrt {10t + 1} }}{{10}}} \right)$ is the optimal solution of the barrier approximation problem for all $t>0$. It is evident that $x^\star \left(t\right)\to x^\star$ as $t\to 0^+$. \hfill $\square$
+\end{enumerate}
+\textbf{Problem 1.10.} \textit{Consider the following problem}
+\begin{align}
+\left( P \right)\mbox{ Min } {x_1} - {x_2}\mbox{ s.t. } x_1^2 + x_2^2 \le 1.
+\end{align}
+\begin{enumerate}
+\item \textit{Prove that $\left(P\right)$ is a convex problem, and the Slater condition is satisfied.}
+\item \textit{Use the KKT conditions, find the optimal solution $x^\star$ of $\left(P\right)$.}
+\item \textit{Establish the barrier approximation problem for $\left(P\right)$, find the optimal solution $x^\star \left(t\right)$ of that barrier approximation problem. Prove that $x^\star \left(t\right)\to x^\star$ as $t\to 0^+$.}
+\end{enumerate}
+\textsc{Solution.}
+\begin{enumerate}
+\item Set $f\left( {{x_1},{x_2}} \right) = {x_1} - {x_2},g\left( {{x_1},{x_2}} \right) = x_1^2 + x_2^2 - 1$ for all $\left(x_1,x_2\right)\in \mathbb{R}^2$, the gradients and the Hessian matrices of $f$ and $g$ are given by
+\begin{align}
+\nabla f\left( {{x_1},{x_2}} \right) &= \left[ {\begin{array}{*{20}{c}}
+1\\
+{ - 1}
+\end{array}} \right],\hspace{0.2cm} {\nabla ^2}f\left( {{x_1},{x_2}} \right) = \left[ {\begin{array}{*{20}{c}}
+0&0\\
+0&0
+\end{array}} \right],\\
+\nabla g\left( {{x_1},{x_2}} \right) &= \left[ {\begin{array}{*{20}{c}}
+{2{x_1}}\\
+{2{x_2}}
+\end{array}} \right],\hspace{0.2cm} {\nabla ^2}g\left( {{x_1},{x_2}} \right) = \left[ {\begin{array}{*{20}{c}}
+2&0\\
+0&2
+\end{array}} \right],
+\end{align}
+for all $\left(x_1,x_2\right)\in \mathbb{R}^2$, respectively. It is clear that ${\nabla ^2}f\left( {{x_1},{x_2}} \right)$ and ${\nabla ^2}g\left( {{x_1},{x_2}} \right)$ are semi-positive definite and positive definite matrices, respectively. Thus, $f$ is convex and $g$ is strictly convex. Consequently, $\left(P\right)$ is a convex problem.
+
+Since $g\left(0,0\right)=-1<0$, the Slater condition is satisfied.
+\item The feasible set of $\left(P\right)$ is given by
+\begin{align}
+C: = \left\{ {\left( {{x_1},{x_2}} \right) \in {\mathbb{R}^2};g\left( {{x_1},{x_2}} \right) = x_1^2 + x_2^2 - 1 \le 0} \right\}.
+\end{align}
+The constraint qualification hypothesis $T_C\left(x^\star\right)=L_C\left(x^\star\right)$ is guaranteed by the Slater constraint qualification (CQ2). Combining this with the convexity of $\left(P\right)$, applying Theorem 8.2.1, and Theorem 8.2.2, \cite{2}, yields that $x^\star$ is an optimal solution of $\left(P\right)$ if and only if the vectors $\left(x^\star,\lambda ^\star\right)$ satisfy the KKT conditions. The KKT conditions for $\left(P\right)$ are given by \eqref{1.62}, i.e.,
+\begin{align}
+2{\lambda ^\star}x_1^\star + 1 &= 0,\\
+2{\lambda ^\star}x_2^\star - 1 &= 0,\\
+{\lambda ^\star}\left( {{{\left( {x_1^\star} \right)}^2} + {{\left( {x_2^\star} \right)}^2} - 1} \right) &= 0,\\
+{\lambda ^\star} &\ge 0,\\
+{\left( {x_1^\star} \right)^2} + {\left( {x_2^\star} \right)^2} - 1 &\le 0.
+\end{align}
+The first equation guarantees that $\lambda ^\star \ne 0$. Solving the first two equations in this system yields $\left( {x_1^\star,x_2^\star} \right) = \left( { - \frac{1}{{2{\lambda ^\star}}},\frac{1}{{2{\lambda ^\star}}}} \right)$. Plugging these into the others gives us
+\begin{align}
+{\lambda ^\star}\left( {\frac{1}{{2{{\left( {{\lambda ^\star}} \right)}^2}}} - 1} \right) &= 0,\\
+{\lambda ^\star} &\ge 0,\\
+\frac{1}{{2{{\left( {{\lambda ^\star}} \right)}^2}}} &\le 1 ,
+\end{align}
+which has the unique root ${\lambda ^\star} = \frac{1}{{\sqrt 2 }}$. Then $\left( {x_1^\star,x_2^\star} \right) = \left( { - \frac{1}{{\sqrt 2 }},\frac{1}{{\sqrt 2 }}} \right)$ is the unique optimal solution of $\left(P\right)$.
+\item The logarithmic barrier function of $\left(P\right)$ is
+\begin{align}
+B\left( {{x_1},{x_2},t} \right): &= f\left( {{x_1},{x_2}} \right) - t\log \left( { - g\left( {{x_1},{x_2}} \right)} \right)\\
+ &= {x_1} - {x_2} - t\log \left( {1 - x_1^2 - x_2^2} \right),
+\end{align} 
+for all $\left(x_1,x_2\right)\in C_B$ and $t>0$, where $C_B$ is the feasible set of $B$ and is given by
+\begin{align}
+{C_B}: = \left\{ {\left( {{x_1},{x_2}} \right) \in {\mathbb{R}^2};g\left( {{x_1},{x_2}} \right) = x_1^2 + x_2^2 - 1 < 0} \right\}.
+\end{align}
+We now prove that $B$ is convex in $C_B$.
+
+$\star$ \textit{First proof of the convexity of $B$.} As in the proof of Problem 1.9, the convexity of $f$, $g$ and $-\log x$ yields the that of $B$. \hfill $\triangle$
+
+$\star$ \textit{Second proof of the convexity of $B$.} The spatial gradient and the spatial Hessian matrix of $B$ are given by
+\begin{align}
+\nabla _x B\left( {{x_1},{x_2},t} \right) &= \left[ {\begin{array}{*{20}{c}}
+{1 - \dfrac{{2t{x_1}}}{{x_1^2 + x_2^2 - 1}}}\\
+{ - 1 - \dfrac{{2t{x_2}}}{{x_1^2 + x_2^2 - 1}}}
+\end{array}} \right],
+\end{align}
+and
+\begin{align}
+{\nabla _x^2}B\left( {{x_1},{x_2},t} \right) &= \frac{{2t}}{{{{\left( {x_1^2 + x_2^2 - 1} \right)}^2}}}\left[ {\begin{array}{*{20}{c}}
+{x_1^2 - x_2^2 + 1}&{2{x_1}{x_2}}\\
+{2{x_1}{x_2}}&{x_2^2 - x_1^2 + 1}
+\end{array}} \right],
+\end{align}
+for all $\left(x_1,x_2\right)\in C_B$ and $t>0$. The eigenvalues of ${\nabla _x^2}B\left( {{x_1},{x_2},t} \right)$ are 
+\begin{align}
+{\lambda _1} &= \frac{{2t\left( {x_1^2 + x_2^2 + 1} \right)}}{{{{\left( {x_1^2 + x_2^2 - 1} \right)}^2}}},\\
+{\lambda _2} &=  - \frac{{2t}}{{x_1^2 + x_2^2 - 1}},
+\end{align}
+which are positive for all $\left(x_1,x_2\right)\in C_B$ and $t>0$. Hence, ${\nabla _x^2}B\left( {{x_1},{x_2},t} \right)$ is positive definite for all $\left(x_1,x_2\right)\in C_B$ and $t>0$, and thus $B$ is strictly convex for all $t>0$. \hfill $\triangle$
+
+Since $B$ is strictly convex, $x^\star$ is the unique minimizer of $B$ in $C_B$ if and only if $g\left(x^\star \right)<0$ and $\nabla _x B\left( {{x^\star},t} \right) = 0$. The roots of the equation $\nabla _x B\left( {x,t} \right) = 0$ are $\left( {\frac{{t - \sqrt {{t^2} + 2} }}{2}, - \frac{{t - \sqrt {{t^2} + 2} }}{2}} \right)$, $\left( {\frac{{t + \sqrt {{t^2} + 2} }}{2}, - \frac{{t + \sqrt {{t^2} + 2} }}{2}} \right)$. The former is taken and the later is omitted since
+\begin{align}
+g\left( {\frac{{t - \sqrt {{t^2} + 2} }}{2}, - \frac{{t - \sqrt {{t^2} + 2} }}{2}} \right) &= \frac{{2t\left( {t - \sqrt {{t^2} + 2} } \right)}}{2} < 0,\\
+g\left( {\frac{{t + \sqrt {{t^2} + 2} }}{2}, - \frac{{t + \sqrt {{t^2} + 2} }}{2}} \right) &= \frac{{2t\left( {t + \sqrt {{t^2} + 2} } \right)}}{2} > 0,
+\end{align} 
+for all $t>0$. Thus, ${x^\star}\left( t \right) = \left( {\frac{{t - \sqrt {{t^2} + 2} }}{2}, - \frac{{t - \sqrt {{t^2} + 2} }}{2}} \right)$ is the optimal solution of the barrier approximation problem for all $t>0$. It is evident that $x^\star \left(t\right)\to x^\star$ as $t\to 0^+$. \hfill $\square$
+\end{enumerate}
+\textbf{Problem 1.11.} \textit{Consider the following problem}
+\begin{align}
+\left( P \right) \mbox{ Min } x\mbox{ s.t. } 0 \le x \le 1.
+\end{align}
+\begin{enumerate}
+\item \textit{Prove that  $\left(P\right)$ is a convex problem and the Slater condition is satisfied.}
+\item \textit{Use the KKT conditions, find the optimal solution $x^\star$ of $\left(P\right)$.}
+\item \textit{Establish the barrier approximation problem for $\left(P\right)$, find the optimal solution $x^\star \left(t\right)$ of the barrier approximation problem. Prove that $x^\star\left(t\right) \to x^\star$ as $t\to 0^+$.}
+\end{enumerate}
+\textsc{Solution.}
+\begin{enumerate}
+\item Set $f\left( x \right) = x$, ${g_1}\left( x \right) =  - x$, and ${g_2}\left( x \right) = x - 1$ for all $\left(x_1,x_2\right)\in \mathbb{R}^2$, the first and second derivatives of $f$, $g_1$, and $g_2$ are given by $f'\left( x \right) = {g_2}'\left( x \right) = 1$, ${g_1}'\left( x \right) =  - 1$, $f''\left( x \right) = {g_1}''\left( x \right) = {g_2}''\left( x \right) = 0$. Hence, these functions are convex and thus $\left(P\right)$ is a convex problem.
+
+Since ${g_1}\left( {\frac{1}{2}} \right) = {g_2}\left( {\frac{1}{2}} \right) =  - \frac{1}{2} <0$, the Slater condition is satisfied.
+\item The feasible set of $\left(P\right)$ is given by
+\begin{align}
+C: = \left\{ {x \in \mathbb{R};{g_i}\left( x \right) \le 0,\hspace{0.1cm} i = 1,2} \right\} = \left[ {0,1} \right].
+\end{align}
+The constraint qualification hypothesis $T_C\left(x^\star\right)=L_C\left(x^\star\right)$ is guaranteed by (CQ1) or (CQ2) since $g_1$, $g_2$ are convex and affine. Combining this with the convexity of $\left(P\right)$, applying Theorem 8.2.1 and Theorem 8.2.2, \cite{2} yields that $x^\star$ is an optimal solution of $\left(P\right)$ if and only if the vector $\left(x^\star,\lambda^\star\right)$ satisfy the KKT conditions. The KKT conditions for $\left(P\right)$ are given by
+\begin{align}
+\label{1.103}
+\left( {KKT} \right)\left\{ {\begin{array}{*{20}{l}}
+{f'\left( {{x^\star}} \right) + \lambda _1^\star{g_1}'\left( {{x^\star}} \right) + \lambda _2^\star{g_2}'\left( {{x^\star}} \right) = 0,}\\
+{\lambda _1^\star{g_1}\left( {{x^\star}} \right) = \lambda _2^\star{g_2}\left( {{x^\star}} \right) = 0,}\\
+{\lambda _1^\star \ge 0, \hspace{0.1cm} \lambda _2^\star \ge 0,}\\
+{{g_1}\left( {{x^\star}} \right) \le 0, \hspace{0.1cm}  {g_2}\left( {{x^\star}} \right) \le 0,}
+\end{array}} \right.
+\end{align}
+which is equivalent to
+\begin{align}
+1 - \lambda _1^\star + \lambda _2^\star &= 0,\\
+\lambda _1^\star{x^\star} = \lambda _2^\star\left( {{x^\star} - 1} \right) &= 0,\\
+\lambda _1^\star \ge 0,\lambda _2^\star &\ge 0,\\
+0 \le {x^\star} &\le 1,
+\end{align}
+We have $\lambda_1=1+\lambda _2\ge 1>0$, thus the second equation gives us $x^\star =0$ and then $\lambda _2=0$, $\lambda _1=1$. Thus, $x^\star =0$ is the optimal solution of $\left(P\right)$.
+\item The logarithmic barrier function of $\left(P\right)$ is 
+\begin{align}
+B\left( {x,t} \right): &= f\left( x \right) - t\log \left( { - {g_1}\left( x \right)} \right) - t\log \left( { - {g_2}\left( x \right)} \right)\\
+& = x - t\log \left( {x\left( {1 - x} \right)} \right)
+\end{align}
+for all $x\in C_B$ and $t>0$, where $C_B$ is the feasible set of $B$ and is given by
+\begin{align}
+{C_B}: = \left\{ {x \in \mathbb{R};{g_i}\left( x \right) < 0,\hspace{0.1cm} i = 1,2} \right\} = \left( {0,1} \right).
+\end{align}
+We now prove that $B$ is convex in $C_B$.
+
+$\star$ \textit{First proof of the convexity of $B$.} As in the proof of Problem 1.9, the convexity of $f$, $g_1$, $g_2$ and $-\log x$ yields that of $B$. \hfill $\triangle$
+
+$\star$ \textit{Second proof of the convexity of $B$.} The first and second $x$-derivatives of $B$ are given by 
+\begin{align}
+\frac{{\partial B}}{{\partial x}}\left( {x,t} \right) = 1 + \frac{{t\left( {2x - 1} \right)}}{{x\left( {1 - x} \right)}},\hspace{0.1cm} \frac{{{\partial ^2}B}}{{\partial {x^2}}}\left( {x,t} \right) = t\left( {\frac{1}{{{x^2}}} + \frac{1}{{{{\left( {1 - x} \right)}^2}}}} \right),
+\end{align}
+for all $x\in \left(0,1\right)$ and $t>0$. Thus, $B$ is strictly convex for all $t>0$. \hfill $\triangle$
+
+Since $B$ is strictly convex, $x^\star$ is the unique minimizer of $B$ in $C_B$ if and only if $\frac{{\partial B}}{{\partial x}}\left( {{x^\star},t} \right) = 0$ and $x^\star \in \left(0,1\right)$. The roots of the equation $\frac{{\partial B}}{{\partial x}}\left( {x,t} \right) = 0$ are ${x_1} = \frac{1}{2}\left( {2t + 1 - \sqrt {4{t^2} + 1} } \right)$, ${x_2} = \frac{1}{2}\left( {2t + 1 + \sqrt {4{t^2} + 1} } \right)$. The former is taken and the later is omitted since $x_2>1$ and $x_1\in \left(0,1\right)$:
+\begin{align}
+\frac{{2t + 1 - \sqrt {4{t^2} + 4t + 1} }}{2} \le \frac{{2t + 1 - \sqrt {4{t^2} + 1} }}{2} \le \frac{{2t + 1 - 2t}}{2},
+\end{align}
+for all $t>0$. Thus $x^\star \left(t\right) =\frac{1}{2}\left( {2t + 1 - \sqrt {4{t^2} + 1} } \right)$ is the optimal solution of the barrier approximation problem for all $t>0$. It is evident that $x^\star \left(t\right)\to x^\star$ as $t\to 0^+$. \hfill $\square$
+\end{enumerate}
+\textbf{Problem 1.12.} \textit{Consider the following problem}
+\begin{align}
+\left( P \right) \mbox{ Min }{\left( {{x_1} + \frac{3}{2}} \right)^2} + {\left( {{x_2} - \frac{3}{2}} \right)^2} \mbox{ s.t. } {x_1} \ge  - 1 \mbox{ and } {x_2} \ge 1.
+\end{align}
+\begin{enumerate}
+\item \textit{Use the methods presented in \cite{2}, find the optimal solution $x^\star$ of $\left(P\right)$.}
+\item \textit{Establish the barrier approximation problem for $\left(P\right)$, find the optimal solution $x^\star \left(t\right)$ of that barrier approximation problem. Prove that $x^\star \left(t\right)\to x^\star$ as $t\to 0^+$.}
+\end{enumerate}
+\textsc{Solution.} 
+\begin{enumerate}
+\item Set $f\left( {{x_1},{x_2}} \right) = {\left( {{x_1} + \frac{3}{2}} \right)^2} + {\left( {{x_2} - \frac{3}{2}} \right)^2}$, ${g_1}\left( {{x_1},{x_2}} \right) = -1 - {x_1}$, and ${g_2}\left( {{x_1},{x_2}} \right) = 1 - {x_2}$ for all $\left(x_1,x_2\right)\in \mathbb{R}^2$, the gradients the Hessian matrices of $f$, $g_1$, and $g_2$ are given by
+\begin{align}
+\nabla f\left( {{x_1},{x_2}} \right) &= \left[ {\begin{array}{*{20}{c}}
+{2{x_1} + 3}\\
+{2{x_2} - 3}
+\end{array}} \right],\hspace{0.1cm} {\nabla ^2}f\left( {{x_1},{x_2}} \right) = \left[ {\begin{array}{*{20}{c}}
+2&0\\
+0&2
+\end{array}} \right],
+\end{align}
+and 
+\begin{align}
+\nabla {g_1}\left( {{x_1},{x_2}} \right)& = \left[ {\begin{array}{*{20}{c}}
+-1\\
+0
+\end{array}} \right],\hspace{0.1cm} {\nabla ^2}{g_1}\left( {{x_1},{x_2}} \right) = \left[ {\begin{array}{*{20}{c}}
+0&0\\
+0&0
+\end{array}} \right],\\
+\nabla {g_2}\left( {{x_1},{x_2}} \right) &= \left[ {\begin{array}{*{20}{c}}
+0\\
+{ - 1}
+\end{array}} \right],\hspace{0.1cm} {\nabla ^2}{g_1}\left( {{x_1},{x_2}} \right) = \left[ {\begin{array}{*{20}{c}}
+0&0\\
+0&0
+\end{array}} \right],
+\end{align}
+for all $\left(x_1,x_2\right)\in \mathbb{R}^2$, respectively. It is clear that ${\nabla ^2}f\left( {{x_1},{x_2}} \right)$ is positive definite and ${\nabla ^2}{g_i}\left( {{x_1},{x_2}} \right)$, for $i=1,2$, are semi-positive definite. Thus, $f$ is strictly convex, and $g_i$, $i=1,2$, are convex. Consequently, $\left(P\right)$ is a convex problem.
+
+Since ${g_1}\left( {0,2} \right) = {g_2}\left( {0,2} \right) =  - 1$, the Slater condition is satisfied.
+
+The feasible set of $\left(P\right)$ is given by
+\begin{align}
+C: = \left\{ {\left( {{x_1},{x_2}} \right) \in {\mathbb{R}^2};{g_i}\left( {{x_1},{x_2}} \right) \le 0, \hspace{0.1cm} i = 1,2} \right\} = \left[ { - 1, + \infty } \right) \times \left[ {1, + \infty } \right).
+\end{align}
+The constraint qualification hypothesis $T_C\left(x^\star\right) =L_C\left(x^\star\right)$ is guaranteed by (CQ1) or (CQ2) since $g_1$, $g_2$ are convex and affine. Combining this with the convexity of $\left(P\right)$, applying Theorem 8.2.1 and Theorem 8.2.2, \cite{2} yields that $x^\star$ is an optimal solution of $\left(P\right)$ if and only if the vectors $\left(x^\star,\lambda ^\star\right)$ satisfy the KKT conditions. The KKT conditions for $\left(P\right)$ are given by 
+\begin{align}
+\label{1.118}
+\left( {KKT} \right)\left\{ {\begin{array}{*{20}{l}}
+{\nabla f\left( {{x^\star}} \right) + \lambda _1^\star\nabla {g_1}\left( {{x^\star}} \right) + \lambda _2^\star\nabla {g_2}\left( {{x^\star}} \right) = 0,}\\
+{\lambda _1^\star{g_1}\left( {{x^\star}} \right) = \lambda _2^\star{g_2}\left( {{x^\star}} \right) = 0,}\\
+{\lambda _1^\star \ge 0,\lambda _2^\star \ge 0,}\\
+{{g_1}\left( {{x^\star}} \right) \le 0,{g_2}\left( {{x^\star}} \right) \le 0,}
+\end{array}} \right.
+\end{align}
+which is equivalent to
+\begin{align}
+2x_1^\star + 3 - \lambda _1^\star &= 0,\\
+2x_2^\star - 3 - \lambda _2^\star &= 0,\\
+\lambda _1^\star\left( {1 + x_1^\star} \right) &= 0,\\
+\lambda _2^\star\left( {1 - x_2^\star} \right) &= 0,\\
+\lambda _1^\star \ge 0, \hspace{0.1cm}  \lambda _2^\star &\ge 0,\\
+x_1^\star \ge  - 1, \hspace{0.1cm} x_2^\star &\ge 1.
+\end{align}
+Solving the first two equations gives us $x_1^\star = \frac{{\lambda _1^\star - 3}}{2}$, $x_2^\star = \frac{{\lambda _2^\star + 3}}{2}$. Substituting these into the others yields
+\begin{align}
+\lambda _1^\star\left( {\lambda _1^\star - 1} \right) &= 0,\\
+\lambda _2^\star\left( {\lambda _2^\star + 1} \right) &= 0,\\
+\lambda _1^\star \ge 0,\lambda _2^\star &\ge 0,\\
+\lambda _1^\star \ge 1,\lambda _2^\star &\ge  - 1.
+\end{align}
+which implies $\lambda _1^\star = 1$, $\lambda _2^\star = 0$. Thus $x^\star =\left(x_1^\star,x_2^\star\right)=\left(-1,\frac{3}{2}\right)$ is the unique optimal solution of $\left(P\right)$.
+\item The logarithmic barrier function of $\left(P\right)$ is 
+\begin{align}
+B\left( {{x_1},{x_2},t} \right): &= f\left( {{x_1},{x_2}} \right) - t\log \left( {{g_1}\left( {{x_1},{x_2}} \right){g_2}\left( {{x_1},{x_2}} \right)} \right)\\
+& = {\left( {{x_1} + \frac{3}{2}} \right)^2} + {\left( {{x_2} - \frac{3}{2}} \right)^2} - t\log \left( {\left( {1 + {x_1}} \right)\left( {{x_2} - 1} \right)} \right),
+\end{align}
+for all $\left(x_1,x_2\right) \in C_B$ and $t>0$, where $C_B$ is the feasible set of $B$ and is given by
+\begin{align}
+{C_B}: = \left\{ {\left( {{x_1},{x_2}} \right) \in {\mathbb{R}^2};{g_i}\left( {{x_1},{x_2}} \right) < 0,\hspace{0.1cm} i = 1,2} \right\} = \left( { - 1, + \infty } \right) \times \left( {1, + \infty } \right).
+\end{align}
+We now prove that $B$ is convex in $C_B$.
+
+$\star$ \textit{First proof of the convexity of $B$.} As in the proof of Problem 1.9, the convexity of $f$, $g_1$, $g_2$ and $-\log x$ yields that of $B$. \hfill $\triangle$
+
+$\star$ \textit{Second proof of the convexity of $B$.} The spatial gradient and the spatial Hessian matrix of $B$ are given by
+\begin{align}
+\nabla _x B\left( {{x_1},{x_2},t} \right) &= \left[ {\begin{array}{*{20}{c}}
+{2{x_1} + 3 - \frac{t}{{{x_1} + 1}}}\\
+{2{x_2} - 3 - \frac{t}{{{x_2} - 1}}}
+\end{array}} \right],\\
+{\nabla _x^2}B\left( {{x_1},{x_2},t} \right)& = \left[ {\begin{array}{*{20}{c}}
+{2 + \frac{t}{{{{\left( {{x_1} + 1} \right)}^2}}}}&0\\
+0&{2 + \frac{t}{{{{\left( {{x_2} - 1} \right)}^2}}}}
+\end{array}} \right],
+\end{align}
+for all $\left(x_1,x_2\right)\in C_B$ and $t>0$. It is evident that ${\nabla _x^2}B\left( {{x_1},{x_2},t} \right)$ is positive definite and thus $B$ is strictly convex for all $t>0$. \hfill $\triangle$
+
+Since $B$ is strictly convex, $x^\star$ is the unique minimizer of $B$ in $C_B$ if and only if $\nabla _x B\left( {{x^\star},t} \right) = 0$ and $x^\star \in C_B$. The four roots of the equation $\nabla _x B\left( {x,t} \right) = 0$ are 
+\begin{align}
+\left( {{x_1},{x_2}} \right) = \left\{ {\left( {\frac{{ - 5 \pm \sqrt {8t + 1} }}{4},\frac{{5 \pm \sqrt {8t + 1} }}{4}} \right)} \right\} .
+\end{align}
+The only solution belonging to $C_B$ is $\left( {\frac{{ - 5 + \sqrt {8t + 1} }}{4},\frac{{5 + \sqrt {8t + 1} }}{4}} \right)$. Thus $x^\star \left(t\right) = \left( {\frac{{ - 5 + \sqrt {8t + 1} }}{4},\frac{{5 + \sqrt {8t + 1} }}{4}} \right)$ is the optimal solution of the barrier approximation problem for all $t>0$. It is evident that $x^\star \left(t\right)\to x^\star$ as $t\to 0^+$. \hfill $\square$
+\end{enumerate} 
+\textbf{Problem 1.13.} \textit{Consider the following problem}
+\begin{align}
+\left( P \right) \mbox{ Min } {x_1} + {x_2} \mbox{ s.t. }- x_1^2 + {x_2} \ge 0 \mbox{ and } {x_1} \ge 0.
+\end{align}
+\begin{enumerate}
+\item \textit{Use the methods presented in \cite{2}, find the optimal solution $x^\star$ of $\left(P\right)$.}
+\item \textit{Establish the barrier approximation problem for $\left(P\right)$, find the optimal solution $x^\star \left(t\right)$ of that barrier approximation problem. Prove that $x^\star \left(t\right)\to x^\star$ as $t\to 0^+$.}
+\end{enumerate}
+\textsc{Solution.}
+\begin{enumerate}
+\item Set $f\left( {{x_1},{x_2}} \right) = {x_1} + {x_2}$, ${g_1}\left( {{x_1},{x_2}} \right) = x_1^2 - {x_2}$, and ${g_2}\left( {{x_1},{x_2}} \right) =  - {x_1}$ for all $\left(x_1,x_2\right)\in \mathbb{R}^2$, the gradients and the Hessian matrices of $f$, $g_1$, and $g_2$ are given by
+\begin{align}
+\nabla f\left( {{x_1},{x_2}} \right) = \left[ {\begin{array}{*{20}{c}}
+1\\
+1
+\end{array}} \right],\hspace{0.2cm} {\nabla ^2}f\left( {{x_1},{x_2}} \right) = \left[ {\begin{array}{*{20}{c}}
+0&0\\
+0&0
+\end{array}} \right],
+\end{align}
+and
+\begin{align}
+\nabla {g_1}\left( {{x_1},{x_2}} \right) = \left[ {\begin{array}{*{20}{c}}
+{2{x_1}}\\
+{ - 1}
+\end{array}} \right],\hspace{0.2cm} {\nabla ^2}{g_1}\left( {{x_1},{x_2}} \right) = \left[ {\begin{array}{*{20}{c}}
+2&0\\
+0&0
+\end{array}} \right],\\
+\nabla {g_2}\left( {{x_1},{x_2}} \right) = \left[ {\begin{array}{*{20}{c}}
+{ - 1}\\
+0
+\end{array}} \right],\hspace{0.2cm} {\nabla ^2}{g_2}\left( {{x_1},{x_2}} \right) = \left[ {\begin{array}{*{20}{c}}
+0&0\\
+0&0
+\end{array}} \right],
+\end{align}
+for all $\left(x_1,x_2\right)\in \mathbb{R}^2$, respectively. It is clear that these three Hessian matrices are semi-positive definite. Thus, $f$, $g_1$, and $g_2$ are convex. Consequently, $\left(P\right)$ is a convex problem.
+
+Since ${g_1}\left( {1,2} \right) = {g_2}\left( {1,2} \right) =  - 1<0$, the Slater condition is satisfied.
+
+The feasible set of $\left(P\right)$ is given by
+\begin{align}
+C: = \left\{ {\left( {{x_1},{x_2}} \right) \in {\mathbb{R}^2};{g_i}\left( {{x_1},{x_2}} \right) \le 0,\hspace{0.1cm} i = 1,2} \right\}.
+\end{align}
+The constraint qualification hypothesis $T_C\left(x^\star\right)=L_C\left(x^\star\right)$ is  guaranteed by the Slater constraint qualification (CQ2). Combining this with the convexity of $\left(P\right)$, applying Theorem 8.2.1 and Theorem 8.2.2, \cite{2} yields that $x^\star$ is an optimal solution of $\left(P\right)$ if and only if the vectors $\left(x^\star, \lambda ^\star\right)$ satisfy the KKT conditions. The KKT conditions for $\left(P\right)$ are given by \eqref{1.118}, i.e.,
+\begin{align}
+1 + 2\lambda _1^\star x_1^\star - \lambda _2^\star &= 0,\\
+1 - \lambda _1^\star &= 0,\\
+\lambda _1^\star \left( {{{\left( {x_1^\star } \right)}^2} - x_2^\star } \right) &= 0,\\
+\lambda _2^\star x_1^\star &= 0,\\
+\lambda _1^\star \ge 0,\hspace{0.1cm} \lambda _2^\star &\ge 0,\\
+{\left( {x_1^\star } \right)^2} &\le x_2^\star ,\\
+x_1^\star &\ge 0.
+\end{align}
+The second equation gives us $\lambda _1^\star =1$, then the third one implies that ${{{\left( {x_1^\star } \right)}^2} = x_2^\star }$. Hence, we obtain
+\begin{align}
+\label{1.147}
+1 + 2x_1^\star  - \lambda _2^\star  &= 0,\\
+{\left( {x_1^\star } \right)^2} &= x_2^\star \\
+\lambda _2^\star x_1^\star  &= 0,\\
+\lambda _2^\star  &\ge 0,\\
+x_1^\star  &\ge 0.
+\end{align}
+The first equation and the last one implies that $\lambda _2^\star =1+2x_1^\star \ge 1$. Combining this with the third equation yields that $x_1^\star =0$, then $x_2^\star=0$ and $\lambda _2^\star =1$. Thus $x^\star =\left(x_1^\star,x_2^\star \right)=\left(0,0\right)$ is the unique optimal solution of $\left(P\right)$. 
+\item The logarithmic barrier function of $\left(P\right)$ is 
+\begin{align}
+B\left( {{x_1},{x_2},t} \right): &= f\left( {{x_1},{x_2}} \right) - t\log \left( {{g_1}\left( {{x_1},{x_2}} \right){g_2}\left( {{x_1},{x_2}} \right)} \right)\\
+& = {x_1} + {x_2} - t\log \left( {{x_1}\left( {{x_2} - x_1^2} \right)} \right) ,
+\end{align}
+for all $\left(x_1,x_2\right)\in C_B$ and $t>0$, where $C_B$ is the feasible set of $B$ and is given by
+\begin{align}
+{C_B}: = \left\{ {\left( {{x_1},{x_2}} \right) \in {\mathbb{R}^2};{g_i}\left( {{x_1},{x_2}} \right) < 0,\hspace{0.1cm} i = 1,2} \right\}.
+\end{align}
+We now prove that $B$ is convex in $C_B$.
+
+$\star$ \textit{First proof of the convexity of $B$.} As in the proof of Problem 1.9, the convexity of $f$, $g_1$, $g_2$ and $-\log x$ yields that of $B$. \hfill $\triangle$
+
+$\star$ \textit{Second proof the convexity of $B$.} The spatial gradient and the spatial Hessian matrix of $B$ are given by
+\begin{align}
+\nabla _x B\left( {{x_1},{x_2},t} \right) &= \left[ {\begin{array}{*{20}{c}}
+{1 - \frac{{t\left( {{x_2} - 3x_1^2} \right)}}{{{x_1}\left( {{x_2} - x_1^2} \right)}}}\\
+{1 - \frac{t}{{{x_2} - x_1^2}}}
+\end{array}} \right],\\
+{\nabla _x^2}B\left( {{x_1},{x_2},t} \right) &= \frac{1}{{{{\left( {{x_2} - x_1^2} \right)}^2}}}\left[ {\begin{array}{*{20}{c}}
+{\frac{{t\left( {3x_1^4 + x_2^2} \right)}}{{x_1^2}}}&{ - 2t{x_1}}\\
+{ - 2t{x_1}}&t
+\end{array}} \right],
+\end{align}
+for all $\left(x_1,x_2\right)\in C_B$ and $t>0$. The eigenvalues of ${\nabla _x^2}B\left( {{x_1},{x_2},t} \right)$, denoted by $\lambda _1$ and $\lambda _2$ satisfy
+\begin{align}
+{\lambda _1} + {\lambda _2} &= \mbox{trace}\left( {{\nabla _x^2}B\left( {{x_1},{x_2},t} \right)} \right) = \frac{{t\left( {3x_1^4 + x_1^2 + x_2^2} \right)}}{{x_1^2{{\left( {{x_2} - x_1^2} \right)}^2}}} > 0,\\
+{\lambda _1}{\lambda _2} &= \det \left( {{\nabla _x^2}B\left( {{x_1},{x_2},t} \right)} \right) = \frac{{{t^2}\left( {x_1^2 + {x_2}} \right)}}{{x_1^2{{\left( {{x_2} - x_1^2} \right)}^3}}} > 0.
+\end{align}
+This implies that $\lambda _1$ and $\lambda _2$ are positive, and thus ${\nabla _x^2}B\left( {{x_1},{x_2},t} \right)$ is positive definite for all $\left(x_1,x_2\right)\in C_B$ and $t>0$. Consequently, $B$ is strictly convex in $C_B$ for all $t>0$. \hfill $\triangle$
+
+Since $B$ is strictly convex, $x^\star$ is the unique minimizer of $B$ in $C_B$ if and only if $\nabla _x B\left( {{x^\star},t} \right) = 0$ and $x^\star \in C_B$. The roots of the equation $\nabla _x B\left( {x,t} \right) = 0$ are $\left( {\frac{{ - 1 - \sqrt {8t + 1} }}{4},\frac{{12t + 1 + \sqrt {8t + 1} }}{8}} \right)$, $\left( {\frac{{ - 1 + \sqrt {8t + 1} }}{4},\frac{{12t + 1 - \sqrt {8t + 1} }}{8}} \right)$. The former is omitted and the later is taken since ${\frac{{ - 1 - \sqrt {8t + 1} }}{4}} <0$ and ${\frac{{ - 1 + \sqrt {8t + 1} }}{4}} >0$ for all $t>0$. Thus $x^\star \left(t\right) = \left( {\frac{{ - 1 + \sqrt {8t + 1} }}{4},\frac{{12t + 1 - \sqrt {8t + 1} }}{8}} \right)$ is the optimal solution of the barrier approximation problem for all $t>0$. It is evident that $x^\star \left(t\right) \to x^\star$ as $t\to 0^+$. \hfill $\square$
+\end{enumerate}
+\textbf{Problem 1.14.} \textit{Consider the following problem}
+\begin{align}
+\left( P \right) \mbox{ Min } {x^2} + xy + \frac{1}{2}{y^2} \mbox{ s.t. } 1 - {x^2} - xy = 0.
+\end{align}
+\begin{enumerate}
+\item \textit{Prove that the Mangasarian-Fromovitz constraint qualification is satisfied.}
+\item \textit{Solve the KKT system, find candidate solutions.}
+\item \textit{Find the optimal solution of $\left(P\right)$.}
+\end{enumerate}
+\textsc{Solution.}
+\begin{enumerate}
+\item Set $f\left( {x,y} \right) = {x^2} + xy + \frac{1}{2}{y^2}$, $h\left( {x,y} \right) = 1 - {x^2} - xy$ for all $\left(x,y\right)\in \mathbb{R}^2$, the gradients and the Hessian matrices of $f$ and $h$ are given by
+\begin{align}
+\nabla f\left( {x,y} \right) &= \left[ {\begin{array}{*{20}{c}}
+{2x + y}\\
+{x + y}
+\end{array}} \right],\hspace{0.2cm} {\nabla ^2}f\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+2&1\\
+1&1
+\end{array}} \right],\\
+\nabla h\left( {x,y} \right) &= \left[ {\begin{array}{*{20}{c}}
+{ - 2x - y}\\
+{ - x}
+\end{array}} \right],\hspace{0.2cm} {\nabla ^2}h\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+{ - 2}&{ - 1}\\
+{ - 1}&0
+\end{array}} \right],
+\end{align}
+for all $\left(x,y\right)\in \mathbb{R}^2$. The feasible set of $\left(P\right)$ is given by
+\begin{align}
+C: = \left\{ {\left( {x,y} \right) \in {\mathbb{R}^2};h\left( {x,y} \right) = 1 - {x^2} - xy = 0} \right\}.
+\end{align}
+We check the validity of the Mangasarian-Fromovitz constraint qualification for $\left(P\right)$. Suppose that $a\nabla h\left( {x,y} \right) = 0$. Since $\left(x,y\right)\in C$, we have $x\ne 0$ (otherwise, $h\left(0,y\right)=1$). Thus $\nabla h\left( {x,y} \right) \ne \left(0,0\right)$, and the given linear equation implies that $a=0$, i.e., $\left\{ {\nabla h\left( {x,y} \right)} \right\}$ is linearly independent for all $\left(x,y\right)\in C$. Moreover, $\nabla h{\left( {x,y} \right)^T}\left( {0,0} \right) = 0$ for all $\left(x,y\right)\in C$. In particular, $\left\{ {\nabla h\left( {x^\star,y^\star} \right)} \right\}$ is linearly independent and $\nabla h{\left( {x^\star,y^\star} \right)^T}\left( {0,0} \right) = 0$ for any local minimizer of $\left(P\right)$, i.e., the Mangasarian-Fromovitz constraint qualification is satisfied.
+\item Consider the KKT conditions
+\begin{align}
+\left( {KKT} \right)\left\{ \begin{array}{l}
+\nabla f\left( {{x^\star },{y^\star }} \right) + {\mu ^\star }\nabla h\left( {{x^\star },{y^\star }} \right) = 0,\\
+h\left( {{x^\star },{y^\star }} \right) = 0,
+\end{array} \right. 
+\end{align}
+i.e., 
+\begin{align}
+\left( {1 - {\mu ^\star }} \right)\left( {2{x^\star } + {y^\star }} \right) &= 0,\\
+\left( {1 - {\mu ^\star }} \right){x^\star } + {y^\star } &= 0,\\
+{\left( {{x^\star }} \right)^2} + {x^\star }{y^\star } &= 1,
+\end{align}
+If $\mu ^\star =1$, the second equation gives us $y^\star =0$ and then the third one implies that $x^\star =\pm 1$. If $\mu ^\star =-1$, the first two equations gives $2x^\star +y^\star =0$. Plugging $y^\star =-2x^\star$ into the third ones yields ${\left( {{x^\star}} \right)^2} =  - 1$, which is absurd for $x^\star \in \mathbb{R}$. If $\mu \ne \pm 1$, solving the first two equations yields that $\left(x^\star,y^\star\right)=\left(0,0\right)$, but this contradicts the third one. 
+
+Thus, we have two candidate solutions $x_1^\star = \left(1,0\right)$, $x_2^\star =\left(-1,0\right)$.
+\item Consider the Lagrangian function 
+\begin{align}
+L\left( {x,y,\mu } \right): &= f\left( {x,y} \right) + \mu h\left( {x,y} \right)\\
+& = {x^2} + xy + \frac{1}{2}{y^2} + \mu \left( {1 - {x^2} - xy} \right),
+\end{align}
+for all $\left(x,y\right)\in C$ and $\mu \in \mathbb{R}$. Thanks to the gradients and the Hessian matrices of $f$ and $h$ computed above, (spatial) those of $L$ are given by
+\begin{align}
+{\nabla _\mathbf{x}}L\left( {x,y,\mu } \right) &= \left[ {\begin{array}{*{20}{c}}
+{\left( {1 - \mu } \right)\left( {2x + y} \right)}\\
+{\left( {1 - \mu } \right)x + y}
+\end{array}} \right],\\
+\nabla _\mathbf{x}^2L\left( {x,y,\mu } \right) &= \left[ {\begin{array}{*{20}{c}}
+{2\left( {1 - \mu } \right)}&{1 - \mu }\\
+{1 - \mu }&1
+\end{array}} \right],
+\end{align}
+for all $\left(x,y\right)\in C$ and $\mu \in \mathbb{R}$. We have that $x_1^\star$ and $x_2^\star$ are feasible (belong to $C$), and ${\nabla _\mathbf{x}}L\left( {x_1^\star ,1} \right) = {\nabla _\mathbf{x}}L\left( {x_2^\star ,1} \right) = 0$. We have 
+\begin{align}
+\nabla _\mathbf{x}^2L\left( {x,y,1} \right) = \left[ {\begin{array}{*{20}{c}}
+0&0\\
+0&1
+\end{array}} \right],
+\end{align}
+for all $\left(x,y\right)\in \mathbb{R}^2$ and
+\begin{align}
+T\left( {x_1^\star } \right): &= \left\{ {d \in {\mathbb{R}^2};\nabla h{{\left( {x_1^\star } \right)}^T}d = 0} \right\}\\
+ &= \left\{ {\left( {{d_1},{d_2}} \right) \in {\mathbb{R}^2}; - 2{d_1} - {d_2} = 0} \right\}\\
+ &= \left\{ {\left( {d, - 2d} \right);d \in \mathbb{R}} \right\},\\
+T\left( {x_2^\star } \right): &= \left\{ {d \in {\mathbb{R}^2};\nabla h{{\left( {x_2^\star } \right)}^T}d = 0} \right\}\\
+& = \left\{ {\left( {{d_1},{d_2}} \right) \in {\mathbb{R}^2};2{d_1} + {d_2} = 0} \right\}\\
+& = \left\{ {\left( {d, - 2d} \right);d \in \mathbb{R}} \right\},
+\end{align}
+Thus, 
+\begin{align}
+{\left( {d, - 2d} \right)^T}\nabla _\mathbf{x}^2L\left( {x_1^\star } \right)\left( {d, - 2d} \right) &= {\left( {d, - 2d} \right)^T}\nabla _\mathbf{x}^2L\left( {x_2^\star } \right)\left( {d, - 2d} \right)\\
+& = 4{d^2} > 0 \mbox{ for all } d\in \mathbb{R}, d \ne 0 ,
+\end{align}
+and then we can apply Theorem 8.2.3 (second-order sufficient optimality conditions), \cite{2}, p. 92, to deduce that two points $\left(\pm 1,0\right)$ are local minimizers for $\left(P\right)$. Since $f\left(-1,0\right)=f\left(1,0\right)=1$, both $\left(\pm 1,0\right)$ are the optimal solutions of $\left(P\right)$. \hfill $\square$
+\end{enumerate}
+\textbf{Problem 1.15.} \textit{Consider the following problem}
+\begin{align}
+\left( P \right)\mbox{ Min } xy \mbox{ s.t. }{x^2} + {y^2} \le 2\mbox{ and } x + y \ge 0.
+\end{align}
+\begin{enumerate}
+\item \textit{Solve the systems of KKT conditions, find candidate solutions for $\left(P\right)$.}
+\item \textit{Find the optimal solution of $\left(P\right)$.}
+\end{enumerate}
+\textsc{Solution.}
+\begin{enumerate}
+\item Set $f\left( {x,y} \right) = xy$, ${g_1}\left( {x,y} \right) = {x^2} + {y^2} - 2$, and ${g_2}\left( {x,y} \right) =  - x - y$ for all $\left(x,y\right)\in \mathbb{R}^2$, the gradients and the Hessian matrices of $f$, $g_1$, and $g_2$ are given by
+\begin{align}
+\nabla f\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+y\\
+x
+\end{array}} \right],\hspace{0.2cm} {\nabla ^2}f\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+0&1\\
+1&0
+\end{array}} \right],
+\end{align}
+and
+\begin{align}
+\nabla {g_1}\left( {x,y} \right) &= \left[ {\begin{array}{*{20}{c}}
+{2x}\\
+{2y}
+\end{array}} \right],\hspace{0.2cm} {\nabla ^2}{g_1}\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+2&0\\
+0&2
+\end{array}} \right],\\
+\nabla {g_2}\left( {x,y} \right) &= \left[ {\begin{array}{*{20}{c}}
+{ - 1}\\
+{ - 1}
+\end{array}} \right],\hspace{0.2cm} {\nabla ^2}{g_2}\left( {x,y} \right) = \left[ {\begin{array}{*{20}{c}}
+0&0\\
+0&0
+\end{array}} \right],
+\end{align}
+for all $\left(x,y\right)\in \mathbb{R}^2$. The feasible set of $\left(P\right)$ is given by
+\begin{align}
+C: = \left\{ {\left( {x,y} \right) \in {\mathbb{R}^2};{g_i}\left( {x,y} \right) \le 0, \hspace{0.1cm} i = 1,2} \right\}.
+\end{align}
+We consider the KKT conditions
+\begin{align}
+\left( {KKT} \right)\left\{ {\begin{array}{*{20}{l}}
+{\nabla f\left( {{x^\star },{y^\star }} \right) + \lambda _1^\star \nabla {g_1}\left( {{x^\star },{y^\star }} \right) + \lambda _2^\star \nabla {g_2}\left( {{x^\star },{y^\star }} \right) = 0,}\\
+{\lambda _1^\star {g_1}\left( {{x^\star },{y^\star }} \right) = \lambda _2^\star {g_2}\left( {{x^\star },{y^\star }} \right) = 0}\\
+{\lambda _1^\star  \ge 0,\hspace{0.1cm} \lambda _2^\star  \ge 0,}\\
+{{g_1}\left( {{x^\star },{y^\star }} \right) \le 0,\hspace{0.1cm} {g_2}\left( {{x^\star },{y^\star }} \right) \le 0,}
+\end{array}} \right.
+\end{align}
+i.e.,
+\begin{align}
+{y^\star } + 2\lambda _1^\star {x^\star } - \lambda _2^\star  &= 0,\\
+{x^\star } + 2\lambda _1^\star {y^\star } - \lambda _2^\star  &= 0,\\
+\lambda _1^\star \left( {{{\left( {{x^\star }} \right)}^2} + {{\left( {{y^\star }} \right)}^2} - 2} \right) &= 0,\\
+\lambda _2^\star \left( {{x^\star } + {y^\star }} \right) &= 0,\\
+\lambda _1^\star  \ge 0,\hspace{0.1cm} \lambda _2^\star  &\ge 0,\\
+{\left( {{x^\star }} \right)^2} + {\left( {{y^\star }} \right)^2} &\le 2,\\
+{x^\star } + {y^\star } &\ge 0.
+\end{align}
+The fourth equation implies that $\lambda _2^\star =0$ or $x^\star =-y^\star$. We consider the following cases depending on the values of $\lambda _2^\star$.
+\begin{itemize}
+\item \textit{Case $\lambda _2^\star=0$.} The above system becomes
+\begin{align}
+{y^\star } + 2\lambda _1^\star {x^\star } &= 0,\\
+{x^\star } + 2\lambda _1^\star {y^\star } &= 0,\\
+\lambda _1^\star \left( {{{\left( {{x^\star }} \right)}^2} + {{\left( {{y^\star }} \right)}^2} - 2} \right) &= 0,\\
+\lambda _1^\star  &\ge 0,\\
+{\left( {{x^\star }} \right)^2} + {\left( {{y^\star }} \right)^2} &\le 2.
+\end{align}
+If $\lambda _1^\star =\frac{1}{2}$, solving the first three equations gives us $\left(x^\star,y^\star \right)=\left(-1,1\right)$ or $\left(x^\star,y^\star\right)=\left(1,-1\right)$. These solutions also satisfies the others. Hence, we obtain two (in their ``full forms'') candidates $\left( {{x^\star },{y^\star },\lambda _1^\star ,\lambda _2^\star } \right) = \left( { - 1,1,\frac{1}{2},0} \right)$, $\left( {{x^\star },{y^\star },\lambda _1^\star ,\lambda _2^\star } \right) = \left( {1, - 1,\frac{1}{2},0} \right)$.
+
+If $\lambda _1^\star \ne \frac{1}{2}$ and $\lambda _1^\star \ge 0$, solving the first two equations yields $x^\star =y^\star =0$. This solution also satisfies the others. Hence, we obtain candidates $\left( {{x^\star },{y^\star },\lambda _1^\star ,\lambda _2^\star } \right) = \left( {0,0,a,0} \right)$ for arbitrary $a\ge 0$ and $a\ne \frac{1}{2}$. 
+\item \textit{Case $\lambda _2^\star > 0$.} The fourth equation in the (KKT) system gives us $x^\star =-y^\star$. But, adding the first two equations in the (KKT) system yields that $2\lambda _2^\star  = \left( {2\lambda _1^\star  + 1} \right)\left( {{x^\star } + {y^\star }} \right) = 0$, which is absurd. 
+\end{itemize}
+Hence, we have three candidate solutions: $\left(-1,1\right)$, $\left(1,-1\right)$ (with $\lambda _1^\star =\frac{1}{2}$ and $\lambda _2^\star =0$), and $\left(0,0\right)$ (with $\lambda _1^\star =a$, $\lambda _2^\star =0$, where $a\ge 0$, $a\ne \frac{1}{2}$).
+\item The eigenvalues of ${\nabla ^2}f\left( {x,y} \right)$ are $\lambda _1=-1$, $\lambda _2=1$, i.e., $f$, which is a quadratic function, is nonconvex. Thus, we can not apply Theorem 8.2.2, \cite{1} to our problem. Moreover, we have ${g_2}\left( { - 1,1} \right) = {g_2}\left( {1, - 1} \right) = {g_2}\left( {0,0} \right) = 0$ but $\lambda _2^\star =0$, i.e., the strict complementarity condition in Theorem 8.2.3, \cite{1} fails for these candidate solutions. Thus, we also can not apply Theorem 8.2.3, \cite{1} to our problem. 
+
+Here is an elementary solution for finding the optimal solution of $\left(P\right)$.
+
+$\star$ \textit{Elementary solution.} By Cauchy inequality, we have $\left| {xy} \right| \le \frac{{{x^2} + {y^2}}}{2} \le 1$. Thus, $- 1 \le f\left(x,y\right)= xy \le 1$. The equality $f\left(x,y\right)=-1$ holds if and only if $\left(x,y\right)=\left(-1,1\right)$ or $\left(x,y\right)=\left(1,-1\right)$. These points also satisfy the constraint $x+y\ge 0$. Therefore, $\left(-1,1\right)$  and $\left(1,-1\right)$ are the only global minimizers of $\left(P\right)$. \hfill $\square$
+\end{enumerate}
+\vspace{1cm}
+\begin{center}
+\textsc{The End}
+\end{center}
+\newpage
+\begin{thebibliography}{999}
+\bibitem {1} O. G\"{u}ler. \textit{Foundations of Optimization}. Graduate Texts in Mathematics 258, Springer.
+\bibitem {2} Strodiot, J-J. \textit{Numerical Methods in Optimization}. Natural Sciences University, Ho Chi Minh City, Viet Nam, April 2007.
+\end{thebibliography}
+\end{document}

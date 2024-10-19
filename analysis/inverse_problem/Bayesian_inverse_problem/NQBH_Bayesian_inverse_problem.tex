@@ -1,0 +1,2593 @@
+\documentclass[oneside,11pt]{book}
+\usepackage[backend=biber,natbib=true,style=authoryear]{biblatex}
+\addbibresource{/home/nguyen/1_NQBH/reference/bib.bib}
+\usepackage[utf8]{inputenc}
+\usepackage{float,graphicx,algorithm,algpseudocode}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\allowdisplaybreaks
+\usepackage{tcolorbox,multicol,enumitem}
+\numberwithin{equation}{section}
+\newtheorem{assumption}{Assumption}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{notation}{Notation}[section]
+\newtheorem{remark}{Remark}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{question}{Question}[section]
+\newtheorem{problem}{Problem}[section]
+\newtheorem{conjecture}{Conjecture}[section]
+\usepackage[left=0.5in,right=0.5in,top=1.5cm,bottom=1.5cm]{geometry}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\addtolength{\headheight}{0pt}% obsolete
+\lhead{\scriptsize \chaptername~\thechapter}
+\rhead{\scriptsize \nouppercase{\leftmark}} %\nouppercase !
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\cfoot{\thepage}
+\def\labelitemii{$\circ$}
+
+\title{Bayesian Inverse Problem}
+\author{Collector: Nguyen Quan Ba Hong}
+\date{\today}
+
+\begin{document}
+\maketitle
+\setcounter{secnumdepth}{6}
+\setcounter{tocdepth}{6}
+\tableofcontents
+
+%------------------------------------------------------------------------------%
+
+\chapter{Introduction}
+
+\section{Inverse problem}
+\textbf{References.}
+\begin{itemize}
+    \item \cite{Aster_Borchers_Thurber2018} [\href{https://github.com/NQBH/reference/blob/master/Aster_Borchers_Thurber2018.pdf}{pdf}]
+    \item \cite{Ito_Jin2015} [\href{https://github.com/NQBH/reference/blob/master/Ito_Jin2015.pdf}{pdf}]
+    \item \cite{Kirsch2021} [\href{https://github.com/NQBH/reference/blob/master/Kirsch2021.pdf}{pdf}]
+    \item \textbf{[W\texttt{/}IP]} \href{https://en.wikipedia.org/wiki/Inverse_problem}{Wikipedia\texttt{/}Inverse Problem}.
+\end{itemize}
+\textbf{Sketches.}
+\begin{enumerate}
+    \item \textbf{Definition.} \textbf{[W\texttt{/}IP]} ``An \textit{inverse problem} in science is the process of calculating from a set of observations the \href{https://en.wikipedia.org/wiki/Causal}{causal} factors that produced them.''
+    \item \textbf{Intuition.} ``It is called an inverse problem because it starts with the effects and then calculates the causes.
+    
+    It is the inverse of a \textit{forward problem}, which starts with the causes and then calculates the effects.''
+    \item \textbf{Motivation.} ``Inverse problems are some of the most important mathematical problems in science and mathematics because they tell us about parameters that we cannot directly observe.''
+    \item \textbf{Application.} Inverse problems ``have wide application in \href{https://en.wikipedia.org/wiki/System_identification}{system identification}, \href{https://en.wikipedia.org/wiki/Optics}{optics}, \href{https://en.wikipedia.org/wiki/Radar}{radar}, \href{https://en.wikipedia.org/wiki/Acoustics}{acoustics}, \href{https://en.wikipedia.org/wiki/Communication_theory}{communication theory}, \href{https://en.wikipedia.org/wiki/Signal_processing}{signal processing}, \href{https://en.wikipedia.org/wiki/Medical_imaging}{medical imaging}, \href{https://en.wikipedia.org/wiki/Computer_vision}{computer vision}, \href{https://en.wikipedia.org/wiki/Geophysics}{geophysics}, \href{https://en.wikipedia.org/wiki/Oceanography}{oceanography}, \href{https://en.wikipedia.org/wiki/Astronomy}{astronomy}, \href{https://en.wikipedia.org/wiki/Remote_sensing}{remote sensing}, \href{https://en.wikipedia.org/wiki/Natural_language_processing}{natural language processing}, \href{https://en.wikipedia.org/wiki/Machine_learning}{machine learning}, \href{https://en.wikipedia.org/wiki/Nondestructive_testing}{nondestructive testing}, slope stability analysis and many other fields.
+\end{enumerate}
+\textbf{Communities.}
+\begin{itemize}
+    \item \href{https://www.wias-berlin.de/research/rgs/fg4/index.jsp}{WIAS\texttt{/}Research Group 4: \textit{Nonlinear Optimization \& Inverse Problem}}.
+\end{itemize}
+
+\subsection{Forward problem vs. inverse problem}
+\textbf{Physical Model.} $\mathcal{G}(u)\to y$.
+\begin{itemize}
+    \item $u\in X$ parameter vector/parameter function
+    \item $\mathcal{G}:X\to Y$ forward response operator
+    \item $y$ results\texttt{/}observations
+    \item Evaluation of $\mathcal{G}$ expensive
+\end{itemize}
+\textbf{Forward Problem.} Find the output $y$ for given parameters $u$.
+
+%
+Find the \textit{unknown data} $u\in X$ from \textit{noisy observations}
+\begin{align*}
+    y = \mathcal{G}(u) + \eta \mbox{ with } \eta\sim\mathcal{N}(0,\Gamma).
+\end{align*}
+\begin{itemize}
+    \item $u\in X$ parameter vector\texttt{/}parameter function
+    \item $\mathcal{G}:X\to Y$ forward response operator
+    \item $y$ result\texttt{/}observations
+    \item Evaluation of $\mathcal{G}$ expensive.
+\end{itemize}
+
+\textbf{Forward Problem.} \fbox{Find the output $y$ for given parameters $u$} $\to$ \textbf{well-posed}.
+
+\textbf{Inverse Problem.} \fbox{Find the parameters $u$ from (noisy) observations $y$} $\to$ \textbf{ill-posed}.
+\begin{example}[2D Inhomogeneous sideways heat equations]
+    Consider the following 2D inhomogeneous sideways heat equation (SHE):
+    \begin{equation}
+        \label{2D inhomogeneous sideways heat equation}
+        \tag{2D-iSHE}
+        \left\{\begin{split}
+            \partial_tu - \Delta u &= f(t,x,y), &&\mbox{ in } [0,\infty)\times\mathbb{R}^2,\\
+            u(t,0,y) &= \phi(t,y), &&\mbox{ in } [0,\infty)\times\mathbb{R},\\
+            \partial_xu(t,0,y) &= \psi(t,y) &&\mbox{ in } [0,\infty)\times\mathbb{R},
+        \end{split}\right.
+    \end{equation}
+    where $\phi$, $\psi$: \emph{temperature, flux data} given in the \emph{accessible region} $x = 0$, $f$: heat source density.
+    
+    Approaches to represent solutions: separation of variables, transform methods, etc., see, e.g., \cite{Evans2010}.
+    
+    \noindent(i) \textbf{Determination of temperature.} Denote the 2D Fourier transform of a function $f(t,y)$ by
+    \begin{align}
+        \label{2D Fourier transform}
+        \tag{2D-Ft}
+        \hat{f}(\tau,\xi) = \mathcal{F}(f)(\tau,\xi) = \frac{1}{2\pi}\int_{\mathbb{R}^2} f(t,y)e^{-{\rm i}(\tau t + \xi y)}{\rm d}y{\rm d}t,\ \forall(\tau,\xi)\in\mathbb{R}^2.
+    \end{align}
+    extend the domain of time $t$ from $[0,\infty)$ to $\mathbb{R}$, then applying the 2D Fourier transform \eqref{2D Fourier transform} w.r.t. $y,t$ to \eqref{2D inhomogeneous sideways heat equation}, obtain in the frequency space the following 2nd-order ODE:
+    \begin{equation*}
+        \left\{\begin{split}
+            \partial_x^2\hat{u} - ({\rm i}\tau + \xi^2)\hat{u}(\tau,x,\xi) &= \hat{f}(\tau,x,\xi), &&\mbox{ in } \mathbb{R}^3,\\
+            \hat{u}(\tau,0,\xi) &= \hat{\phi}(\tau,\xi), &&\mbox{ in } \mathbb{R}^2,\\
+            \partial_x\hat{u}(\tau,0,\xi) &= \hat{\psi}(\tau,\xi), &&\mbox{ in } \mathbb{R}^2.
+        \end{split}\right.
+    \end{equation*}
+    Solving this ODE yields
+    \begin{align}
+        \label{Fourier transform of solution of 2D inhomogeneous sideways heat equation}
+        \tag{$\hat{u}$}
+        \hat{u}(\tau,x,\xi) = \hat{\phi}(\tau,\xi)\cosh(x\theta) + \hat{\psi}(\tau,\xi)\frac{\sinh(x\theta)}{\theta} - \int_0^x \frac{\sinh((x - \eta)\theta)}{\theta}\hat{f}(\tau,\eta,\xi){\rm d}\eta,\ \forall(\tau,x,\xi)\in\mathbb{R}^3,
+    \end{align}
+    where $\theta = \theta(\tau,\xi)$ is the principle value of $\sqrt{{\rm i}\tau + \xi^2}$ and is given by
+    \begin{align*}
+        \theta(\tau,\xi) = \sqrt{\frac{\sqrt{\tau^2 + \xi^4} + \xi^2}{2}} + {\rm i}\operatorname{sgn}(\tau)\sqrt{\frac{\sqrt{\tau^2 + \xi^4} - \xi^2}{2}},\ \forall(\tau,\xi)\in\mathbb{R}^2.
+    \end{align*}
+    This representation of $\hat{u}$ also indicates the ill-posedness of \eqref{2D inhomogeneous sideways heat equation}. Indeed, for $i = 1,2$, consider $u_i$ solves \eqref{2D inhomogeneous sideways heat equation} with the data $(f_i,\phi_i,\psi_i)$, and then
+    \begin{align*}
+        \hat{u}_i(\tau,x,\xi) = \hat{\phi}_i(\tau,\xi)\cosh(x\theta) + \hat{\psi}_i(\tau,\xi)\frac{\sinh(x\theta)}{\theta} - \int_0^x \frac{\sinh((x - \eta)\theta)}{\theta}\hat{f}_i(\tau,\eta,\xi){\rm d}\eta,\ \forall(\tau,x,\xi)\in\mathbb{R}^3, \mbox{ for } i = 1,2.
+    \end{align*}
+    Subtract these, term by term, to obtain:
+    \begin{align*}
+        (\hat{u}_1 - \hat{u}_2)(\tau,x,\xi) = (\hat{\phi}_1 - \hat{\phi}_2)(\tau,\xi)\cosh(x\theta) + (\hat{\psi}_1 - \hat{\psi}_2)(\tau,\xi)\frac{\sinh(x\theta)}{\theta} - \int_0^x \frac{\sinh((x - \eta)\theta)}{\theta}(\hat{f}_1 - \hat{f}_2)(\tau,\eta,\xi){\rm d}\eta,
+    \end{align*}
+    for all $(\tau,x,\xi)\in\mathbb{R}^3$.
+    
+    The perturbations in the data, which are indicated by $(\hat{f}_1 - \hat{f}_2,\hat{\phi}_1 - \hat{\phi}_2,\hat{\psi}_1 - \hat{\psi}_2)$, are magnified by the hyperbolic function $\cosh$ and even a singular kernel $\frac{\sinh(x\theta)}{\theta}$ whose a singularity is the origin of the frequency space, i.e., $(\tau,\xi) = (0,0)$.
+    
+    \begin{remark}[Generalization: $x = 0$ to $x = x_0\in\mathbb{R}$]
+        Note that by using the 2D Fourier transform \eqref{2D Fourier transform}, the solution of \eqref{2D inhomogeneous sideways heat equation} where the Cauchy data $(\phi,\psi)$ is posed at $x = x_0\in\mathbb{R}$ instead of $x = 0$, can be represented as
+        \begin{align*}
+            \hat{u}(\tau,x,\xi) = \hat{\phi}(\tau,\xi)\cosh((x - x_0)\theta) + \hat{\psi}(\tau,\xi)\frac{\sinh((x - x_0)\theta)}{\theta} - \int_{x_0}^x \frac{\sinh((x - \eta)\theta)}{\theta}\hat{f}(\tau,\eta,\xi){\rm d}\eta,\ \forall(\tau,x,\xi)\in\mathbb{R}^3.
+        \end{align*}
+    \end{remark}
+    \begin{itemize}
+        \item \textbf{Ill-posedness.} Both kernels $\cosh(x\theta)$, $\frac{\sinh(x\theta)}{\theta}$ are unbounded for arbitrarily $x\ne 0$ when $\|(\tau,\xi)\|_2^2 = \tau^2 + \xi^2\to\infty$, and thus small errors in the data can blow up and ultimately destroy the solution.
+        \item \textbf{Measured data.} The measured data, denoted by $(f_\delta,\phi_\delta,\psi_\delta)$, where $\delta > 0$ is called an \emph{error level} (see, e.g., \cite{Ito_Jin2015, Kirsch2021}), is typically assumed to satisfy
+        \begin{align}
+            \label{noise boundedness}
+            \tag{noise}
+            \max\{\|f_\delta - f\|_{L^2(\mathbb{R}^3)},\|\phi_\delta - \phi\|_{L^2(\mathbb{R}^2)},\|\psi_\delta - \psi\|_{L^2(\mathbb{R}^2)}\}\le\delta.
+        \end{align}
+    \end{itemize}
+    (ii) \textbf{Determination of the thermal flux.} Differentiate the RHS of \eqref{Fourier transform of solution of 2D inhomogeneous sideways heat equation} w.r.t. $x$, with the help of Leibnitz integral rule for the integral term, to obtain the following representation of the thermal flux w.r.t. $x$
+    \begin{align*}
+        \partial_x\hat{u}(\tau,x,\xi) = \theta\hat{\phi}(\tau,\xi)\sinh(x\theta) + \hat{\psi}(\tau,\xi)\cosh(x\theta) - \int_0^x \cosh((x - \eta)\theta)\hat{f}(\tau,\eta,\xi){\rm d}\eta,\ \forall(\tau,x,\xi)\in\mathbb{R}^3.
+    \end{align*}
+    Blow-up kernels: $\sinh(x\theta)$, $\cosh((x - \eta)\theta)$ $\to$ ill-posedness.
+    
+    \noindent(iii) \textbf{Numerical implementation.} The Cauchy data $(u,\partial_xu)|_{x=0} = (\phi,\psi)$ and the source term $f(t,x,y)$ are given and sampled at an equidistant grid in the domain $[L,R]^2$ with $n\times n$ points ($n$: sampling frequency), and the discretizations of $(f,\phi,\psi)$ are denoted by $({\bf F},\Phi,\Psi)$, to distinguish them and their continuous counterparts.
+    
+    Main tools: \textsc{Matlab} builtin-in function \verb|fft2|, which is used to carry out the 2D fast Fourier transforms (abbr., 2D FFT) of the given data, and \verb|ifft2|, which is used to obtain 2D inverse fast Fourier transforms (abbr., 2D IIFT). 
+    
+    Denote $\bar{x}\in[0,1]$ the point at which we choose to observe the solutions and the thermal fluxes. Use Gauss-Legendre quadrature of order $m$ for numerical integrations, where $m\in\mathbb{Z}_{> 0}$ is chosen by users, i.e.,
+    \begin{align*}
+        \int_0^{\bar{x}} \widehat{f_\delta}(\tau,\eta,\xi)\frac{\sinh((\bar{x} - \eta))}{\theta}{\rm d}\eta&\approx\sum_{k=1}^m w_{m,k}\widehat{f_\delta}(\tau,x_{m,k},\xi)\frac{\sinh((\bar{x} - x_{m,k})\theta)}{\theta},\\
+        \int_0^{\bar{x}} \widehat{f_\delta}(\tau,\eta,\xi)\cosh((\bar{x} - \eta)\theta){\rm d}\eta&\approx\sum_{k=1}^m w_{m,k}\widehat{f_\delta}(\tau,x_{m,k},\xi)\cosh((\bar{x} - x_{m,k})\theta),
+    \end{align*}
+    where $x_{m,k}$ and $w_{m,k}$ are the nodes and weights of the Gauss-Legendre quadrature of degree $m$ for the interval $[0,\bar{x}]$, resp. To apply these numerical integration formulas, it is necessary to carry out the 2D FFT of $f_\delta$ at each Gauss-Legendre quadrature's node.
+    
+    Add random noises to the (discrete) exact input data $({\bf F},\Phi,\Psi)$, i.e.:
+    \begin{equation}
+        \label{noise data}
+        \tag{noise data}
+        \left\{\begin{split}
+            {\bf F}_\delta(\cdot,x_{m,k},\cdot) &= {\bf F}(\cdot,x_{m,k},\cdot) + \delta\texttt{randn}(\texttt{size}({\bf F}(\cdot,x_{m,k},\cdot))),\ \forall k = 1,\ldots,m,\\
+            \Phi_\delta &= \Phi + \delta\texttt{randn}(\texttt{size}(\Phi)),\ \Psi_\delta = \Psi + \delta\texttt{randn}(\texttt{size}(\Psi)),
+        \end{split}\right.        
+    \end{equation}
+    where \verb|randn()| is a \textsc{Matlab} built-in function.
+    
+    Denote $\|\cdot\|_{\overline{\rm F}}$ the ``average'' Frobenius norm, i.e.:
+    \begin{align*}
+        \|A\|_{\overline{\rm F}}\coloneqq\frac{1}{\sqrt{mn}}\|A\|_{\rm F} = \frac{1}{\sqrt{mn}}\left(\sum_{i=1}^m\sum_{j=1}^n |A_{ij}|^2\right)^{\frac{1}{2}},\ \forall A\in\operatorname{Mat}_\mathbb{C}(m\times n),
+    \end{align*}
+    where $\|\cdot\|_{\rm F}$ is the Frobenius norm, we can define the total noises of the 3D array ${\bf F}_\delta$ and the matrices $(\Phi_\delta,\Psi_\delta)$ as
+    \begin{align}
+        \label{total noise}
+        \tag{total noise}
+        \operatorname{TN}({\bf F},{\bf F}_\delta)\coloneqq\frac{1}{n\sqrt{m}}\left(\sum_{k=1}^m \|({\bf F}_\delta - {\bf F})(\cdot,x_{m,k},\cdot)\|_{\rm F}^2\right)^{\frac{1}{2}},\ \operatorname{TN}(\Phi,\Phi_\delta)\coloneqq\|\Phi_\delta - \Phi\|_{\overline{\rm F}},\ \operatorname{TN}(\Psi,\Psi_\delta)\coloneqq\|\Psi_\delta - \Psi\|_{\overline{\rm F}},\ \forall\delta > 0.
+    \end{align}
+    After doing this, we obtain the noisy data $({\bf F}_\delta,\Phi_\delta,\Psi_\delta)$ satisfying the condition $\max\{\operatorname{TN}({\bf F},{\bf F}_\delta),\operatorname{TN}(\Phi,\Phi_\delta),\operatorname{TN}(\Psi,\Psi_\delta)\}\le\delta$, which can be interpreted as the discrete analogue of \eqref{noise boundedness}. We also use the norm $\|\cdot\|_{\overline{\rm F}}$ to calculate root mean square and relative errors, e.g.,
+    \begin{align*}
+        \operatorname{RMSE}({\bf U}_\mathcal{R}^\delta)\coloneqq\|{\bf U}_\mathcal{R}^\delta - {\bf U}_{\rm exact}\|_{\overline{\rm F}},\ \operatorname{RE}({\bf U}_\mathcal{R}^\delta)\coloneqq\frac{\|{\bf U}_\mathcal{R}^\delta - {\bf U}_{\rm exact}\|_{\overline{\rm F}}}{\|{\bf U}_{\rm exact}\|_{\overline{\rm F}}},
+    \end{align*}
+    where ${\bf U}_{\rm exact}$, ${\bf U}_\mathcal{R}^\delta$ is the discrete version of the solution $u$ of \eqref{2D inhomogeneous sideways heat equation} and its regularized analogue $u_\mathcal{R}^\delta$ on the sampled grid.
+\end{example}
+
+\begin{algorithm}[H]
+    \caption{Numerical implementation of a regularization method proposed for \eqref{2D inhomogeneous sideways heat equation}.}
+    \label{algorithm1}
+    \begin{algorithmic}[1]
+        \State \textbf{Inputs:} observed point $x_{\rm obs} \in\mathbb{R}$, Cauchy data $\left[\phi,\psi\right]$ at $x = 0$, source term $f$, boundaries $L$ and $R$ of the computational domain $\Omega _{L,R}$, sampling frequency $n$, order $m\in \mathbb{Z}_{> 0}$ of Gauss-Legendre quadrature, (approximate) nodes $x_{k,m}$ and (approximate) weights $w_{k,m}$ of the Gauss-Legendre quadrature of degree $m$ for the interval $[0,x_{\rm obs}]$, noisy level $\delta > 0$, exact solution $u$ or the set of its values at the grid points;
+        \State Generate an equidistant grid in the computational domain $\Omega _{L,R}$; \Comment{Treat the origin $\left(0,0\right)$ carefully}
+        \State Compute the discrete exact data $({\bf F},\Phi,\Psi)$;
+        \State Generate the discrete noisy data $({\bf F}_\delta,\Phi_\delta,\Psi_\delta)$ by \eqref{noise data};
+        \State (Optional) Compute the triple of the averaged noises $(\operatorname{TN}({\bf F},{\bf F}_\delta),\operatorname{TN}(\Phi,\Phi_\delta),\operatorname{TN}(\Psi,\Psi_\delta))$ of the discrete noisy data generated in Step 4 by \eqref{total noise}; \Comment{This triple will slightly change in magnitude in each execution due to randomness.}
+        \State Compute 2D FFT $(\widehat{{\bf F}_\delta},\widehat{\Phi_\delta},\widehat{\Psi_\delta})$ of the discrete noisy data in Step 4 by \verb|fft2|;
+        \State Compute 2D FFT of the discrete versions $\widehat{{\bf U}_\delta}$ and $\widehat{{\bf U}_\mathcal{R}^\delta}$ of \eqref{Fourier transform of solution of 2D inhomogeneous sideways heat equation} and the regularized one(s);
+        \State Carry out both the discrete versions ${\bf U}_\delta$ and ${\bf U}_\mathcal{R}^\delta$ of the non-regularized and regularized solutions $u_\delta$ and $u_\mathcal{R}^\delta$ by \verb|ifft2|;
+        \State Compute the corresponding Root Mean Square Error $\operatorname{RMSE}({\bf U}_\mathcal{R}^\delta)$ and Relative Error $\operatorname{RE}({\bf U}_\mathcal{R}^\delta)$;
+        \State (Optional) 3D-Plot the discrete non-regularized solution ${\bf U}_\delta$ and regularized solution ${\bf U}_\mathcal{R}^\delta$ on the equidistant grid generated in Step 2;
+        \State \textbf{Output:} Triple of the averaged noises $(\operatorname{TN}({\bf F},{\bf F}_\delta),\operatorname{TN}(\Phi,\Phi_\delta),\operatorname{TN}(\Psi,\Psi_\delta))$ (optional), non-regularized discrete solution ${\bf U}_\delta$, regularized discrete solution ${\bf U}_\mathcal{R}^\delta$, errors $\operatorname{RMSE}({\bf U}_\mathcal{R}^\delta)$, $\operatorname{RE}({\bf U}_\mathcal{R}^\delta)$, 3D plots of non-regularized and regularized solutions.
+    \end{algorithmic}
+\end{algorithm}
+The \textsc{Matlab} scripts and a gallery for this algorithm for \eqref{2D inhomogeneous sideways heat equation} can be downloaded at the following \textsc{url}s:
+\begin{itemize}
+    \item \href{https://github.com/NQBH/miscellaneous/tree/master/math/seminar/Bayesian_inverse_problem/MATLAB}{NQBH\texttt{/}math\texttt{/}seminar\texttt{/}Bayesian inverse problem\texttt{/}\textsc{Matlab}}
+    \item \href{https://github.com/NQBH/miscellaneous/tree/master/math/seminar/Bayesian_inverse_problem/gallery}{NQBH\texttt{/}math\texttt{/}seminar\texttt{/}Bayesian inverse problem\texttt{/}gallery}.
+\end{itemize}
+
+\subsection{Deterministic Optimization Problem}
+Find the unknown data $u\in X$ from noisy observations
+\begin{align*}
+    y = \mathcal{G}(u) + \eta.
+\end{align*}
+Deterministic optimization problem
+\begin{align*}
+    \min_{u\in X} \frac{1}{2}\|y - \mathcal{G}(u)\|^2 + R(u).
+\end{align*}
+\begin{itemize}
+    \item $\|y - \mathcal{G}(u)\|$ potential\texttt{/}data misfit
+    \item $R$ regularization term
+\end{itemize}
+\begin{itemize}
+    \item Large-scale, deterministic optimization problem
+    \item No quantification of the uncertainty in the unknown $u$
+    \item Proper choice of the regularization term $R$
+\end{itemize}
+
+\section{Uncertainty quantification}
+\textbf{References.}
+\begin{itemize}
+    \item \textbf{[W\texttt{/}U]} \href{https://en.wikipedia.org/wiki/Uncertainty}{Wikipedia\texttt{/}Uncertainty}.
+    \item \textbf{[W\texttt{/}UQ]} \href{https://en.wikipedia.org/wiki/Uncertainty_quantification}{Wikipedia\texttt{/}Uncertainty Quantification}.
+\end{itemize}
+\textbf{Sketches.}
+\begin{enumerate}
+    \item \textbf{Definitions.} \textbf{[W\texttt{/}U]} ``\textit{Uncertainty} refers to \href{https://en.wikipedia.org/wiki/Epistemology}{epistemic} situations involving imperfect or unknown \href{https://en.wikipedia.org/wiki/Information}{information}.''
+    
+    \textbf{[W\texttt{/}UQ]} ``\textit{Uncertainty quantification} (UQ) is the science of quantitative characterization and reduction of \href{https://en.wikipedia.org/wiki/Uncertainty}{uncertainties} in both computational and real world applications.''
+    \item \textbf{Intuition.} Uncertainty quantification ``tries to determine how likely certain outcomes are if some aspects of the system are not exactly known''.
+    \item \textbf{Motivation.} ``Many problems in the natural sciences and engineering are also rife with sources of uncertainty.'' E.g., (see, e.g., \textbf{[Schillings\_Teckentrup2017]}, Slides 3--4) \textit{environmental systems} (weather, climate, seismic, subsurface geophysics), \textit{engineering systems} (automobiles, aircraft, bridges, structures), \textit{biological systems} (health \& medicine, pharmaceuticals, gene expression, cancer research), \textit{physical systems} (nano-optics, quantum physics, radioactive decay), etc.
+    \item \textbf{Sources of uncertainty.} \textbf{[W\texttt{/}UQ]} ``Uncertainty can enter \href{https://en.wikipedia.org/wiki/Mathematical_model}{mathematical models} and experimental measurements in various contexts.''
+    
+    \textbf{Categorization of sources of uncertainty.} Consider: parameter uncertainty, parametric variability, structural uncertainty\texttt{/}model inadequacy\texttt{/}model bias\texttt{/}model discrepancy, algorithmic uncertainty\texttt{/}numerical uncertainty\texttt{/}discrete uncertainty, experimental uncertainty\texttt{/}observation error, interpolation uncertainty.
+    
+    \textbf{Classification of uncertainty.}
+    \begin{itemize}
+        \item \textit{Aleatoric uncertainty}\texttt{/}\textit{statistical uncertainty} is representative of unknowns that differ each time we run the same experiment. E.g., \textsc{Matlab} built-in function \texttt{rand()}.
+        
+        ``The quantification for the aleatoric uncertainties can be relatively straightforward, where traditional \href{https://en.wikipedia.org/wiki/Frequentist_probability}{(frequentist) probability} is the most basic form.''
+        \item \textit{Epistemic uncertainty}\texttt{/}\textit{systematic uncertainty} is due to things one could in principle know but do not in practice, which may be because a measurement is not accurate, because the model neglects certain effects, or because particular data has been deliberately hidden. E.g., $g = 9.8{\rm m}\texttt{/}{\rm s}^2$ ignores the effects of air resistance.
+        
+        ``To evaluate epistemic uncertainties, the efforts are made to understand the (lack of) knowledge of the system, process or mechanism.''
+    \end{itemize}
+    ``Uncertainty quantification intends to explicitly express both types of uncertainty separately.''
+    
+    \textbf{Mathematical perspective of aleatoric \& epistemic uncertainty.} ``In mathematics, uncertainty is often characterized in terms of a \href{https://en.wikipedia.org/wiki/Probability_distribution}{probability distribution}. From that perspective, epistemic uncertainty means not being certain what the relevant probability distribution is, and aleatoric uncertainty means not being certain what a \href{https://en.wikipedia.org/wiki/Random_sample}{random sample} drawn from a probability distribution will be.''
+    \item \textbf{Quantification \& minimization of uncertainties.}
+    \begin{itemize}
+        \item Uncertainty quantification in numerical simulations
+        \item Minimization of uncertainties in design \& control problems
+        \item Identification of uncertain parameters from noisy observations
+    \end{itemize}
+    \textbf{Related research fields.} Numerical analysis, methods for optimal control\texttt{/}optimization problems, approximation theory, stochastic, statistics, algorithms \& data structures.
+\end{enumerate}
+\textbf{Communities.}
+\begin{itemize}
+    \item \href{https://www.wias-berlin.de/research/rgs/fg5/index.jsp}{WIAS\texttt{/}Research Group 5: \textit{Interacting Random Systems}}.
+    \item \href{https://www.wias-berlin.de/research/rgs/fg6/index.jsp}{WIAS\texttt{/}Research Group 6: \textit{Stochastic Algorithms \& Nonparametric Statistics}}.
+\end{itemize}
+\textbf{References.}
+\begin{itemize}
+    \item \textbf{[Schillings\_Teckentrup2017]} Schillings, Claudia \& Teckentrup, Aretha,
+    2017. \textit{Mathematical Foundations of Bayesian Inverse Problems: Well-posedness \& Statistical Estimates in Bayesian Inverse Problems}. [\href{https://github.com/NQBH/reference/blob/master/Schillings_Teckentrup2017_part_1.pdf}{pdf}]
+\end{itemize}
+In \cite{Dashti_Stuart2017}, the authors highlight the mathematical and computational structure relating to the formulation of, and development of algorithms for, the Bayesian approach to inverse problems in differential equations, which is a fundamental approach in the quantification of uncertainty within applications involving the blending of mathematical models with data.
+
+\section{Bayesian Inversion in $\mathbb{R}^n$}
+Consider the problem of finding ${\bf u}\in\mathbb{R}^n$ from ${\bf y}\in\mathbb{R}^J$ where ${\bf u}$ and ${\bf y}$ are related by the equation ${\bf y} = G({\bf u})$.
+
+We refer to ${\bf y}$ as \textit{observed data} and to ${\bf u}$ as the \textit{unknown}.
+
+This problem may be difficult for a number of reasons.
+
+Dashti \& Stuart highlight 2 of these, both particularly relevant to their future developments.
+\begin{enumerate}
+    \item The 1st difficulty, which may be illustrated in the case where $n = J$, concerns the fact that often the equation is perturbed by noise and so we should really consider the equation
+    \begin{align}
+        \label{noise-perturbed equation}
+        {\bf y} = G({\bf u}) + \boldsymbol{\eta},
+    \end{align}
+    where $\boldsymbol{\eta}\in\mathbb{R}^J$ represents the \textit{observational noise} which enters the observed data.
+    
+    Assume further that $G$ maps $\mathbb{R}^J$ into a proper subset of itself, $\operatorname{Im}_G$, and that $G$ has a unique inverse as a map from $\operatorname{Im}_G$ into $\mathbb{R}^J$.
+    
+    It may then be the case that, because of the noise, ${\bf y}\notin\operatorname{Im}_G$ so that simply inverting $G$ on the data ${\bf y}$ will not be possible.
+    
+    Furthermore, the specific instance of $\boldsymbol{\eta}$ which enters the data may not be known to us; typically, at best, only the statistical properties of a typical noise $\boldsymbol{\eta}$ are known.
+    
+    Thus we cannot subtract $\boldsymbol{\eta}$ from the observed data ${\bf y}$ to obtain something in $\operatorname{Im}_G$.
+    
+    Even if ${\bf y}\in\operatorname{Im}_G$, the uncertainty caused by the presence of noise $\boldsymbol{\eta}$ causes problems for the inversion.
+    \item The 2nd difficulty is manifest in the case where $n > J$ so that the system is \textit{underdetermined}: the number of equations is smaller than the number of unknowns.
+    
+    How do we attach a sensible meaning to the concept of solution in this case where, generically, there will be many solutions?
+\end{enumerate}
+Thinking probabilistically enables us to overcome both of these difficulties.
+
+We will treat ${\bf u},{\bf y}$, and $\boldsymbol{\eta}$ as random variables and determine the joint probability distribution of $({\bf u},{\bf y})$.
+
+We then define the ``solution'' of the inverse problem to be the probability distribution of ${\bf u}$ given ${\bf y}$, denoted ${\bf u}|{\bf y}$.
+
+This allows us to \fbox{model the noise via its statistical properties}, even if we do not know the exact instance of the noise entering the given data.
+
+And it also allows us to specify a priori the form of solutions that we believe to be more likely, thereby enabling us to attach weights to multiple solutions which explain the data.
+
+This is the \textit{Bayesian approach} to inverse problems.
+
+%
+To this end, we define a random variable $({\bf u},{\bf y})\in\mathbb{R}^n\times\mathbb{R}^J$ as follows.
+
+We let ${\bf u}\in\mathbb{R}^n$ be a random variable with (Lebesgue) density $\rho_0({\bf u})$.
+
+Assume that ${\bf y}|{\bf u}$ (${\bf y}$ given ${\bf u}$) is defined via the formula \eqref{noise-perturbed equation} where $G:\mathbb{R}^n\to\mathbb{R}^J$ is measurable and $\boldsymbol{\eta}$ is independent of ${\bf u}$ (we sometimes write this as $\boldsymbol{\eta}\bot{\bf u}$) and distributed according to measure $\mathbb{Q}_0$ with Lebesgue density $\rho(\boldsymbol{\eta})$.
+
+Then ${\bf y}|{\bf u}$ is simply found by shifting $\mathbb{Q}_0$ by $G({\bf u})$ to measure $\mathbb{Q}_{\bf u}$ with Lebesgue density $\rho({\bf y} - G({\bf u}))$.
+
+It follows that $({\bf u},{\bf y})\in\mathbb{R}^n\times\mathbb{R}^J$ is a random variable with Lebesgue density $\rho({\bf y} - G({\bf u}))\rho_0({\bf u})$.
+
+%
+The following theorem allows us to calculate the distribution of the random variable ${\bf u}|{\bf y}$:
+
+\begin{theorem}[Bayes' Theorem]
+    \label{Bayes' theorem}
+    Assume that
+    \begin{align*}
+        Z\coloneqq\int_{\mathbb{R}^n} \rho({\bf y} - G({\bf u}))\rho_0({\bf u}){\rm d}{\bf u} > 0.
+    \end{align*}
+    Then ${\bf u}|{\bf y}$ is a random variable with Lebesgue density $\rho^{\bf y}({\bf u})$ given by
+    \begin{align*}
+        \rho^{\bf y}({\bf u}) = \frac{1}{Z}\rho({\bf y} - G({\bf u}))\rho_0({\bf u}).
+    \end{align*}
+\end{theorem}
+
+\begin{remark}
+    The following remarks establish the nomenclature\footnote{\textbf{nomenclaure}: [n] a system of naming things, especially in a branch of science.} of Bayesian statistics and also frame the previous theorem in a manner which generalizes to the infinite-dimensional setting.
+    \begin{itemize}
+        \item $\rho_0({\bf u})$ is the \textbf{prior density}.
+        \item $\rho({\bf y} - G({\bf u}))$ is the \textbf{likelihood}.
+        \item $\rho^{\bf y}({\bf u})$ is the \textbf{posterior density}.
+        \item It will be useful in what follows to define
+        \begin{align*}
+            \Phi({\bf u};{\bf y}) = -\log\rho({\bf y} - G({\bf u})).
+        \end{align*}
+        We call $\Phi$ the \textbf{potential}.
+        
+        This is the \textbf{negative log likelihood}.
+        \item Note that $Z$ is the probability of ${\bf y}$.
+        
+        Bayes' formula expresses
+        \begin{align*}
+            \mathbb{P}({\bf u}|{\bf y}) = \frac{1}{\mathbb{P}({\bf y})}\mathbb{P}({\bf y}|{\bf u})\mathbb{P}({\bf u}).
+        \end{align*}
+        \item Let $\mu^{\bf y}$ be a measure on $\mathbb{R}^n$ with density $\rho^{\bf y}$ and $\mu_0$ a measure on $\mathbb{R}^n$ with density $\rho_0$.
+        
+        Then the conclusion of Theorem \ref{Bayes' theorem} may be written as:\footnote{Indeed, since $\mu^{\bf y}$, $\mu_0$ are measures on $\mathbb{R}^n$ with densities $\rho^{\bf y}$,$ \rho_0$, respectively, we have ${\rm d}\mu^{\bf y}({\bf u}) = \rho^{\bf y}{\rm d}{\bf u}$, ${\rm d}\mu_0({\bf u}) = \rho_0({\bf u}){\rm d}{\bf u}$, and thus the LHS can be written as
+        \begin{align*}
+            \frac{{\rm d}\mu^{\bf y}}{{\rm d}\mu_0}({\bf u}) = \frac{\rho^{\bf y}({\bf u}){\rm d}{\bf u}}{\rho_0({\bf u}){\rm d}{\bf u}} = \frac{\rho^{\bf y}({\bf u})}{\rho_0({\bf u})}.
+        \end{align*}
+        By definition of the potential $\Phi$, we have
+        \begin{align*}
+            Z = \int_{\mathbb{R}^n} \exp(-\Phi({\bf u};{\bf y}))\mu_0({\rm d}{\bf u}) = \int_{\mathbb{R}^n} \exp(\log\rho({\bf y} - G({\bf u})))\mu_0({\rm d}{\bf u}) = \int_{\mathbb{R}^n} \rho({\bf y} - G({\bf u}))\rho_0({\bf u}){\rm d}{\bf u},
+        \end{align*}
+        which is assumed to be positive to make sense of the denominator. The RHS can be written as
+        \begin{align*}
+            \frac{1}{Z}\exp(-\Phi({\bf u};{\bf y})) = \frac{1}{Z}\exp(\log\rho({\bf y} - G({\bf y}))) = \frac{1}{Z}\rho({\bf y} - G({\bf u})).
+        \end{align*}
+        Multiplying both sides with $\rho_0({\bf u})$ yields the desired equality in Theorem \ref{Bayes' theorem}.}
+        \begin{align*}
+            \frac{{\rm d}\mu^{\bf y}}{{\rm d}\mu_0}({\bf u}) = \frac{1}{Z}\exp(-\Phi({\bf u};{\bf y})),\ Z = \int_{\mathbb{R}^n} \exp(-\Phi({\bf u};{\bf y}))\mu_0({\rm d}{\bf u}).
+        \end{align*}
+        Thus \fbox{the posterior is absolutely continuous w.r.t. the prior}, and \emph{the Radon-Nikodym derivative is proportional to the likelihood}.
+        
+        This is rewriting Bayes' formula in the form
+        \begin{align*}
+            \frac{1}{\mathbb{P}({\bf u})}\mathbb{P}({\bf u}|{\bf y}) = \frac{1}{\mathbb{P}({\bf y})}\mathbb{P}({\bf y}|{\bf u}).
+        \end{align*}
+        \item The expression for the Radon-Nikodym derivative is to be interpreted as the statement that, for all measurable $f:\mathbb{R}^n\to\mathbb{R}$,
+        \begin{align*}
+            \mathbb{E}^{\mu^{\bf y}}f({\bf u}) = \mathbb{E}^{\mu_0}\left(\frac{{\rm d}\mu^{\bf y}}{{\rm d}\mu_0}({\bf u})f({\bf u})\right).
+        \end{align*}
+        Alternatively we may write this in integral form as
+        \begin{align*}
+            \int_{\mathbb{R}^n} f({\bf u})\mu^{\bf y}({\rm d}{\bf u}) = \int_{\mathbb{R}^n} \left(\frac{1}{Z}\exp(-\Phi({\bf u};{\bf y}))f({\bf u})\right)\mu_0({\rm d}{\bf u}) = \frac{\int_{\mathbb{R}^n} \exp(-\Phi({\bf u};{\bf y}))f({\bf u})\mu_0({\rm d}{\bf u})}{\int_{\mathbb{R}^n} \exp(-\Phi({\bf u};{\bf y}))\mu_0({\rm d}{\bf u})}.
+        \end{align*}
+    \end{itemize}
+\end{remark}
+
+\subsection{Inverse Heat Equation}
+This inverse problem illustrates the 1st difficulty, which motivates the Bayesian approach to inverse problems.
+
+Let $D\subset\mathbb{R}^d$ be a bounded open set, with Lipschitz boundary $\partial D$.
+
+Then define the Hilbert space $H$ and operator $A$ as follows:
+\begin{align*}
+    H = (L^2(D),\langle\cdot,\cdot\rangle,\|\cdot\|);\ A = -\Delta,\ \mathcal{D}(A) = H^2(D)\cap H_0^1(D).
+\end{align*}
+We make the following assumption about the spectrum of $A$ which is easily verified for simple geometries, but in fact holds quite generally.
+
+\begin{assumption}
+    The eigenvalue problem $A\varphi_j = \alpha_j\varphi_j$ has a countably infinite set of solutions, indexed by $j\in\mathbb{Z}^+$.
+    
+    They may be normalized to satisfy the $L^2$-orthonormality condition
+    \begin{equation*}
+        \langle\varphi_j,\varphi_k\rangle = \delta_{jk}\coloneqq\left\{\begin{split}
+            &1, &&j = k,\\
+            &0, &&j\ne k,
+        \end{split}\right.
+    \end{equation*}
+    and form a basis for $H$.
+    
+    Furthermore, the eigenvalues are positive and, if ordered to be increasing, satisfy $\alpha_j\asymp j^{2/d}$.
+\end{assumption}
+The notation $\asymp$ (i.e., ``asymptotic to'') denotes the existence of constants $C^\pm > 0$ s.t.
+\begin{align*}
+    C^-j^{2/d}\le\alpha_j\le C^+j^{2/d},\ \forall j\in\mathbb{N}.
+\end{align*}
+Any $w\in H$ can be written as
+\begin{align*}
+    w = \sum_{j=1}^\infty \langle w,\varphi_j\rangle\varphi_j,
+\end{align*}
+and we can define the Hilbert scale of spaces $\mathcal{H}^t = \mathcal{D}(A^{t/2})$ as explained in Sect. A.1.3 for any $t > 0$ and with the norm
+\begin{align*}
+    \|w\|_{\mathcal{H}^t}^2 = \sum_{j=1}^\infty j^{\frac{2t}{d}}|w_j|^2, \mbox{ where } w_j = \langle w,\varphi_j\rangle.
+\end{align*}
+Consider the \textit{heat conduction equation} on $D$, with homogeneous Dirichlet boundary conditions (i.e., $v = 0$ on $\partial D$), writing it as an ODE in $H$:
+\begin{align}
+    \label{heat conduction}
+    \tag{hc}
+    \frac{{\rm d}v}{{\rm d}t} + Av = 0,\ v(0) = u.
+\end{align}
+We have the following:
+
+\begin{lemma}
+    Let Assumption 1 hold. Then for every $u\in H$ and every $s > 0$, there is a unique solution $v$ of equation \eqref{heat conduction} in the space $C([0,\infty);H)\cap C((0,\infty);\mathcal{H}^s)$. We write $v(t) = \exp(-At)u$.
+\end{lemma}
+To motivate this statement, and in particular the high degree of regularity seen at each fixed $t$, we argue as follows.
+
+Note that, if the initial condition is expanded in the eigenbasis as
+\begin{align*}
+    u = \sum_{j=1}^\infty u_j\varphi_j,\ u_j = \langle u,\varphi_j\rangle,
+\end{align*}
+then the solution of \eqref{heat conduction} has the form
+\begin{align*}
+    v(t) = \sum_{j=1}^\infty u_je^{-\alpha_jt}\varphi_j.
+\end{align*}
+Thus
+\begin{align*}
+    \|v(t)\|_{\mathcal{H}^s}^2 = \sum_{j=1}^\infty j^{2s/d}e^{-2\alpha_jt}|u_j|^2\asymp\sum_{j=1}^\infty \alpha_j^se^{-2\alpha_jt}|u_j|^2 = t^{-s}\sum_{j=1}^\infty (\alpha_jt)^se^{-2\alpha_jt}|u_j|^2\le Ct^{-s}\sum_{j=1}^\infty |u_j|^2 = Ct^{-s}\|u\|_H^2.
+\end{align*}
+It follows that $v(t)\in\mathcal{H}^s$ for any $s > 0$, provided $u\in H$.
+
+%
+We are interested in the inverse problem of finding $u$ from $y$ where
+\begin{align*}
+    y = v(1) + \eta = G(u) + \eta = e^{-A}u + \eta.
+\end{align*}
+Here $\eta\in H$ is noise and $G(u)\coloneqq v(1) = e^{-A}u$.
+
+Formally this looks like an infinite-dimensional linear version of the inverse problem (10.1), extended from finite dimensions to a Hilbert space setting.
+
+\fbox{However, the infinite-dimensional setting throws up significant new issues.}
+
+To see this, assume that there is $\beta_c > 0$ s.t. $\eta$ has regularity $\mathcal{H}^\beta$ iff $\beta < \beta_c$.
+
+Then $y$ is not in the image space of $G$ which is, of course, contained in $\bigcap_{s > 0} \mathcal{H}^s$.
+
+Applying the formal inverse of $G$ to $y$ results in an object which is not in $H$.
+
+%
+To overcome this problem, we will apply a Bayesian approach and hence will need to put probability measures on the Hilbert space $H$; in particular we will want to study $\mathbb{P}(u)$, $\mathbb{P}(y|u)$, and $\mathbb{P}(u|y)$, all probability measures on $H$.
+
+\section{Elliptic Inverse Problem}
+\textit{1 motivation for adopting the Bayesian approach to inverse problems is that prior modeling is a transparent approach to dealing with under-determined inverse problems}; it forms a rational approach to dealing with the 2nd difficulty, labeled 2 in Sect. 1.1.
+
+The elliptic inverse problem we now describe is a concrete example of an under-determined inverse problem.
+
+%
+As in Sect. 1.2, $D\subset\mathbb{R}^d$ denotes a bounded open set, with Lispchitz boundary $\partial D$.
+
+We define the Gelfand triple of Hilbert spaces $V\subset H\subset V^*$ by \textbf{(10.5)}
+\begin{align*}
+    H = (L^2(D),\langle\cdot,\cdot\rangle,\|\cdot\|),\ V = (H_0^1(D),\langle\nabla\cdot,\nabla\cdot\rangle,\|\cdot\|_V = \|\nabla\cdot\|),
+\end{align*}
+and $V^*$ the dual of $V$ w.r.t. the pairing induced by $H$.
+
+Note that $\|\cdot\|\le C_{\rm p}\|\cdot\|_V$ for some constant $C_{\rm p}$: the Poincar\'e inequality.
+
+%
+Let $\kappa\in X\coloneqq L^\infty(D)$ satisfy \textbf{(10.6)}
+\begin{align*}
+    \operatorname{ess\inf}_{{\bf x}\in D} \kappa({\bf x}) = \kappa_{\min} > 0.
+\end{align*}
+Now consider the equation
+\begin{equation*}
+    \label{elliptic}
+    \tag{elliptic}
+    \left\{\begin{split}
+        -\nabla\cdot(\kappa\nabla p) &= f,\ {\bf x}\in D,\\
+        p &= 0,\ {\bf x}\in\partial D.
+    \end{split}\right.    
+\end{equation*}
+Lax-Milgram theory yields the following:
+
+\begin{lemma}
+    Assume that $f\in V^*$ and that $\kappa$ satisfies (10.6). Then (10.7) has a unique weak solution $p\in V$. This solution satisfies
+    \begin{align*}
+        \|p\|_V\le\frac{\|f\|_{V^*}}{\kappa_{\min}},
+    \end{align*}
+    and, if $f\in H$,
+    \begin{align*}
+        \|p\|_V\le C_p\frac{\|f\|}{\kappa_{\min}}.
+    \end{align*}
+\end{lemma}
+We will be interested in the inverse problem of finding $\kappa$ from $y$ where \textbf{(10.8)}
+\begin{align*}
+    y_j = l_j(p) + \eta_j,\ j = 1,\ldots,J.
+\end{align*}
+Here $l_j\in V^*$ is a continuous linear functional on $V$ and $\eta_j$ is a noise.
+
+%
+Notice that the unknown, $\kappa\in X$, is a function (infinite dimensional), whereas the data from which we wish to determine $\kappa$ is finite dimensional: ${\bf y}\in\mathbb{R}^J$.
+
+The problem is severely under-determined, illustrating point 2 from Sect. 1.1.
+
+\fbox{1 way to treat such problems is by adopting the Bayesian framework, using prior modeling to fill in missing information.}
+
+We will take the unknown function to be $u$ where either $u = \kappa$ or $u = \log\kappa$.
+
+In either case, we will define $G_j(u) = l_j(p)$ and, noting that $p$ is then a nonlinear function of $u$, (10.8) may be written as \textbf{(10.9)}
+\begin{align*}
+    {\bf y} = G(u) + \boldsymbol{\eta},
+\end{align*}
+where ${\bf y},\boldsymbol{\eta}\in\mathbb{R}^J$ and $G:X^+\subset X\to\mathbb{R}^J$.
+
+The set $X^+$ is introduced because $G$ may not be defined on the whole of $X$.
+
+In particular, the positivity constraint (10.6) is only satisfied on \textbf{(10.10)}
+\begin{align*}
+    X^+\coloneqq\left\{u\in X;\operatorname{ess\inf}_{{\bf x}\in D} u({\bf x}) > 0\right\}\subset X
+\end{align*}
+in the case where $\kappa = u$.
+
+On the other hand, if $\kappa = \exp(u)$, then the positivity constraint (10.6) is satisfied for any $u\in X$ and we may take $X^+ = X$.
+
+%
+Notice that we again need probability measures on function space, here the Banach space $X = L^\infty(D)$.
+
+Furthermore, in the case where $u = \kappa$, these probability measures should charge only positive functions, in view of the desired inequality (10.6).
+
+Probability on Banach spaces of functions is most naturally developed in the setting of separable spaces, which $L^\infty(D)$ is not.
+
+This difficulty can be circumvented in various different ways as we describe in what follows.
+
+\section{Prior Modeling}
+\textbf{Goal.} \textit{Show how to construct probability measures on a function space, adopting a constructive approach based on random series}.
+
+As explained in \cite[Sect. A.2.2]{Dashti_Stuart2017}, the natural setting for probability in a function space is that of a separable Banach space.
+
+A countable infinite sequence in the Banach space $X$ will be used for our random series; in the case where $X$ is not separable, the resulting probability measure will be constructed on a separable subspace $X'$ of $X$.
+
+We denote the prior measures constructed in this section by $\mu_0$.
+
+\subsection{General setting}
+We let $\{\phi_j\}_{j=1}^\infty$ denote an infinite sequence in the Banach space $X$, with norm $\|\cdot\|$, of $\mathbb{R}$-valued functions defined on a domain $D$.
+
+We will either take $D\subset\mathbb{R}^d$, a bounded, open set with Lipschitz boundary or $D = \mathbb{T}^d$ the $d$-dimensional torus.
+
+We normalize these functions so that $\|\phi_j\| = 1$ for $j\in\mathbb{Z}_{> 0}$.
+
+We also introduce another element $m_0\in X$, not necessarily normalized to 1.
+
+Define the function $u$ by
+\begin{align}
+    \label{random function}
+    \tag{rand-func}
+    u\coloneqq m_0 + \sum_{j=1}^\infty u_j\phi_j.
+\end{align}
+By randomizing ${\rm u}\coloneqq\{u_j\}_{j=1}^\infty$, we create real-valued random functions on $D$.
+
+(The extension to $\mathbb{R}^n$-valued random functions is straightforward, but omitted for brevity.)
+
+%
+We now define the deterministic sequence $\gamma = \{\gamma_j\}_{j=1}^\infty$ and the i.i.d. random sequence $\xi = \{\xi_j\}_{j=1}^\infty$, and set $u_j\coloneqq\gamma_j\xi_j$.
+
+We assume that $\xi$ is centered, i.e., that it has mean zero.
+
+Formally we see that the average value of $u$ is then $m_0$ so that this element of $X$ should be thought of as the \textit{mean function}.
+
+We assume that $\gamma\in l_w^p$ for some $p\in[1,\infty)$ and some positive weight sequence $\{w_j\}$ (see \cite[Sect. A.1.1]{Dashti_Stuart2017}).
+
+We define $\Omega = \mathbb{R}^\infty$ and view $\xi$ as a random element in the probability space $(\Omega,{\rm B}(\Omega),\mathbb{P})$ of i.i.d. sequences equipped with the product $\sigma$-algebra; we let $\mathbb{E}$ denote expectation.
+
+This sigma algebra can be generated by cylinder sets if an appropriate distance $d$ is defined on sequences.
+
+However, the distance $d$ captures nothing of the properties of the random function $u$ itself.
+
+For this reason we will be interested in the pushforward of the measure $\mathbb{P}$ on the measure space $(\Omega,{\rm B}(\Omega))$ into a measure $\mu$ on $(X',{\rm B}(X'))$, where $X'$ is a separable Banach space and ${\rm B}(X')$ denotes its Borel $\sigma$-algebra.
+
+Sometimes $X'$ will be the same as $X$ but not always: the space $X$ may not be separable; and, although we have stated the normalization of the $\phi_j$ in $X$, they may of course live in smaller spaces $X'$, and $u$ may do so too.
+
+For either of these reasons, $X'$ may be a proper subspace of $X$.
+
+%
+In dealing with the random series construction, we will also find it useful to consider the truncated random functions
+\begin{align*}
+    u^N\coloneqq m_0 + \sum_{j=1}^N u_j\phi_j,\ u_j\coloneqq\gamma_j\xi_j.
+\end{align*}
+
+\subsection{Uniform Priors}
+To construct the random functions \eqref{random function}, we take $X = L^\infty(D)$, choose the deterministic sequence $\gamma = \{\gamma_j\}_{j=1}^\infty\in l^1$ and specify the i.i.d. sequence $\xi = \{\xi_j\}_{j=1}^\infty$ by $\xi_j\sim U[-1,1]$, uniform random variables on $[-1,1]$ (see, e.g., \cite[Sect. 3.3]{Pope2000}).
+
+Assume further that there are finite, strictly positive constants $m_{\min},m_{\max}$, and $\delta$ s.t.
+\begin{align*}
+    \operatorname{ess\inf}_{{\bf x}\in D} m_0({\bf x})\ge m_{\min},\ \operatorname{ess\sup}_{{\bf x}\in D} m_0({\bf x})\le m_{\max},\ \|\gamma\|_{l^1} = \frac{\delta}{1 + \delta}m_{\min}.
+\end{align*}
+The space $X$ is not separable and so, instead, we work with the space $X'$ found as the closure of the linear span of the functions $(m_0,\{\phi_j\}_{j=1}^\infty)$ w.r.t. the norm $\|\cdot\|_\infty$ on $X$.
+
+The Banach space $(X',\|\cdot\|_\infty)$ is separable.
+
+\begin{theorem}
+    The following holds $\mathbb{P}$-almost surely: the sequence of functions $\{u^N\}_{N=1}^\infty$ given by (10.12) is Cauchy in $X'$, and the limiting function $u$ given by \eqref{random function} satisfies
+    \begin{align*}
+        \frac{1}{1 + \delta}m_{\min}\le u({\bf x})\le m_{\max} + \frac{\delta}{1 + \delta}m_{\min} \mbox{ a.e. } {\bf x}\in D.
+    \end{align*}
+\end{theorem}
+
+\begin{proof}
+    See \cite[pp. 322--323]{Dashti_Stuart2017}.
+\end{proof}
+
+\begin{example}
+    Consider the random function \eqref{random function} as specified in this section.
+    
+    By Theorem 2 we have that, $\mathbb{P}$-a.s., \textbf{(10.13)}
+    \begin{align*}
+        u({\bf x})\ge\frac{1}{1 + \delta}m_{\min} > 0, \mbox{ a.e. } {\bf x}\in D.
+    \end{align*}
+    Set $\kappa = u$ in the elliptic equation \eqref{elliptic}, so that the coefficient $\kappa$ in the equation and the solution $p$ are random variables on $(\mathbb{R}^\infty,\mathcal{B}(\mathbb{R}^\infty),\mathbb{P})$.
+    
+    Since (10.13) holds $\mathbb{P}$-a.s., Lemma 2 shows that, again $\mathbb{P}$-a.s.,
+    \begin{align*}
+        \|p\|_V\le(1 + \delta)\frac{\|f\|_{V^*}}{m_{\min}}.
+    \end{align*}
+    Since the RHS is nonrandom, we have that for all $r\in\mathbb{Z}^+$ the random variable $p\in L_{\mathbb{P}}^r(\Omega;V)$:
+    \begin{align*}
+        \mathbb{E}\|p\|_V^r < \infty.
+    \end{align*}
+    In fact $\mathbb{E}\exp(\alpha\|p\|_V^r) < \infty$ for all $r\in\mathbb{Z}^+$ and $\alpha\in(0,\infty)$.
+\end{example}
+
+\begin{example}[1D Gaussian, linear example]
+    Forward response operator $g\in L(\mathbb{R},\mathbb{R})$
+    
+    Prior:
+    \begin{align*}
+        \mu_0 = \mathcal{N}(0,\sigma_0^2),\ \sigma_0\in\mathbb{R}, \mbox{ Leb. dens. } \rho_0(u) = \frac{1}{\sigma_0\sqrt{2\pi}}\exp\left(-\frac{\|u\|^2}{\sigma_0^2}\right).
+    \end{align*}
+    Noise:
+    \begin{align*}
+        \eta\sim\mathcal{N}(0,\gamma^2),\ \gamma\in\mathbb{R}, \mbox{ Leb. dens. } \rho_0(\eta) = \frac{1}{\gamma\sqrt{2\pi}}\exp\left(-\frac{\|\eta\|^2}{2\gamma^2}\right).
+    \end{align*}
+    Bayes' formula
+    \begin{align*}
+        \rho(u|y) = \frac{\rho(y|u)\rho(u)}{\int_{\mathbb{R}^2} \rho(y|u)\rho(u){\rm d}u}.
+    \end{align*}
+    Completing the square
+    \begin{align*}
+        \mu^y = \mathcal{N}\left(\frac{\sigma_0^2g}{\gamma^2 + g^2\sigma_0^2}y,\sigma_0^2 - \frac{\sigma_0^4g^2}{\gamma^2 + g^2\sigma_0^2}\right).
+    \end{align*}
+    By assumption, we have for the prior density $\rho_0(u)$
+    \begin{align*}
+        \rho_0(u)\propto\exp\left(-\frac{1}{2\sigma_0^2}u^2\right),
+    \end{align*}
+    and the noise has density
+    \begin{align*}
+        \rho(\eta)\propto\exp\left(-\frac{1}{2\gamma^2}\eta^2\right).
+    \end{align*}
+    Thus, by Bayes' formula, the posterior is given by
+    \begin{align*}
+        \rho^y(u)\propto\exp\left(-\frac{1}{2\sigma_0^2}u^2 - \frac{1}{2\gamma^2}(y - gu)^2\right) = \exp\left(-\frac{1}{2}\left(\frac{1}{\sigma_0^2} + \frac{g^2}{\gamma^2}\right)u^2 - 2\frac{gy}{\gamma^2}u + \frac{y^2}{u^2}\right).
+    \end{align*}
+    Defining
+    \begin{align*}
+        a = \frac{1}{\sigma_0^2} + \frac{g^2}{\gamma^2},\ b = \frac{gy}{\gamma^2},\ c = \frac{y^2}{\gamma^2},
+    \end{align*}
+    we are interested in constants $m,K,\sigma$, s.t.
+    \begin{align*}
+        \rho^\gamma(u)\propto\exp\left(-\frac{1}{2\sigma^2}(u - m)^2 + K\right).
+    \end{align*}
+    By completing the square, we obtain
+    \begin{align*}
+        au^2 - 2bu + c = a\left(u^2 - 2\frac{b}{a}u + \frac{c}{a}\right) = a\left(u - \frac{b}{a}\right)^2 + c - \frac{b^2}{a},
+    \end{align*}
+    and thus
+    \begin{align*}
+        \sigma = \frac{1}{a} = \frac{\sigma_0^2\gamma^2}{\gamma^2 + g^2\sigma_0^2},\ m = \frac{b}{a} = \frac{\sigma_0^2g}{\gamma^2 + \sigma_0^2g^2}y,
+    \end{align*}
+    and for the constant $K$, which does not depend on $u$, we obtain
+    \begin{align*}
+        K = c - \frac{b^2}{a} = \frac{y^2}{\gamma^2} - \frac{\sigma_0^2g^2y^2}{y^4 + y^2g^2\sigma^2}.
+    \end{align*}
+    Hence,
+    \begin{align*}
+        \rho^y(u)\propto\exp\left(-\frac{1}{2\left(\frac{\sigma_0^2\gamma^2}{\gamma^2 + g^2\sigma_0^2}\right)^2}\left(u - \frac{\sigma_0^2g}{\gamma^2 + g^2\sigma_0^2}y\right)^2\right).
+    \end{align*}
+\end{example}
+
+\section{Estimators}
+\begin{itemize}
+    \item Maximum a posteriori estimate (MAP)
+    \begin{align*}
+        u_{\rm MAP} = \operatorname{arg\max}_{u\in\mathbb{R}^n} \rho^y(u).
+    \end{align*}
+    \item Conditional mean (CM)
+    \begin{align*}
+        u_{\rm CM} = \mathbb{E}(u|y) = \int_{\mathbb{R}^n} u\rho^y(u){\rm d}u.
+    \end{align*}
+    \item Maximum likelihood estimate (ML)
+    \begin{align*}
+        u_{\rm ML} = \operatorname{arg\max}_{u\in\mathbb{R}^n} \rho(y - \mathcal{G}(u)).
+    \end{align*}
+    \item Conditional variance (speed estimator)
+    \begin{align*}
+        \mathbb{V}(u|y) = \int_{\mathbb{R}^n} (u - u_{\rm CM})(u - u_{\rm CM})^\top\rho^y(u){\rm d}u.
+    \end{align*}
+\end{itemize}
+
+\begin{example}[Linear Gaussian Case]
+    \textbf{Connection of MAP \& CM \& optimization.}
+    
+    Forward response operator $A\in L(\mathbb{R}^n,\mathbb{R}^J)$
+    
+    Prior: $\mu_0 = \mathcal{N}(m_0,C_0)$
+    
+    Noise: $\eta\sim\mathcal{N}(0,\Gamma)$
+    
+    Posterior:
+    \begin{align*}
+        \mu^y = \mathcal{N}(m,C) \mbox{ with } m = m_0 + C_0A^*(AC_0A^* + \Gamma)^{-1}(y - Am_0) \mbox{ and } C = C_0 - C_0A^*(AC_0A^* + \Gamma)^{-1}AC_0.
+    \end{align*}
+    \begin{align*}
+        u_{\rm MAP} &= \operatorname{arg\max}_{u\in\mathbb{R}^n} \rho^y(u) = \operatorname{arg\min}_{u\in\mathbb{R}^n} (u - m)^\top C^{-1}(u - m) = m,\\
+        u_{\rm CM} &= \mathbb{E}(u|y) = m,\\
+        u_{\rm opt} &= \operatorname{arg\min}_{u\in\mathbb{R}^n} \|Ax - y\|_\Gamma^2 + \|u - m_0\|_{C_0}^2 = m.
+    \end{align*}
+\end{example}
+
+\begin{example}[Comparison of CM \& MAP (1D)]
+    Let $u$ be a real-valued rv and assume that the posterior density is given by
+    \begin{align*}
+        \rho^y(u) = \frac{\alpha}{\sigma_0}\varphi\left(\frac{u}{\sigma_0}\right) + \frac{1 - \alpha}{\sigma_1}\varphi\left(\frac{u - 1}{\sigma_1}\right) \mbox{ with } 0 < \alpha < 1,\ \sigma_0,\sigma_1 > 0 \mbox{ and } \varphi(u) = \frac{1}{\sqrt{2\pi}}\exp\left(-\frac{u^2}{2}\right).
+    \end{align*}
+    \textbf{Estimators.}
+    \begin{equation*}
+        u_{\rm CM} = 1 - \alpha,\ u_{\rm MAP} = \left\{\begin{split}
+            &0, &&\mbox{ if } \frac{\alpha}{\sigma_0} > \frac{1 - \alpha}{\sigma_1},\\
+            &1, &&\mbox{ if } \frac{\alpha}{\sigma_0} < \frac{1 - \alpha}{\sigma_1},\\
+            &\{0,1\}, &&\mbox{ if } \frac{\alpha}{\sigma_0} = \frac{1 - \alpha}{\sigma_1}.
+        \end{split}\right.
+    \end{equation*}
+\end{example}
+
+%------------------------------------------------------------------------------%
+
+\chapter{Prior Modeling}
+In this section the authors show how to construct probability measures on a function space, adopting a constructive approach based on random series.
+
+As explained in Sect. A.2.2, \fbox{the natural setting for probability in a function space is that of a separable Banach space.}
+
+A countable infinite sequence in the Banach space $X$ will be used for our random series; in the case where $X$ is not separable, the resulting probability measure will be constructed on a separable subspace $X'$ of $X$ (see the discussion in Sect. 2.1).
+
+%
+Sect. 2.1 describes this general setting, and Sects. 2.2--2.4 consider, in turn, 3 classes of priors termed uniform, Besov and Gaussian.
+
+In Sect. 2.5 the authors link the random series construction to the widely used random field perspective on spatial stochastic processes and the authors summarize in Sect. 2.6.
+
+We denote the prior measures constructed in this section by $\mu_0$.
+
+\section{General Setting}
+We let $\{\phi_j\}_{j=1}^\infty$ denote an infinite sequence in the Banach space $X$, with norm $\|\cdot\|$, of $\mathbb{R}$-valued functions defined on a domain $D$.
+
+We will either take $D\subset\mathbb{R}^d$, a bounded, open set with Lipschitz boundary or $D = \mathbb{T}^d$ the $d$-dimensional torus.
+
+We normalize these functions so that $\|\phi_j\| = 1$ for $j = 1,\ldots,\infty$.
+
+We also introduce another element $m_0\in X$, not necessarily normalized to 1.
+
+Define the function $u$ by \textbf{(10.11)}
+\begin{align*}
+    u = m_0 + \sum_{j=1}^\infty u_j\phi_j.
+\end{align*}
+By randomizing ${\rm u}\coloneqq\{u_j\}_{j=1}^\infty$, we create real-valued random functions on $D$.
+
+(The extension to $\mathbb{R}^n$-valued random functions is straightforward, but omitted for brevity.)
+
+%
+We now define the deterministic sequence $\gamma = \{\gamma_j\}_{j=1}^\infty$ and the i.i.d. random sequence $\xi = \{\xi_j\}_{j=1}^\infty$, and set $u_j = \gamma_j\xi_j$.
+
+We assume that $\xi$ is centered, i.e., that it has mean zero.
+
+Formally we see that the average value of $u$ is then $m_0$ so that this element of $X$ should be thought of as the \textit{mean function}.
+
+We assume that $\gamma\in l_w^p$ for some $p\in[1,\infty)$ and some positive weight sequence $\{w_j\}$ (see Sect. A.1.1).
+
+We define $\Omega = \mathbb{R}^\infty$ and view $\xi$ as a random element in the probability space $(\Omega,{\rm B}(\Omega),\mathbb{P})$ of i.i.d. sequences equipped with the product $\sigma$-algebra; we let $\mathbb{E}$ denote expectation.
+
+This sigma algebra can be generated by cylinder sets if an appropriate distance $d$ is defined on sequences.
+
+However, the distance $d$ captures nothing of the properties of the random function $u$ itself.
+
+For this reason we will be interested in the pushforward of the measure $\mathbb{P}$ on the measure space $(\Omega,{\rm B}(\Omega))$ into a measure $\mu$ on $(X',{\rm B}(X'))$, where $X'$ is a separable Banach space and ${\rm B}(X')$ denotes its Borel $\sigma$-algebra.
+
+Sometimes $X'$ will be the same as $X$ but not always: the space $X$ may not be separable; and, although we have stated the normalization of the $\phi_j$ in $X$, they may of course live in smaller spaces $X'$, and $u$ may do so too.
+
+For either of these reasons, $X'$ may be a proper subspace of $X$.
+
+%
+In the next 3 subsections, the authors demonstrate how this general setting may be adapted to create a variety of useful prior measures on function space; the 4th subsection, which follows these 3, relates the random series construction, in the Gaussian case, to the standard construction of Gaussian random fields.
+
+Dashti \& Stuart will express many of their results in terms of the probability measure $\mathbb{P}$ i.i.d. sequences, but all such results will, of course, have direct implications for the induced pushforward measures on the function spaces where the random functions $u$ live.
+
+We discuss this perspective in the summary Sect. 2.6.
+
+In dealing with the random series construction, we will also find it useful to consider the truncated random functions \textbf{(10.12)}
+\begin{align*}
+    u^N = m_0 + \sum_{j=1}^N u_j\phi_j,\ u_j = \gamma_j\xi_j.
+\end{align*}
+
+\section{Uniform Priors}
+To construct the random functions (10.11), we take $X = L^\infty(D)$, choose the deterministic sequence $\gamma = \{\gamma_j\}_{j=1}^\infty\in l^1$ and specify the i.i.d. sequence $\xi = \{\xi_j\}_{j=1}^\infty$ by $\xi_j\sim U[-1,1]$, uniform random variables on $[-1,1]$.
+
+Assume further that there are finite, strictly positive constants $m_{\min},m_{\max}$, and $\delta$ s.t.
+\begin{align*}
+    \operatorname{ess\inf}_{{\bf x}\in D} m_0({\bf x})\ge m_{\min},\ \operatorname{ess\sup}_{{\bf x}\in D} m_0({\bf x})\le m_{\max},\ \|\gamma\|_{l^1} = \frac{\delta}{1 + \delta}m_{\min}.
+\end{align*}
+The space $X$ is not separable and so, instead, we work with the space $X'$ found as the closure of the linear span of the functions $(m_0,\{\phi_j\}_{j=1}^\infty)$ w.r.t. the norm $\|\cdot\|_\infty$ on $X$.
+
+The Banach space $(X',\|\cdot\|_\infty)$ is separable.
+
+\begin{theorem}
+    The following holds $\mathbb{P}$-almost surely: the sequence of functions $\{u^N\}_{N=1}^\infty$ given by (10.12) is Cauchy in $X'$, and the limiting function $u$ given by (10.11) satisfies
+    \begin{align*}
+        \frac{1}{1 + \delta}m_{\min}\le u({\bf x})\le m_{\max} + \frac{\delta}{1 + \delta}m_{\min} \mbox{ a.e. } {\bf x}\in D.
+    \end{align*}
+\end{theorem}
+
+\begin{proof}
+    See \cite[pp. 322--323]{Dashti_Stuart2017}.
+\end{proof}
+
+\begin{example}
+    Consider the random function (10.11) as specified in this section.
+    
+    By Theorem 2 we have that, $\mathbb{P}$-a.s., \textbf{(10.13)}
+    \begin{align*}
+        u({\bf x})\ge\frac{1}{1 + \delta}m_{\min} > 0, \mbox{ a.e. } {\bf x}\in D.
+    \end{align*}
+    Set $\kappa = u$ in the elliptic equation (10.6), so that the coefficient $\kappa$ in the equation and the solution $p$ are random variables on $(\mathbb{R}^\infty,\mathcal{B}(\mathbb{R}^\infty),\mathbb{P})$.
+    
+    Since (10.13) holds $\mathbb{P}$-a.s., Lemma 2 shows that, again $\mathbb{P}$-a.s.,
+    \begin{align*}
+        \|p\|_V\le(1 + \delta)\frac{\|f\|_{V^*}}{m_{\min}}.
+    \end{align*}
+    Since the RHS is nonrandom, we have that for all $r\in\mathbb{Z}^+$ the random variable $p\in L_{\mathbb{P}}^r(\Omega;V)$:
+    \begin{align*}
+        \mathbb{E}\|p\|_V^r < \infty.
+    \end{align*}
+    In fact $\mathbb{E}\exp(\alpha\|p\|_V^r) < \infty$ for all $r\in\mathbb{Z}^+$ and $\alpha\in(0,\infty)$.
+\end{example}
+We now consider the situation where the family $\{\phi_j\}_{j=1}^\infty$ has a uniform H\"older exponent $\alpha$ and study the implications for H\"older continuity of the random function $u$.
+
+Specially we assume that there $C,a > 0$ and $\alpha\in(0,1]$ s.t., for all $j\ge 1$, \textbf{(10.14)--(10.15)}
+\begin{align*}
+    |\phi_j({\bf x}) - \phi_j({\bf y})|&\le Cj^a|{\bf x} - {\bf y}|^a,\ {\bf x},{\bf y}\in D,\\
+    |m_0({\bf x}) - m_0({\bf y})|&\le C|{\bf x} - {\bf y}|^\alpha,\ {\bf x},{\bf y}\in D.
+\end{align*}
+
+\begin{theorem}
+    Assume that $u$ is given by (10.11) where the collection of functions $(m_0,\{\phi_j\}_{j=1}^\infty)$ satisfy (10.14) and (10.15). Assume further that $\sum_{j=1}^\infty |\gamma_j|^2j^{a\theta} < \infty$ for some $\theta\in(0,2)$. Then $\mathbb{P}$-a.s. we have $u\in C^{0,\beta}(D)$ for all $\beta < \frac{a\theta}{2}$.
+\end{theorem}
+
+\begin{proof}
+    See \cite[p. 324]{Dashti_Stuart2017}.
+\end{proof}
+
+\begin{example}
+    Let $\{\phi_j\}$ denote the Fourier basis for $L^2(D)$ with $D = [0,1]^d$.
+    
+    Then we may take $a = \alpha = 1$.
+    
+    If $\gamma_j = j^{-s}$, then $s > 1$ ensures $\gamma\in l^1$.
+    
+    Furthermore,
+    \begin{align*}
+        \sum_{j=1}^\infty |\gamma_j|^2j^{a\theta} = \sum_{j=1} j^{\theta - 2s} < \infty, \mbox{ for } \theta < 2s - 1.
+    \end{align*}
+    We thus deduce that $u\in C^{0,\beta}([0,1]^d)$ for all $\beta < \min\{s - \frac{1}{2},1\}$.
+\end{example}
+
+\section{Besov Priors}
+For this construction of random functions, we take $X$ to be the Hilbert space
+\begin{align*}
+    X\coloneqq\dot{L}^2(\mathbb{T}^d) = \left\{u:\mathbb{T}^d\to\mathbb{R};\int_{\mathbb{R}^d} |u({\bf x})|^2{\rm d}{\bf x} < \infty,\ \int_{\mathbb{T}^d} u({\bf x}){\rm d}{\bf x} = 0\right\}
+\end{align*}
+of real valued periodic functions in dimension $d\le 3$ with inner product and norm denoted by $\langle\cdot,\cdot\rangle$ and $\|\cdot\|$, resp.
+
+We then set $m_0 = 0$ and let $\{\phi_j\}_{j=1}^\infty$ be an orthonormal basis for $X$.
+
+Consequently, for any $u\in X$, we have for a.e. ${\bf x}\in\mathbb{T}^d$, \textbf{(10.16)}
+\begin{align*}
+    u({\bf x}) = \sum_{j=1}^\infty u_j\phi_j({\bf x}),\ u_j = \langle u,\phi_j\rangle.
+\end{align*}
+Given a function $u:\mathbb{T}^d\to\mathbb{R}$ and the $\{u_j\}$ as defined in (10.16), we define the Banach space $X^{t,q}$ by
+\begin{align*}
+    X^{t,q} = \left\{u:\mathbb{T}^d\to\mathbb{R};\|u\|_{X^{t,q}} < \infty,\ \int_{\mathbb{T}^d} u({\bf x}){\rm d}{\bf x} = 0\right\},
+\end{align*}
+where
+\begin{align*}
+    \|u\|_{X^{t,q}} = \left(\sum_{j=1}^\infty j^{\frac{tq}{d} + \frac{q}{2} - 1}|u_j|^q\right)^{\frac{1}{q}}, \mbox{ with } q\in[1,\infty),\ t > 0.
+\end{align*}
+If $\{\phi_j\}$ form the Fourier basis and $q = 2$, then $X^{t,2}$ is the Sobolev space $\dot{H}^t(\mathbb{T}^d)$ of mean-zero periodic functions with $t$ (possibly non-integer) square-integrable derivatives; in particular $X^{0,2} = \dot{L}^2(\mathbb{T}^d)$.
+
+On the other hand, if the $\{\phi_j\}$ form certain wavelet bases, then $X^{t,q}$ is the \textit{Besov space} $B_{qq}^t$.
+
+%
+As described above, we assume that $u_j = \gamma_j\xi_j$ where $\xi = \{\xi_j\}_{j=1}^\infty$ is an i.i.d. sequence and $\gamma = \{\gamma_j\}_{j=1}^\infty$ is deterministic.
+
+Here we assume that $\xi_j1$ is drawn from the centered measure on $\mathbb{R}$ with density proportional to $\exp\left(-\frac{1}{2}|x|^q\right)$ for some $1\le q < \infty$ - we refer to this as a \textit{$q$-exponential distribution}, noting that $q = 2$ gives a Gaussian and $q = 1$ a Laplace-distributed random variable.
+
+Then for $s > 0$ and $\delta > 0$, we define \textbf{(10.17)}
+\begin{align*}
+    \gamma_j = j^{-\left(\frac{s}{d} + \frac{1}{2} - \frac{1}{q}\right)}\left(\frac{1}{\delta}\right)^{\frac{1}{q}}.
+\end{align*}
+The parameter $\delta$ is a key scaling parameter which will appear in the statement of exponential moment bounds below.
+
+%
+We now prove convergence of the series (found from (10.12) with $m_0 = 0$) \textbf{(10.18)}
+\begin{align*}
+    u^N = \sum_{j=1}^N u_j\phi_j,\ u_j = \gamma_j\xi_j
+\end{align*}
+to the limit function \textbf{(10.19)}
+\begin{align*}
+    u({\bf x}) = \sum_{j=1}^\infty u_j\phi_j({\bf x}),\ u_j = \gamma_j\xi_j,
+\end{align*}
+in an appropriate space.
+
+To understand the sequence of functions $\{u^N\}$, it is useful to introduce the following function space:
+\begin{align*}
+    L_{\mathbb{P}}^q(\Omega;X^{t,q})\coloneqq\left\{v:D\times\Omega\to\mathbb{R};\mathbb{E}(\|v\|_{X^{t,q}}^q) < \infty\right\}.
+\end{align*}
+This is a Banach space, when equipped with the norm $(\mathbb{E}(\|v\|_{X^{t,q}})^q)^{1/q}$.
+
+Thus every Cauchy sequence is convergent in this space.
+
+\begin{theorem}
+    For $t < s - \frac{d}{q}$, the sequence of functions $\{u^N\}_{N=1}^\infty$, given by (10.18) and (10.17) with $\xi_1$ drawn from a centered $q$-exponential distribution, is Cauchy in the Banach space $L_{\mathbb{P}}^q(\Omega;X^{t,q})$. Thus the infinite series (10.19) exists as an $L_{\mathbb{P}}^q$-limit and takes values in $X^{t,q}$ almost surely, for all $t < s - \frac{d}{q}$.
+\end{theorem}
+
+\begin{proof}
+    See \cite[p. 326]{Dashti_Stuart2017}.
+\end{proof}
+The previous theorem gives a sufficient condition, on $t$, for existence of the limiting random function.
+
+The following theorem refines this to an iff statement, in the context of almost sure convergence.
+
+\begin{theorem}
+    Assume that $u$ is given by (10.19) and (10.17) with $\xi_1$ drawn from a centered $q$-exponential distribution. Then the following are equivalent:
+    \begin{itemize}
+        \item[(i)] $\|u\|_{X^{t,q}} < \infty$ $\mathbb{P}$-a.s.;
+        \item[(ii)] $\mathbb{E}(\exp(\alpha\|u\|_{X^{t,q}}^q)) < \infty$ for any $\alpha\in[0,\frac{\delta}{2})$;
+        \item[(iii)] $t < s - \frac{d}{q}$.
+    \end{itemize}
+\end{theorem}
+
+\begin{proof}
+    See \cite[pp. 326--328]{Dashti_Stuart2017}.
+\end{proof}
+
+\begin{lemma}
+    Let $\{I_j\}_{j=1}^\infty$ be an independent sequence of $\mathbb{R}^+$-valued random variables. Then
+    \begin{align*}
+        \sum_{j=1}^\infty I_j < \infty \mbox{ a.s.}\Leftrightarrow\sum_{j=1}^\infty \mathbb{E}(I_j\wedge 1) < \infty.
+    \end{align*}
+\end{lemma}
+As in the previous subsection, we now study the situation where the family $\{\phi_j\}$ has a uniform H\"older exponent $\alpha$ and study the implications for H\"older continuity of the random function $u$.
+
+In this case, however, the basis functions are normalized in $\dot{L}^2$ and not $L^\infty$; thus we must make additional assumptions on the possible growth of the $L^\infty$ norms of $\{\phi_j\}$ with $j$.
+
+We assume that there are $C,a,b > 0$ and $\alpha\in(0,1]$ s.t., for all $j\ge 0$, \textbf{(10.20)}
+\begin{align*}
+    |\phi_j({\bf x})| &= \beta_j\le Cj^b,\ {\bf x}\in D,\\
+    |\phi_j({\bf x}) - \phi_j({\bf y})|&\le Cj^a|{\bf x} - {\bf y}|^\alpha,\ {\bf x},{\bf y}\in D.
+\end{align*}
+We also assume that $a > b$ as, since $\|\phi_j\|_{L^2} = 1$, it is natural that the pre-multiplication constant in the H\"older estimate on the $\{\phi_j\}$ grows in $j$ at least as fast as the bound on the functions themselves.
+
+\begin{theorem}
+    Assume that $u$ is given by (10.19) and (10.17) with $\xi_1$ drawn from a centered $q$-exponential distribution. Suppose also that (10.20) hold and that $s > d(b + q^{-1} + \frac{1}{2}\theta(a - b))$ for some $\theta\in(0,2)$. Then $\mathbb{P}$-a.s. we have $u\in C^{0,\beta}(\mathbb{T}^d)$ for all $\beta < \frac{\alpha\theta}{2}$.
+\end{theorem}
+
+\begin{proof}
+    See \cite[p. 329]{Dashti_Stuart2017}.
+\end{proof}
+We note that the result of Theorem 6 holds true when the mean function is nonzero if it satisfies
+\begin{align*}
+    |m_0({\bf x})|&\le C,\ {\bf x}\in D,\\
+    |m_0({\bf x}) - m_0({\bf y})|&\le C|{\bf x} - {\bf y}|^\alpha,\ {\bf x},{\bf y}\in D.
+\end{align*}
+We have the following sharper result if the family $\{\phi_j\}$ is regular enough to be a basis for $B_{qq}^t$ instead of satisfying (10.20):
+
+\begin{theorem}
+    Assume that $u$ is given by (10.19) and (10.17) with $\xi_1$ drawn from a centered $q$-exponential distribution. Suppose also that $\{\phi_j\}_{j\in\mathbb{N}}$ form a basis for $B_{qq}^t$ for some $t < s - \frac{d}{q}$. Then $u\in C^{0,t}(\mathbb{T}^d)$ $\mathbb{P}$-almost surely.
+\end{theorem}
+
+\begin{proof}
+    See \cite[p. 329]{Dashti_Stuart2017}.
+\end{proof}
+If the mean function $m_0$ is $t$-H\"older continuous, the result of the above theorem holds for a random series with nonzero mean function as well.
+
+\section{Gaussian Priors}
+Let $X$ be a Hilbert space $\mathcal{H}$ of real-valued functions on bounded open $D\subset\mathbb{R}^d$ with Lipschitz boundary and with inner product and norm denoted by $\langle\cdot,\cdot\rangle$ and $\|\cdot\|$, resp.; e.g., $\mathcal{H} = L^2(D;\mathbb{R})$.
+
+Assume that $\{\phi_j\}_{j=1}^\infty$ is an orthonormal basis for $\mathcal{H}$.
+
+We study the Gaussian case where $\xi_1\sim N(0,1)$, and then equation (10.11) with $u_j = \gamma_j\xi_j$ generates random draws from the Gaussian measure $N(m_0,\mathcal{C})$ on $\mathcal{H}$ where the covariance operator $\mathcal{C}$ depends on the sequence $\gamma = \{\gamma_j\}_{j=1}^\infty$.
+
+See the Appendix for background on Gaussian measures in a Hilbert space.
+
+As in Sect. 2.3, we consider the setting in which $m_0 = 0$ so that the function $u$ is given by (10.16) and has mean zero.
+
+We thus focus on identifying $\mathcal{C}$ from the random series (10.16) and studying the regularity of random draws from $N(0,\mathcal{C})$.
+
+%
+Define the Hilbert scale of spaces $\mathcal{H}^t$ as in Sect. A.1.3 with, recall, norm
+\begin{align*}
+    \|u\|_{\mathcal{H}^t}^2 = \sum_{j=1}^\infty j^{\frac{2t}{d}}|u_j|^2.
+\end{align*}
+We choose $\xi_1\sim N(0,1)$ and study convergence of the series (10.18) for $u^N$ to a limit function $u$ given by (10.19); the spaces in which this convergence occurs will depend upon the sequence $\gamma$.
+
+To understand the sequence of functions $\{u^N\}$, it is useful to introduce the following function space:
+\begin{align*}
+    L_{\mathbb{P}}^2(\Omega;\mathcal{H}^t)\coloneqq\left\{v:D\times\Omega\to\mathbb{R};\mathbb{E}(\|v\|_{\mathcal{H}^t})^2 < \infty\right\}.
+\end{align*}
+This is in fact a Hilbert space, although we will not use the Hilbert space structure.
+
+We will only use the fact that $L_{\mathbb{P}}^2$ is a Banach space when equipped with the norm $(\mathbb{E}(\|v\|_{\mathcal{H}^t}^2))^{1/2}$ and that hence every Cauchy sequence is convergent.
+
+\begin{theorem}
+    Assume that $\gamma_j\asymp j^{-s/d}$. Then the sequence of functions $\{u^N\}_{N=1}^\infty$ given by (10.18) is Cauchy in the Hilbert space $L_{\mathbb{P}}^2(\Omega;\mathcal{H}^t)$, $t < s - \frac{d}{2}$. Thus, the infinite series (10.19) exists as an $L_{\mathbb{P}}^2$ limit and takes values in $\mathcal{H}^t$ almost surely, for $t < s - \frac{d}{2}$.
+\end{theorem}
+
+\begin{proof}
+    See \cite[p. 331]{Dashti_Stuart2017}.
+\end{proof}
+
+\begin{remark}
+    We make the following remarks concerning the Gaussian random functions constructed in the preceding theorem.
+    \begin{itemize}
+        \item The preceding theorem shows that the sum (10.18) has an $L_{\mathbb{P}}^2$ limit in $\mathcal{H}^t$ when $t < s - \frac{d}{2}$, as one can also see from the following direct calculation
+        \begin{align*}
+            \mathbb{E}\|u\|_{\mathcal{H}^t}^2 = \sum_{j=1}^\infty j^{\frac{2t}{d}}\mathbb{E}(\gamma_j^2\xi_j^2) = \sum_{j=1}^\infty j^{\frac{2t}{d}}\gamma_j^2\asymp\sum_{j=1}^\infty j^{\frac{2(t - s)}{d}} < \infty.
+        \end{align*}
+        Thus $u\in\mathcal{H}^t$ a.s., for $t < s - \frac{d}{2}$.
+        \item From the preceding theorem, we see that, provided $s > \frac{d}{2}$, the random function in (10.19) generates a mean-zero Gaussian measure on $\mathcal{H}$.
+        
+        The expression (10.19) is known as the \emph{Karhunen-Loève expansion} and the eigenfunctions $\{\phi_j\}_{j=1}^\infty$ as the \emph{Karhunen-Loève basis}.
+        \item The covariance operator $\mathcal{C}$ of a measure $\mu$ on $\mathcal{H}$ may then be viewed as a bounded linear operator from $\mathcal{H}$ into itself defined to satisfy \textbf{(10.24)}
+        \begin{align*}
+            \mathcal{C}l = \int_{\mathcal{H}} \langle l,u\rangle u\mu({\rm d}u),\ \forall l\in\mathcal{H}.
+        \end{align*}
+        Thus, \textbf{(10.25)}
+        \begin{align*}
+            \mathcal{C} = \int_{\mathcal{H}} u\otimes u\mu({\rm d}u).
+        \end{align*}
+        The following formal calculation, which can be made rigorous if $\mathcal{C}$ is trace class on $\mathcal{H}$, gives an expression for the covariance operator:
+        \begin{align*}
+            \mathcal{C} &= \mathbb{E}u\otimes u = \mathbb{E}\left(\sum_{j=1}^\infty\sum_{k=1}^\infty \gamma_j\gamma_k\xi_j\xi_k\phi_j\otimes\phi_k\right) = \left(\sum_{j=1}^\infty\sum_{k=1}^\infty \gamma_j\gamma_k\mathbb{E}(\xi_j\xi_k)\phi_j\otimes\phi_k\right)\\
+            &= \left(\sum_{j=1}^\infty\sum_{k=1}^\infty \gamma_j\gamma_k\delta_{jk}\phi_j\otimes\phi_k\right) = \sum_{j=1}^\infty \gamma_j^2\phi_j\otimes\phi_j.
+        \end{align*}
+        From this expression for the covariance, we may find eigenpairs explicitly:
+        \begin{align*}
+            \mathcal{C}\phi_k = \left(\sum_{j=1}^\infty \gamma_j^2\phi_j\otimes\phi_j\right)\phi_k = \sum_{j=1}^\infty \gamma_j^2\langle\phi_j,\phi_k\rangle\phi_j = \sum_{j=1}^\infty \gamma_j^2\delta_{jk}\phi_k = \gamma_k^2\phi_k.
+        \end{align*}
+        \item The Gaussian measure is denoted by $\mu_0\coloneqq N(0,\mathcal{C})$, a Gaussian with mean function 0 and covariance operator $\mathcal{C}$.
+        
+        The eigenfunctions of $\mathcal{C}$, $\{\phi_j\}_{j=1}^\infty$, are known as the \emph{Karhunen-Loève basis} for measure $\mu_0$.
+        
+        The $\gamma_j^2$ are the eigenvalues associated with this eigenbasis, and thus $\gamma_j$ is the standard deviation of the Gaussian measure in the direction $\phi_j$.
+    \end{itemize}
+\end{remark}
+In the case where $\mathcal{H} = \dot{L}^2(\mathbb{T}^d)$, we are in the setting of Sect. 2.3 and we briefly consider this case.
+
+We assume that the $\{\phi_j\}_{j=1}^\infty$ constitute the Fourier basis.
+
+Let $A = -\Delta$ denote the negative Laplacian equipped with periodic boundary conditions on $[0,1)^d$ and restricted to functions which integrate to zero over $[0,1)^d$.
+
+This operator is positive self-adjoint and has eigenvalues which grow like $j^{2/d}$, analogously to Assumption 1 made in the case of Dirichlet boundary conditions.
+
+It then follows that $\mathcal{H}^t = \mathcal{D}(A^{t/2}) = \dot{H}^t(\mathbb{T}^d)$, the Sobolev space of periodic functions on $[0,1)^d$ with spatial mean equal to zero and $t$ (possibly negative or fractional) square integrable derivatives.
+
+Thus, by the preceding Remarks 2, $u$ defined by (10.19) is in the space $\dot{H}^t$ a.s., $t < s - \frac{d}{2}$.
+
+In fact we can say more about regularity, using the Kolmogorov continuity test and Corollary 4; this we now do.
+
+\begin{theorem}
+    Consider the Karhunen-Loève expansion (10.19) so that $u$ is a sample from the measure $N(0,\mathcal{C})$ in the case where $\mathcal{C} = A^{-s}$ with $A = -\Delta$, $\mathcal{D}(A) = \dot{H}^2(\mathbb{T}^d)$ and $s > \frac{d}{2}$. Then, $\mathbb{P}$-a.s., $u\in\dot{H}^t$, $t < s - \frac{d}{2}$, and $u\in C^{0,t}(\mathbb{T}^d)$ a.s., $t < 1\wedge(s - \frac{d}{2})$.
+\end{theorem}
+
+\begin{proof}
+    See \cite[p. 333]{Dashti_Stuart2017}.
+\end{proof}
+The previous example illustrates the fact that, although we have constructed Gaussian measures in a Hilbert space setting, and that they are naturally defined on a range of Hilbert (Sobolev-like) spaces defined through fractional powers of the Laplacian, they may also be defined on Banach spaces, e.g. the space of H\"older continuous functions.
+
+We now return to the setting of the general domain $D$, rather than the $d$-dimensional torus.
+
+In this general context, it is important to highlight the Fernique theorem, here restated from the Appendix because of its importance:
+
+\begin{theorem}[Fernique Theorem]
+    Let $\mu_0$ be a Gaussian measure on the separable Banach space $X$. Then there exists $\beta_c\in(0,\infty)$ s.t., for all $\beta\in(0,\beta_c)$,
+    \begin{align*}
+        \mathbb{E}^{\mu_0}\exp(\beta\|u\|_X^2) < \infty.
+    \end{align*}
+\end{theorem}
+
+\begin{remark}
+    We make 2 remarks concerning the Fernique theorem.
+    \begin{itemize}
+        \item Theorem 10, when combined with Theorem 9, shows that, with $\beta$ sufficiently small, $\mathbb{E}^{\mu_0}\exp(\beta\|u\|_X^2) < \infty$ for both $X = \dot{H}^t$ and $X = C^{0,t}(\mathbb{T}^d)$, if $t < s - \frac{d}{2}$.
+        \item Let $\mu_0 = N(0,A^{-s})$ where $A$ is as in Theorem 9.
+        
+        Then Theorem 5 proves the Fernique theorem 10 for $X = X^{t,2} = \dot{H}^t$, if $t < s - \frac{d}{2}$; the proof in the case of the torus is very different from the general proof of the result in the abstract setting of Theorem 10.
+        \item Theorem 5(ii) gives, in the Gaussian case, the Fernique theorem in the case that $X$ is the Hilbert space $X^{t,2}$.
+        
+        Furthermore, the constant $\beta_c$ is specified explicitly in that setting.
+        
+        More explicit versions of the general Fernique Theorem 10 are possible, but the characterization of $\beta_c$ is more involved.
+    \end{itemize}
+\end{remark}
+
+\begin{example}
+    Consider the random function (10.11) in the case where $\mathcal{H} = \dot{L}^2(\mathbb{T}^d)$ and $\mu_0 = N(0,A^{-s})$, $s > \frac{d}{2}$ as in the preceding example.
+    
+    Then we know that, $\mu_0$-a.s., $u\in C^{0,t}$, $t < 1\wedge\left(s - \frac{d}{2}\right)$.
+    
+    Set $\kappa = e^u$ in the elliptic PDE (10.7) so that the coefficient $\kappa$ and hence the solution $p$ are random variables on the probability space $(\Omega,\mathcal{F},\mathbb{P})$.
+    
+    Then $\kappa_{\min}$ given in (10.6) satisfies
+    \begin{align*}
+        \kappa_{\min}\ge\exp(-\|u\|_\infty).
+    \end{align*}
+    By Lemma 2 we obtain
+    \begin{align*}
+        \|p\|_V\le\exp(\|u\|_\infty)\|f\|_{V^*}.
+    \end{align*}
+    Since $C^{0,t}\subset L^\infty(\mathbb{T}^d)$, $t\in(0,1)$, we deduce that
+    \begin{align*}
+        \|u\|_{L^\infty}\le K_1\|u\|_{C^{0,t}}.
+    \end{align*}
+    Furthermore, for any $\epsilon > 0$, there is constant $K_2 = K_2(\epsilon)$ s.t. $\exp(K_1rx)\le K_2\exp(\epsilon x^2)$ for all $x\ge 0$.
+    
+    Thus
+    \begin{align*}
+        \|p\|_V^r\le\exp(K_1r\|u\|_{C^{0,t}})\|f\|_{V^*}^r\le K_2\exp(\epsilon\|u\|_{C^{0,t}}^2)\|f\|_{V^*}^t.
+    \end{align*}
+    Hence, by Theorem 10, we deduce that
+    \begin{align*}
+        \mathbb{E}\|p\|_V^r < \infty, \mbox{ i.e. } p\in L_{\mathbb{P}}^r(\Omega;V),\ \forall r\in\mathbb{Z}^+.
+    \end{align*}
+    This result holds for any $r\ge 0$.
+    
+    Thus, when the coefficient of the elliptic PDE is \emph{log normal}, i.e., $\kappa$ is the exponential of a Gaussian function, moments of all orders exist for the random variable $p$.
+    
+    However, unlike the case of the uniform prior, we cannot obtain exponential moments on $\mathbb{E}\exp(\alpha\|p\|_V^r)$ for any $(r,\alpha)\in\mathbb{Z}^+\times(0,\infty)$.
+    
+    This is because the coefficient $\kappa$, while positive a.s., does not satisfy a uniform positive lower bound across the probability space.
+\end{example}
+
+\section{Random Field Perspective}
+In this subsection the authors link the preceding constructions of random functions, through randomized series, to the notion of \textit{random fields}.
+
+Let $(\Omega,\mathcal{F},\mathbb{P})$ be a probability space, with expectation denoted by $\mathbb{E}$, and $D\subseteq\mathbb{R}^d$ an open set.
+
+For the random series constructions developed in the preceding subsections, $\Omega = \mathbb{R}^\infty$ and $\mathcal{F} = {\rm B}(\Omega)$; however, the development of the general theory of random fields does not require this specific choice.
+
+A \textit{random field} on $D$ is a measurable mapping $u:D\times\Omega\to\mathbb{R}^n$.
+
+Thus, for any ${\bf x}\in D$, $u({\bf x};\cdot)$ is an $\mathbb{R}^n$-valued random variable; on the other hand, for any $\omega\in\Omega$, $u(\cdot;\omega):D\to\mathbb{R}^n$ is a vector field.
+
+In the construction of random fields, it is commonplace to 1st construct the \textit{finite-dimensional distributions}.
+
+These are found by choosing any integer $K\ge 1$, and any set of points $\{x_k\}_{k=1}^K$ in $D$, and then considering the random vector $(u(x_1,\cdot)^*,\ldots,u(x_K;\cdot)^*)^*\in\mathbb{R}^{nK}$.
+
+From the finite-dimensional distributions of this collection of random vectors, we would like to be able to make sense of the probability measure $\mu$ on $X$, a separable Banach space equipped with the Borel $\sigma$-algebra ${\rm B}(X)$, via the formula \textbf{(10.26)}
+\begin{align*}
+    \mu(A) = \mathbb{P}(u(\cdot;\omega)\in A),\ A\in{\rm B}(X),
+\end{align*}
+where $\omega$ is taken from a common probability space on which the random element $u\in X$ is defined.
+
+It is thus necessary to study the joint distribution of a set of $K$ $\mathbb{R}^n$-valued random variables, all on a common probability space.
+
+Such $\mathbb{R}^{nK}$-valued random variables are, of course, only defined up to a set of zero measure.
+
+It is desirable that all such finite-dimensional distributions are defined on a common subset $\Omega_0\subset\Omega$ with full measure, so that $u$ may be viewed as a function $u:D\times\Omega_0\to\mathbb{R}^n$; such a choice of random field is termed a \textit{modification}.
+
+When reinterpreting the previous subsections in terms of random fields, statements about almost sure (regularity) properties should be viewed as statements concerning the existence of a modification possessing of the stated almost sure regularity property.
+
+%
+We may define the space of functions
+\begin{align*}
+    L_{\mathbb{P}}^q(\Omega;X)\coloneqq\left\{v:D\times\Omega\to\mathbb{R}^n;\mathbb{E}(\|v\|_X^q) < \infty\right\}.
+\end{align*}
+This is a Banach space, when equipped with the norm $(\mathbb{E}(\|v\|_X^q))^{1/q}$.
+
+We have used such spaces in the preceding subsections when demonstrating convergence of the randomized series.
+
+Note that we often simply write $u(x)$, suppressing the explicit dependence on the probability space.
+
+%
+A \textit{Gaussian random field} is one where, for any integer $K\ge 1$, and any set of points $\{x_k\}_{k=1}^K$ in $D$, the random vector $(u(x_1,\cdot)^*,\ldots,u(x_K;\cdot)^*)^*\in\mathbb{R}^{nK}$ is a Gaussian random vector.
+
+The \textit{mean function} of a Gaussian random field is $m(x) = \mathbb{E}u(x)$.
+
+The \textit{covariance function} is $c(x,y) = \mathbb{E}(u(x) - m(x))(u(y) - m(y))^*$.
+
+For Gaussian random fields, the \textit{mean function} $m:D\to\mathbb{R}^n$ and the \textit{covariance function} $c:D\times D\to\mathbb{R}^{n\times n}$ together completely specify the joint probability distribution for $(u(x_1;\cdot)^*,\ldots,u(x_K)^*)^*\in\mathbb{R}^{nK}$.
+
+Furthermore, if we view the Gaussian random field as a Gaussian measure on $L^2(D;\mathbb{R}^n)$, then the covariance operator can be constructed from the covariance function as follows.
+
+W.l.o.g., we consider the mean-zero case; the more general case follows by shift of origin.
+
+Since the field has mean zero, we have, from (10.24), that for all $h_1,h_2\in L^2(D;\mathbb{R}^n)$,
+\begin{align*}
+    \langle h_1,\mathcal{C}h_2\rangle &= \mathbb{E}\langle h_1,u\rangle\langle u,h_2\rangle = \mathbb{E}\int_D\int_D h_1({\bf x})^*(u({\bf x})u({\bf y})^*)h_2({\bf y}){\rm d}{\bf y}{\rm d}{\bf x}\\
+    &= \mathbb{E}\int_D h_1({\bf x})^*\left(\int_D (u({\bf x})u({\bf y})^*)h_2({\bf y}){\rm d}{\bf y}\right){\rm d}{\bf x} = \int_D h_1({\bf x})^*\left(\int_D c({\bf x},{\bf y})h_2({\bf y}){\rm d}{\bf y}\right){\rm d}{\bf x},
+\end{align*}
+and we deduce that, for all $\psi\in L^2(D;\mathbb{R}^n)$, \textbf{(10.27)}
+\begin{align*}
+    (\mathcal{C}\psi)({\bf x}) = \int_D c({\bf x},{\bf y})\psi({\bf y}){\rm d}{\bf y}.
+\end{align*}
+Thus the covariance operator of a Gaussian random field is an integral operator with kernel given by the covariance function.
+
+As such we may also view the covariance function as the Green's function of the inverse covariance, or \textit{precision}.
+
+%
+A mean-zero Gaussian random field is termed \textit{stationary} if $c({\bf x},{\bf y}) = s({\bf x} - {\bf y})$ for some matrix-valued function $s$, so that shifting the field by a fixed random vector does not change the statistics.
+
+It is \textit{isotropic} if it is stationary and, in addition, $s(\cdot) = \i(|\cdot|)$, for some matrix-valued function $\i$.
+
+%
+In the previous subsection, the authors demonstrated how the regularity of random fields maybe established from the properties of the sequences $\gamma$ (deterministic, with decay) and $\xi$ (i.i.d. random).
+
+Here we show similar results but express them in terms of properties of the covariance function and covariance operator.
+
+\begin{theorem}
+    Consider an $\mathbb{R}^n$-valued Gaussian random field $u$ on $D\subset\mathbb{R}^d$ with mean zero and with isotropic correlation function $c:D\times D\to\mathbb{R}^{n\times n}$. Assume that $D$ is bounded and that $\operatorname{Tr}c({\bf x},{\bf y}) = k(|{\bf x} - {\bf y}|)$ where $k:\mathbb{R}^+\to\mathbb{R}$ is H\"older with any exponent $\alpha\le 1$. Then $u$ is almost surely H\"older continuous on $D$ with any exponent smaller than $\frac{1}{2}\alpha$.
+\end{theorem}
+
+\begin{proof}
+    See \cite[p. 337]{Dashti_Stuart2017}.
+\end{proof}
+It is often convenient both algorithmically and theoretically to define the covariance operator through fractional inverse powers of a differential operator.
+
+Indeed in the previous subsection, we showed that our assumptions on the random series construction we used could be interpreted as having a covariance operator which was an inverse fractional power of the Laplacian on zero spatial average functions with periodic boundary conditions.
+
+We now generalize this perspective and consider covariance operators which are a fractional power of an operator $A$ satisfying the following.
+
+\begin{assumption}
+    The operator $A$, densely defined on the Hilbert space $\mathcal{H} = L^2(D;\mathbb{R}^n)$, satisfies the following properties:
+    \begin{enumerate}
+        \item $A$ is positive definite, self-adjoint and invertible;
+        \item the eigenfunctions $\{\phi_j\}_{j\in\mathbb{N}}$ of $A$ form an orthonormal basis for $\mathcal{H}$;
+        \item the eigenvalues of $A$ satisfy $\alpha_j\asymp j^{2/d}$;
+        \item there is $C > 0$ s.t.
+        \begin{align*}
+            \sup_{j\in\mathbb{N}} \left(\|\phi_j\|_{L^\infty} + \frac{1}{j^{\frac{1}{d}}}{\rm Lip}(\phi_j)\right)\le C.
+        \end{align*}
+    \end{enumerate}
+\end{assumption}
+These properties are satisfied by the Laplacian on a torus, when applied to functions with spatial mean zero.
+
+But they are in fact satisfied for a much wider range of differential operators which are \textit{Laplacian-like}.
+
+E.g., the Dirichlet Laplacian on a bounded open set $D$ in $\mathbb{R}^d$, together with various Laplacian operators perturbed by lower order terms, e.g., Schr\"odinger operators.
+
+Inspection of the proof of Theorem 9 reveals that it only uses the properties of Assumption 2.
+
+Thus we have:
+
+\begin{theorem}
+    Let $u$ be a sample from the measure $N(0,\mathcal{C})$ in the case where $\mathcal{C} = A^{-s}$ with $A$ satisfying Assumptions 2 and $s > \frac{d}{2}$. Then, $\mathbb{P}$-a.s., $u\in\dot{H}^t$, for $t < s - \frac{d}{2}$, and $u\in C^{0,t}(D)$, for $t < 1\wedge\left(s - \frac{d}{2}\right)$.
+\end{theorem}
+
+\begin{example}
+    Consider the case $d = 2$, $n = 1$ and $D = [0,1]^2$.
+    
+    Define the Gaussian random field through the measure $\mu = N(0,(-\Delta)^{-\alpha})$ where $\Delta$ is the Laplacian with domain $H_0^1(D)\cap H^2(D)$.
+    
+    Then Assumption 2 is satisfied by $-\Delta$.
+    
+    By Theorem 12 it follows that choosing $\alpha > 1$ suffices to ensure that draws from $\mu$ are almost surely in $L^2(D)$.
+    
+    It also follows that, in fact, draws from $\mu$ are almost surely in $C(D)$.
+\end{example}
+
+\section{Summary}
+In the preceding 4 subsections, the authors have shown how to create random functions by randomizing the coefficients of a series of functions.
+
+Using these random series, the authors have also studied the regularity properties of the resulting functions.
+
+Furthermore we have extended our perspective in the Gaussian case to determine regularity properties from the properties of the covariance function or the covariance operator.
+
+%
+For the uniform prior, the authors have shown that the random functions all live in a subset of $X = L^\infty$ characterized by the upper and lower bounds given in Theorem 2 and found as the closure of the linear span of the set of functions $(m_0,\{\phi_j\}_{j=1}^\infty)$; denote this subset, which is a separable Banach space, by $X'$.
+
+For the Besov priors, the authors have shown in Theorem 5 that the random functions live in the separable Banach spaces $X^{t,q}$ for all $t < s - \frac{d}{q}$; denote any 1 of these Banach spaces by $X'$.
+
+And finally for the Gaussian priors, the authors have shown in Theorem 8 that the random function exists as an $L^2$ limit in any of the Hilbert spaces $\mathcal{H}^t$ for $t < s - \frac{d}{2}$.
+
+Furthermore, the authors have indicated that, by use of the Kolmogorov continuity theorem, we can also show that the Gaussian random functions lie in certain H\"older spaces; these H\"older spaces are not separable but, by the discussion in Sect. A.1.2, we can embed the spaces $C^{0,\gamma'}$ in the separable uniform H\"older spaces $C_0^{0,\gamma}$ for any $\gamma < \gamma'$; since the upper bound on the range of H\"older exponents established by use of Kolmogorov continuity theorem is open, this means we can work in the same range of H\"older exponents, but restricted to uniform H\"older spaces, thereby regaiing separability.
+
+In this Gaussian case, we denote any of the separable Hilbert or Banach spaces where the Gaussian random function lives almost surely by $X'$.
+
+%
+Thus, in all of these examples, we have created a probability measure $\mu_0$ which is the pushforward of the measure $\mathbb{P}$ on the i.i.d. sequence $\xi$ under the map which takes the sequence into the random function.
+
+The resulting measure lives on the separable Banach space $X'$, and we will often write $\mu_0(X') = 1$ to denote this fact.
+
+This is shorthand for saying that functions drawn from $\mu_0$ are in $X'$ almost surely.
+
+Separability of $X'$ naturally leads to the use of the Borel $\sigma$-algebra to define a canonical measurable space and to the development of an integration theory - Bochner integration - which is natural on this space; see Sect. A.2.2.
+
+%------------------------------------------------------------------------------%
+
+\chapter{Posterior Distribution}
+In this section the authors prove a Bayes' theorem appropriate for combining a likelihood with prior measures on separable Banach spaces as constructed in the previous section.
+
+In Sect. 3.1, the authors start with some general remarks about conditioned random variables.
+
+Sect. 3.2 contains the authors' statement and proof of a Bayes' theorem and specifically its application to Bayesian inversion.
+
+Dashti \& Stuart note here that, \fbox{in their setting, the posterior $\mu^y$ will always be absolutely continuous w.r.t. the prior $\mu_0$}, and they use the standard notation $\mu^y\ll\mu_0$ to denote this.
+
+It is possible to construct examples, e.g., in the purely Gaussian setting, where the posterior is not absolutely continuous w.r.t. the prior.
+
+Thus, it is certainly not necessary to work in the setting where $\mu^y\ll\mu_0$.
+
+However, it is quite natural, from a modeling point of view, to work in this setting: absolute continuity ensures that almost sure properties built into the prior will be inherited by the posterior.
+
+For these almost sure properties to be changed by the data would require that the data contains an infinite amount of information, something which is unnatural in most applications.
+
+%
+In Sect. 3.3, the authors study the example of the heat equation, introduced in Sect. 1.2, from the perspective of Bayesian inversion, and in Sect. 3.4 they do the same for the elliptic inverse problem of Sect. 1.3.
+
+\section{Conditional Random Variables}
+Key to the development of Bayes' theorem, and the posterior distribution, is the notion of conditional random variables.
+
+In this section the authors state an important theorem concerning conditioning.
+
+%
+Let $(X,A)$ and $(Y,B)$ denote a pair of measurable spaces, and let $\nu$ and $\pi$ be probability measures on $X\times Y$.
+
+We assume that $\nu\ll\tau$.
+
+Thus there exists $\pi$-measurable $\phi:X\times Y\to\mathbb{R}$ with $\phi\in L_\pi^1$ (see Sect. A.1.4 for definition of $L_\pi^1$) and \textbf{(10.28)}
+\begin{align*}
+    \frac{{\rm d}\nu}{{\rm d}\pi}(x,y) = \phi(x,y).
+\end{align*}
+I.e., for $(x,y)\in X\times Y$,
+\begin{align*}
+    \mathbb{E}^\nu f(x,y) = \mathbb{E}^\pi(\phi(x,y),f(x,y)),
+\end{align*}
+or, equivalently,
+\begin{align*}
+    \int_{X\times Y} f(x,y)\nu({\rm d}x,{\rm d}y) = \int_{X\times Y} \phi(x,y)f(x,y)\pi({\rm d}x,{\rm d}y).
+\end{align*}
+
+\begin{theorem}
+    Assume that the condition random variable $x|y$ exists under $\pi$ with probability distribution denoted $\pi^y({\rm d}x)$. Then the condition random variable $x|y$ under $\nu$ exists, with probability distribution denoted by $\nu^y({\rm d}x)$. Furthermore, $\nu^y\ll\pi^y$ and if $c(y)\coloneqq\int_X \phi(x,y){\rm d}\pi^y(x) > 0$, then
+    \begin{align*}
+        \frac{{\rm d}\nu^y}{{\rm d}\pi^y}(x) = \frac{1}{c(y)}\phi(x,y).
+    \end{align*}
+\end{theorem}
+
+\begin{example}
+    Let $X = C([0,1];\mathbb{R})$, $Y = \mathbb{R}$.
+    
+    Let $\pi$ denote the measure on $X\times Y$ induced by the random variable $(w(\cdot),w(1))$, where $w$ is a draw from standard unit Wiener measure on $\mathbb{R}$, starting from $w(0) = z$.
+    
+    Let $\pi^y$ denote measure on $X$ found by conditioning Brownian motion to satisfy $w(1) = y$, thus $\pi^y$ is a Brownian bridge measure with $w(0) = z$, $w(1) = y$.
+    
+    %
+    Assume further that
+    \begin{align*}
+        \sup_{x\in X} \Phi(x,y) = \Phi^+(y) < \infty,\ \forall y\in\mathbb{R}.
+    \end{align*} 
+    Then
+    \begin{align*}
+        c(y) = \int_\mathbb{R} \exp(-\phi(x,y)){\rm d}\pi^y(x) > \exp(-\Phi^+(y)) > 0.
+    \end{align*}
+    Thus $\nu^y({\rm d}x)$ exists and
+    \begin{align*}
+        \frac{{\rm d}\nu^y}{{\rm d}\pi^y}(x) = \frac{1}{c(y)}\exp(-\Phi(x,y)).
+    \end{align*}
+\end{example}
+We will use the preceding theorem to go from a construction of the joint probability distribution on unknown and data to the conditional distribution of the unknown, given data.
+
+In constructing the joint probability distribution, we will need to establish measurability of the likelihood, for which the following will be useful:
+
+\begin{lemma}
+    Let $(Z,B)$ be a Borel measurable topological space and assume that $G\in C(Z;\mathbb{R})$ and that $\pi(Z) = 1$ for some probability measure $\pi$ on $(Z,B)$. Then $G$ is a $\pi$-measurable function.
+\end{lemma}
+
+\section{Bayes' Theorem for Inverse Problems}
+Let $X$ and $Y$ be separable Banach spaces, equipped with the Borel $\sigma$-algebra, and $G:X\to Y$ a measurable mapping.
+
+We wish to solve the inverse problem of finding $u$ from $y$ where \textbf{(10.29)}
+\begin{align*}
+    y = G(u) + \eta,
+\end{align*}
+and $\eta\in Y$ denotes \textit{noise}.
+
+We employ a Bayesian approach to this problem in which we let $(u,y)\in X\times Y$ be a random variable and compute $u|y$.
+
+We specify the random variable $(u,y)$ as follows:
+\begin{itemize}
+    \item \textbf{Prior}: $u\sim\mu_0$ measure on $X$.
+    \item \textbf{Noise}: $\eta\sim\mathbb{Q}_0$ measure on $Y$, and (recalling that $\bot$ denotes independence) $\eta\bot u$.
+\end{itemize}
+The random variable $y|u$ is then distributed according to the measure $\mathbb{Q}_u$, the translate of $\mathbb{Q}_0$ by $G(u)$.
+
+We \textit{assume} throughout the following that $\mathbb{Q}_u\ll\mathbb{Q}_0$ for $u$ $\mu_0$-a.s.
+
+Thus, for some \textit{potential} $\Phi:X\times Y\to\mathbb{R}$, \textbf{(10.30)}
+\begin{align*}
+    \frac{{\rm d}\mathbb{Q}_u}{{\rm d}\mathbb{Q}_0}(y) = \exp(-\Phi(u;y)).
+\end{align*}
+Thus, for fixed $u$, $\Phi(u;\cdot):Y\to\mathbb{R}$ is measurable and $\mathbb{E}^{\mathbb{Q}_0}\exp(-\Phi(u;y)) = 1$.
+
+For given instance of the data $y$, $-\Phi(\cdot;y)$ is termed the \textit{log likelihood}.
+
+%
+Define $\nu_0$ to be the product measure \textbf{(10.31)}
+\begin{align*}
+    \nu_0({\rm d}u,{\rm d}y) = \mu_0({\rm d}u)\mathbb{Q}_0({\rm d}y).
+\end{align*}
+We \textit{assume} in what follows that $\Phi(\cdot,\cdot)$ is $\nu_0$ measurable.
+
+Then the random variable $(u,y)\in X\times Y$ is distributed according to measure $\nu({\rm d}u,{\rm d}y) = \mu_0({\rm d}u)\mathbb{Q}_u({\rm d}y)$.
+
+Furthermore, it then follows that $\nu\ll\nu_0$ with
+\begin{align*}
+    \frac{{\rm d}\nu}{{\rm d}\nu_0}(u,y) = \exp(-\Phi(u;y)).
+\end{align*}
+We have the following infinite-dimensional analogue of Theorem 1.
+
+\begin{theorem}[Bayes' Theorem]
+    Assume that $\Phi:X\times Y\to\mathbb{R}$ is $\nu_0$ measurable and that, for $y$ $\mathbb{Q}_0$-a.s., \textbf{(10.32)}
+    \begin{align*}
+        Z\coloneqq\int_X \exp(-\Phi(u;y))\mu_0({\rm d}u) > 0.
+    \end{align*}
+    Then the conditional distribution of $u|y$ exists under $\nu$ and is denoted by $\mu^y$. Furthermore $\mu^y\ll\mu_0$ and, for $y$ $\nu$-a.s., \textbf{(10.33)}
+    \begin{align*}
+        \frac{{\rm d}\mu^y}{{\rm d}\mu_0}(u) = \frac{1}{Z}\exp(-\Phi(u;y)).
+    \end{align*}
+\end{theorem}
+
+\begin{proof}
+    See \cite[p. 343]{Dashti_Stuart2017}.
+\end{proof}
+
+\begin{remark}
+    In order to implement the derivation of Bayes' formula (10.33), 4 essential steps are required:
+    \begin{itemize}
+        \item Define a suitable prior measure $\mu_0$ and noise measure $\mathbb{Q}_0$ whose independent product form the reference measure $\nu_0$.
+        \item Determine the potential $\Phi$ s.t. formula (10.30) holds.
+        \item Show that $\Phi$ is $\nu_0$ measurable.
+        \item Show that the normalization constant $Z$ given by (10.32) is positive almost surely w.r.t. $y\sim\mathbb{Q}_0$.
+    \end{itemize}
+\end{remark}
+We will show how to carry out this program for 2 examples in the following subsections.
+
+The following remark will also be used in studying 1 of the examples.
+
+\begin{remark}
+    The following comments on the setup above may be useful.
+    \begin{itemize}
+        \item In formula (10.33) we can shift $\Phi(u,y)$ by any constant $c(y)$, independent of $u$, provided the constant is finite $\mathbb{Q}_0$-a.s. and hence $\nu$-a.s.
+        
+        Such a shift can be absorbed into a redefinition of the normalization constant $Z$.
+        \item Our Bayes' theorem only asserts that the posterior is absolutely continuous w.r.t. the prior $\mu_0$.
+        
+        In fact equivalence (mutual absolute continuity) will occur when $\Phi(\cdot;y)$ is finite everywhere in $X$.
+    \end{itemize}
+\end{remark}
+
+\section{Heat Equation}
+We apply Bayesian inversion to the heat equation from Sect. 1.2.
+
+Recall that for $G(u) = e^{-A}u$, we have the relationship
+\begin{align*}
+    y = G(u) + \eta,
+\end{align*}
+which we wish to invert.
+
+Let $X = H$ and define
+\begin{align*}
+    \mathcal{H}^t = \mathcal{D}(A^{t/2}) = \left\{w;w = A^{-t/2}w_0,\ w_0\in H\right\}.
+\end{align*}
+Under Assumption 1, we have $\alpha_j\asymp j^{2/d}$ so that this family of spaces is identical with the Hilbert scale of spaces $\mathcal{H}^t$ as defined in Sects. 1.2 and 2.4.
+
+%
+We choose the prior $\mu_0 = N(0,A^{-\alpha})$, $\alpha > \frac{d}{2}$.
+
+Thus $\mu_0(X) = \mu_0(H) = 1$.
+
+Indeed the analysis in Sect. 2.4 shows that $\mu_0(\mathcal{H}^t) = 1$, $t < \alpha - \frac{d}{2}$.
+
+For the likelihood we assume that $\eta\bot u$ with $\eta\sim\mathbb{Q}_0 = N(0,A^{-\beta})$, and $\beta\in\mathbb{R}$.
+
+This measure satisfies $\mathbb{Q}_0(\mathcal{H}^t) = 1$ for $t < \beta - \frac{d}{2}$ and we thus choose $Y = \mathcal{H}^{t'}$ for some $t' < \beta - \frac{d}{2}$.
+
+Notice that the authors' analysis includes the case of white observational noise, for which $\beta = 0$.
+
+The Cameron-Martin theorem 32, together with the fact that $e^{-\lambda A}$ commutes with arbitrary fractional powers of $A$, can be used to show that $y|u\sim\mathbb{Q}_u\coloneqq N(G(u),A^{-\beta})$ where $\mathbb{Q}_u\ll\mathbb{Q}_0$ with
+\begin{align*}
+    \frac{{\rm d}\mathbb{Q}_u}{{\rm d}\mathbb{Q}_0}(y) = \exp(-\Phi(u;y)),
+\end{align*}
+and
+\begin{align*}
+    \Phi(u;y) = \frac{1}{2}\|A^{\frac{\beta}{2}}e^{-A}u\|^2 - \langle A^{\frac{\beta}{2}}e^{-\frac{A}{2}}y,A^{\frac{\beta}{2}}e^{-\frac{A}{2}}u\rangle.
+\end{align*}
+In the following we repeatedly use the fact that $A^\gamma e^{-\lambda A}$, $\lambda > 0$, is a bounded linear operator from $\mathcal{H}^a$ to $\mathcal{H}^b$, any $a,b,\gamma\in\mathbb{R}$.
+
+Recall that $\nu_0({\rm d}u,{\rm d}y) = \mu_0({\rm d}u)\mathbb{Q}_0({\rm d}y)$.
+
+Note that $\nu_0(H\times\mathcal{H}^{t'}) = 1$.
+
+Using the boundedness of $A^\gamma e^{-\lambda A}$, it may be shown that $\Phi:H\times\mathcal{H}^{t'}\to\mathbb{R}$ is continuous and hence $\nu_0$-measurable by Lemma 4.
+
+%
+Theorem 14 shows that the posterior is given by $\mu^y$ where
+\begin{align*}
+    \frac{{\rm d}\mu^y}{{\rm d}\mu_0}(u) = \frac{1}{Z}\exp(-\Phi(u;y)),\ Z = \int_H \exp(-\Phi(u;y))\mu_0({\rm du}),
+\end{align*}
+provided that $Z > 0$ for $y$ $\mathbb{Q}_0$-a.s.
+
+We establish this positivity in the remainder of the proof.
+
+Since $y\in\mathcal{H}^t$ for any $t < \beta - \frac{d}{2}$, $\mathbb{Q}_0$-a.s., we have that $y = A^{-t'/2}w_0$ for some $w_0\in H$ and $t' < \beta - \frac{d}{2}$.
+
+Thus we may write \textbf{(10.34)}
+\begin{align*}
+    \Phi(u;y) = \frac{1}{2}\|A^{\frac{\beta}{2}}e^{-A}u\|^2 - \langle A^{\frac{\beta - t'}{2}}e^{-\frac{A}{2}}w_0,A^{\frac{\beta}{2}}e^{-\frac{A}{2}}u\rangle.
+\end{align*}
+Then, using the boundedness of $A^\gamma e^{-\lambda A}$, $\lambda > 0$, together with (10.34), we have
+\begin{align*}
+    \Phi(u;y)\le C(\|u\|^2 + \|w_0\|^2),
+\end{align*}
+where $\|w_0\|$ is finite $\mathbb{Q}_0$-a.s.
+
+Thus,
+\begin{align*}
+    Z\ge\int_{\|u\|^2\le 1} \exp(-C(1 + \|w_0\|^2))\mu_0({\rm d}u),
+\end{align*}
+and, since $\mu_0(\|u\|^2\le 1) > 0$ (by Theorem 33 all balls have positive measure for Gaussians on a separable Banach space), the required positivity follows.
+
+\section{Elliptic Inverse Problem}
+We consider the elliptic inverse problem from Sect. 1.3 from the Bayesian perspective.
+
+We consider the use of both uniform and Gaussian priors.
+
+Before studying the inverse problem, however, it is important to derive some continuity properties of the forward problem.
+
+Throughout this section, we consider equation (10.7) under the assumption that $f\in V^*$.
+
+\subsection{Forward Problem}
+Recall that in Sect. 1.3, equation (10.10), we defined \textbf{(10.35)}
+\begin{align*}
+    X^+ = \left\{v\in L^\infty(D);\operatorname{ess\inf}_{{\bf x}\in D} v({\bf x}) > 0\right\}.
+\end{align*}
+Then the map $\mathcal{R}:X^+\to V$ by $\mathcal{R}(\kappa) = p$.
+
+This map is well-defined by Lemma 2 and we have the following result.
+
+\begin{lemma}
+    For $i = 1,2$, let
+    \begin{align*}
+        -\nabla\cdot(\kappa_i\nabla p_i) &= f,\ {\bf x}\in D,\\
+        p_i &= 0,\ {\bf x}\in\partial D.
+    \end{align*}
+    Then
+    \begin{align*}
+        \|p_1 - p_2\|_V\le\frac{1}{\kappa_{\min}^2}\|f\|_{V^*}\|\kappa_1 - \kappa_2\|_{L^\infty},
+    \end{align*}
+    where we assume that
+    \begin{align*}
+        \kappa_{\min}\coloneqq\operatorname{ess\inf}_{{\bf x}\in D} \kappa_1({\bf x})\wedge\operatorname{ess\inf}_{{\bf x}\in D} \kappa_2({\bf x}) > 0.
+    \end{align*}
+    Thus the function $\mathcal{R}:X^+\to V$ is locally Lipschitz.
+\end{lemma}
+
+\begin{proof}
+    See \cite[p. 346]{Dashti_Stuart2017}.
+\end{proof}
+
+\subsection{Uniform Priors}
+We now study the inverse problem of finding $\kappa$ from a finite set of continuous linear functionals $\{l_j\}_{j=1}^J$ on $V$, representing measurements of $p$; thus $l_j\in V^*$.
+
+To match the notation from Sect. 3.2, we take $\kappa = u$ and we define the separable Banach space $X'$ as in Sect. 2.2.
+
+It is straightforward to see that Lemma 5 extends to the case where $X^+$ given by (10.35) is replaced by \textbf{(10.36)}
+\begin{align*}
+    X^+ = \left\{v\in X';\operatorname{ess\inf}_{{\bf x}\in D} v({\bf x}) > 0\right\}
+\end{align*}
+since $X'\subset L^\infty(D)$.
+
+When considering uniform priors for the elliptic problem, we work with this definition of $X^+$.
+
+%
+We define $G:X^+\to\mathbb{R}^J$ by
+\begin{align*}
+    G_j(u) = l_j(\mathcal{R}(u)),\ j = 1,\ldots,J,
+\end{align*}
+where, recall, the $l_j$ are elements of $V^*$: bounded linear functionals on $V$.
+
+Then $G(u) = (G_1(u),\ldots,G_J(u))$ and we are interested in the inverse problem of finding $u\in X^+$ from $y$ where $y = G(u) + \eta$ and $\eta$ is the noise.
+
+We assume $\eta\sim N(0,\Gamma)$, for positive symmetric $\Gamma\in\mathbb{R}^{J\times J}$.
+
+(Use of other statistical assumptions on $\eta$ is a straightforward extension of what follows whenever $\eta$ has a smooth density on $\mathbb{R}^J$.)
+
+%
+Let $\mu_0$ denote the prior measure constructed in Sect. 2.2.
+
+Then $\mu_0$-almost surely we have, by Theorem 2, \textbf{(10.37)}
+\begin{align*}
+    u\in X_0^+\coloneqq\left\{v\in X';\frac{1}{1 + \delta}m_{\min}\le v({\bf x})\le m_{\max} + \frac{\delta}{1 + \delta}m_{\min} \mbox{ a.e. } {\bf x}\in D\right\}.
+\end{align*}
+Thus $\mu_0(X_0^+) = 1$.
+
+%
+The likelihood is defined as follows.
+
+Since $\eta\sim N(0,\Gamma)$, it follows that $\mathbb{Q}_0 = N(0,\Gamma)$, $\mathbb{Q}_u = N(G(u),\Gamma)$ and
+\begin{align*}
+    \frac{{\rm d}\mathbb{Q}_u}{{\rm d}\mathbb{Q}_0}(y) = \exp(-\Phi(u;y)),\ \Phi(u;y) = \frac{1}{2}|\Gamma^{-\frac{1}{2}}(y - G(u))|^2 - \frac{1}{2}|\Gamma^{-\frac{1}{2}}y|^2.
+\end{align*}
+Recall that $\nu_0({\rm d}y,{\rm d}u) = \mathbb{Q}_0({\rm d}y)\mu_0({\rm d}u)$.
+
+Since $G:X^+\to\mathbb{R}^J$ is locally Lipschitz by Lemma 5, Lemma 4 implies that $\Phi: X^+\times Y\to\mathbb{R}$ is $\nu_0$-measurable.
+
+Thus Theorem 14 shows that $u|y\sim\mu^y$ where \textbf{(10.38)}
+\begin{align*}
+    \frac{{\rm d}\mu^y}{{\rm d}\mu_0}(u) = \frac{1}{Z}\exp(-\Phi(u;y)),\ Z = \int_{X^+} \exp(-\Phi(u;y))\mu_0({\rm d}u),
+\end{align*}
+provided $Z > 0$ for $y$ $\mathbb{Q}_0$-almost surely.
+
+To see that $Z > 0$, note that
+\begin{align*}
+    Z = \int_{X_0^+} \exp(-\Phi(u;y))\mu_0({\rm d}u),
+\end{align*}
+since $\mu_0(X_0^+) = 1$.
+
+On $X_0^+$ we have that $\mathcal{R}(\cdot)$ is bounded in $V$, and hence $G$ is bounded in $\mathbb{R}^J$.
+
+Furthermore $y$ is finite $\mathbb{Q}_0$-almost surely.
+
+Thus $\mathbb{Q}_0$-almost surely w.r.t. to $y$, $\Phi(\cdot;y)$ is bounded on $X_0^+$; we denote the resulting bound by $M = M(y) < \infty$.
+
+Hence
+\begin{align*}
+    Z\ge\int_{X_0^+} \exp(-M)\mu_0({\rm d}u) = \exp(-M) > 0,
+\end{align*}
+and the result is proved.
+
+%
+We may use Remark 5 to shift $\Phi$ by $\frac{1}{2}|\Gamma^{-1/2}y|^2$, since this is almost surely finite under $\mathbb{Q}_0$ and hence under $\nu({\rm d}u,{\rm d}y) = \mathbb{Q}_u({\rm d}y)\mu_0({\rm d}u)$.
+
+We then obtain the equivalent form for the posterior distribution $\mu^y$: \textbf{(10.39)}
+\begin{align*}
+    \frac{{\rm d}\mu^y}{{\rm d}\mu_0}(u) = \frac{1}{Z}\exp\left(-\frac{1}{2}|\Gamma^{-\frac{1}{2}}(y - G(u))|^2\right),\ Z = \int_X \exp\left(-\frac{1}{2}|\Gamma^{-\frac{1}{2}}(y - G(u))|^2\right)\mu_0({\rm d}u).
+\end{align*}
+
+\subsection{Gaussian Priors}
+Dashti \& Stuart conclude this subsection by discussing the same inverse problem, but using Gaussian priors from Sect. 2.4.
+
+We now set $X = C(\overline{D})$ and $Y = \mathbb{R}^J$ and we note that $X$ embeds continuously into $L^\infty(D)$.
+
+We assume that we can find an operator $A$ which satisfies Assumption 2.
+
+We now take $\kappa = \exp(u)$ and define $G:X\to\mathbb{R}^J$ by
+\begin{align*}
+    G_j(u) = l_j(\mathcal{R}(\exp(u))),\ j = 1,\ldots,J.
+\end{align*}
+We take as prior on $u$ the measure $N(0,A^{-s})$ with $s > \frac{d}{2}$.
+
+Then Theorem 12 shows that $\mu(X) = 1$.
+
+The likelihood is unchanged by the prior, since it concerns $y$ given $u$, and is hence identical to that in the case of the uniform prior, although the mean shift from $\mathbb{Q}_0$ to $\mathbb{Q}_u$ by $G(u)$ now has a different interpretation since $\kappa = \exp(u)$ rather than $\kappa = u$.
+
+Thus we again obtain (10.38) for the posterior distribution (albeit with a different definition of $G(u)$) provided that we can establish that, $\mathbb{Q}_0$-a.s.,
+\begin{align*}
+    Z = \int_X \exp\left(\frac{1}{2}|\Gamma^{-\frac{1}{2}}y|^2 - \frac{1}{2}|\Gamma^{-\frac{1}{2}}(y - G(u))|^2\right)\mu_0({\rm d}u) > 0.
+\end{align*}
+To this end, we use the fact that the unit ball in $X$, denoted $B$, has positive measure by Theorem 33 and that on this ball $\mathcal{R}(\exp(u))$ is bounded in $V$ by $e^{-a}\|f\|_{V^*}$, by Lemma 2, for some finite positive constant $a$.
+
+This follows from the continuous embedding of $X$ into $L^\infty$ and since the infimum of $\kappa = \exp(u)$ is bounded below by $e^{-\|u\|_{L^\infty}}$.
+
+Thus $G$ is bounded on $B$ and, noting that $y$ is $\mathbb{Q}_0$-a.s. finite, we have for some $M = M(y) < \infty$,
+\begin{align*}
+    \sup_{u\in B} \left(\frac{1}{2}|\Gamma^{-\frac{1}{2}}(y - G(u))|^2 - \frac{1}{2}|\Gamma^{-\frac{1}{2}}y|^2\right) < M.
+\end{align*}
+Hence
+\begin{align*}
+    Z\ge\int_B \exp(-M)\mu_0({\rm d}u) = \exp(-M)\mu_0(B) > 0,
+\end{align*}
+since all balls have positive measure for Gaussian measure on a separable Banach space.
+
+Thus we again obtain (10.39) for the posterior measure, now with the new definition of $G$, and hence $\Phi$.
+
+%------------------------------------------------------------------------------%
+
+\chapter{Common Structures}
+
+\section{Wellposedness}
+\cite[Chap. 3]{Ito_Jin2015}: ``Inverse problems suffer from instability, which poses significantly challenges to their stable and accurate numerical solution.
+Therefore, specialized techniques are required.''
+
+\begin{example}
+    Consider again the heat conduction equation
+    \begin{equation*}
+        \left\{\begin{split}
+            v_t + Av &= 0,&&\mbox{ in }(0,T)\times\Omega,\\
+            v &= 0,&&\mbox{ on }[0,T]\times\partial\Omega,\\
+            v(0,\cdot) &= u,&&\mbox{ in }\Omega,
+        \end{split}\right.
+    \end{equation*}
+    where $A = -\Delta$, $D(A) = H^2(\Omega)\cap H_0^1(\Omega)$, and both perfect data $y = e^{-A}u$, derived from the forward model with no noise, and noisy data $y' = e^{-A}u + \eta$.
+    
+    Consider the case where $\eta = \epsilon\varphi_j$ with $\epsilon\in(0,1)$ small and $\varphi_j$ a normalized eigenfunction of $A$.
+    
+    Thus $\|\eta\|_{L^2(\Omega)} = \epsilon$.
+    
+    Obviously application of the inverse of $e^{-A}$ to $y$ returns the point $u$ which gave rise to the perfect data.
+    
+    It is natural to apply the inverse of $e^{-A}$ to both $y$ and to $y'$ to understand the effect of the noise.
+    
+    Doing so yields the identity
+    \begin{align*}
+        \|e^Ay - e^Ay'\|_{L^2(\Omega)} = \|e^A(y - y')\|_{L^2(\Omega)} = \|e^A\eta\|_{L^2(\Omega)} = \epsilon\|e^A\varphi_j\|_{L^2(\Omega)} = \epsilon e^{\alpha_j}.
+    \end{align*}
+    Recall Assumption 1 which gives $\alpha_j\asymp j^{\frac{2}{d}}\to\infty$ as $j\to\infty$.
+    
+    Now fix any $a > 0$ and choose $j$ large enough to ensure that $\alpha_j\ge(a + 1)\log(\epsilon^{-1})$.
+    
+    It then follows that $\|y - y'\|_{L^2(\Omega)} = \epsilon$ while $\|e^Ay - e^Ay'\|_{L^2(\Omega)} = \epsilon e^{(a + 1)\log(\epsilon^{-1})} = \epsilon\epsilon^{-(a + 1)} = \epsilon^{-a}$.
+    
+    This is a manifestation of ill posedness.
+    
+    Furthermore, since $a > 0$ is arbitrary, the ill posedness can be made arbitrarily bad by considering $a\to\infty$ (then $\epsilon^{-a}\to\infty$).
+\end{example}
+\textbf{Aim.} To show that \textit{this ill-posedness affect does not occur in the Bayesian posterior distribution: small changes in the data $y$ lead to small changes in the measure $\mu^y$}.
+
+Let $X$ and $Y$ be separable Banach spaces, equipped with the Borel $\sigma$-algebra, and $\mu_0$ a measure on $X$.
+
+We will work under assumptions which enable us to make sense of the following measure $\mu^y\ll\mu_0$ defined, for some $\Phi: X\times Y\to\mathbb{R}$, by
+\begin{align*}
+    \frac{{\rm d}\mu^y}{{\rm d}\mu_0}(u) = \frac{1}{Z(y)}\exp(-\Phi(u;y)),\ Z(y)\coloneqq\int_X \exp(-\Phi(u;y))\mu_0({\rm d}u).
+\end{align*}
+
+\begin{question}
+    Why does this formula make sense? \emph{$\to$ Require: Integrability of the integrand of $Z(y)$ (and thus a lower bound of the likelihood $\Phi(u;y)$), nonzero-being (and thus positivity) of the denominator $Z(y)$.}
+\end{question}
+We make the following assumptions concerning $\Phi$:
+
+\begin{assumption}
+    \label{assumption 1}
+    Let $X'\subseteq X$ and assume that $\Phi\in C(X'\times Y;\mathbb{R})$. Assume further that there are functions $M_1:\mathbb{R}_{\ge 0}\times\mathbb{R}_{\ge 0}\to\mathbb{R}_{\ge 0}$, $M_2:\mathbb{R}_{\ge 0}\times\mathbb{R}_{\ge 0}\to\mathbb{R}_{> 0}$,\footnote{$M_2$ is required to be strictly positive to prevent the case that $\Phi(u;y) = {\rm const}$ for all $y\in B_Y(0,r)$ which is deduced from the 2nd inequality.} monotonic non-decreasing separately in each argument, s.t. for all $u\in X'$, $y,y_1,y_2\in B_Y(0,r)$,
+    \begin{align*}
+        \Phi(u;y)&\ge-M_1(r,\|u\|_X),\\
+        |\Phi(u;y_1) - \Phi(u;y_2)|&\le M_2(r,\|u\|_X)\|y_1 - y_2\|_Y.
+    \end{align*}
+\end{assumption}
+
+\begin{question}
+    Why do we need the Lipschitzian assumption of $\Phi(u;y)$ w.r.t. the 2nd argument?
+\end{question}
+
+In order to measure the effect of changes in $y$ on the measure $\mu^y$, we need a metric on measures.
+
+Dashti \& Stuart use the \href{https://en.wikipedia.org/wiki/Hellinger_distance}{Hellinger metric} defined in \cite[Sect. A.2.4]{Dashti_Stuart2017}.
+
+\paragraph*{A brief summary of Hellinger metric \& its properties.} Assume that we have 2 probability measures $\mu$ and $\mu'$ on a separable Banach space denoted by $B$ (actually the considerations here apply on a Polish space but we do not need this level of generality).
+
+Assume that $\mu$ and $\mu'$ are both absolutely continuous w.r.t. a common reference measure $\nu$, also defined on the same measure space, e.g., $\nu = \frac{1}{2}(\mu + \mu')$.
+
+The resulting metrics that we define are independent of the choice of this common reference measure.
+
+\begin{definition}
+    The \emph{total variation distance} between $\mu$ and $\mu'$ is
+    \begin{align*}
+        d_{\rm TV}(\mu,\mu')\coloneqq\frac{1}{2}\int_B \left|\frac{{\rm d}\mu}{{\rm d}\nu} - \frac{{\rm d}\mu'}{{\rm d}\nu}\right|{\rm d}\nu.
+    \end{align*}
+\end{definition}
+In particular, if $\mu'$ is absolutely continuous w.r.t. $\mu$, then
+\begin{align*}
+    d_{\rm TV}(\mu,\mu')\coloneqq\frac{1}{2}\int_B \left|1 - \frac{{\rm d}\mu'}{{\rm d}\mu}\right|{\rm d}\mu.
+\end{align*}
+
+\begin{definition}
+    The \emph{Hellinger distance} between $\mu$ and $\mu'$ is
+    \begin{align*}
+        d_{\rm Hell}(\mu,\mu')\coloneqq\sqrt{\frac{1}{2}\int_B \left(\sqrt{\frac{{\rm d}\mu}{{\rm d}\nu}} - \sqrt{\frac{{\rm d}\mu'}{{\rm d}\nu}}\right)^2{\rm d}\nu}.
+    \end{align*}
+\end{definition}
+In particular, if $\mu'$ is absolutely continuous w.r.t. $\mu$, then
+\begin{align*}
+    d_{\rm Hell}(\mu,\mu') = \sqrt{\frac{1}{2}\int_B \left(1 - \sqrt{\frac{{\rm d}\mu'}{{\rm d}\mu}}\right)^2{\rm d}\mu}.
+\end{align*}
+Note that the numerical constant $\frac{1}{2}$ appearing in both definitions is chosen in such a way as to ensure the bounds
+\begin{align*}
+    0\le d_{\rm TV}(\mu,\mu')\le 1,\ 0\le d_{\rm Hell}(\mu,\mu')\le 1.
+\end{align*}
+The Hellinger and total variation distances are related as follows, which shows in particular that they both generate the same topology:
+
+\begin{lemma}
+    The total variation and Hellinger metrics are related by the inequalities
+    \begin{align*}
+        \frac{1}{\sqrt{2}}d_{\rm TV}(\mu,\mu')\le d_{\rm Hell}(\mu,\mu')\le d_{\rm TV}(\mu,\mu')^{\frac{1}{2}}.
+    \end{align*}
+\end{lemma}
+Furthermore, the Hellinger distance is particularly useful for estimating the difference between expectation values of functions of random variables under different measures:
+
+\begin{lemma}
+    Let $\mu$ and $\mu'$ be 2 probability measures on a separable Banach space $X$. Assume also that $f:X\to E$, where $(E,\|\cdot\|)$ is a separable Banach space, is measurable and has 2nd moments w.r.t. both $\mu$ and $\mu'$. Then
+    \begin{align*}
+        \|\mathbb{E}^\mu f - \mathbb{E}^{\mu'}f\|\le 2\left(\mathbb{E}^\mu\|f\|^2 + \mathbb{E}^{\mu'}\|f\|^2\right)^{\frac{1}{2}}d_{\rm Hell}(\mu,\mu').
+    \end{align*}
+    Furthermore, if $E$ is a separable Hilbert space and $f:X\to E$ as before has 4th moments, then
+    \begin{align*}
+        \|\mathbb{E}^\mu(f\otimes f) - \mathbb{E}^{\mu'}(f\otimes f)\|\le 2\left(\mathbb{E}^\mu\|f\|^4 + \mathbb{E}^{\mu'}\|f\|^4\right)^{\frac{1}{2}}d_{\rm Hell}(\mu,\mu').
+    \end{align*}
+\end{lemma}
+
+\begin{proof}
+    See \cite[p. 410]{Dashti_Stuart2017}.
+\end{proof}
+
+\begin{remark}
+    Note, in particular, that choosing $X = E$, and with $f$ chosen to be the identity mapping, we deduce that the differences between the mean (resp., covariance operator) of 2 measures are bounded above by their Hellinger distance, provided that one has some a priori control on the 2nd (resp., 4th) moments.
+\end{remark}
+Go back to our main discussion:
+
+\begin{theorem}
+    Let Assumptions \ref{assumption 1} hold. Assume that $\mu_0(X') = 1$ and that $\mu_0(X'\cap B) > 0$ for some bounded set $B$ in $X$. Assume additionally that, for every fixed $r > 0$,
+    \begin{align*}
+        \exp(M_1(r,\|u\|_X))\in L_{\mu_0}^1(X;\mathbb{R}).
+    \end{align*}
+    Then, for every $y\in Y$, $Z(y)$ given by
+    \begin{align*}
+        Z(y)\coloneqq\int_X \exp(-\Phi(u;y))\mu_0({\rm d}u).
+    \end{align*}
+    is positive and finite and the probability measure $\mu^y$ given by
+    \begin{align*}
+        \frac{{\rm d}\mu^y}{{\rm d}\mu_0}(u) = \frac{1}{Z(y)}\exp(-\Phi(u;y)),
+    \end{align*}
+    is well defined.
+\end{theorem}
+
+\begin{question}
+    Why need the assumption $\mu_0(X'\cap B) > 0$ for some bounded set $B$ in $X$?
+\end{question}
+
+\begin{proof}
+    See \cite[p. 351]{Dashti_Stuart2017}.
+    
+    The boundedness of $Z(y)$ follows directly from the lower bound on $\Phi$ in Assumption 1, together with the assumed integrability condition in the theorem:
+    \begin{align*}
+        Z(y) = \int_X \exp(-\Phi(u;y))\mu_0({\rm d}u)\le\int_X \exp(M_1(r,\|u\|_X))\mu_0({\rm d}u) < \infty.
+    \end{align*}
+    Since $u\sim\mu_0$ satisfies $u\in X'$ a.s., we have
+    \begin{align*}
+        Z(y) = \int_{X'} \exp(-\Phi(u;y))\mu_0({\rm d}u).
+    \end{align*}
+    Note that $B'\coloneqq X'\cap B$ is bounded in $X$. Define
+    \begin{align*}
+        R_1\coloneqq\sup_{u\in B'} \|u\|_X < \infty.
+    \end{align*}
+    Since $\Phi:X'\times Y\to\mathbb{R}$ is continuous, $\Phi$ is finite at every point in $B'\times\{y\}$.
+    
+    Thus, by the continuity of $\Phi(\cdot;\cdot)$ implied by Assumptions \ref{assumption 1},
+    \begin{align*}
+        \sup_{(u,y)\in B'\times B_Y(0,r)} \Phi(u;y) = R_2 < \infty.
+    \end{align*}
+    Indeed,
+    \begin{align*}
+        \forall u\in B'\subset X,\,\ \forall y\in B_Y(0,r):\ \Phi(u;y)\le\Phi(u;0) + M_2(r,\|u\|_X)\|y\|_Y\le\Phi(u;0) + rM_2(r,\|u\|_X),
+    \end{align*}
+    and thus
+    \begin{align*}
+        \sup_{(u,y)\in B'\times B_Y(0,r)} \Phi(u;y)&\le\sup_{u\in B'} \Phi(u;0) + rM_2(r,\|u\|_X)\le\sup_{u\in B'} \Phi(u;0) + rM_2(r,\sup_{u\in B'} \|u\|_X)\\
+        &= \sup_{u\in B'} \Phi(u;0) + rM_2(r,R_1) =: R_2.
+    \end{align*}
+    Hence
+    \begin{align}
+        Z(y) &= \int_{X'} \exp(-\Phi(u;y))\mu_0({\rm d}u)\ge\int_{B'} \exp(-\Phi(u;y))\mu_0({\rm d}u)\nonumber\\
+        &\ge\int_{B'} \exp(-R_2)\mu_0({\rm d}u) = \exp(-R_2)\mu_0(B') > 0.\label{Dashti_Stuart2017 (10.41)}
+    \end{align}
+    Since $\mu_0(B')$ is assumed positive and $R_2$ is finite, we deduce that $Z(y) > 0$.
+\end{proof}
+
+\begin{remark}
+    The following remarks apply to the preceding and following theorem.
+    \begin{itemize}
+        \item In the preceding theorem, we are not explicitly working in a Bayesian setting: we are showing that, under the stated conditions on $\Phi$, the measure is well defined and normalizable.
+        
+        In Theorem 14, we did not need to check normalizability because $\mu^y$ was defined as a regular conditional probability, via Theorem 13, and therefore automatically normalizable.
+        \item The lower bound \eqref{Dashti_Stuart2017 (10.41)} is used repeatedly in what follows, without comment.
+        \item Establishing the integrability conditions for both the preceding
+        \begin{align*}
+            \exp(M_1(r,\|u\|_X))\in L_{\mu_0}^1(X;\mathbb{R}),
+        \end{align*}
+        and following theorem is often achieved for Gaussian $\mu_0$ by appealing to the Fernique theorem.
+    \end{itemize}
+\end{remark}
+
+\begin{theorem}[Fernique theorem]
+    Let $\mu_0$ be a Gaussian measure on the separable Banach space $X$. Then there exists $\beta_{\rm c}\in(0,\infty)$ s.t.,\footnote{The subscript c stands for ``critical value'' which is commonly used in the analysis of PDEs.}
+    \begin{align*}
+        \mathbb{E}^{\mu_0}\exp(\beta\|u\|_X^2) < \infty,\ \forall\beta\in(0,\beta_{\rm c}).
+    \end{align*}
+\end{theorem}
+
+\begin{theorem}
+    Let Assumption 1 hold. Assume that $\mu_0(X') = 1$ and that $\mu_0(X'\cap B) > 0$ for some bounded set $B$ in $X$. Assume additionally that, for every fixed $r > 0$,
+    \begin{align*}
+        \exp(M_1(r,\|u\|_X))\left(1 + M_2(r,\|u\|_X)^2\right)\in L_{\mu_0}^1(X;\mathbb{R}).
+    \end{align*}
+    Then there is $C = C(r) > 0$ s.t., for all $y,y'\in B_Y(0,r)$
+    \begin{align*}
+        d_{\rm Hell}(\mu^y,\mu^{y'})\le C\|y - y'\|_Y.
+    \end{align*}
+\end{theorem}
+Cf. integrability conditions of these 2 theorems:
+\begin{align*}
+    \exp(M_1(r,\|u\|_X))&\in L_{\mu_0}^1(X;\mathbb{R}),\\
+    \exp(M_1(r,\|u\|_X))\left(1 + M_2(r,\|u\|_X)^2\right)&\in L_{\mu_0}^1(X;\mathbb{R}).
+\end{align*}
+
+\begin{proof}
+    See \cite[pp. 352--354]{Dashti_Stuart2017}.
+    
+    Throughout this proof, we use $C$ to denote a constant independent of $u$, but possibly depending on the fixed value of $r$; it may change from occurrence to occurrence.
+    
+    Since $M_2(r,\cdot)$ is monotonic non-decreasing and strictly positive on $[0,\infty)$,
+    \begin{align}
+        \label{Dashti_Stuart2017 (10.42a)}
+        \exp(M_1(r,\|u\|_X))M_2(r,\|u\|_X)&\le\exp(M_1(r,\|u\|_X))\left(1 + M_2(r,\|u\|_X)^2\right),\\
+        \label{Dashti_Stuart2017 (10.42b)}
+        \exp(M_1(r,\|u\|_X))&\le\exp(M_1(r,\|u\|_X))\left(1 + M_2(r,\|u\|_X)^2\right).
+    \end{align}
+    Let $Z = Z(y)$ and $Z' = Z(y')$ denote the \textit{normalization constants} for $\mu^y$ and $\mu^{y'}$ so that, by Theorem 15,
+    \begin{align*}
+        Z &= \int_{X'} \exp(-\Phi(u;y))\mu_0({\rm d}u) > 0,\\
+        Z' &= \int_{X'} \exp(-\Phi(u;y'))\mu_0({\rm d}u) > 0.
+    \end{align*}
+    Then, using the local Lipschitz property of the exponential and the assumed Lipschitz continuity of $\Phi(u,\cdot)$, together with \eqref{Dashti_Stuart2017 (10.42a)}, we have
+    \begin{align*}
+        |Z - Z'|&\le\int_{X'} |\exp(-\Phi(u;y)) - \exp(-\Phi(u;y'))|\mu_0({\rm d}u)\le\int_{X'} \exp(M_1(r,\|u\|_X))|\Phi(u;y) - \Phi(u;y')|\mu_0({\rm d}u)\\
+        &\le\left(\int_{X'} \exp(M_1(r,\|u\|_X))M_2(r,\|u\|_X)\mu_0({\rm d}u)\right)\|y - y'\|_Y\\
+        &\le\left(\int_{X'} \exp(M_1(r,\|u\|_X))\left(1 + M_2(r,\|u\|_X)^2\right)\mu_0({\rm d}u)\right)\|y - y'\|_Y\le C\|y - y'\|_Y.
+    \end{align*}
+    The last line follows because the integrand is in $L_{\mu_0}^1$ by assumption.
+    
+    From the definition of Hellinger distance, we have
+    \begin{align*}
+        \left(d_{\rm Hell}(\mu^y,\mu^{y'})\right)^2\le I_1 + I_2,
+    \end{align*}
+    where
+    \begin{align*}
+        I_1&\coloneqq\frac{1}{Z}\int_{X'} \left(\exp\left(-\frac{1}{2}\Phi(u;y)\right) - \exp\left(-\frac{1}{2}\Phi(u;y')\right)\right)^2\mu_0({\rm d}u),\\
+        I_2&\coloneqq|Z^{-\frac{1}{2}} - (Z')^{-\frac{1}{2}}|^2\int_{X'} \exp(-\Phi(u;y'))\mu_0({\rm d}u).
+    \end{align*}
+    Indeed, recall that
+    \begin{align*}
+        \frac{{\rm d}\mu^y}{{\rm d}\mu_0}(u)&\coloneqq\frac{1}{Z}\exp(-\Phi(u;y))\mbox{ where } Z\coloneqq Z(y)\coloneqq\int_X \exp(-\Phi(u;y))\mu_0({\rm d}u) = \int_{X'} \exp(-\Phi(u;y))\mu_0({\rm d}u),\\
+        \frac{{\rm d}\mu^{y'}}{{\rm d}\mu_0}(u)&\coloneqq\frac{1}{Z'}\exp(-\Phi(u;y'))\mbox{ where } Z'\coloneqq Z(y')\coloneqq\int_X \exp(-\Phi(u;y'))\mu_0({\rm d}u) = \int_{X'} \exp(-\Phi(u;y'))\mu_0({\rm d}u),
+    \end{align*}
+    then
+    \begin{align*}
+        &\left(d_{\rm Hell}(\mu^y,\mu^{y'})\right)^2 = \frac{1}{2}\int_{X'} \left(\sqrt{\frac{{\rm d}\mu^y}{{\rm d}\mu_0}} - \sqrt{\frac{{\rm d}\mu^{y'}}{{\rm d}\mu_0}}\right)^2{\rm d}\mu_0({\rm d}u)\\
+        &= \frac{1}{2}\int_{X'} \left[Z^{-\frac{1}{2}}\exp\left(-\frac{1}{2}\Phi(u;y)\right) - (Z')^{-\frac{1}{2}}\exp\left(-\frac{1}{2}\Phi(u;y')\right)\right]^2\mu_0({\rm d}u)\\
+        &= \frac{1}{2}\int_{X'} \left[Z^{-\frac{1}{2}}\left(\exp\left(-\frac{1}{2}\Phi(u;y)\right) - \exp\left(-\frac{1}{2}\Phi(u;y')\right)\right) + \left(Z^{-\frac{1}{2}} - (Z')^{-\frac{1}{2}}\right)\exp\left(-\frac{1}{2}\Phi(u;y')\right)\right]^2\mu_0{\rm d}u\\
+        &\le\frac{1}{Z}\int_{X'} \left(\exp\left(-\frac{1}{2}\Phi(u;y)\right) - \exp\left(-\frac{1}{2}\Phi(u;y')\right)\right)^2\mu_0({\rm d}u) + |Z^{-\frac{1}{2}} - (Z')^{-\frac{1}{2}}|^2\int_{X'} \exp(-\Phi(u;y'))\mu_0({\rm d}u).
+    \end{align*}
+    Note that, again using similar Lipschitz calculations to those above, using the fact that $Z > 0$ and Assumption \ref{assumption 1},
+    \begin{align*}
+        I_1\le\cdots\le C\|y - y'\|_Y^2.
+    \end{align*}
+    Also, using Assumptions \ref{assumption 1}, together with \ref{Dashti_Stuart2017 (10.42b)},
+    \begin{align*}
+        I_2\le\cdots\le C\|y - y'\|_Y^2.
+    \end{align*}
+    The result is complete.
+\end{proof}
+
+\begin{remark}
+    The Hellinger metric has the very desirable property that it translates directly into bounds on expectations.
+    
+    For functions $f$ which are in $L_{\mu^y}^2(X;\mathbb{R})$ and $L_{\mu^{y'}}^2(X;\mathbb{R})$, the closeness of the Hellinger metric implies closeness of expectations of $f$.
+    
+    To be precise, for $y,y'\in B_Y(0,r)$, we have
+    \begin{align*}
+        |\mathbb{E}^{\mu^y}f(u) - \mathbb{E}^{\mu^{y'}}f(u)|\le Cd_{\rm Hell}(\mu^y,\mu^{y'}),
+    \end{align*}
+    where constant $C$ depends on $r$ and on the expectations of $|f|^2$ under $\mu^y$ and $\mu^{y'}$.
+    
+    It follows that
+    \begin{align*}
+        |\mathbb{E}^{\mu^y}f(u) - \mathbb{E}^{\mu^{y'}}f(u)|\le C\|y - y'\|_Y,
+    \end{align*}
+    for a possibly different constant $C$ which also depends on $r$ and on the expectations of $|f|^2$ under $\mu^y$ and $\mu^{y'}$.
+\end{remark}
+
+\section{Approximation}
+In this section we concentrate on continuity properties of the posterior measure w.r.t. approximation of the potential $\Phi$.
+
+The methods used are very similar to those in the previous subsection, and we establish a continuity property of the posterior distribution, in the Hellinger metric, w.r.t. small changes in the potential $\Phi$.
+
+%
+Because the data $y$ plays no explicit role in this discussion, we drop explicit reference to it.
+
+Let $X$ be a Banach space and $\mu_0$ a measure on $X$.
+
+Assume that $\mu$ and $\mu^N$ are both absolutely continuous w.r.t. $\mu_0$ and given by \textbf{(10.43)}
+\begin{align*}
+    \frac{{\rm d}\mu}{{\rm d}\mu_0}(u) = \frac{1}{Z}\exp(-\Phi(u)),\ Z = \int_X \exp(-\Phi(u))\mu_0({\rm d}u),
+\end{align*}
+and \textbf{(10.44)}
+\begin{align*}
+    \frac{{\rm d}\mu^N}{{\rm d}\mu_0}(u) = \frac{1}{Z^N}\exp(-\Phi^N(u)),\ Z^N = \int_X \exp(-\Phi^N(u))\mu_0({\rm d}u),
+\end{align*}
+resp.
+
+The measure $\mu^N$ might arise, e.g., through an approximation of the forward map $G$ underlying an inverse problem of the form (10.29).
+
+It is natural to ask whether closeness of the forward map and its approximation imply closeness of the posterior measures.
+
+Dashti \& Stuart now address this question.
+
+\begin{assumption}
+    Let $X'\subseteq X$ and assume that $\Phi\in C(X';\mathbb{R})$.
+    
+    Assume further that there are functions $M_i:\mathbb{R}^+\to\mathbb{R}^+$, $i = 1,2$, independent of $N$ and monotonic non-decreasing separately in each argument, and with $M_2$ strictly positive, s.t. for all $u\in X'$,
+    \begin{align*}
+        \Phi(u)&\ge -M_1(\|u\|_X),\\
+        \Phi^N(u)&\ge -M_1(\|u\|_X),\\
+        |\Phi(u) - \Phi^N(u)|&\le M_2(\|u\|_X)\psi(N),
+    \end{align*}
+    where $\psi(N)\to 0$ as $N\to\infty$.
+\end{assumption}
+The following 2 theorems are very similar to Theorems 15--16, and the proofs are adapted to estimate changes in the posterior caused by changes in the potential $\Phi$, rather than the data $y$.
+
+\begin{theorem}
+    Let Assumptions 2 hold. Assume that $\mu_0(X') = 1$ and that $\mu_0(X'\cap B) > 0$ for some bounded set $B$ in $X$. Assume additionally that, for every fixed $r > 0$,
+    \begin{align*}
+        \exp(M_1(r,\|u\|_X))\in L_{\mu_0}^1(X;\mathbb{R}).
+    \end{align*}
+    Then $Z$ and $Z^N$ given by (10.43b) and (10.44b) are positive and finite and the probability measures $\mu$ and $\mu^N$ given by (10.43) and (10.44) are well defined. Furthermore, for sufficiently large $N$, $Z^N$ given by (10.44b) is bounded below by a positive constant independent of $N$.
+\end{theorem}
+
+\begin{proof}
+    See \cite[pp. 355--356]{Dashti_Stuart2017}.
+\end{proof}
+
+\begin{theorem}
+    Let Assumptions 2 hold. Assume that $\mu_0(X') = 1$ and that $\mu_0(X'\cap B) > 0$ for some bounded set $B$ in $X$. Assume additionally that
+    \begin{align*}
+        \exp(M_1(\|u\|_X))\left(1 + M_2(\|u\|_X)^2\right)\in L_{\mu_0}^1(X;\mathbb{R}).
+    \end{align*}
+    Then there is $C > 0$ s.t., for all $N$ sufficiently large,
+    \begin{align*}
+        d_{\rm Hell}(\mu,\mu^N)\le C\psi(N).
+    \end{align*}
+\end{theorem}
+
+\begin{proof}
+    See \cite[pp. 356--358]{Dashti_Stuart2017}.
+\end{proof}
+
+\begin{remark}
+    The following 2 remarks are relevant to establishing the conditions of the preceding 2 theorems and to applying them.
+    \begin{itemize}
+        \item As mentioned in the previous subsection concerning well posedness, the Fernique theorem can frequently be used to establish integrability conditions, e.g. those in the 2 preceding theorems when $\mu_0$ is Gaussian.
+        \item Using the ideas underlying Remark 1, the preceding theorem enables us to translate errors arising from approximation of the forward problem into errors in the Bayesian solution of the inverse problem.
+        
+        Furthermore, the errors in the forward and inverse problems scale the same way w.r.t. $N$.
+        
+        For functions $f$ which are in $L_\mu^2$ and $L_{\mu^N}^2$, uniformly w.r.t. $N$, the closeness of the Hellinger metric implies closeness of expectations of $f$:
+        \begin{align*}
+            |\mathbb{E}^\mu f(u) - \mathbb{E}^{\mu^N}f(u)|\le C\psi(N).
+        \end{align*}
+    \end{itemize}
+\end{remark}
+
+\section{MAP Estimators \& Tikhonov Regularization}
+The aim of this section is to connect the probabilistic approach to inverse problems with the classical method of Tikhonov regularization.
+
+Dashti \& Stuart consider the setting in which the prior measure $\mu_0$ is a Gaussian measure.
+
+Dashti \& Stuart then show that MAP estimators, points of maximal probability, coincide with minimizers of a Tikhonov-Phillips regularized least squares function, with regularization being w.r.t. the Cameron-Martin norm of the Gaussian prior.
+
+The data $y$ plays no explicit role in the authors' developments here, and so they work in the setting of equation (10.43).
+
+Recall, however, that in the context of inverse problems, a classical methodology is to simply try and minimize (subject to some regularization) $\Phi(u)$.
+
+Indeed for finite data and Gaussian observational noise with Gaussian distribution $N(0,\Gamma)$, we have
+\begin{align*}
+    \Phi(u) = \frac{1}{2}|\Gamma^{-\frac{1}{2}} ( y - G(u))|^2.
+\end{align*}
+Thus $\Phi$ is simply a covariance weighted model-data misfit least squares function.
+
+%
+In this section we show that maximizing probability under $\mu$ (in a sense that we will make precise in what follows) is equivalent to minimizing \textbf{(10.46)}
+\begin{equation*}
+    I(u) = \left\{\begin{split}
+        &\Phi(u) + \frac{1}{2}\|u\|_E^2 &&\mbox{if } u\in E,\\
+        &+\infty &&\mbox{else}.
+    \end{split}\right.
+\end{equation*}
+Here $(E,\|\cdot\|_E)$ denotes the Cameron-Martin space associated to the Gaussian prior $\mu_0$.
+
+We view $\mu_0$ as a Gaussian probability measure on a separable Banach space $(X,\|\cdot\|_X)$ so that $\mu_0(X) = 1$.
+
+We make the following assumptions about the function $\Phi$:
+
+\begin{assumption}
+    The function $\Phi:X\to\mathbb{R}$ satisfies the following conditions:
+    \begin{itemize}
+        \item[(i)] For every $\epsilon > 0$, there is an $M = M(\epsilon)\in\mathbb{R}$, s.t. for all $u\in X$,
+        \begin{align*}
+            \Phi(u)\ge M - \epsilon\|u\|_X^2.
+        \end{align*}
+        \item[(ii)] $\Phi$ is locally bounded from above, i.e., for every $r > 0$ there exists $K = K(r) > 0$ s.t., for all $u\in X$ with $\|u\|_X < r$, we have
+        \begin{align*}
+            \Phi(u)\le K.
+        \end{align*}
+        \item[(iii)] $\Phi$ is locally Lipschitz continuous, i.e., for every $r > 0$ there exists $L = L(r) > 0$ s.t. for all $u_1,u_2\in X$ with $\|u_1\|_X,\|u_2\|_X < r$, we have
+        \begin{align*}
+            |\Phi(u_1) - \Phi(u_2)|\le L\|u_1 - u_2\|_X.
+        \end{align*}
+    \end{itemize}
+\end{assumption}
+In finite dimensions, for measures which have a continuous density w.r.t. Lebesgue measure, there is an obvious notion of most likely point(s): simply the point(s) at which the Lebesgue density is maximized.
+
+This way of thinking does not translate into the infinite-dimensional context, but there is a way of restating it which does.
+
+Fix a small radius $\delta > 0$ and identify centers of balls of radius $\delta$ which have maximal probability.
+
+Letting $\delta\to 0$ then recovers the preceding definition, when there is a continuous Lebesgue density.
+
+Dashti \& Stuart adopt this small ball approach in the infinite-dimensional setting.
+
+%
+For $z\in E$, let $B^\delta(z)\subset X$ be the open ball centered at $z\in X$ with radius $\delta$ in $X$.
+
+Let
+\begin{align*}
+    J^\delta(z) = \mu(B^\delta(z))
+\end{align*}
+be the mass of the ball $B^\delta(z)$ under the measure $\mu$.
+
+Similarly we define
+\begin{align*}
+    J_0^\delta(z) = \mu_0(B^\delta(z))
+\end{align*}
+the mass of the ball $B^\delta(z)$ under the Gaussian prior.
+
+Recall that at balls in a separable Banach space have positive Gaussian measure, by Theorem 33; it thus follows that $J_0^\delta(z)$ is finite and positive for any $z\in E$.
+
+By Assumptions 3(i) and (ii) together with the Fernique Theorem 10, the same is true for $J^\delta(z)$.
+
+Dashti \& Stuart' 1st theorem encapsulates the idea that probability is maximized where $I$ is minimized.
+
+To see this, fix any point $z_2$ in the Cameron-Martin space $E$ and notice that the probability of the small ball at $z_1$ is maximized, asymptotically as the radius of the ball tends to zero, at minimizers of $I$.
+
+\begin{theorem}
+    Let Assumptions 3 hold and assume that $\mu_0(X) = 1$. Then the function $I$ defined by (10.46) satisfies, for any $z_1,z_2\in E$,
+    \begin{align*}
+        \lim_{\delta\to 0} \frac{J^\delta(z_1)}{J^\delta(z_2)} = \exp(I(z_2) - I(z_1)).
+    \end{align*}
+\end{theorem}
+
+\begin{proof}
+    See \cite[pp. 360--361]{Dashti_Stuart2017}.
+\end{proof}
+Dashti \& Stuart have thus linked the Bayesian approach to inverse problems with a classical regularization technique.
+
+Dashti \& Stuart conclude the subsection by showing that, under the prevailing Assumption 3, the minimization problem for $I$ is well defined.
+
+1st recall a basic definition and lemma from the calculus of variations.
+
+\begin{definition}
+    The function $I:E\to\mathbb{R}$ is \emph{weakly lower semicontinuous} if
+    \begin{align*}
+        \liminf_{n\to\infty} I(u_n)\ge I(u)
+    \end{align*}
+    whenever $u_n\rightharpoonup u$ in $E$.
+    
+    The function $I:E\to\mathbb{R}$ is \emph{weakly continuous} if
+    \begin{align*}
+        \lim_{n\to\infty} I(u_n) = I(u)
+    \end{align*}
+    whenever $u_n\rightharpoonup u$ in $E$.
+\end{definition}
+Clearly weak continuity implies weak lower semicontinuity.
+
+\begin{lemma}
+    If $(E,\langle\cdot,\cdot\rangle_E)$ is a Hilbert space with induced norm $\|\cdot\|_E$, then the quadratic form $J(u)\coloneqq\frac{1}{2}\|u\|_E^2$ is weakly lower semicontinuous.
+\end{lemma}
+
+\begin{proof}
+    See \cite[p. 362]{Dashti_Stuart2017}.
+\end{proof}
+
+\begin{theorem}
+    Suppose that Assumption 3 hold and let $E$ be a Hilbert space compactly embedded in $X$. Then there exists $\overline{u}\in E$ s.t.
+    \begin{align*}
+        I(\overline{u}) = \overline{I}\coloneqq\inf\{I(u);u\in E\}.
+    \end{align*}
+    Furthermore, if $\{u_n\}$ is a minimizing sequence satisfying $I(u_n)\to I(\overline{u})$, then there is a subsequence $\{u_{n'}\}$ that converges strongly to $\overline{u}$ in $E$.
+\end{theorem}
+
+\begin{proof}
+    See \cite[pp. 362--363]{Dashti_Stuart2017}.
+\end{proof}
+
+\begin{corollary}
+    Suppose that Assumptions 3 hold and the Gaussian measure $\mu_0$ with Cameron-Martin space $E$ satisfies $\mu_0(X) = 1$. Then there exists $\overline{u}\in E$ s.t.
+    \begin{align*}
+        I(\overline{u}) = \overline{I}\coloneqq\inf\{I(u);u\in E\}.
+    \end{align*}
+    Furthermore, if $\{u_n\}$ is a minimizing sequence satisfying $I(u_n)\to I(\overline{u})$, then there is a subsequence $\{u_{n'}\}$ that converges strongly to $\overline{u}$ in $E$.
+\end{corollary}
+
+\begin{proof}
+    See \cite[p. 363]{Dashti_Stuart2017}.
+\end{proof}
+
+\appendix
+
+\chapter{Tools}
+
+\section{Probability Theory}
+
+\subsection{Background in Probability Theory}
+Probability Space $(\Omega,\mathcal{A},\mu)$
+\begin{itemize}
+    \item $\Omega$ is a set
+    \item $\mathcal{A}$ is a $\sigma$-algebra over $\Omega$
+    \begin{itemize}
+        \item $\emptyset\in\mathcal{A}$,
+        \item the complement $A^c\coloneqq\{\omega\in\Omega;\omega\notin A\}\in\mathcal{A}$ for all $A\in\mathcal{A}$ and
+        \item the union $\bigcup_{j\in\mathbb{N}} A_j\in\mathcal{A}$ for every sequence $(A_j)_{j\in\mathbb{N}}\in\mathcal{A}$.
+    \end{itemize}
+    \item A \textit{measure} $\mu$ on a measurable space $(\Omega,\mathcal{A})$ is a mapping from $\mathcal{A}$ to $\mathbb{R}_+\cup\{\infty\}$ s.t.
+    \begin{itemize}
+        \item the empty set has measure zero, i.e., $\mu(\emptyset) = 0$ and
+        \item $\mu\left(\bigcup_{j\in\mathbb{N}} A_j\right) = \sum_{j\in\mathbb{N}} \mu(A_j)$ if $A_j\in\mathcal{A}$ are disjoint.
+    \end{itemize}
+    \item $\mu$ is a \textit{probability measure} iff
+    \begin{itemize}
+        \item $\mu(\Omega) = 1$
+    \end{itemize}
+    \item $\mathcal{B}(\mathbb{R})$ denotes the \textit{Borel $\sigma$-algebra} and equals the smallest $\sigma$-algebra containing all open subsets of $\mathbb{R}$.
+    \item The usual notion of volume of subsets of $\mathbb{R}^d$ gives rise to the \textit{Lebesgue measure}.
+\end{itemize}
+
+\subsection{Real-valued Random Variables}
+Let $(\Omega,\mathcal{A},\mu)$ be a probability space.
+
+A mapping $f:\Omega\to\mathbb{R}$ is called a \textit{random variable}, if $f$ is $\mathcal{A}$-$\mathcal{B}(\mathbb{R})$-measurable, i.e.,
+\begin{align*}
+    \forall B\in\mathcal{B}(\mathbb{R}),\ f^{-1}(B) = \{\omega\in\Omega;f(\omega)\in B\}\in\mathcal{A}\Rightarrow f^{-1}(\mathcal{B}(\mathbb{R}))\subset\mathcal{A}.
+\end{align*}
+\begin{itemize}
+    \item Image measure/distribution
+    \begin{itemize}
+        \item $\mu_f(B)\coloneqq(\mu\circ f^{-1}(B)) = \mu(f^{-1}(B)) = \mu(\{f\in B\})$.
+        \item $(\mathbb{R},\mathcal{B}(\mathbb{R}),\mu_f)$ is again a probability measure.
+    \end{itemize}
+    \item Distribution function
+    \begin{itemize}
+        \item $F_f(x)\coloneqq\mu_f((-\infty,x]) = \mu(f\le x) = \mu(\{\omega\in\Omega;f(\omega)\le x\})$.
+    \end{itemize}
+    \item Density function
+    \begin{itemize}
+        \item If $\mu_f(B)\coloneqq\int_B \rho(x){\rm d}x$ for all $B\in\mathcal{B}(\mathbb{R})$ with a measurable function $\rho:\mathbb{R}\to[0,\infty)$.
+    \end{itemize}
+    \item If $h$ is a real-valued measurable function on $\mathbb{R}\Rightarrow h\circ f$ $\mathcal{A}$-$\mathcal{B}(\mathbb{R})$-measurable
+\end{itemize}
+
+\subsection{Expectations}
+\begin{itemize}
+    \item For $f\in\mathcal{L}^1(\mu)$ is the \textit{expectation} defined as
+    \begin{align*}
+        \mathbb{E}(f) = \int_\Omega f{\rm d}\mu = \int_\Omega f(\omega){\rm d}\mu(\omega).
+    \end{align*}
+    \item For a real-valued measurable function $h$
+    \begin{itemize}
+        \item discretely distributed random variable: $\mu_f = \sum_{i=1}^n p_i{\bf 1}_{x_i}$
+        \begin{align*}
+            \mathbb{E}(h\circ f) = \int_\Omega h\circ f{\rm d}\mu = \int_\mathbb{R} h{\rm d}\mu_f = \sum_{i=1}^n p_if_{x_i}.???
+        \end{align*}
+        \item continuously distributed random variable: $\mu_f([a,b]) = \int_a^b \rho(x){\rm d}x$.
+        \begin{align*}
+            \mathbb{E}(h\circ f) = \int_\Omega h\circ f{\rm d}\mu = \int_\mathbb{R} h{\rm d}\mu_f = \int_\mathbb{R} h(x)\rho(x){\rm d}x.
+        \end{align*}
+    \end{itemize}
+    \item For $f\in\mathcal{L}^2(\mu)$ is the \textit{variance} defined as
+    \begin{align*}
+        \mathbb{V}(f) = \mathbb{E}((f - \mathbb{E}(f))^2) = \mathbb{E}(f^2) - (\mathbb{E}(f))^2.
+    \end{align*}
+\end{itemize}
+
+\subsection{Product Spaces \& Joint Distributions}
+\begin{itemize}
+    \item Product space $(\bigtimes_{i=1}^N \Omega_i,\bigotimes_{i=1}^N \mathcal{A}_i,\bigotimes_{i=1}^N \mu_i)$
+    \begin{itemize}
+        \item $\bigtimes_{i=1}^N \Omega_i = \{(\omega_1,\ldots,\omega_N);\omega_i\in\Omega_i,\ i = 1,\ldots,N\}$.
+        \item $\bigotimes_{i=1}^N \mathcal{A}_i$ smallest $\sigma$-algebra that contains all sets of the form $A = A_1\times\cdots\times A_N$ with $A_i\in\mathcal{A}_i$, $i = 1,\ldots,N$.
+        \item $\bigotimes_{i=1}^N \mu_i$ is defined by
+        \begin{align*}
+            \bigotimes_{i=1}^N \mu_i = \mu_1(A_1)\times\cdots\times\mu_N(A_N),\ \forall A_1\in\mathcal{A}_1,\ldots,A_N\in\mathcal{A}_N.
+        \end{align*}
+    \end{itemize}
+    \item For a real-valued random variables ($f_i$, $i = 1,\ldots,N$), we define $f_1\otimes\cdots\otimes f_N:\Omega\to\mathbb{R}^N$ via $\omega\mapsto(f_1(\omega),\ldots,f_N(\omega))$ a random variable in $(\mathbb{R}^N,\mathcal{B}(\mathbb{R}^N))$.
+    \begin{itemize}
+        \item Joint distribution is for $B\in\mathcal{B}(\mathbb{R}^N)$ given by
+        \begin{align*}
+            \mu_{f_1\otimes\cdots\otimes f_N}(B) = \mu(f_1\otimes\cdots\otimes f_N\in B).
+        \end{align*}
+        \item Joint distribution function is given by
+        \begin{align*}
+            F_{f_1\otimes\cdots\otimes f_N}(x_1,\ldots,x_N) = \mu_{f_1\otimes\cdots\otimes f_N} ((-\infty,x_1],\ldots,(-\infty,x_N]) = \mu(f_1\le x_1,\ldots,f_n\le x_n).
+        \end{align*}
+    \end{itemize}
+\end{itemize}
+
+\subsection{Conditional Probabilities \& Expectations}
+Let $(\Omega,\mathcal{A},\mu)$ be a probability space.
+\begin{itemize}
+    \item The \textit{conditional probability} that an event $A\in\mathcal{A}$ occurs given that an event $B\in\mathcal{A}$ has occurred is defined by
+    \begin{align*}
+        \mu(A|B) = \frac{\mu(A\cap B)}{\mu(B)} \mbox{ for } \mu(B) > 0.
+    \end{align*}
+    \item Given 2 random variables $f$ and $h$ with joint density function $\rho$ and $x\in\mathbb{R}$ s.t. $\int_{-\infty}^\infty \rho(x,v){\rm d}v > 0$,
+    \begin{itemize}
+        \item the \textit{conditional distribution function} of $h$ given $f = x$ is given by
+        \begin{align*}
+            F_{h|f}(y|x) = \int_{-\infty}^y \frac{\rho(x,v){\rm d}v}{\int_{-\infty}^\infty \rho(x,v){\rm d}v}.
+        \end{align*}
+        \item the \textit{conditional density function} of $h$ given $f = x$ is given by
+        \begin{align*}
+            \rho_{h|f}(y|x) = \frac{\rho(x,y)}{\int_{-\infty}^\infty \rho(x,v){\rm d}v}.
+        \end{align*}
+        \item the \textit{conditional expectation} $\mathbb{E}(h|f)$ is defined by
+        \begin{align*}
+            \mathbb{E}(h|f) = \int_{-\infty}^\infty y\rho_{h|f}(y|x){\rm d}y.
+        \end{align*}
+    \end{itemize}
+\end{itemize}
+
+\subsection{Independent Random Variables}
+\begin{itemize}
+    \item For \textit{independent random variables} $(f_i)_{i=1}^N$, it holds
+    \begin{align*}
+        \mu_{f_1\otimes\cdots\otimes f_N}(B_1\times\cdots\times B_N) &= \mu(f_1\in B_1,\ldots,f_N\in B_N) = \mu(f_1\in B_1)\cdots\mu(f_N\in B_N)\\
+        &= \mu_{f_1}(B_1)\cdots\mu_{f_N}(B_N) = \mu_{f_1}\otimes\cdots\otimes\mu_{f_N}(B_1\times\cdots\times B_N).
+    \end{align*}
+    \item $(f_i)_{i=1}^N$ are independent $\Leftrightarrow$ the joint distribution is equal to the product measure.
+\end{itemize}
+
+\subsection{Metrics on Probability Measures}
+When discussing well posedness and approximation theory for the posterior distribution, it is of interest to estimate the distance between 2 probability measures, and thus we will be interested in metrics between probability measures.
+
+In this subsection the authors introduce 2 useful metrics on measures: the \textit{total variation distance} and the \textit{Hellinger distance}.
+
+Dashti \& Stuart discuss the relationships between the metrics and indicate how they may be used to estimate differences between expectations of random variables under 2 different measures.
+
+Dashti \& Stuart also discuss the \textit{Kullback-Leibler divergence}, a useful distance measure which does not satisfy the axioms of a metric, but which may be used to bound both the Hellinger and total variation distances, and which is also useful in defining algorithms for finding the best approximation to a given measure from within some restricted class of measures, e.g. Gaussians.
+
+%
+Assume that we have 2 probability measures $\mu$ and $\mu'$ on a separable Banach space denoted by $B$ (actually the considerations here apply on a Polish space but we do not need this level of generality).
+
+Assume that $\mu$ and $\mu'$ are both absolutely continuous w.r.t. a common reference measure $\nu$, also defined on the same measure space.
+
+Such a measure always exists - take $\nu = \frac{1}{2}(\mu + \mu')$, e.g.
+
+In the following, all integrals of real-valued functions over $B$ are simply denoted by $\int$.
+
+The following define 2 concepts of distance between $\mu$ and $\mu'$.
+
+The resulting metrics that we define are independent of the choice of this common reference measure.
+
+\begin{definition}
+    The \emph{total variation distance} between $\mu$ and $\mu'$ is
+    \begin{align*}
+        d_{\rm TV}(\mu,\mu')\coloneqq\frac{1}{2}\int \left|\frac{{\rm d}\mu}{{\rm d}\nu} - \frac{{\rm d}\mu'}{{\rm d}\nu}\right|{\rm d}\nu.
+    \end{align*}
+\end{definition}
+In particular, if $\mu'$ is absolutely continuous w.r.t. $\mu$, then \textbf{(10.118)}
+\begin{align*}
+    d_{\rm TV}(\mu,\mu')\coloneqq\frac{1}{2}\int \left|1 - \frac{{\rm d}\mu'}{{\rm d}\mu}\right|{\rm d}\mu.
+\end{align*}
+
+\begin{definition}
+    The \emph{Hellinger distance} between $\mu$ and $\mu'$ is
+    \begin{align*}
+        d_{\rm Hell}(\mu,\mu')\coloneqq\sqrt{\frac{1}{2}\int \left(\sqrt{\frac{{\rm d}\mu}{{\rm d}\nu}} - \sqrt{\frac{{\rm d}\mu'}{{\rm d}\nu}}\right)^2{\rm d}\nu}.
+    \end{align*}
+\end{definition}
+In particular, if $\mu'$ is absolutely continuous w.r.t. $\mu$, then \textbf{(10.119)}
+\begin{align*}
+    d_{\rm Hell}(\mu,\mu') = \sqrt{\frac{1}{2}\int \left(1 - \sqrt{\frac{{\rm d}\mu'}{{\rm d}\mu}}\right)^2{\rm d}\mu}.
+\end{align*}
+Note that the numerical constant $\frac{1}{2}$ appearing in both definitions is chosen in such a way as to ensure the bounds
+\begin{align*}
+    0\le d_{\rm TV}(\mu,\mu')\le 1,\ 0\le d_{\rm Hell}(\mu,\mu')\le 1.
+\end{align*}
+In the case of the total variation inequality, this is an immediate consequence of the triangle inequality, combined with the fact that both $\mu$ and $\mu'$ are probability measures, so that $\int \frac{{\rm d}\mu}{{\rm d}\nu}{\rm d}\nu = 1$ and similarly for $\mu'$.
+
+In the case of the Hellinger distance, it follows by expanding the square and applying similar considerations.
+
+%
+The Hellinger and total variation distances are related as follows, which shows in particular that they both generate the same topology:
+
+\begin{lemma}
+    The total variation and Hellinger metrics are related by the inequalities
+    \begin{align*}
+        \frac{1}{\sqrt{2}}d_{\rm TV}(\mu,\mu')\le d_{\rm Hell}(\mu,\mu')\le d_{\rm TV}(\mu,\mu')^{\frac{1}{2}}.
+    \end{align*}
+\end{lemma}
+
+\begin{proof}
+    See \cite[p. 408]{Dashti_Stuart2017}.
+\end{proof}
+
+\begin{example}
+    Consider 2 Gaussian densities on $\mathbb{R}$: $N(m_1,\sigma_1^2)$ and $N(m_2,\sigma_2^2)$.
+    
+    The Hellinger distance between them is given by
+    \begin{align*}
+        d_{\rm Hell}(\mu,\mu')^2 = 1 - \sqrt{\exp\left(-\frac{(m_1 - m_2)^2}{2(\sigma_1^2 + \sigma_2^2)}\right)\frac{2\sigma_1\sigma_2}{\sigma_1^2 + \sigma_2^2}}.
+    \end{align*}
+    To see this note that
+    \begin{align*}
+        d_{\rm Hell}(\mu,\mu')^2 = 1 - \frac{1}{(2\pi\sigma_1\sigma_2)^{\frac{1}{2}}}\int_\mathbb{R} \exp(-Q){\rm d}x,
+    \end{align*}
+    where
+    \begin{align*}
+        Q = \frac{1}{4\sigma_1^2}(x - m_1)^2 + \frac{1}{4\sigma_2^2}(x - m_2)^2.
+    \end{align*}
+    Define $\sigma^2$ by
+    \begin{align*}
+        \frac{1}{\sigma^2} = \frac{1}{4\sigma_1^2} + \frac{1}{4\sigma_2^2}.
+    \end{align*}
+    We change variable under the integral to $y$ given by
+    \begin{align*}
+        y = x - \frac{m_1 + m_2}{2},
+    \end{align*}
+    and note that then, by completing the square,
+    \begin{align*}
+        Q = \frac{1}{2\sigma^2}(y - m)^2 + \frac{1}{4(\sigma_1^2 + \sigma_2^2)}(m_2 - m_1)^2,
+    \end{align*}
+    where $m$ does not appear in what follows and so we do not detail it.
+    
+    Note that the integral is then a multiple of a standard Gaussian $N(m,\sigma^2)$ gives the desired result.
+    
+    In particular this calculation shows that \emph{the Hellinger distance between 2 Gaussians on $\mathbb{R}$ tends to 0 iff the means and variances of the 2 Gaussians approach one another}.
+    
+    Furthermore, by the previous lemma, the same is
+    true for the total variation distance.
+\end{example}
+The preceding example generalizes to higher dimension and shows that, e.g., the total variation and Hellinger metrics cannot metrize weak convergence of probability measures (as one can also show that convergence in total variation metric implies strong convergence).
+
+They are nonetheless useful distance measures, e.g., between families of measures which are mutually absolutely continuous.
+
+Furthermore, the Hellinger distance is particularly useful for estimating the difference between expectation values of functions of random variables under different measures.
+
+This is encapsulated in the following lemma:
+
+\begin{lemma}
+    Let $\mu$ and $\mu'$ be 2 probability measures on a separable Banach space $X$. Assume also that $f:X\to E$, where $(E,\|\cdot\|)$ is a separable Banach space, is measurable and has 2nd moments w.r.t. both $\mu$ and $\mu'$. Then
+    \begin{align*}
+        \|\mathbb{E}^\mu f - \mathbb{E}^{\mu'}f\|\le 2\left(\mathbb{E}^\mu\|f\|^2 + \mathbb{E}^{\mu'}\|f\|^2\right)^{\frac{1}{2}}d_{\rm Hell}(\mu,\mu').
+    \end{align*}
+    Furthermore, if $E$ is a separable Hilbert space and $f:X\to E$ as before has 4th moments, then
+    \begin{align*}
+        \|\mathbb{E}^\mu(f\otimes f) - \mathbb{E}^{\mu'}(f\otimes f)\|\le 2\left(\mathbb{E}^\mu\|f\|^4 + \mathbb{E}^{\mu'}\|f\|^4\right)^{\frac{1}{2}}d_{\rm Hell}(\mu,\mu').
+    \end{align*}
+\end{lemma}
+
+\begin{proof}
+    See \cite[p. 410]{Dashti_Stuart2017}.
+\end{proof}
+
+\begin{remark}
+    Note, in particular, that choosing $X = E$, and with $f$ chosen to be the identity mapping, we deduce that the differences between the mean (resp., covariance operator) of 2 measures are bounded above by their Hellinger distance, provided that one has some a priori control on the 2nd (resp., 4th) moments.
+\end{remark}
+We now define a 3rd widely used distance concept for comparing 2 probability measures.
+
+Note, however, that it does not give rise to a metric in the strict sense, because it violates both symmetry and the triangle inequality.
+
+\begin{definition}
+    The \emph{Kullback-Leibler divergence} between 2 measures $\mu'$ and $\mu$, with $\mu'$ absolutely continuous w.r.t. $\mu$, is
+    \begin{align*}
+        D_{\rm KL}(\mu'||\mu) = \int \frac{{\rm d}\mu'}{{\rm d}\mu}\log\frac{{\rm d}\mu'}{{\rm d}\mu}{\rm d}\mu.
+    \end{align*}
+\end{definition}
+If $\mu$ is also absolutely continuous w.r.t. $\mu'$, so that the 2 measures are equivalent, then
+\begin{align*}
+    D_{\rm KL}(\mu'||\mu) = -\int \log\frac{{\rm d}\mu}{{\rm d}\mu'}{\rm d}\mu',
+\end{align*}
+and the 2 definitions coincide.
+
+\begin{example}
+    Consider 2 Gaussian densities on $\mathbb{R}$: $N(m_1,\sigma_1^2)$ and $N(m_2,\sigma_2^2)$.
+    
+    The Kullback-Leibler divergence between them is given by
+    \begin{align*}
+        D_{\rm KL}(\mu_1||\mu_2) = \log\frac{\sigma_2}{\sigma_1} + \frac{1}{2}\left(\frac{\sigma_1^2}{\sigma_2^2} - 1\right) + \frac{(m_2 - m_1)^2}{2\sigma_2^2}.
+    \end{align*}
+    To see this note that
+    \begin{align*}
+        D_{\rm KL} &= \mathbb{E}^{\mu_1}\left(\log\sqrt{\frac{\sigma_2^2}{\sigma_1^2}} + \frac{1}{2\sigma_2^2}|x - m_2|^2 - \frac{1}{2\sigma_1^2}|x - m_1|^2\right)\\
+        &= \log\frac{\sigma_2}{\sigma_1} + \mathbb{E}^{\mu_1}\left(\left(\frac{1}{2\sigma_2^2} - \frac{1}{2\sigma_1^2}\right)|x - m_1|^2\right) + \mathbb{E}^{\mu_1}\frac{1}{2\sigma_2^2}\left(|x - m_2|^2 - |x - m_1|^2\right)\\
+        &= \log\frac{\sigma_2}{\sigma_1} + \frac{1}{2}\left(\frac{\sigma_1^2}{\sigma_2^2} - 1\right) + \frac{1}{2\sigma_2^2}\mathbb{E}^{\mu_1}\left(m_2^2 - m_1^2 + 2x(m_1 - m_2)\right)\\
+        &= \log\frac{\sigma_2}{\sigma_1} + \frac{1}{2}\left(\frac{\sigma_1^2}{\sigma_2^2} - 1\right) + \frac{1}{2\sigma_2^2}(m_2 - m_1)^2
+    \end{align*}
+    as required.
+\end{example}
+As for Hellinger distance, this example shows that 2 Gaussians on $\mathbb{R}$ approach one another in the Kullback-Leibler divergence iff their means and variances approach one another.
+
+This generalizes to higher dimensions.
+
+The Kullback-Leibler divergence provides an upper bound for the square of the Hellinger distance and for the square of the total variation distance.
+
+\begin{lemma}
+    Assume that 2 measures $\mu$ and $\mu'$ are equivalent. Then the bounds
+    \begin{align*}
+        d_{\rm Hell}(\mu,\mu')^2\le\frac{1}{2}D_{\rm KL}(\mu||\mu'),\ d_{\rm TV}(\mu,\mu')^2\le D_{\rm KL}(\mu||\mu'),
+    \end{align*}
+    hold.
+\end{lemma}
+
+\begin{proof}
+    See \cite[p. 412]{Dashti_Stuart2017}.
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\printbibliography[heading=bibintoc]
+\end{document}

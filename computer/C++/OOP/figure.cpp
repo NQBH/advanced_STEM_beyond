@@ -1,4 +1,8 @@
+#include <iostream>
+using namespace std;
 #include "figure.h"
+// #include "point2D.h"
+
 void point2D::set(double x0, double y0) {
 	x = x0;	// equivalent: this->x = x0
 	y = y0; // equivalent: this->y = y0
@@ -32,4 +36,16 @@ double circle::area() {
 
 double circle::perimeter() {
 	return 2*PI*radius;
+}
+
+int main() {
+	{
+		point2D P; // declare & create obj P of class point2D
+		P.set(7.2, 4.3);
+		P.move(2.7, 4.1);
+	} // obj P is destroyed here
+	circle Cir; // declare & create obj Circ of class circle
+	Cir.set(1, 2, 3);
+	Cir.move(0.5, 1);
+	cout << Cir.area() << Cir.perimeter() << ".\n";
 }

@@ -26,6 +26,10 @@ void circle::set(double x0, double y0, double r) {
 	this->radius = r;
 }
 
+void circle::set(double r) {
+	if (r >= 0) radius = r;
+}
+
 void circle::move(double dx, double dy) {
 	center.move(dx, dy);
 }

@@ -48,8 +48,23 @@ int main() {
 		P.set(7.2, 4.3);
 		P.move(2.7, 4.1);
 	} // obj P is destroyed here
-	circle Cir; // declare & create obj Circ of class circle
-	Cir.set(1, 2, 3);
-	Cir.move(0.5, 1);
-	cout << Cir.area() << Cir.perimeter() << ".\n";
+
+	circle cir; // declare & automatically create obj circ of class circle
+	cir.set(1, 2, 3);
+	cir.move(0.5, 1);
+	cout << "Area = " << cir.area() << "Perimeter = " << cir.perimeter() << ".\n";
+	cin.get();
+
+	circle* mycir = new circle();
+	/*
+	circle* mycir; // no obj yet
+	mycir = new circle()
+	*/
+	if (mycir != NULL) { // create successfully
+		mycir->set(20, 20, 100);
+		cout << "Area = " << mycir->area() << "Perimeter = " << mycir->perimeter() << ".\n";
+		delete mycir; // delete obj saved in variable mycir
+		mycir = NULL;
+		cin.get();
+	}
 }

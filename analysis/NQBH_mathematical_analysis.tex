@@ -184,6 +184,70 @@ Lebesgue integration theory is 1 of the great triumphs of 20th century mathemati
 
 %------------------------------------------------------------------------------%
 
+\section{Mean-Field Game Theory -- Lý Thuyết Trò Chơi Trường Trung Bình}
+\textbf{\textsf{Community -- Cộng đồng.}} {\sc Nicholetta Tchou (French), Đào Mạnh Khang (Vietnamese), Michael Hinterm\"uller (Austrian), Steven-Marian Stengl (German)}.
+
+\subsection{Wikipedia{\tt/}mean-field game theory}
+``{\it Mean-field game theory} is the study of strategic decision making by small interacting \href{https://en.wikipedia.org/wiki/Agent_(economics)}{agents} in very large populations. It lies at the intersection of \href{https://en.wikipedia.org/wiki/Game_theory}{game theory} with stochastic analysis \& \href{https://en.wikipedia.org/wiki/Control_theory}{control theory}. The use of the term ``mean field'' is inspired by \href{https://en.wikipedia.org/wiki/Mean-field_theory}{mean-field theory} in physics, which considers the behavior of systems of large numbers of particles where individual particles have negligible impacts upon the system. In other words, each agent acts according to his minimization or maximization problem taking into account other agents' decisions \& because their population is large we can assume the number of agents goes to infinity \& a representative agent exists.
+
+In traditional \href{https://en.wikipedia.org/wiki/Game_theory}{game theory}, the subject of study is usually a game with 2 players \& discrete time space, \& extends the results to more complex situations by induction. However, for games in continuous time with continuous states (differential games or stochastic differential games) this strategy cannot be used because of the complexity that the dynamic interactions generate. On the other hand with MFGs we can handle large numbers of players through the mean representative agent \& at the same time describe complex state dynamics.
+
+This class of problems was considered in the economics literature by \href{https://en.wikipedia.org/wiki/Boyan_Jovanovic}{Boyan Jovanovic} \& \href{https://en.wikipedia.org/wiki/Robert_W._Rosenthal}{Robert W. Rosenthal}, in the engineering literature by Minyi Huang, Roland Malhame, \& \href{https://en.wikipedia.org/wiki/Peter_E._Caines}{Peter E. Caines} \& independently \& around the same time by mathematicians Jean-Michel Lasry \& \href{https://en.wikipedia.org/wiki/Pierre-Louis_Lions}{Pierre-Louis Lions}.
+
+In continuous time a mean-field game is typically composed of a \href{https://en.wikipedia.org/wiki/Hamilton%E2%80%93Jacobi%E2%80%93Bellman_equation}{Hamilton-Jacobi-Bellman equation} that describes the \href{https://en.wikipedia.org/wiki/Optimal_control}{optimal control} problem of an individual \& a \href{https://en.wikipedia.org/wiki/Fokker%E2%80%93Planck_equation}{Fokker--Planck equation} that describes the dynamics of the aggregate distribution of agents. Under fairly general assumptions it can be proved that a class of mean-field games is the limit as $N\to\infty$ of an $N$-player \href{https://en.wikipedia.org/wiki/Nash_equilibrium}{Nash equilibrium}.
+
+A related concept to that of mean-field games is ``mean-field-type control''. In this case, a \href{https://en.wikipedia.org/wiki/Social_planner}{social planner} controls the distribution of states \& chooses a control strategy. The solution to a mean-field-type control problem can typically be expressed as a dual adjoint Hamilton-Jacobi-Bellman equation coupled with \href{https://en.wikipedia.org/wiki/Fokker%E2%80%93Planck_equation}{Kolmogorov equation}. Mean-field-type game theory is the multi-agent generalization of the single-agent mean-field-type control.
+
+\subsubsection{General Form of a Mean-field Game}
+The system of equations
+\begin{equation*}
+	\left\{\begin{split}
+		-\partial_tu - \nu\Delta u + H(x,m,Du) &= 0,\\
+		\partial_tm - \nu\Delta m - \nabla\cdot(D_pH(x,m,Du)m) &= 0,\\
+		m(0) &= m_0,\\
+		u(T,x) &= G(x,m(T)),
+	\end{split}\right.
+\end{equation*}
+can be used to model a typical Mean-field game. The basic dynamics of this set of equations can be explained by an average agent's optimal control problem. In a mean-field game, an average agent can control their movement $\alpha$ to influence the population's overall location by
+\begin{equation*}
+	dX_t = \alpha_tdt + \sqrt{2\nu}dB_t,
+\end{equation*}
+where $\nu$: a parameter, $B_t$: a standard Brownian motion. By controlling their movement, the agent aims to minimize their overall expected cost $C$ throughout the time period $[0,T]$:
+\begin{equation*}
+	C = \mathbb{E}\left[\int_0^T L(X_s,\alpha_s,m(s))\,{\rm d}s + G(X_T,m(T))\right],
+\end{equation*}
+where $L(X_s,\alpha_s,m(s))$ is the running cost at time $s$ \& $G(X_T,m(T))$ is the terminal cost at time $T$. By this definition, at time $t$ \& position $x$, the value function $u(t,x)$ can be determined as
+\begin{equation*}
+	u(t,x) = \inf_\alpha \mathbb{E}\left[\int_t^T L(X_s,\alpha_s,m(s))\,{\rm d}s + G(X_T,m(T))\right].
+\end{equation*}
+Given the definition of the value function $u(t,x)$, it can be tracked by the Hamilton-Jacobi equation. The optimal action of the average players $\alpha^*(t,x)$ can be determined as $\alpha^*(t,x) = D_pH(x,m,Du)$. As all agents are relatively small \& cannot single-handedly change the dynamics of the population, they will individually adapt the optimal control \& the population would move in that way. This is similar to a Nash Equilibrium, in which all agents act in response to a specific set of others' strategies. The optimal control solution then leads to the Kolmogorov-Fokker-Planck equation $\partial_tm - \nu\Delta m - \nabla\cdot(D_pH(x,m,Du)m) = 0$.
+
+\subsubsection{Finite State Games}
+A prominent category of mean field is games with a finite number of states \& a finite number of actions per player. For those games, the analog of the Hamilton-Jacobi-Bellman equation is the Bellman equation, \& the discrete version of the Fokker-Planck equation is the Kolmogorov equation. Specifically, for discrete-time models, the players' strategy is the Kolmogorv equation's probability matrix. In continuous time models, players have the ability to control the transition rate matrix.
+
+A discrete mean field game can be defined by a tuple $\mathcal{G} = (\mathcal{E},\mathcal{A},\{Q_a\},{\bf m}_0,\{c_a\},\beta)$ where $\mathcal{E}$ is the state space, $\mathcal{A}$ the action set, $Q_a$ the transition rate matrices, ${\bf m}_0$ the initial state, $\{c_a\}$ the cost functions \& $\beta\in\mathbb{R}$ a discount factor. Furthermore, a mixed strategy is a measurable function $\pi:\mathbb{R}^+\times\mathbb{E}\to\mathcal{P}(\mathcal{A})$, that associates to each state $i\in\mathcal{E}$ \& each time $t\ge0$ a probability measure $\pi_i(t)\in\mathcal{P}(\mathcal{A})$ on the set of possible actions. Thus $\pi_{i,a}(t)$ is the probability that, at time $t$ a player in state $i$ takes action $a$, under strategy $\pi$. Additionally, rate matrices $\{Q_a({\bf m}^\pi(t))\}_{a\in\mathcal{A}}$ define the evolution over the time of population distribution, where ${\bf m}^\pi(t)\in\mathcal{P}(\mathcal{E})$ is the population distribution at time $t$.
+
+\subsubsection{Linear-quadratic Gaussian game problem}
+From Caines (2009), a relatively simple model of large-scale games is the \href{https://en.wikipedia.org/wiki/Linear%E2%80%93quadratic%E2%80%93Gaussian_control}{linear-quadratic Gaussian} model. The individual agent's dynamics are modeled as a \href{https://en.wikipedia.org/wiki/Stochastic_differential_equation}{stochastic differential equation}
+\begin{equation*}
+	dX_i = (a_iX_i + b_iu_i)dt + \sigma_idW_i,\ i = 1,\ldots,N,
+\end{equation*}
+where $X_i$: the state of the $i$th agent, $u_i$: control of the $i$th agent, $W_i$: independent \href{https://en.wikipedia.org/wiki/Wiener_process}{Wiener processes} $\forall i = 1,\ldots,N$. The individual agent's cost is
+\begin{equation*}
+	J_i(u_i,\nu) = \mathbb{E}\left[\int_0^\infty e^{-\rho t}[(X_i - \nu)^2 + ru_i^2]\,{\rm d}t\right],\ \nu = \Phi\left(\frac{1}{N}\sum_{k\ne i}^N X_k + \eta\right).
+\end{equation*}
+The coupling between agents occurs in the cost function.
+
+\subsubsection{General \& Applied Use}
+The paradigm of Mean Field Games has become a major connection between distributed decision-making \& stochastic modeling. Starting out tin the stochastic control literature, it is gaining rapid adoption across a range of applications, including:
+\begin{enumerate}
+	\item {\bf Financial market.} Carmona reviews applications in financial engineering \& economics that can be cast \& tackled within the framework of the MFG paradigm. Carmona argues that models in macroeconomics, contract theory, finance, $\ldots$, greatly benefit from the switch to continuous time from the more traditional discrete-time models. He considers only continuous time models in his review chapter, including systemic risk, price impact, optimal execution, models for bank runs, high-frequency trading, \& cryptocurrencies.
+	\item {\bf Crowd motions.} MFG assumes that individuals are smart players which try to optimize their strategy \& path w.r.t. certain costs (equilibrium with rational expectations approach). MFG models are useful to describe the anticipation phenomenon: the forward part describes the crowd evolution while the backward gives the process of how the anticipations are built. Additionally, compared to multi-agent microscopic model computations, MFG only requires lower computational costs for the macroscopic simulations. Some researchers have turned to MFG in order to model the interaction between populations \& study the decision-making process of intelligent agents, including aversion \& congestion behavior between 2 groups of pedestrians, departure time choice of morning commuters, \& decision-making processes for autonomous vehicle.
+	\item {\bf Control \& mitigation of Epidemics.} Since the epidemic has affected society \& individuals significantly, MFG \& mean-field controls (MFCs) provide a perspective to study \& understand the underlying population dynamics, especially in the context of the Covid-19 pandemic response. MFG has been used to extend the SIR-type dynamics with spatial effects or allowing for individuals to choose their behaviors \& control their contributions to the spread of the disease. MFC is applied to design the optimal strategy to control the virus spreading within a spatial domain, control individuals' decisions to limit their social interactions, \& support the government's nonpharmaceutical interventions.'' -- \href{https://en.wikipedia.org/wiki/Mean-field_game_theory}{Wikipedia{\tt/}mean-field game theory}
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
 \section{Partial Differential Equations (PDEs) -- Phương Trình Vi Phân Đạo Hàm Riêng}
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}

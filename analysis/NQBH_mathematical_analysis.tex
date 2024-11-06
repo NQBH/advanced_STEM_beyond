@@ -809,6 +809,39 @@ Translation \& discontinuous behavior are hard to approximate using PINNs. They 
 
 %------------------------------------------------------------------------------%
 
+\subsection{Wikipedia{\tt/}relaxation (iterative method)}
+``In \href{https://en.wikipedia.org/wiki/Numerical_mathematics}{numerical mathematics}, {\it relaxation methods} are \href{https://en.wikipedia.org/wiki/Iterative_method}{iterative methods} for solving \href{https://en.wikipedia.org/wiki/Simultaneous_equations}{systems of equations}, including nonlinear systems.
+
+Relaxation methods were developed for solving large \href{https://en.wikipedia.org/wiki/Sparse_matrix}{sparse} \href{https://en.wikipedia.org/wiki/Linear_system}{linear systems}, which arose as \href{https://en.wikipedia.org/wiki/Finite_difference}{finite-difference} \href{https://en.wikipedia.org/wiki/Discretization}{discretizations} of differential equations. They are also used for the solution of linear equations for \href{https://en.wikipedia.org/wiki/Linear_least_squares_(mathematics)}{linear least-squares} problems \& also for system of linear inequalities, e.g. those arising in \href{https://en.wikipedia.org/wiki/Linear_programming}{linear programming}. They have also been developed for solving nonlinear systems of equations.
+
+Relaxation methods are important especially in the solution of linear systems used to model \href{https://en.wikipedia.org/wiki/Elliptic_partial_differential_equation}{elliptic PDEs}, e.g., \href{https://en.wikipedia.org/wiki/Laplace%27s_equation}{Laplace's equation} \& its generalization, \href{https://en.wikipedia.org/wiki/Poisson%27s_equation}{Poisson's equation}. These equations describe \href{https://en.wikipedia.org/wiki/Boundary-value_problem}{BVPs}, in which the solution-function's values are specified on boundary of a domain; the problem is to compute a solution also on its interior. Relaxation methods are used to solve the linear equations resulting from a discretization of the differential equation, e.g. by finite differences.
+
+Iterative relaxation of solutions is commonly dubbed \href{https://en.wikipedia.org/wiki/Smoothing}{smoothing} because with certain equations, e.g., Laplace's equation, it resembles repeated application of a local smoothing filter to the solution vector. These are not to be confused with \href{https://en.wikipedia.org/wiki/Relaxation_(approximation)}{relaxation} methods in mathematical optimization, which \href{https://en.wikipedia.org/wiki/Approximation_theory}{approximate} a difficult problem by a simpler problem whose ``relaxed'' solution provides information about the solution of the original problem.
+
+\subsubsection{Model problem of potential theory}
+Main article: \href{https://en.wikipedia.org/wiki/Discrete_Poisson_equation}{Wikipedia{\tt/}discrete Poisson equation}. When $\varphi$ is a smooth real-valued function on $\mathbb{R}$, its 2nd derivative can be approximated by
+\begin{equation}
+	\frac{d^2\varphi(x)}{dx^2} = \frac{\varphi(x - h) - 2\varphi(x) + \varphi(x + h)}{h^2} + O(h^2).
+\end{equation}
+Using this in both dimensions for a function $\varphi$ of 2 arguments at the point $(x,y)$, \& solving for $\varphi(x,y)$, results in:
+\begin{equation}
+	\varphi(x,y) = \frac{1}{4}\left(\varphi(x + h,y) + \varphi(x,y + h) + \varphi(x - h,y) + \varphi(x,y - h) - h^2\Delta\varphi(x,y)\right) + O(h^4).
+\end{equation}
+To approximate the solution of Poisson equation $\Delta\varphi = \nabla^2\varphi = f$ numerically on a 2D grid with grid spacing $h$, the relaxation method assigns the given values of function $\varphi$ to the grid points near the boundary \& arbitrary values to the interior grid points, \& then repeatedly performs the assignment $\varphi\coloneqq\varphi^\star$ on the interior points, where $\varphi^\star$ is defined by
+\begin{equation}
+	\varphi^\star(x,y) = \frac{1}{4}\left(\varphi(x + h,y) + \varphi(x,y + h) + \varphi(x - h,y) + \varphi(x,y - h) - h^2f(x,y)\right),
+\end{equation}
+until convergence. The method is easily generalized to other number of dimensions.
+
+\subsubsection{Convergence \& acceleration}
+While the method converges under general conditions, it typically makes slower progress than competing methods. Nonetheless, the study of relaxation methods remains a core part of linear algebra, because the transformations of relaxation theory provide excellent \href{https://en.wikipedia.org/wiki/Preconditioner}{preconditioners} for new methods. Indeed, the choice of preconditioners is often more important than the choice of iterative method.
+
+\href{https://en.wikipedia.org/wiki/Multigrid_methods}{Multigrid methods} may be used to accelerate the methods. One can 1st compute an approximation on a coarser grid -- usually the double spacing $2h$ -- \& use that solution with \href{https://en.wikipedia.org/wiki/Interpolation}{interpolated} values for the other grid points as the initial assignment. This can then also be done recursively for the coarser computation.
+
+In linear systems, the 2 main classes of relaxation methods are \href{https://en.wikipedia.org/wiki/Iterative_method#Stationary_iterative_methods}{stationary iterative methods}, \& the more general \href{https://en.wikipedia.org/wiki/Iterative_method#Krylov_subspace_methods}{Krylov subspace methods}. The \href{https://en.wikipedia.org/wiki/Jacobi_method}{Jacobi method} is a simple relaxation method. The \href{https://en.wikipedia.org/wiki/Gauss%E2%80%93Seidel_method}{Gauss--Seidel method} is an improvement upon the Jacobi method. \href{https://en.wikipedia.org/wiki/Successive_over-relaxation}{Successive over-relaxation} can be applied to either of the Jacobi \& Gauss--Seidel methods to speed convergence.'' -- \href{https://en.wikipedia.org/wiki/Relaxation_(iterative_method)}{Wikipedia{\tt/}relaxation (iterative method)}
+
+%------------------------------------------------------------------------------%
+
 \subsection{Wikipedia{\tt/}spectral theory}
 ``In mathematics, {\it spectral theory} is an inclusive term for theories extending the \href{https://en.wikipedia.org/wiki/Eigenvector}{eigenvector} \& \href{https://en.wikipedia.org/wiki/Eigenvalue}{eigenvalue} theory of a single \href{https://en.wikipedia.org/wiki/Square_matrix}{square matrix} to a much broader theory of the structure of \href{https://en.wikipedia.org/wiki/Operator_(mathematics)}{operators} in a variety of \href{https://en.wikipedia.org/wiki/Mathematical_space}{mathematical spaces}. It is a result of studies of \href{https://en.wikipedia.org/wiki/Linear_algebra}{linear algebra} \& the solutions of \href{https://en.wikipedia.org/wiki/System_of_linear_equations}{systems of linear equations} \& their generalizations. The theory is connected to that of \href{https://en.wikipedia.org/wiki/Analytic_functions}{analytic functions} because the spectral properties of an operator are related to analytic functions of the spectral parameter.
 

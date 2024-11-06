@@ -621,6 +621,127 @@ There are several distinct branches of mathematical physics, \& these roughly co
 
 %------------------------------------------------------------------------------%
 
+\subsection{Wikipedia{\tt/}numerical methods in fluid mechanics}
+``\href{https://en.wikipedia.org/wiki/Fluid_motion}{Fluid motion} is governed by the \href{https://en.wikipedia.org/wiki/Navier-Stokes_equations}{Navier-Stokes equations}, a set of coupled and nonlinear partial differential equations derived from the basic laws of conservation of \href{https://en.wikipedia.org/wiki/Mass}{mass}, \href{https://en.wikipedia.org/wiki/Momentum}{momentum} and \href{https://en.wikipedia.org/wiki/Energy}{energy}.
+
+The unknowns are usually the \href{https://en.wikipedia.org/wiki/Flow_velocity}{flow velocity}, the \href{https://en.wikipedia.org/wiki/Pressure}{pressure} and \href{https://en.wikipedia.org/wiki/Density}{density} and \href{https://en.wikipedia.org/wiki/Temperature}{temperature}.
+
+The \href{https://en.wikipedia.org/wiki/Analytical_solution}{analytical solution} of this equation is impossible hence scientists resort to laboratory experiments in such situations. The answers delivered are, however, usually qualitatively different since dynamical and geometric similitude are difficult to enforce simultaneously between the lab experiment and the \href{https://en.wikipedia.org/wiki/Prototype}{prototype}.
+
+Furthermore, the design and construction of these experiments can be difficult (and costly), particularly for stratified rotating flows.
+
+\href{https://en.wikipedia.org/wiki/Computational_fluid_dynamics}{Computational fluid dynamics} (CFD) is an additional tool in the arsenal of scientists.
+
+In its early days CFD was often controversial, as it involved additional approximation to the governing equations and raised additional (legitimate) issues.
+
+Nowadays CFD is an established discipline alongside theoretical and experimental methods.
+
+This position is in large part due to the exponential growth of computer power which has allowed us to tackle ever larger and more complex problems.
+
+\subsubsection{Discretization}
+The central process in CFD is the process of \href{https://en.wikipedia.org/wiki/Discretization}{discretization}, i.e. the process of taking differential equations with an infinite number of \href{https://en.wikipedia.org/wiki/Degrees_of_freedom}{degrees of freedom}, and reducing it to a system of finite degrees of freedom.
+
+Hence, instead of determining the solution everywhere and for all times, we will be satisfied with its calculation at a finite number of locations and at specified time intervals.
+
+The \href{https://en.wikipedia.org/wiki/Partial_differential_equations}{PDEs} are then reduced to a system of algebraic equations that can be solved on a computer.
+
+Errors creep in during the discretization process.
+
+The nature and characteristics of the errors must be controlled in order to ensure that:
+\begin{itemize}
+	\item we are solving the correct equations (consistency property)
+	\item that the error can be decreased as we increase the number of degrees of freedom (stability and convergence).
+\end{itemize}
+Once these 2 criteria are established, the power of computing machines can be leveraged to solve the problem in a numerically reliable fashion.
+
+Various discretization schemes have been developed to cope with a variety of issues.
+
+The most notable for our purposes are: \href{https://en.wikipedia.org/wiki/Finite_difference_methods}{finite difference methods}, finite volume methods, \href{https://en.wikipedia.org/wiki/Finite_element_methods}{finite element methods}, and \href{https://en.wikipedia.org/wiki/Spectral_methods}{spectral methods}.
+
+\subsubsection{FDM}
+Finite difference replace the infinitesimal limiting process of derivative calculation:
+\begin{align*}
+	\lim_{\Delta x\to 0} f'(x) = \frac{f(x + \Delta x) - f(x)}{\Delta x},
+\end{align*}
+with a finite limiting process, i.e.,
+\begin{align*}
+	f'(x) = \frac{f(x + \Delta x) - f(x)}{\Delta x} + \mathcal{O}(\Delta x).
+\end{align*}
+The term $\mathcal{O}(\Delta x)$ gives an indication of the magnitude of the error as a function of the mesh spacing.
+
+In this instance, the error is halved if the grid spacing, $\Delta x$ is halved, and we say that this is a 1st order method.
+
+Most FDM used in practice are at least 2nd order accurate except in very special circumstances.
+
+Finite Difference method is still the most popular numerical method for solution of PDEs because of their simplicity, efficiency and low computational cost.
+
+Their major drawback is in their geometric inflexibility which complicates their applications to general complex domains.
+
+These can be alleviated by the use of either mapping techniques and/or masking to fit the computational mesh to the computational domain. 
+
+\subsubsection{FEM}
+The finite element method was designed to deal with problem with complicated computational regions.
+
+The PDE is 1st recast into a variational form which essentially forces the mean error to be small everywhere.
+
+The discretization step proceeds by dividing the computational domain into elements of triangular or rectangular shape.
+
+The solution within each element is interpolated with a polynomial of usually low order.
+
+Again, the unknowns are the solution at the collocation points.
+
+The CFD community adopted the FEM in the 1980s when reliable methods for dealing with advection dominated problems were devised.
+
+\subsubsection{Spectral method}
+Both finite element and finite difference methods are low order methods, usually of 2nd - 4th order, and have local approximation property.
+
+By local we mean that a particular collocation point is affected by a limited number of points around it.
+
+In contrast, spectral method have global approximation property.
+
+The interpolation functions, either polynomials or trigonomic functions are global in nature.
+
+Their main benefits is in the rate of convergence which depends on the smoothness of the solution (i.e. how many continuous derivatives does it admit).
+
+For infinitely smooth solution, the error decreases exponentially, i.e. faster than algebraic.
+
+Spectral methods are mostly used in the computations of homogeneous turbulence, and require relatively simple geometries.
+
+Atmospheric model have also adopted spectral methods because of their convergence properties and the regular spherical shape of their computational domain.
+
+\subsubsection{FVM}
+Finite volume methods are primarily used in \href{https://en.wikipedia.org/wiki/Aerodynamics}{aerodynamics} applications where strong shocks and discontinuities in the solution occur.
+
+Finite volume method solves an integral form of the governing equations so that local continuity property do not have to hold.
+
+\subsubsection{Computational cost}
+The \href{https://en.wikipedia.org/wiki/CPU}{CPU} time to solve the system of equations differs substantially from method to method.
+
+Finite differences are usually the cheapest on a per grid point basis followed by the finite element method and spectral method.
+
+However, a per grid point basis comparison is a little like comparing apple and oranges.
+
+Spectral methods deliver more accuracy on a per grid point basis than either FEM or FDM.
+
+The comparison is more meaningful if the question is recast as ``\textit{what is the computational cost to achieve a given error tolerance?}''.
+
+The problem becomes 1 of defining the error measure which is a complicated task in general situations.
+
+\subsubsection{Forward Euler approximation}
+\begin{align*}
+	\frac{u^{n + 1} - u^n}{\Delta t}\approx\kappa u^n.
+\end{align*}
+Equation is an explicit approximation to the original differential equation since no information about the unknown function at the future time $(n + 1)t$ has been used on the RHS of the equation.
+
+In order to derive the error committed in the approximation we rely again on Taylor series.
+
+\subsubsection{Backward difference}
+This is an example of an implicit method since the unknown $u(n + 1)$ has been used in evaluating the slope of the solution on the RHS; this is not a problem to solve for $u(n + 1)$ in this scalar and linear case.
+
+For more complicated situations like a nonlinear RHS or a system of equations, a nonlinear system of equations may have to be inverted.'' -- \href{https://en.wikipedia.org/wiki/Numerical_methods_in_fluid_mechanics}{Wikipedia{\tt/}numerical methods in fluid mechanics}
+
+%------------------------------------------------------------------------------%
+
 \subsection{Wikipedia{\tt/}physics}
 ``
 

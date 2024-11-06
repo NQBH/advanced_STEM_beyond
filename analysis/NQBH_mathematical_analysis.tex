@@ -425,6 +425,44 @@ A set of the form $L_c^-(f)\coloneqq\{(x_1,\ldots,x_n)|f(x_1,\ldots,x_n)\le c\}$
 
 %------------------------------------------------------------------------------%
 
+\subsection{Wikipedia{\tt/}level-set method}
+``The {\it level-set method} (LSM) is a conceptual framework for using \href{https://en.wikipedia.org/wiki/Level_set}{level sets} as a tool for \href{https://en.wikipedia.org/wiki/Numerical_analysis}{numerical analysis} of \href{https://en.wikipedia.org/wiki/Surface_(topology)}{surfaces} \& \href{https://en.wikipedia.org/wiki/Shape}{shapes}. LSM can perform \href{https://en.wikipedia.org/wiki/Numerical_computation}{numerical computations} involving \href{https://en.wikipedia.org/wiki/Curve}{curves} \& surfaces on a fixed \href{https://en.wikipedia.org/wiki/Cartesian_grid}{Cartesian grid} without having to \href{https://en.wikipedia.org/wiki/Parametric_surface}{parameterize} these objects. LSM makes it easier to perform computations on shapes with sharp corners \& \href{https://en.wikipedia.org/wiki/Shape}{shapes} that change \href{https://en.wikipedia.org/wiki/Topology}{topology} (e.g. by splitting in 2 or developing holes). These characteristics make LSM effective for \href{https://en.wikipedia.org/wiki/Modeling}{modeling} objects that vary in time, such as an \href{https://en.wikipedia.org/wiki/Airbag}{airbag} inflating or a drop of oil floating in water.
+
+\subsubsection{Overview}
+A \href{https://en.wikipedia.org/wiki/Bounded_region}{bounded region} with a well-behaved boundary. Below it, the red surface is the graph of a level set function $\varphi$ determining this shape, \& the flat blue region represents the $X$-$Y$ plane. The boundary of the shape is then the zero-level set of $\varphi$, while the shape itself is the set of points in the plane for which $\varphi$ is positive (interior of the shape) or zero (at the boundary).
+
+In the top row, the shape's topology changes as it is split in 2. It is challenging to describe this transformation numerically by \href{https://en.wikipedia.org/wiki/Parametrization_(geometry)}{parameterizing} the boundary of the shape \& following its evolution. An algorithm can be used to detect the moment the shape splits in 2 \& then construct parameterizations for the 2 newly obtained curves. On the bottom row, however, the plane at which the level set function is sampled is translated upwards, on which the shape's change in topology is described. It is less challenging to work with a shape's change in topology is described. It is less challenging to work with a shape through its level-set function rather than with itself directly, in which a method would need to consider all the possible deformations the shape might undergo.
+
+Thus, in 2D, the level-set method amounts to representing a \href{https://en.wikipedia.org/wiki/Closed_curve}{closed curve} $\Gamma$ (e.g. the shape boundary) using an \href{https://en.wikipedia.org/wiki/Auxiliary_function}{auxiliary function} $\varphi$, called the {\it level-set function}. The curve $\Gamma$ is represented as the zero-level set of $\varphi$ by $\Gamma\coloneqq\{(x,y)|\varphi(x,y) = 0\}$, \& the level-set method manipulates $\Gamma$ {\it implicitly} through the function $\varphi$. This function $\varphi$ is assumed to take positive values inside the region delimited by the curve $\Gamma$ \& negative values outside.
+
+\subsubsection{The level-set equation}
+If the curve $\Gamma$ moves in the normal direction with a speed $v$, then by chain rule \& implicit differentiation, it can be determined that the level-set function $\varphi$ satisfies the {\it level-set equation} \fbox{$\partial_t\varphi = v|\nabla\varphi|$}. Here, $|\cdot|$ is the \href{https://en.wikipedia.org/wiki/Euclidean_norm}{Euclidean norm} (denoted customarily by single bars in PDEs), \& $t$ is time. This is a PDE, in particular a \href{https://en.wikipedia.org/wiki/Hamilton%E2%80%93Jacobi_equation}{Hamilton--Jacobi equation}, \& can be solved numerically, e.g., by using \href{https://en.wikipedia.org/wiki/Finite_difference}{finite differences} on a Cartesian grid.
+
+However, the numerical solution of the level set equation may require advanced techniques. Simple FDMs fails quickly. \href{https://en.wikipedia.org/wiki/Upwind_scheme}{Upwinding} methods e.g. \href{https://en.wikipedia.org/wiki/Godunov_method}{Godunov method} are considered better; however, the level set method does not guarantee preservative of the volume \& shape of the set level in an advection field that maintains shape \& size, e.g., a uniform or \href{https://en.wikipedia.org/wiki/Rotational_velocity}{rotational velocity} field. Instead, the shape of the level set may become distorted, \& the level set may disappear over a few time steps. Therefore, high-order FDMs, e.g. high-order essentially non-oscillatory (ENO) schemes, are often required, \& even then, the feasibility of long-term simulations is questionable. More advanced methods have been developed ito overcome this; e.g., combinations of the leveling method with tracking marker particles suggested by the velocity field.
+
+\subsubsection{Example}
+Consider a unit circle in $\mathbb{R}^2$, shrinking it on itself at a constant rate, i.e., each point on the boundary of the circle moves along its inwards pointing normally at some fixed speed. The circle will shrink \& eventually collapse down to a point. If an initial distance field is constructed (i.e., a function whose value is the signed \href{https://en.wikipedia.org/wiki/Euclidean_distance}{Euclidean distance} to the boundary, positive interior, negative exterior) on the initial circle, the normalized gradient of this field will be the circle normal.
+
+If the field has a constant value subtracted from it in time, the zero level (which was the initial boundary) of the new fields will also be circular \& will similarly collapse to a point. This is due to this being effectively the temporal integration of the \href{https://en.wikipedia.org/wiki/Eikonal_equation}{Eikonal equation} with a fixed front velocity.
+
+\subsubsection{Applications}
+
+\begin{itemize}
+	\item In mathematical modeling of \href{https://en.wikipedia.org/wiki/Combustion}{combustion}, LSM is used to describe the instantaneous flame surface, known as \href{https://en.wikipedia.org/wiki/G_equation}{G equation}.
+	\item \href{https://en.wikipedia.org/wiki/Level_set_(data_structures)}{Level-set data structures} have been developed to facilitate the use of the level-set method in computer applications.
+	\item CFD
+	\item \href{https://en.wikipedia.org/wiki/Trajectory}{Trajectory planning}
+	\item Optimization
+	\item \href{https://en.wikipedia.org/wiki/Image_processing}{Image processing}
+	\item \href{https://en.wikipedia.org/wiki/Computational_biophysics}{Computational biophysics}
+	\item Discrete \href{https://en.wikipedia.org/wiki/Complex_dynamics}{complex dynamics} (visualization of the \href{https://en.wikibooks.org/wiki/Fractals/Iterations_in_the_complex_plane/Mandelbrot_set}{parameter plane} \& the \href{https://en.wikibooks.org/wiki/Fractals/Iterations_in_the_complex_plane/Julia_set}{dynamic plane})
+\end{itemize}
+
+\subsubsection{History}
+The level-set method was developed in 1979 by {\sc Alain Dervieux}, \& subsequently popularized by \href{https://en.wikipedia.org/wiki/Stanley_Osher}{\sc Stanley Osher} \& \href{https://en.wikipedia.org/wiki/James_Sethian}{\sc James Sethian}. It has since become popular in many disciplines, e.g., image processing, \href{https://en.wikipedia.org/wiki/Computer_graphics}{computer graphics}, \href{https://en.wikipedia.org/wiki/Computational_geometry}{computational geometry}, optimization, CFDs, \& \href{https://en.wikipedia.org/wiki/Computational_biology}{computational biology}.'' -- \href{https://en.wikipedia.org/wiki/Level-set_method}{Wikipedia{\tt/}level-set method}
+
+%------------------------------------------------------------------------------%
+
 \subsection{Wikipedia{\tt/}minimal surface}
 {\sf A \href{https://en.wikipedia.org/wiki/Helicoid}{helicoid} minimal surface formed by a soap film on a helical frame.} ``In mathematics, a {\it minimal surface} is a surface that locally minimizes its area. This is equivalent to having zero \href{https://en.wikipedia.org/wiki/Mean_curvature}{mean curvature}.
 

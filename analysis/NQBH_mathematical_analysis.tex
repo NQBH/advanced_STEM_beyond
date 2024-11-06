@@ -767,6 +767,41 @@ Such physical ideas have nothing to do with the mathematical theory on a technic
 
 %------------------------------------------------------------------------------%
 
+\subsection{Wikipedia{\tt/}upwind scheme}
+``In \href{https://en.wikipedia.org/wiki/Computational_physics}{computational physics}, the term advection scheme refers to a class of numerical \href{https://en.wikipedia.org/wiki/Discretization}{discretization} methods for solving \href{https://en.wikipedia.org/wiki/Hyperbolic_partial_differential_equation}{hyperbolic PDEs}. In the so-called upwind scheme {\it typically}, the so-called upstream variables are used to calculate the derivatives in a flow field. I.e., derivatives are estimated using a set of data points biased to be more ``upwind'' of the query point, w.r.t. the direction of the flow. Historically, the origin of upwind methods can be traced back to the work of \href{https://en.wikipedia.org/wiki/Richard_Courant}{\sc Courant}, {\sc Isaacson}, \& {\sc Rees} who proposed the CIR method.
+
+\subsubsection{Model equation}
+To illustrate the method, consider 1D linear \href{https://en.wikipedia.org/wiki/Advection_equation}{advection equation} $\partial_tu + a\partial_xu = 0$ which describes a wave propagating along the $x$-axis with a velocity $a$. This equation is also a mathematical mdoel for 1D linear \href{https://en.wikipedia.org/wiki/Advection}{advection}. Consider a typical grind point $i$ in the domain. In a 1D domain, there are only 2 directions associated with point $i$ -- left (towards negative infinity) \& right (towards positive infinity). If $a > 0$, the traveling wave solution of the 1D linear advection equation propagates towards the right, the left side is called the {\it upwind} side \& the right side is the {\it downwind} side. Similarly, if $a < 0$ the traveling wave solution propagates towards the left, the left side is called {\it downwind} side \& right side is the {\it upwind} side. If the finite difference scheme for the spatial derivative, $\partial_xu$ contains more points in the upwind side, the scheme is called an {\it upwind-biased} or simply an {\it upwind scheme}.
+
+\subsubsection{1st-order upwind scheme}
+{\sf A simulation of a 1st-order upwind scheme in which $a = \sin t$.} The simplest upwind scheme possible is the 1st-order upwind scheme. It is given by
+\begin{equation}
+	\label{1st-order upwind scheme}
+	\left\{\begin{split}
+		\frac{u_i^{n+1} - u_i^n}{\Delta t} + a\frac{u_i^n - u_{i-1}^n}{\Delta x} &= 0&&\mbox{if } a > 0,\\
+		\frac{u_i^{n+1} - u_i^n}{\Delta t} + a\frac{u_{i+1}^n - u_i^n}{\Delta x} &= 0&&\mbox{if } a < 0,
+	\end{split}\right.
+\end{equation}
+where $n$ refers to the $t$ dimension \& $i$ refers to the $x$ dimension. By comparison, a central difference scheme in this scenario would like like
+\begin{equation}
+	\frac{u_i^{n+1} - u_i^n}{\Delta t} + a\frac{u_{i+1}^n - u_{i-1}^n}{2\Delta x} = 0
+\end{equation}
+regardless of ${\rm sign}a$.
+\begin{enumerate}
+	\item {\bf Compact form.} Define $a^+\coloneqq\max\{a,0\}$, $a^-\coloneqq\min\{a,0\}$ \& $u_x^+\coloneqq\frac{u_i^n - u_{i-1}^n}{\Delta x}$, $u_x^-\coloneqq\frac{u_{i+1}^n - u_i^n}{\Delta x}$ the 2 conditional equations \eqref{1st-order upwind scheme} can be combined \& written in a compact form as
+	\begin{equation}
+		\label{1st-order upwind scheme: compact form}
+		u_i^{n+1} = u_i^n - \Delta t[a^+u_x^- + a^-u_x^+],
+	\end{equation}
+	which is a general way of writing any upwind-type schemes.
+	\item {\bf Stability.} The upwind scheme is \href{https://en.wikipedia.org/wiki/Numerical_stability}{stable} if the following \href{https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition}{Courant--Friedrichs--Lewy condition} (CFL) is satisfied. $c\coloneqq\left|\frac{a\Delta t}{\Delta x}\right|\le1$ \& $0\le a$. A \href{https://en.wikipedia.org/wiki/Taylor_series}{Taylor series} analysis of the upwind scheme will show that it is 1st-order accurate in space \& time. Modified wavenumber analysis shows that the 1st-order upwind scheme introduces severe \href{https://en.wikipedia.org/wiki/Numerical_diffusion}{numerical diffusion}{\tt/}dissipation in the solution where large gradients exist due to necessity of high wavenumbers to represent sharp gradients. {\sf The effects of the Courant number $c$ on the stability of the 1st-order upward numerical scheme.}
+\end{enumerate}
+
+\subsubsection{2nd-order upwind scheme}
+The spatial accuracy of the 1st-order upwind scheme can be improved by including 3 data points instead of just 2, which offers a more accurate finite difference stencil for the approximation of spatial derivative. For the 2nd-order upwind scheme, $u_x^-$ becomes the 3-point backward difference in \eqref{1st-order upwind scheme: compact form} \& is defined as $u_x^+\coloneqq\dfrac{3u_i^n - 4u_{i-1}^n + u_{i-2}^n}{2\Delta x}$ \& $u_x^+$ is the 3-point forward difference, defined as $u_x^-\coloneqq\dfrac{-u_{i+2}^n + 4u_{i+1}^n - 3u_i^n}{2\Delta x}$. This scheme is less diffusive compared to the 1st-order accurate scheme \& is called {\it linear upwind differencing (LUD) scheme}.'' -- \href{https://en.wikipedia.org/wiki/Upwind_scheme}{Wikipedia{\tt/}upwind scheme}
+
+%------------------------------------------------------------------------------%
+
 \section{$C_0$ Semigroup -- Nửa Nhóm $C_0$}
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}

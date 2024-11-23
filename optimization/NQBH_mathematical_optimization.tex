@@ -144,8 +144,59 @@
 		\end{itemize}
 		To keep exposition succinct, defs \& results valid for both cases are presented{\tt/}proved once \& when that happens we will explicitly state so. Most of our developments start from abstract operator settings \& then reduce to standard finite-dimensional settings in $\mathbb{R}^d$ as a special case. In some cases, e.g. optimization, order is reversed as we believe it is more natural that way. Each sect. of paper is equipped with examples on which we show how to apply preceding abstract theoretical results. Make an effort to include practical examples from different fields including linear algebra (e.g., eigendecomposition \& SVD), ODEs (an epidemic model), PDEs (of elliptic, hyperbolic, \& Friedrichs' types), neural networks (feed-forward deep neural networks), least squares \& inverse problems (with Tikhonov regularization), PDE-constrained optimization, etc. Due to interdisciplinary nature of paper, do not attempt to provide an exhaustive list of refs but a few for each sect. to keep references at a manageable length.
 				
-		\item {\sf2. Notations.}
-		\item {\sf3. Part I: Adjoint operators in finite dimensional Hilbert spaces.}
+		\item {\sf2. Notations.} boldface lower case letters, e.g., ${\bf u}$: vector-valued functions in $\mathbb{R}^d$. Calligraphic uppercase letters, e.g., $\mathcal{A}$: matrices, script uppercase letters: operators. Bold blackboard upper cases: spaces \& sets. Lowercase letters: scalar-valued functions, also for results valid for both finite \& infinite dimensional settings. Bold uppercase letters: bases of vector spaces. Frequently identify dual of any Hilbert space with itself. $\theta$ denotes either ``zero'' function or ``zero'' vector in appropriate space.
+		
+		Defs: Linear transformation{\tt/}map{\tt/}operator \& its domain, range, kernel{\tt/}null space. Any matrix is a linear operator. Integrals are operators: $\mathcal{A}f = \int_0^1 \omega(t)f(t)\,{\rm d}t$. Differentiation is a linear operator: $\mathcal{A}u = \frac{d^2}{dt^2}u(t)$.
+		
+		\item {\sf3. Part I: Adjoint operators in finite dimensional Hilbert spaces.} Assume $X,Y$ are finite dimensional vector spaces, $\dim X = n < \infty,\dim Y = m < \infty$. If $A\in L(X,Y)$ \& $\dim X < \infty$, then $A\in\mathcal{B}(X,Y)$. Let $E = \{e_i\}_{i=1}^n,G = \{g_i\}_{i=1}^m$ be orthonormal bases for $X,Y$, resp. $\forall u\in X$, denote by $u^E$ the unique vector of coordinates of $u$ in $E$, then $(u^E,v^E)_{\mathbb{F}^d} = (u,v)_X$. Matrix representation of $A$ w.r.t. bases $E,G$ is denoted as $A^{EG}$. When there is no ambiguity on bases referred to, simply ignore superscripts for both coordinate vector \& matrix representation. Denote $i$th element of a vector ${\bf u}$ as ${\bf u}(i)$ \& element at $i$th row \& $j$th column of a matrix $A$ as $A(i,j)$. Also use ${\bf u}_i\coloneqq{\bf u}(i)$. Use square brackets to express matrices \& vectors with a finite number of components. Unless otherwise stated, vectors with finite number of components are column vectors. Organize: celebrated Riesz representation theorem \& closed range theorem, upon which develop several applications of adjoint.
+		
+		\begin{theorem}[Riesz representation]
+			Let $L$ be a bounded linear functional on a Hilbert space $X$. There exists a unique $u\in X$ s.t. $L(v) = (u,v)_X$, $\forall v\in X$. Furthermore, operator norm of $L$ is given as $\|L\|\coloneqq\sup_{v\in X} \frac{|L(v)|}{\|v\|_X} = \|u\|_X$.
+		\end{theorem}
+		
+		\begin{definition}[Adjoint operator]
+			Let $A\in B(X,Y)$. Say that $A^\star:Y\to X$ is the adjoint of $A$ iff $(Au,v)_Y = (u,A^\star v)_X$, $\forall u\in X,v\in Y$.
+		\end{definition}
+		
+		\begin{proposition}
+			Let $A\in B(X,Y)$. Then $A^\star$ exists \& is unique. Furthermore, it is linear with $\|A^\star\| = \|A\|$, where operator norm is defined as $\|A\|\coloneqq\sup_{u\in X} \frac{\|Au\|_Y}{\|u\|_X} = \sup_{\|u\|_X = 1} \|Au\|_Y$.
+		\end{proposition}
+		An $M$-weighted inner product $(\cdot,\cdot)_{\mathbb{R}^d,M}$ where $({\bf u},{\bf v})_{\mathbb{R}^d,M}\coloneqq\sum_{i,j} {\bf u}(i)M(i,j){\bf v}(i)\coloneqq{\bf u}^TM{\bf v}$, $\forall{\bf u},{\bf v}\in V$, $M$: a symmetric \& positive definite matrix. Adjoint operator $A^\star = A^TM$ of a matrix $A$. Set $\mathbb{P}^n[0,1]$ of complex-valued polynomial of order $\le n$ on $[0,1]$.
+		
+		\begin{proposition}
+			Let $E,G$ be orthonormal bases of $X,Y$, resp., \& $\dim X = n,\dim Y = m$. Let $A,B$ be the matrix representations of $A,A^\star$ w.r.t. bases $E,G$. Then $B = A^\star$ where $A^\star$ be the conjugate transpose of $A$.
+		\end{proposition}
+		Orthogonal complement $S^\bot$ of $S\subset X$ is a closed subspace of $X$ \& $S\cap S^\bot =\{0\}$. Close $\overline{S}$ of $S$ is the smallest closed set containing $S$. $(S^\bot)^\bot = \overline{S}$.
+		
+		\begin{theorem}[Closed range]
+			Let $A:X\to Y$. $[{\rm R}(A)]^\bot = {\rm N}{A^\star},\overline{{\rm R}(A)} = [N(A^\star)]^\bot,[{\rm R}(A^\star)]^\bot = {\rm N}(A),\overline{{\rm R}(A^\star)} = [{\rm N}(A)]^\bot$. Consequently, $X = {\rm N}(A)\oplus\overline{{\rm R}(A^\star)}$, $Y = {\rm N}(A^\star)\oplus\overline{{\rm R}(A)}$.
+		\end{theorem}
+		Since consider only Hilbert spaces, which are reflexive, $\overline{{\rm R}(A^\star)} = [{\rm N}(A)]^\bot$ holds. In general $\overline{{\rm R}(A^\star)}\subset[{\rm N}(A)]^\bot$. For finite dimensional vector spaces $X,Y$, ${\rm R}|(A)$, \& hence ${\rm R}(A^\star)$, is obviously closed. Proof of closed range theorem for finite dimensional cases is trivial using SVD decomposition.
+		
+		\begin{itemize}
+			\item {\sf Subsect. 3.1: Application of adjoint to solvability of linear operator equations.} Solvability of linear operator equations before solving them. Existence of a solution of linear operator equation $Au = f$ where $A:X\to Y$.
+			
+			\begin{lemma}
+				\item(i) Existence: The linear equation $Au = f$ has a solution iff $y\in{\rm N}(A^\star)^\bot$.
+				\item(ii) Uniqueness: The solution of the linear equation $Au = f$ is unique iff ${\rm N}(A) = \{0\}$.
+				\item(iii) If $\dim X = \dim Y$, uniqueness $\Leftrightarrow$ existence.
+			\end{lemma}
+			Existence condition can be simply $y\in{\rm R}(A)$. However, easier to work with ${\rm N}(A^\star)^\bot$ as it gives us equations to determine{\tt/}characterize ${\rm N}(A^\star)^\bot$.
+			
+			An operator setting for problem of fitting a quadratic polynomial $u(x)$ with 2 pieces of information about $u(x)$.
+			
+			\item {\sf Subsect. 3.2: Application of adjoint to eigenvalue problems.} Role of adjoint in study of eigenvalue problems.
+			
+			\item {\sf Subsect. 3.3.} Employ classical projection theorem $+$ closed range theorem to find necessary \& sufficient condition for optimality of an abstract linear least squares problem.
+			
+			\item {\sf Subsect. 3.4.} Singular value decomposition (SVD). Deploy SVD decomposition to provide trivial proofs for closed range theorem, rank-nullity theorem, \& fundamental theorem of linear algebra for abstract linear operators.
+			
+			\item {\sf Subsect. 3.5.} Optimization with equality constraints, expose at length role of adjoint in optimization theory valid for both finite \& infinite dimensions.
+			
+			\item {\sf Subsect. 3.6.} A reduced spaced approach using adjoint reduces to backpropagation of deep neural networks.
+			
+			\item {\sf Subsect. 3.7.} role of adjoint in establishing stability of autonomous ODEs.
+		\end{itemize}
 		\item {\sf4. Part II: Adjoint operators in Infinite dimensional Hilbert spaces.}
 		\item {\sf5. Conclusions.}
 	\end{itemize}

@@ -187,15 +187,74 @@
 			
 			\item {\sf Subsect. 3.2: Application of adjoint to eigenvalue problems.} Role of adjoint in study of eigenvalue problems.
 			
+			\begin{definition}[Eigenvalue problem]
+				Let $A:X\to X$ be a linear operator. $Au = \lambda u$ is called an \emph{eigenvalue problem} if there exists a nontrivial pair $(\lambda,x)$ ($x$ is not a zero vector{\tt/}function but $\lambda$ could be zero). In particular: $\lambda$ is called an \emph{eigenvalue}. $x$ is called an \emph{eigenfunction}, associated with eigenvalue $\lambda$, of $A$. If $X$ is a finite-dimensional space, i.e., $X = \mathbb{R}^d$, $x$ is typically called \emph{eigenvector}.
+			\end{definition}
+			
+			\begin{definition}[Self-adjoint operator]
+				If $A^\star = A$, then $A$ is called \emph{self-adjoint}.
+			\end{definition}
+			
+			\begin{lemma}
+				Let $A:X\to X$ be a linear operator \& $A$ is self-adjoint. Then:
+				\item(i) Eigenvalues of $A$ are real.
+				\item(ii) Eigenfunctions corresponding to distinct eigenvalues are orthogonal to each other. I.e., if $(\lambda,u)$ \& $(\alpha,v)$ are 2 eigen-pairs \& $\lambda\ne\alpha$ then $(u,v)_X = 0$.
+			\end{lemma}
+			
+			\begin{proposition}
+				Let $A:X\to X$ be a linear operator. Then $A$ has at least 1 eigenvalue.
+			\end{proposition}
+			
+			\begin{theorem}
+				Let $A:X\to X$ be a self-adjoint linear operator. Then, an orthonormal basis of $X$ can be constructed from eigenfunctions of $A$.
+			\end{theorem}
+			
+			\begin{theorem}[Spectral decomposition of self-adjoint operators in finite dimensions]
+				Let $\dim X = n$ \& $A:X\to X$ be a linear \& self-adjoint operator. There exists $n$ real values $\lambda_1\ge\lambda_2\ge\cdots\ge\lambda_n$ \& orthonormal vectors $u_1,u_2,\ldots,u_n$ s.t. $Au_i = \lambda_iu_i$. $\forall x\in X$, $Ax = \sum_{i=1} \lambda_i(x,u_i)_Xu_i\Rightarrow A = \sum_{i=1}^n \lambda_i(\cdot,u_i)_Xu_i$, i.e., $A$ is completely determined by its eigenpairs.
+			\end{theorem}
+			
 			\item {\sf Subsect. 3.3.} Employ classical projection theorem $+$ closed range theorem to find necessary \& sufficient condition for optimality of an abstract linear least squares problem.
 			
 			\item {\sf Subsect. 3.4.} Singular value decomposition (SVD). Deploy SVD decomposition to provide trivial proofs for closed range theorem, rank-nullity theorem, \& fundamental theorem of linear algebra for abstract linear operators.
 			
 			\item {\sf Subsect. 3.5.} Optimization with equality constraints, expose at length role of adjoint in optimization theory valid for both finite \& infinite dimensions.
 			
-			\item {\sf Subsect. 3.6.} A reduced spaced approach using adjoint reduces to backpropagation of deep neural networks.
+			\item {\sf Subsect. 3.6: Application of adjoint to backpropagation in deep learning.} A reduced spaced approach using adjoint reduces to backpropagation of deep neural networks. Consider standard fully connected deep neural network \& use adjoint method to derive backpropagation method for computing gradient of loss function w.r.t. weights \& biases of a general fully-connected deep neural work (DNN). Review papers on deep learning \cite{LeCun_Bengio_Hinton2015}, [69], history of backpropagation: [54,55]. Gradient is needed for gradient-based methods e.g. stochastic gradient descent. Extension of adjoint method for other type of neural networks e.g. ResNet \& CNN are straightforward. Backpropagation is nothing more than a reduced space approach to compute gradient using gradient method.
 			
-			\item {\sf Subsect. 3.7.} role of adjoint in establishing stability of autonomous ODEs.
+			\begin{definition}[$L$-layer Neural network]
+				Given $n_l,s_0,s_1,\ldots,s_{n_l}\in\mathbb{N}$, an $n_l$-layer neural network is defined as the following series of composition: Input layer: ${\bf a}^0 - {\bf x} = {\bf0}$, The $i$th layer: ${\bf a}^i - \sigma(\mathcal{W}^i{\bf a}^{i-1} + {\bf b}^i) = {\bf0}$, $i = 1,\ldots,n_l$, where ${\bf x}\in\mathbb{R}^{s_0},\mathcal{W}^i\in\mathbb{R}^{s_i}\times\mathbb{R}^{s_i - 1}$, ${\bf b}^i\in\mathbb{R}^{s_i}$, $i = 1,\ldots,n_l$, are weight matrix \& bias vector of the $i$th layer; ${\bf a}^i\in\mathbb{R}^{s_i}$ is the output of the $i$th layer; \& the activation function $\sigma$ acts componentwise when its argument is a vector.
+			\end{definition}
+			Define ${\bf u}\coloneqq[{\bf a}^0,\ldots,{\bf a}^{n_l}]^T,{\bf z}\coloneqq[\mathcal{W}^1,{\bf b}^1,\ldots,W^{n_l},{\bf b}^{n_l}]^T,{\bf c}({\bf u},{\bf z}) = {\bf0}$ as concatenation of all subequation. For concreteness, consider loss (objective) function $f({\bf u},{\bf z})\coloneqq\frac{1}{2}\|{\bf a}^{\rm obs} - {\bf a}^{n_l}\|^2$ where ${\bf a}^{\rm obs}$ is a given data (label). Neural network training problem is constrained optimization problem in Ex 3.59.
+			
+			Using adjoint equations, backpropagate to compute adjoint solution from output layer to $i$th layer, \& then compute gradients. From backpropagation point of view, ${\bf y}^i,i = 1,\ldots,n_l$ are simply temporary variables to help compute{\tt/}write chain rule in a succinct manner. The adjoint approach, however, reveals their precise role as adjoint solutions -- also known as Lagrangian multiliers -- of adjoint equations stemming from 1st-order optimality condition using reduced space approach. DNN training problem, from adjoint point of view, is a constrained optimization problem with forward pass as forward equations. The backpropagation is thus nothing more than a reduced space approach to compute gradient using adjoint method.
+			
+			\item {\sf Subsect. 3.7.} role of adjoint in establishing stability of autonomous ODEs. A brief view of role of adjoint in study of stability of equilibria of ODEs. Limit to autonomous systems of form $\dot{\bf x}\coloneqq\frac{d{\bf x}}{dt} = {\bf f}({\bf x})$ where ${\bf x}\in\mathbb{R}^d,{\bf f}:G\subset\mathbb{R}^d\to\mathbb{R}^d$ is assumed to be continuous \& locally Lipschitz.
+			
+			\begin{definition}[Lyapunov stability]
+				The equilibrium point ${\bf0}$ is stable in the sense of Lyapunov if for any $\varepsilon > 0,\exists\delta > 0$ s.t. for every (maximal) solution ${\bf x}:I\to G$ s.t. ${\bf x}(0)\le\delta$, have ${\bf x}(t)\le\varepsilon$, $\forall t\in I\cap(0,\infty)$.
+			\end{definition}
+			
+			\begin{theorem}[Lyapunov direct method]
+				If there exists an open neighborhood $U$ of ${\bf0}$ \& a continuous differentiable function $V$ s.t.
+				\item(i) $V({\bf0}) = 0$, $V({\bf z}) > 0$, $\forall{\bf z}\in U\backslash\{{\bf 0}\}$, \&
+				\item(ii) $V_{\bf f}({\bf z})\coloneqq(\nabla V({\bf z}),{\bf f}({\bf z}))\coloneqq\sum_{i=1}^n \partial_{{\bf z}_i}V {\bf f}_i({\bf z})\le0$, $\forall{\bf z}\in U$.
+				
+				Then $\bf0$ is a stable equilibrium point of $\dot{\bf x}\coloneqq\frac{d{\bf x}}{dt} = {\bf f}({\bf x})$.
+			\end{theorem}
+			
+			\begin{definition}[Asymptotic stability]
+				The equilibrium $\bf0$ is \emph{attractive} if there exists $\delta > 0$ s.t. $\forall{\bf x}_0\in G$ s.t. $\|{\bf x}_0\|\le\delta$, then the solution ${\bf x}(t)\to{\bf0}$ as $t\to\infty$. Say $\bf0$ \emph{asymptotically stable} in the sense of Lyapunov if it is both stable \& attractive.
+			\end{definition}
+			
+			\begin{theorem}[A sufficient condition for asymptotic stability]
+				Assume that there exists a neighborhood $U$ of ${\bf x}_0$ \& a continuously differentiable function $V$ s.t.
+				\item(i) $V({\bf0}) = 0$, $V({\bf z}) > 0$, $\forall{\bf z}\in U\backslash\{{\bf 0}\}$, \& $V_{\bf f}\le0$, $\forall{\bf z}\in U$, \&
+				\item(ii) $\bf0$ is the inverse image of $V_{\bf f}({\bf z}) = 0$, i.e., $V_{\bf f}^{-1}(0) = {\bf0}$.
+				
+				Then $\bf0$ is asymptotically stable.
+			\end{theorem}
+			Study stability of systems of linear ODEs, \& this is where the adjoint comes into picture. Infer stability of nonlinear systems using stability of their linearizations. 
+			
 		\end{itemize}
 		\item {\sf4. Part II: Adjoint operators in Infinite dimensional Hilbert spaces.}
 		\item {\sf5. Conclusions.}

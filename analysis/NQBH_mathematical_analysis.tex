@@ -1251,6 +1251,35 @@ The spatial accuracy of the 1st-order upwind scheme can be improved by including
 \section{Numerical Analysis}
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
+	\item \cite{Atkinson_Han2009}. {\sc Kendall Atkinson, Weimin Han}. {\it Theoretical Numerical Analysis: A Functional Analysis Framework}.
+	
+	{\sf Series Preface.} Mathematics is playing an ever more important role in physical \& biological sciences, provoking a blurring of boundaries between scientific disciplines \& a resurgence of interest in modern as well as classical techniques of applied mathematics. This renewal of interest, both in research \& teaching, has led to establishment of series: {\it Texts in Applied Mathematics (TAM)}.
+	
+	Development of new courses is a natural consequence of a high level of excitement on research frontier as newer techniques, e.g. numerical \& symbolic computer systems, dynamical systems, \& chaos, mix with \& reinforce traditional methods of applied mathematics. thus, purpose of this textbook series is to meet current \& future needs of these advances \& to encourage teaching of new courses.
+	
+	TAM will publish textbooks suitable for use in advanced undergraduate \& beginning graduate courses, \& will complement {\it Applied Mathematical Sciences (AMS)} series, which will focus on advanced textbooks \& research-level monographs.
+	
+	{\sf Preface.} This textbook has grown out of course which we teach periodically at University of Iowa. Have beginning graduate students in mathematics who wish to work in numerical analysis from a theoretical perspective, \& they need a background in those ``tools of the trade''. In the past, such students would ordinarily begin with a 1-year course in {\it real \& complex analysis}, followed by a 1 or 2 semester course in {\it functional analysis} \& possibly a graduate  level course in {\it ODEs, PDEs}, or {\it integral equations}. Still expect students to take most of these standard courses. The course based on this book allows these students to move more rapidly into a research program.
+	
+	Textbook covers basic results of functional analysis, approximation theory, Fourier analysis \& wavelets, calculus \& iteration methods for nonlinear equations, FDMs, Sobolev spaces \& weak formulations of BVPs, FEMs, elliptic variational inequalities \& their numerical solution, numerical methods for solving integral equations of 2nd kind, boundary integral equations for planar regions with a smooth boundary curve, \& multivariable polynomial approximations. Presentation of each topic is meant to be an introduction with a certain degree of depth. Comprehensive references on a particular topic are listed at end of each chapter for further reading \& study. For 3e, add a chapter on multivariable polynomial approximation \& revise numerous sections from 2e to varying degrees. Include a good number of new exercises.
+	
+	\begin{itemize}
+		\item {\sf1. Linear Spaces.}
+		\item {\sf2. Linear Operators on Normed Spaces.}
+		\item {\sf3. Approximation Theory.}
+		\item {\sf4. Fourier Analysis \& Wavelets.}
+		\item {\sf5. Nonlinear Equations \& Their Solution by Iteration.}
+		\item {\sf6. FDM.}
+		\item {\sf7. Sobolev Spaces.}
+		\item {\sf8. Weak Formulations of Elliptic BVPs.}
+		\item {\sf9. Galerkin Method \& Its Variants.}
+		\item {\sf10. Finite Element Analysis.}
+		\item {\sf11. Elliptic Variational Inequalities \& Their Numerical Approximations.}
+		\item {\sf12. Numerical Solution of Fredholm Integral Equations of 2nd Kind.}
+		\item {\sf13. Boundary Integral Equations.}
+		\item {\sf14. Multivariable Polynomial Approximations.}
+	\end{itemize}
+	
 	\item \cite{Burden_Faires_Burden2015}. {\sc Richard L. Burden, J. Douglas Faires, Annette M. Burden}. {\it Numerical Analysis}.
 	
 	\item \cite{Isaacson_Keller1994}. {\sc Eugene Isaacson, Herbert Bishop Keller}. {\it Analysis of Numerical Methods}.
@@ -1292,6 +1321,89 @@ The spatial accuracy of the 1st-order upwind scheme can be improved by including
 		\item {\sf Chap. 6: Differences, Interpolation Polynomials, \& Approximate Differentiation.}
 		\item {\sf Chap. 7: Numerical Integration.}
 		\item {\sf Chap. 8: Numerical Solution of ODEs.}
+		\begin{itemize}
+			\item {\sf Introduction.} To study effectiveness of various methods for numerical solution of differential equation problems, illustrate theory for case of general 1st order ODE:
+			\begin{equation}
+				\label{general 1st order ODE}
+				\tag{g1ODE}
+				\left\{\begin{split}
+					\frac{dy}{dx} &= f(x,y),\\
+					y(a) &= y_0\mbox{ in }(a,b).
+				\end{split}\right.
+			\end{equation}
+			Require to find a solution $y = y(x)$ of \eqref{general 1st order ODE} in some interval $[a,b]$. Under suitable restrictions on function $f(x,y)$, well known that a unique solution exists, e.g., existence \& uniqueness of solution are assured if $f(x,y)$ is bounded, continuous in $x$, \& Lipschitz continuous w.r.t. $y$ in some sufficiently large rectangle $R_C$: $[a\le x\le b,\ |y - y_0|\le C]$. The class of methods to be discussed uses a subdivision of interval $I\coloneqq[a,b]$ by a finite set of distinct points $I_\Delta$: $x_0 = a$, $x_{i+1} = x_i + \Delta x_i$, $i = 0,1,\ldots,N$. Finer subdivisions also play a role \& are denoted by same generic symbol $I_\Delta$. Set of points defining a subdivision is frequently called a {\it net, grid, lattice}, or {\it mesh}. The quantities $\Delta x_i$ are called the {\it net spacings} or {\it mesh widths}. Corresponding to each point of the net, seek a quantity, say $u_i$, which is to approximate $y_i\coloneqq y(x_i)$, the exact solution at the corresponding net point. The set of values $\{u_i\}$ is called a {\it net function}. Clearly, the values $\{y_i\}$ also form a net function on $I_\Delta$. Use generic symbol $\{u_i\}$ to denote a net function on any subdivision.
+			
+			For most of methods treated in this chapter, quantities $\{u_i\}$ are to be determined from a set of (usually non-algebraic) equations which in {\it some sense} approximate system \eqref{general 1st order ODE}; these approximating equations are called {\it difference equations}. Natural requirements for approximating difference equations are that for any function $f(x,y)$ (in some class of sufficiently often differentiable functions):
+			\begin{enumerate}
+				\item They have a unique solution.
+				\item Their solution, at least for ``sufficiently small'' net spacings, should be ``close'' to the exact  solution of \eqref{general 1st order ODE}.
+				\item Their solution should be ``effectively computable''.
+			\end{enumerate}
+			Property (a) is trivially satisfied by many of difference equations to be studied, so-called {\it explicit schemes}. Whether or not the {\it implicit schemes} satisfy condition (a) is determined by a study of roots of a sequence of equations (or systems), of form $z = g(z)$. In general, if $\Delta x_i$ is small enough, the implicit equations have a unique solution. Property (b) is related to question of convergence, as $\max_i \Delta x_i\to0$, of $\{u_i\}$ to $\{y_i\}$. The study of such {\it convergence properties} of difference solution will occupy a considerable part of this chapter. Sects. 1--3 examine separately convergence of each of several special methods. Sects. 5--6: a general treatment of convergence which includes previous cases. Vaguely formulated property (c) involves 2 important considerations: (i) number of single precision computations required; (ii) growth of roundoff errors in computed difference ``solution''. Of course, these 2 points are related since having to compensate for rounding errors by using more significant figures usually entails additional computations. A trivial 1st approximation of (i) is based on operational count for infinite precision arithmetic. Growth of roundoff error is related to notion of {\it stability} of difference equations. Stability theory of difference equations treated in Sect. 5 is based on study of difference equations with constant coefficients developed in Sect. 4. Sect. 5: Establish main general theorem of this chapter, i.e., stability is equivalent to convergence for consistent methods.
+			
+			There are a number of systematic ways in which one can ``derive'' or rather generate difference equations that approximate or are consistent with \eqref{general 1st order ODE}. I.e., these difference equations seem to be discrete models for continuous problem \eqref{general 1st order ODE}. But, no matter how reasonable the derivation, the efficacy of such difference equations can only be determined by checking conditions (a)--(c). Subsect. 1.4: derive a discrete model which seems quite reasonable, but is absolutely useless since growth of roundoff error cannot be controlled (i.e., unstable). Sect. 5: develop a simple criterion for recognizing when a finite difference scheme is stable \& convergent.
+			
+			It should be recalled that some of numerical methods for approximating solutions of ODEs, \& systems of them, also have important theoretical applications. In fact, 1 of basic existence \& uniqueness proofs uses {\it Euler--Cauchy difference method} (resist temptation to present such a proof here). Rather, assume: Problem \eqref{general 1st order ODE} is ``well-posed'', i.e., it has a unique solution with a certain number of continuous derivatives \& furthermore, the solution depends differentiably on initial data. Can guarantee well-posedness of Problem \eqref{general 1st order ODE} for a wide class of functions $f(x,y)$. Will be interested in showing that certain difference methods have properties (a)--(c) for such a class of functions $f(x,y)$.
+			
+			At the present time there seems to be no general way of formulating an ``ideal method'' for solving \eqref{general 1st order ODE}. An ``ideal method'' is one which requires least amount of work (number of single precision computations) to produce an approximation solution of \eqref{general 1st order ODE} accurate to within a given $\epsilon > 0$.
+			
+			Derive a number of inequalities with use of 2 simple lemmas:
+			\begin{lemma}
+				$1 + x\le e^x$, $\forall x\in\mathbb{R}$. $1 + x = e^x\Leftrightarrow x = 0$. Consequently, $0\le(1 + x)^n\le e^{nx}$, $\forall z\ge-1,n\ge0$.
+			\end{lemma}
+			
+			\begin{question}
+				Can list all elementary inequalities derived from Taylor's theorem or Maclaurin's series?
+			\end{question}
+			
+			\item {\sf Methods based on approximating derivative: Euler--Cauchy method.} To illustrate basic concepts, consider simple difference approximation to \eqref{general 1st order ODE} which results from approximation derivative by a forward difference quotient,
+			\begin{equation}
+				\label{general 1st order ODE: forward difference}
+				\frac{u_{i+1} - u_i}{h} = f(x_i,u_i),\ i = 0,1,\ldots,N - 1.
+			\end{equation}
+			For simplicity only, chose a {\it uniform net}
+			\begin{equation}
+				\label{uniform net}
+				I_h:x_0 = a,\ x_i = x_0 + ih,\ i = 0,\ldots,N,\ h = \frac{b - a}{N}.
+			\end{equation}
+			Initial condition is replaced by $u_0 = y_0 + e_0$ where have intentionally permitted introduction of an initial error $e_0$. Equations \eqref{general 1st order ODE} are difference equations of Euler--Cauchy method, also called {\it polygon method}, where the polygon is constructed by joining successive points $(x_i,u_i)$ with straight line segments. Each segment has slop given by value of $f$ at left endpoint.
+			
+			Existence of a unique solution $u_i$ of difference equations follows from writing \eqref{general 1st order ODE: forward difference} as
+			\begin{equation}
+				\label{general 1st order ODE: forward difference 1}
+				u_{i+1} = u_i + hf(x_i,u_i),\ i = 0,1,\ldots,N - 1.
+			\end{equation}
+			Then with $u_0$ given by $u_0 = y_0 + e_0$, yield recursively $u_1,u_2,\ldots,u_N$ provided only that $f(x_i,u_i)$ is defined. Present analysis of \eqref{general 1st order ODE: forward difference 1} is based on using infinite precision arithmetic. I.e., numbers that would be calculated in finite precision arithmetic satisfy $U_{i+1} = [U_i + hf(x_i,U_i)] + \rho_{i+1}$ where $\rho_{i+1}$ is rounding error made in evaluating term in brackets. Study error $U_i - y_i$ as $h\to0$. A consideration of error $\{e_i\}$ defined by
+			\begin{equation}
+				\label{error}
+				\tag{err}
+				e_i\coloneqq u_i - y_i,\ j = 0,1,\ldots,N.
+			\end{equation}
+			For this study, require that, in some region $S$ to be specified later, $f(x,y)$ be continuous in $x$ \& satisfy a uniform Lipschitz condition in variable $y$:
+			\begin{equation}
+				\label{Lipschitz condition}
+				|f(x,y) - f(x,y')|\le K|y - y'|\mbox{ for some constant } K > 0,\ \forall(x,y),(x,y')\in S.
+			\end{equation}
+			If $K = 0$, then $f(x,y)$ is independent of $y$ \& \eqref{general 1st order ODE} is a simple problem of quadrature treated in Chap. 7. Will need a measure of error by which exact solution of \eqref{general 1st order ODE} fails to satisfy difference relation \eqref{general 1st order ODE: forward difference}. This error is called {\it local truncation error} or discretization error \& is defined by
+			\begin{equation}
+				\label{local truncation error}
+				\tau_{i+1}\coloneqq\frac{y_{i+1} - y_i}{h} - f(x_i,y_i),\ i = 0,1,\ldots,N - 1.
+			\end{equation}
+			This relation is frequently written as
+			\begin{equation}
+				\label{local truncation error 1}
+				y_{i+1} = y_i + hf(x_i,y_i) + h\tau_{i+1},\ i = 0,1,\ldots,N - 1.
+			\end{equation}
+			An explicit representation of $\tau_i$ will be derived shortly [under additional conditions on $f(x,y)$]. If $\tau_i$ vanish as $h\to0$, say: difference equations are {\it consistent} with differential equation. Subsect. 2: for another consistent scheme, corresponding difference solution $\{u_i\}$ can diverge as $h\to0$, from exact solution $\{y_i\}$ even though $e_0$ is small.
+			
+			\begin{theorem}
+				Let $\{u_i\}$ be the solution \eqref{general 1st order ODE: forward difference} \& $y(x)$ the solution of \eqref{general 1st order ODE} where $f(x,y)$ satisfies \eqref{Lipschitz condition} in the strip $S:[a\le x\le b,\ |y| < \infty]$. then, with the definitions of \eqref{local truncation error 1} of $\{\tau_i\}$:
+				\begin{equation}
+					|u_i - y(x_i)|\le e^{K(x_i - a)}\left(|e_0| + \frac{\tau}{K}\right),\ i = 0,1,\ldots,N,\mbox{ where } \tau\coloneqq\max_i |\tau_i|.
+				\end{equation}
+			\end{theorem}
+			
+		\end{itemize}
 		\item {\sf Chap. 9: Difference Methods for PDEs.}
 	\end{itemize}
 	

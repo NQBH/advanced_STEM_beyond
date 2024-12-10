@@ -1373,7 +1373,43 @@ The spatial accuracy of the 1st-order upwind scheme can be improved by including
 		\end{itemize}
 		\item {\sf13. Boundary Integral Equations.} In Chap. 10, examined FEMs for numerical solution of Laplace's equation. Propose an alternative approach. Introduce idea of reformulating Laplace's equation as a {\it boundary integral equation} (BIE), \& then consider numerical solution of Laplace's equation by numerically solving its reformulation as a BIE. Some of most important BVPs for elliptic PDEs have been studied \& solved numerically by this means; \& depending on requirements of problem, use of BIE reformulations may be the most efficient means of solving these problems. Examples of other equations solved by use of BIE reformulations are Helmholtz equation $\Delta u + \lambda u = 0$ \& biharmonic equation $\Delta^2u = 0$. Consider use of boundary integral equations in solving only planar problems for Laplace's equation. For domain $D$ for equation, restrict it or its complement to be a simply-connected set with a smooth boundary $S$. Most of results \& methods given here will generalize to other equations, e.g., Helmholtz's equation. Use notation popular in literature on boundary integral equations.
 		\begin{itemize}
-			\item {\sf Boundary integral equations.} contain a theoretical framework for BIE reformulations of Laplace's equation in $\mathbb{R}^2$, giving most popular of such boundary integral equations. For much of history of BIE, those of 2nd kind have been most popular; this includes work of {\sc Ivar Fredholm, Carl Neumann, David Hilbert}, \& others in late 1800s \& early 1900s. Let $D$ be a bounded open simply-connected region in plane, \& 
+			\item {\sf Boundary integral equations.} contain a theoretical framework for BIE reformulations of Laplace's equation in $\mathbb{R}^2$, giving most popular of such boundary integral equations. For much of history of BIE, those of 2nd kind have been most popular; this includes work of {\sc Ivar Fredholm, Carl Neumann, David Hilbert}, \& others in late 1800s \& early 1900s. Let $D$ be a bounded open simply-connected region in plane, \& denote its boundary by $S$. At a point $P\in S$, let ${\bf n}_P$ denote inner unit normal to $S$. Restate principal BVPs of interest when solving Laplace's equation on $D$.
+			
+			\begin{problem}[Interior Dirichlet problem]
+				Find $u\in C(\overline{D})\cap C^2(D)$ that satisfies
+				\begin{equation}
+					\label{interior Dirichlet prob}
+					\left\{\begin{split}
+						\Delta u(P) &= 0&&P\in D,\\
+						u(P) &= f(P)&&P\in S,
+					\end{split}\right.
+				\end{equation}
+				with $f\in C(S)$ a given boundary function.
+			\end{problem}
+			
+			\begin{problem}[Interior Neumann problem]
+				Find $u\in C^1(\overline{D})\cap C^2(D)$ that satisfies
+				\begin{equation}
+					\label{interior Neumann prob}
+					\left\{\begin{split}
+						\Delta u(P) &= 0&&P\in D,\\
+						u(P) &= f(P)&&P\in S,
+					\end{split}\right.
+				\end{equation}
+				with $f\in C(S)$ a given boundary function.
+			\end{problem}
+			Another important BVP is that with a mixture of Neumann \& Dirichlet boundary conditions on different sections of boundary, or perhaps some combination of them. Techniques introduced here can also be used to study \& solve such mixed BVPs, but omit any such discussion here. Corresponding to interior Dirichlet \& Neumann problems given, there are corresponding exterior problems. Functions satisfying Laplace's equation are often called {\it harmonic functions}. Study of Laplace's equation is often referred to as {\it potential theory}, since many applications involve finding a potential function $u$ in order to construct a conservative vector field $\nabla u$. A theorem summarizing main results on solvability of above BVPs:
+			
+			\begin{theorem}
+				Let the function $f\in C(S)$; \& assume $S$ can be parameterized by a twice continuously differentiable function. Then:
+				\item[(i)] The Dirichlet problem \eqref{interior Dirichlet prob} has a unique solution.
+				\item[(ii)] The Neumann problem \eqref{interior Neumann prob} has a unique solution, up to the addition of an arbitrary constant, provided $\int_S f(Q)\,{\rm d}S = 0$.
+			\end{theorem}
+			
+			\begin{itemize}
+				\item {\sf Green's identities \& representation formula.} A very important tool for studying elliptic PDEs: {\it divergence theorem} or {\it Gauss's theorem} (Prop. 7.6.1) but restate it in the form needed for planar Laplace equation, a form usually called {\it Green's theorem}. State result for regions $\Omega$ that are not simply-connected \& whose boundaries need not be smooth. Need this form when proving Green's representation formula.
+			\end{itemize}
+			
 			\item {\sf Boundary integral equations of 2nd kind.} Discuss numerical solution of such BIE of 2nd kind.
 			\item {\sf A boundary integral equation of 1st kind.} Introduce briefly study of BIE of 1st kind, \& discuss use of Fourier series as a means of studying these equations \& numerical methods for their solution.
 		\end{itemize}
@@ -1597,6 +1633,207 @@ The spatial accuracy of the 1st-order upwind scheme can be improved by including
 
 \subsection{Calculus on Surfaces}
 {\bf Goal.} Define \& develop the fundamental tools of calculus on a regular surface. Start with the notion of differentiability of functions defined only on a surface. Define the concept of vector fields in a surface. Then proceed to develop the gradient \& Laplacian operators w.r.t. a surface. These operators allow for alternative expressions of the summed \& Gaussian curvatures. Derive integration by parts on surfaces, i.e., the domain of integration is a surface. Conclude with some useful identities \& inequalities. Always take $\Gamma$: a regular surface, either with or without a boundary.
+
+%------------------------------------------------------------------------------%
+
+\section{Distribution Theory -- Lý Thuyết Phân Phối}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \cite{Simon2022}. {\sc Jacques Simon}. {\it Distributions}. Analysis for PDEs Set: Vol. 3.
+	
+	To {\sc Laurent Schwartz}, For his {\it Theory of Distributions}, obviously, without which this book could not have existed, but also, \& above, for his kindness \& courage. The clarity of {\sc Schwartz}'s analysis classes at the \'Ecole Polytechnique in 1968 made the dunce that I was there happy. Even if I arrived late, even if I had skipped a few sessions, everything was clear, lively \& easy to understand. His soft voice, benevolent smile, mischievous eye -- especially when, with an air of nothing, he was watching for reactions to 1 of his veiled jokes, ``a tore, from the Greek toro, the tyre'' -- he made people love analysis. When master's students at the university demanded ``a grade average for all'' in 1969, most professors either complied or slunk away. Not {\sc Schwartz}. When the results were posted -- I was there, to make up easily for the calamitous grades I had earned at Polytechnique -- he came along, frail, in front of a fairly excited horde. He explained, in substance: ``An examination given to all, without any value, would no longer allow one to rise in society through knowledge. Removing selection on the basis of merit would leave the field open to selection by money or social origin.'' Preminitory, alas.
+	
+	-- Gửi {\sc Laurent Schwartz}, vì {\it Theory of Distributions} của ông, rõ ràng là, nếu không có nó thì cuốn sách này không thể tồn tại, nhưng cũng hơn thế nữa, vì lòng tốt \& lòng dũng cảm của ông. Sự rõ ràng của các lớp giải tích của {\sc Schwartz} tại \'Ecole Polytechnique năm 1968 đã khiến kẻ ngốc như tôi ở đó vui mừng. Ngay cả khi tôi đến muộn, ngay cả khi tôi đã bỏ lỡ 1 vài buổi học, mọi thứ đều rõ ràng, sống động \& dễ hiểu. Giọng nói nhẹ nhàng, nụ cười nhân hậu, đôi mắt tinh nghịch của ông -- đặc biệt là khi, với vẻ mặt vô hồn, ông đang theo dõi phản ứng với 1 trong những trò đùa che đậy của mình, ``1 vết rách, từ tiếng Hy Lạp toro, lốp xe'' -- ông đã khiến mọi người yêu thích giải tích. Khi sinh viên thạc sĩ tại trường đại học yêu cầu ``điểm trung bình cho tất cả'' vào năm 1969, hầu hết các giáo sư đều tuân thủ hoặc lẩn tránh. Nhưng không phải {\sc Schwartz}. Khi kết quả được công bố -- tôi đã ở đó, để dễ dàng bù đắp cho điểm số thảm hại mà tôi đã đạt được tại Polytechnique -- ông ấy đã đi đến, yếu ớt, trước 1 đám đông khá phấn khích. Ông giải thích, về cơ bản: ``1 kỳ thi dành cho tất cả mọi người, không có giá trị nào, sẽ không còn cho phép 1 người thăng tiến trong xã hội thông qua kiến thức. Loại bỏ việc lựa chọn dựa trên thành tích sẽ để lại lĩnh vực này cho việc lựa chọn theo tiền bạc hoặc nguồn gốc xã hội.'' Thật đáng tiếc, đó là lời mở đầu.
+	\begin{itemize}
+		\item {\sf Introduction.} {\bf Objective.} This book is 3rd of 7 volumes dedicated to solving PDEs in physics:
+		\begin{itemize}
+			\item Vol. 1: Banach, Frechet, Hilbert, \& Neumann Spaces
+			\item Vol. 2: Continuous Functions
+			\item Vol. 3: Distributions
+			\item Vol. 4: Integration
+			\item Vol. 5: Sobolev Spaces
+			\item Vol. 6: Traces
+			\item Vol. 7: PDEs
+		\end{itemize}
+		This 3rd volume aims to construct space of distributions with real or vectorial values \& to provide main properties useful in studying PDEs.
+		
+		{\bf Intended audience.} Have looked for simple methods that require a minimal level of knowledge to make this tool accessible to as wide an audience as possible -- doctoral students, university students, engineers -- without loosing generality \& even generalizing certain results, which may be of interest to some researchers. Led us to choose an unconventional approach that prioritizes semi-norms \& sequential properties, whether related to completeness, compactness or continuity.
+		
+		{\bf Utility of distributions.} Main advantage of distribution: distributions provide derivatives of all continuous or integrable functions, even those which are not differentiable, \& thus broaden scope of application of differential calculus. Especially useful for solving PDEs.
+		
+		To this end, a family of objects, the distributions, is defined, with following properties:
+		\begin{itemize}
+			\item Any continuous function is a distribution.
+			\item Any distribution has partial derivatives, which are distributions.
+			\item For a differentiable function, find conventional derivatives.
+			\item Any limit of distributions is a distribution.
+			\item Any Cauchy sequence of distributions has a limit.
+		\end{itemize}
+		These properties may be roughly summarized by saying: space $\mathcal{D}'$ of distributions is the {\it completion w.r.t. derivation} of space $C$ of continuous functions. This construction, due to {\sc Laurent Schwartz}, is completed here for distributions on an open subset $\Omega$ of $\mathbb{R}^d$ with values in a Neumann space $E$, i.e., a sequentially complete separable semi-normed space. This includes values in a Banach or Fr\'echet space.
+		\item {\sf Notations.}
+		\item {\sf Chap. 1: Semi-Normed Spaces \& Function Spaces.}
+		\begin{itemize}
+			\item {\sf Semi-normed spaces.}
+			\item {\sf Comparison of semi-normed spaces.}
+			\item {\sf Continuous mappings.}
+			\item {\sf Differentiable functions.}
+			\item {\sf Spaces $C^m(\Omega;E),C_{\rm b}^m(\Omega;E),{\bf C}_{\rm b}^m(\Omega;E)$.}
+			\item {\sf Integral of a uniformly continuous function.}
+		\end{itemize}
+		\item {\sf Chap. 2: Space of Test Functions.}
+		\begin{itemize}
+			\item {\sf Functions with compact support.}
+			\item {\sf Compactness in their whole of support of functions.}
+			\item {\sf Space $\mathcal{D}(\Omega)$.}
+			\item {\sf Sequential completeness of $\mathcal{D}(\Omega)$.}
+			\item {\sf Comparison of $\mathcal{D}(\Omega)$ to various spaces.}
+			\item {\sf Convergent sequences in $\mathcal{D}(\Omega)$.}
+			\item {\sf Covering by crown-shaped sets \& partitions of unity.}
+			\item {\sf Control of $C_K^m(\Omega)$-norms by semi-norms of $\mathcal{D}(\Omega)$.}
+			\item {\sf Semi-norms that are continuous on all $C_K^\infty(\Omega)$.}
+		\end{itemize}
+		\item {\sf Chap. 3: Space of Distributions.}
+		\begin{itemize}
+			\item {\sf Space $\mathcal{D}'(\Omega'E)$.}
+			\item {\sf Characterization of distributions.}
+			\item {\sf Inclusion of $C(\Omega;E)$ into $\mathcal{D}'(\Omega;E)$.}
+			\item {\sf Case where $E$ is not a Neumann space.}
+			\item {\sf Measures.}
+			\item {\sf Continuous functions \& measures.}
+		\end{itemize}
+		\item {\sf Chap. 4: Extraction of Convergent Subsequences.}
+		\begin{itemize}
+			\item {\sf Bounded subsets of $\mathcal{D}'(\Omega;E)$.}
+			\item {\sf Convergence in $\mathcal{D}'(\Omega;E)$.}
+			\item {\sf Sequential completeness of $\mathcal{D}'(\Omega;E)$.}
+			\item {\sf Sequential compactness in $\mathcal{D}'(\Omega;E)$.}
+			\item {\sf Change of space $E$ of values.}
+			\item {\sf Space $E$-weak.}
+			\item {\sf Space $\mathcal{D}'(\Omega;E\mbox{-weak})$ \& extractability.}
+		\end{itemize}
+		\item {\sf Chap. 5: Operations on Distributions.}
+		\begin{itemize}
+			\item {\sf Distributions fields.}
+			\item {\sf Derivatives of a distribution.}
+			\item {\sf Image under a linear mapping.}
+			\item {\sf Product with a regular function.}
+			\item {\sf Change of variables.}
+			\item {\sf Some particular changes of variables.}
+			\item {\sf Positive distributions.}
+			\item {\sf Distributions with values in a product space.}
+		\end{itemize}
+		\item {\sf Chap. 6: Restriction, Gluing \& Support.}
+		\begin{itemize}
+			\item {\sf Restriction.}
+			\item {\sf Additivity w.r.t. domain.}
+			\item {\sf Local character.}
+			\item {\sf Localization-extension.}
+			\item {\sf Gluing.}
+			\item {\sf Annihilation domain \& support.}
+			\item {\sf Properties of annihilation domain \& support.}
+			\item {\sf Space $\mathcal{D}_K'(\Omega;E)$.}
+		\end{itemize}
+		\item {\sf Chap. 7: Weighting.}
+		\begin{itemize}
+			\item {\sf Weighting by a regular function.}
+			\item {\sf Regularizing character of weighting by a regular function.}
+			\item {\sf Derivatives \& support of distributions weighted by a regular weight.}
+			\item {\sf Continuity of weighting by a regular function.}
+			\item {\sf Weighting by a distribution.}
+			\item {\sf Comparison of definitions of weighting.}
+			\item {\sf Continuity of weighting by a distribution.}
+			\item {\sf Derivatives \& support of a weighted distribution.}
+			\item {\sf Miscellaneous properties of weighting.}
+		\end{itemize}
+		\item {\sf Chap. 8: Regularization \& Applications.}
+		\begin{itemize}
+			\item {\sf Local regularization.}
+			\item {\sf Properties of local approximations.}
+			\item {\sf Global regularization.}
+			\item {\sf Convergence of global approximations.}
+			\item {\sf Properties of global approximations.}
+			\item {\sf Commutativity \& associativity of weighting.}
+			\item {\sf Uniform convergence of sequences of distributions.}
+		\end{itemize}
+		\item {\sf Chap. 9: Potentials \& Singular Functions.}
+		\begin{itemize}
+			\item {\sf Surface integral over a sphere.}
+			\item {\sf Distribution associated with a singular function.}
+			\item {\sf Derivatives of a distribution associated with a singular function.}
+			\item {\sf Elementary Newtonian potential.}
+			\item {\sf Newtonian potential of order $n$.}
+			\item {\sf Localized potential.}
+			\item {\sf Dirac mass as derivatives of continuous functions.}
+			\item {\sf Heaviside potential.}
+			\item {\sf Weighting by a singular weight.}
+		\end{itemize}
+		\item {\sf Chap. 10: Line Integral of a Continuous Field.}
+		\begin{itemize}
+			\item {\sf Line integral along a $C^1$ path.}
+			\item {\sf Change of variable in a path.}
+			\item {\sf Line integral along a piecewise $C^1$ path.}
+			\item {\sf Homotopy invariance theorem.}
+			\item {\sf Connectedness \& simply connectedness.}
+		\end{itemize}
+		\item {\sf Chap. 11: Primitives of Functions.}
+		\begin{itemize}
+			\item {\sf Primitive of a function field with a zero line integral.}
+			\item {\sf Tubular flows \& concentration theorem.}
+			\item {\sf Orthogonality theorem for functions.}
+			\item {\sf Poincar\'e's theorem.}
+		\end{itemize}
+		\item {\sf Chap. 12: Properties of Primitives of Distributions.}
+		\begin{itemize}
+			\item {\sf Representation by derivatives.}
+			\item {\sf Distribution whose derivatives are zero or continuous.}
+			\item {\sf Uniqueness of a primitive.}
+			\item {\sf Locally explicit primitive.}
+			\item {\sf Continuous primitive mapping.}
+			\item {\sf Harmonic distributions, distributions with a continuous Laplacian.}
+		\end{itemize}
+		\item {\sf Chap. 13: Existence of Primitives.}
+		\begin{itemize}
+			\item {\sf Peripheral gluing.}
+			\item {\sf Reduction to function case.}
+			\item {\sf Orthogonality theorem.}
+			\item {\sf Poincar\'e's generalized theorem.}
+			\item {\sf Current of an incompressible 2D field.}
+			\item {\sf Global vs. local primitives.}
+			\item {\sf Comparison of existence conditions of a primitive.}
+			\item {\sf Limits of gradients.}
+		\end{itemize}
+		\item {\sf Chap. 14: Distributions of Distributions.}
+		\begin{itemize}
+			\item {\sf Characterization.}
+			\item {\sf Bounded sets.}
+			\item {\sf Convergent sequences.}
+			\item {\sf Extraction of convergent subsequences.}
+			\item {\sf Change of space of values.}
+			\item {\sf Distributions of distributions with values in $E$-weak.}
+		\end{itemize}
+		\item {\sf Chap. 15: Separation of Variables.}
+		\begin{itemize}
+			\item {\sf Tensor products of test functions.}
+			\item {\sf Decomposition of test functions on a product of sets.}
+			\item {\sf Tensorial control theorem.}
+			\item {\sf Separation of variables.}
+			\item {\sf Kernel theorem.}
+			\item {\sf Regrouping of variables.}
+			\item {\sf Permutation of variables.}
+		\end{itemize}
+		\item {\sf Chap. 16: Banach Space Valued Distributions.}
+		\begin{itemize}
+			\item {\sf Finite order distributions.}
+			\item {\sf Weighting of a finite order distribution.}
+			\item {\sf Finite order distribution as derivatives of continuous functions.}
+			\item {\sf Finite order distribution as derivative of a single function.}
+			\item {\sf Distributions in a Banach space as derivatives of functions.}
+			\item {\sf Non-representability of distributions with values in a Fr\'echet space.}
+			\item {\sf Extendability of distributions with values in a Banach space.}
+			\item {\sf Cancellation of distributions with values in a Banach space.}
+		\end{itemize}
+	\end{itemize}
+\end{enumerate}
 
 %------------------------------------------------------------------------------%
 
@@ -2028,6 +2265,9 @@ The paradigm of Mean Field Games has become a major connection between distribut
 		\item {\sf Appendix D: Functional Analysis.}
 		\item {\sf Appendix E: Measure Theory.}
 	\end{itemize}
+	
+	\item \cite{Gilbarg_Trudinger2001}. {\sc David Gilbarg, Neil S. Trudinger}. {\it Elliptic Partial Differential Equations of 2nd Order}.
+	
 	\item {\sc John C. Hunter}. {\it Notes on PDEs}.
 	
 	\begin{itemize}
@@ -2071,8 +2311,6 @@ The paradigm of Mean Field Games has become a major connection between distribut
 		\end{itemize}
 		\item {\sf Chap. 8: Friedrich Symmetric Systems.}
 	\end{itemize}
-	
-	\item \cite{Gilbarg_Trudinger2001}. {\sc David Gilbarg, Neil S. Trudinger}. {\it Elliptic Partial Differential Equations of 2nd Order}.
 	
 	\item {\sc Trần Vĩnh Hưng}. {\it An Undergraduate Course in Partial Differential Equations}.
 	
@@ -2186,6 +2424,81 @@ The paradigm of Mean Field Games has become a major connection between distribut
 		\end{itemize}
 	\end{itemize}
 	\item John 91
+	
+	\item \cite{Lions_Magenes1972}. {\sc J. L. Lions, E. Magenes}. {\it Problemes aux limites non homogenes et applications (tome I) -- Non-Homogeneous BVPs \& Applications Vol. I}.
+	
+	\begin{itemize}
+		\item {\sf Chap. 1: Hilbert Theory of Trace \& Interpolation Spaces.} Aim: give fundamental results of theory of trace \& interpolation spaces in the {\it Hilbert case}. Some indications about possible generalizations to non-Hilbert case are given in Comments \& in Sect. 14 along with basic literature.
+		\begin{itemize}
+			\item {\sf1. Some Function Spaces.}
+			\item {\sf2. Intermediate Derivatives Theorem.}
+			\item {\sf3. Trace Theorem.}
+			\item {\sf4. Trace Spaces \& Non-Integer Order Derivatives.}
+			\item {\sf5. Interpolation Theorem.}
+			\item {\sf6. Reiteration Properties \& Duality of Spaces $[X,Y]_0$.}
+			\item {\sf7. Spaces $H^s(\mathbb{R}^d),H^s(\Gamma)$.}
+			\item {\sf8. Trace Theorem in $H^m(\Omega)$.}
+			\item {\sf9. Spaces $H^s(\Omega),s\ge0$.}
+			\item {\sf10. Some Further Properties of Spaces $[X,Y]_0$.}
+			\item {\sf11. Subspaces of $H^s(\Omega)$. Spaces $H_0^s(\Omega)$.}
+			\item {\sf12. Spaces $H^{-s}(\Omega),s > 0$.}
+			\item {\sf13. Intersection Interpolation.}
+			\item {\sf14. Holomorphic Interpolation.}
+			\item {\sf15. Another Intrinsic Definition of Spaces $[X,Y]_0$.}
+			\item {\sf16. Compactness Properties.}
+			\item {\sf17. Comments.}
+		\end{itemize}
+		
+		\item {\sf Chap. 2: Elliptic Operators. Hilbert Theory.}
+		\begin{itemize}
+			\item {\sf1. Elliptic Operators \& Regular BVPs.}
+			\item {\sf2. Green's Formula \& Adjoint BVPs.}
+			\item {\sf3. Regularity of Solutions of Elliptic Equations in Interior of $\Omega$.}
+			\item {\sf4. A priori Estimates in Half-Space.}
+			\item {\sf5. A priori Estimates in Open Set $\Omega$ \& Existence of Solutions in $H^s(\Omega)$-Spaces, with Real $s\ge2m$.}
+			\item {\sf6. Application of Transposition: Existence of Solutions in $H^s(\Omega)$-Spaces, with Real $s\le0$.}
+			\item {\sf7. Application of Interpolation: Existence of Solutions in $H^s(\Omega)$-Spaces, with Real $0 < s < 2m$.}
+			\item {\sf8. Complements \& Generalizations.}
+			\item {\sf9. Variational Theory of BVPs.}
+			\item {\sf10. Comments.}
+			\item {\sf11. Problems.}
+		\end{itemize}
+		\item {\sf Chap. 3: Variational Evolution Equations.}
+		\begin{itemize}
+			\item {\sf1. An Isomorphism Theorem.}
+			\item {\sf2. Transposition.}
+			\item {\sf3. Interpolation.}
+			\item {\sf4. Example: Abstract Parabolic Equations, Initial Condition Problem (I).}
+			\item {\sf5. Example: Abstract Parabolic Equations, Initial Condition Problem (II).}
+			\item {\sf6. Example: Abstract Parabolic Equations, Periodic Solutions.}
+			\item {\sf7. Elliptic Regularization.}
+			\item {\sf8. Equations of 2nd Order in $t$.}
+			\item {\sf9. Equations of 2nd Order in $t$; Transposition.}
+			\item {\sf10. Schroedinger Type Equations.}
+			\item {\sf11. Schroedinger Type Equations; Transposition.}
+			\item {\sf12. Comments.}
+			\item {\sf13. Problems.}
+		\end{itemize}
+	\end{itemize}
+	
+	\item {\sc J. L. Lions, E. Magenes}. {\it Problemes aux limites non homogenes et applications (tome II) -- Non-Homogeneous BVPs \& Applications Vol. II}.
+	\begin{itemize}
+		\item {\sf Chap. 4: Parabolic Evolution Operators. Hilbert Theory.}
+		\item {\sf Chap. 5: Hyperbolic Evolution Operators, of Petrowski \& of Schroedinger. Hilbert Theory.}
+		\item {\sf Chap. 6: Applications to Optimal Control Problems.}
+		\item {\sf Appendix: BVPs \& Operator Extensions.}
+	\end{itemize}
+	
+	\item {\sc J. L. Lions, E. Magenes}. {\it Problemes aux limites non homogenes et applications (tome III) -- Non-Homogeneous BVPs \& Applications Vol. III}.
+	\begin{itemize}
+		\item {\sf Chap. 7: Scalar \& Vector Ultra-Distributions.}
+		\item {\sf Chap. 8: Elliptic BVPs in Spaces of Distributions \& Ultra-Distributions.}
+		\item {\sf Chap. 9: Evolution Equations in Spaces of Distributions \& Ultra-Distributions.}
+		\item {\sf Chap. 10: Parabolic BVPs in Spaces of Ultra-Distributions.}
+		\item {\sf Chap. 11: Evolution Equations of 2nd Order in $t$ \& Schroedinger Type Equations.}
+		\item {\sf Appendix: Calculus of Variations in Gevrey Type Spaces.}
+	\end{itemize}
+	
 	\item Strauss 07
 \end{enumerate}
 
@@ -2426,7 +2739,7 @@ In summary, if the original (strong) problem was to find a $|\alpha|$-times diff
 	
 	{\bf Preface.} To an uninformed observer, it may seem that there is more interest in NSE nowadays, but many who claim to be interested show such a lack of knowledge about continuum mechanics that one may wonder about such a superficial attraction. Could 1 of the Clay Millennium Prizes be the reason behind this renewed interest? Reading text of conjectures to be solved for winning that particular prize leaves the impression that the subject was not chosen by people interested in continuum mechanics, as selected questions have almost no physical content. Invariance by translation or scaling is mentioned, but why is invariance by rotations not pointed out \& why is Galilean invariance\footnote{Velocities involved for ordinary fluids being much smaller than the velocity of light $c$, no relativistic corrections are necessary \& Galilean invariance should then be used, but one should be aware that once the mathematical equation has been written it is not automatic that its solutions will only use velocities bounded by $c$. One should learn to distinguish between a mathematical property of an equation \& a conjecture that some property holds which one guesses from the belief that the equation corresponds to a physical problem. One should learn about which defects are already known concerning how a mathematical model describes physical reality, but one should not forget that a mathematical model which is considered obsolete from the physical point of view may still be useful for mathematical reasons. I often wonder why so many forget to mention the defects of the models that they study.
 	
-	-- Vận tốc liên quan đến chất lỏng thông thường nhỏ hơn nhiều so với vận tốc ánh sáng $c$, không cần hiệu chỉnh tương đối tính \& nên sử dụng bất biến Galilei, nhưng người ta nên lưu ý rằng một khi phương trình toán học đã được viết thì nó không tự động cho rằng nó lời giải sẽ chỉ sử dụng vận tốc giới hạn bởi $c$. Người ta nên học cách phân biệt giữa một thuộc tính toán học của một phương trình \& một phỏng đoán mà một số thuộc tính nắm giữ mà người ta đoán từ niềm tin rằng phương trình tương ứng với một bài toán vật lý. Người ta nên tìm hiểu về những khiếm khuyết đã được biết đến liên quan đến cách mô hình toán học mô tả thực tế vật lý, nhưng người ta không nên quên rằng một mô hình toán học được coi là lỗi thời xét theo quan điểm vật lý vẫn có thể hữu ích vì lý do toán học. Tôi thường tự hỏi tại sao nhiều người lại quên đề cập đến những khiếm khuyết của các mô hình mà họ nghiên cứu.} omitted, as it is the essential fact which makes equation introduced by {\sc Navier}\footnote{The equation which one calls now after both {\sc Navier \& Stokes} was introduced by {\sc Navier}, while {\sc Stokes} only later introduced the equation without inertial effects, which is linear \& does not present so much mathematical difficulty nowadays, but there are cases where the nonlinear term in Navier equation disappears \& the equation reduces to the Stokes equation, an example being irrotational flows. If one believes that the Stokes equation is a good model for small velocities (\& bounded derivatives of the velocity) then using Stokes equation in a frame moving at a local velocity \& invoking Galilean invariance makes one discover Navier equation; shall point out other defects of the model along the way.} much better than that introduced later by {\sc Stokes}? If one had used the word ``turbulence'' to make the donator believe that he would be giving 1 million dollars away for an important realistic problem in continuum mechanics, why has attention been restricted to unrealistic domains without boundary (the whole space $\mathbb{R}^3$, or a torus for periodic solutions), as if one did not know that vorticity is created at the boundary of the domain? The problems seem to have been chosen in the hope that they will be solved by specialists of harmonic analysis, \& it has given the occasion to some of these specialists to help others in showing the techniques that they use, as in a recent book  \cite{Lemarie-Rieusset2002}; some of the techniques are actually very similar to those that I have learnt in the theory of interpolation spaces, on which I have already written some lecture notes which I plan to revise, \& I hope that this particular set of lecture notes on NSE \& another one not yet finished on kinetic theory may help the readers understand a little more about the physical content of the equation, \& also its limitations, which many do not seem to be aware of.
+	-- Vận tốc liên quan đến chất lỏng thông thường nhỏ hơn nhiều so với vận tốc ánh sáng $c$, không cần hiệu chỉnh tương đối tính \& nên sử dụng bất biến Galilei, nhưng người ta nên lưu ý rằng 1 khi phương trình toán học đã được viết thì nó không tự động cho rằng nó lời giải sẽ chỉ sử dụng vận tốc giới hạn bởi $c$. Người ta nên học cách phân biệt giữa 1 thuộc tính toán học của 1 phương trình \& 1 phỏng đoán mà 1 số thuộc tính nắm giữ mà người ta đoán từ niềm tin rằng phương trình tương ứng với 1 bài toán vật lý. Người ta nên tìm hiểu về những khiếm khuyết đã được biết đến liên quan đến cách mô hình toán học mô tả thực tế vật lý, nhưng người ta không nên quên rằng 1 mô hình toán học được coi là lỗi thời xét theo quan điểm vật lý vẫn có thể hữu ích vì lý do toán học. Tôi thường tự hỏi tại sao nhiều người lại quên đề cập đến những khiếm khuyết của các mô hình mà họ nghiên cứu.} omitted, as it is the essential fact which makes equation introduced by {\sc Navier}\footnote{The equation which one calls now after both {\sc Navier \& Stokes} was introduced by {\sc Navier}, while {\sc Stokes} only later introduced the equation without inertial effects, which is linear \& does not present so much mathematical difficulty nowadays, but there are cases where the nonlinear term in Navier equation disappears \& the equation reduces to the Stokes equation, an example being irrotational flows. If one believes that the Stokes equation is a good model for small velocities (\& bounded derivatives of the velocity) then using Stokes equation in a frame moving at a local velocity \& invoking Galilean invariance makes one discover Navier equation; shall point out other defects of the model along the way.} much better than that introduced later by {\sc Stokes}? If one had used the word ``turbulence'' to make the donator believe that he would be giving 1 million dollars away for an important realistic problem in continuum mechanics, why has attention been restricted to unrealistic domains without boundary (the whole space $\mathbb{R}^3$, or a torus for periodic solutions), as if one did not know that vorticity is created at the boundary of the domain? The problems seem to have been chosen in the hope that they will be solved by specialists of harmonic analysis, \& it has given the occasion to some of these specialists to help others in showing the techniques that they use, as in a recent book  \cite{Lemarie-Rieusset2002}; some of the techniques are actually very similar to those that I have learnt in the theory of interpolation spaces, on which I have already written some lecture notes which I plan to revise, \& I hope that this particular set of lecture notes on NSE \& another one not yet finished on kinetic theory may help the readers understand a little more about the physical content of the equation, \& also its limitations, which many do not seem to be aware of.
 	
 	Being a mathematician interested in science, \& having learnt more than most mathematicians about various aspects of mechanics \& physics,\footnote{Classical mechanics is an 18th century point of view of mechanics, which requires ODEs as mathematical tools. Continuum mechanics is an 18th--19th century point of view of mechanics, which requires PDEs as mathematical tools; the same is true for many aspects of physics. However, 20th century aspects of mechanics (plasticity, turbulence) or physics (quantum effects) require mathematical tools which are beyond PDEs, similar to those that {\sc Tartar} has tried to develop in research work, improving concepts e.g. {\it homogenization, compensated compactness \& $H$-measures}.} 1 reason for teaching various courses \& writing lecture notes is to help isolated researchers to learn about some aspects unknown to most mathematicians whom they could meet, or read. A consequence of this choice is then to make researchers aware that some who claim to work on problems of continuum mechanics or physics have forgotten to point out known defects of the models that they use.\footnote{Of course, I also suffer from the same disease of not having learnt enough, but my hope is that by explaining what I have already understood \& by showing how to analyze \& criticize classical models, many will acquire my understanding \& a few will go much further than I have on the path of discovery.}
 	
@@ -2446,7 +2759,7 @@ In summary, if the original (strong) problem was to find a $|\alpha|$-times diff
 	\begin{goal}
 		Familiarize readers with the subject \& encourage them to acquire an open \& scientific point of view, \& not to write a definitive account of the subject.
 		
-		-- Giúp người đọc làm quen với chủ đề \& khuyến khích họ có được quan điểm \& khoa học cởi mở, \& không viết một bài tường thuật dứt khoát về chủ đề này.
+		-- Giúp người đọc làm quen với chủ đề \& khuyến khích họ có được quan điểm \& khoa học cởi mở, \& không viết 1 bài tường thuật dứt khoát về chủ đề này.
 	\end{goal}
 	There are results which are repeated, but it is inevitable in a real course that one should often recall results which have already been mentioned. There are also results which are mentioned without proof, \& sometimes they are proven later but sometimes they are not, \& if no references are given, one should remember that I have been trained as a mathematician, \& that my statements without proofs have indeed been proven in a mathematical sense, because if they had not I would have called them conjectures instead;\footnote{Some people like to talk of pure mathematics vs. applied mathematics, but I do not think that such a distinction is accurate, as I mentioned in the introduction of an article for a conference at \'Ecole Polytechnique (Palaiseau, France) in the fall of 1983, but because that introduction was cut by political censors, it is worth repeating that for what concerns different parts of mathematics there are those which I know, those which I do not know well but think that they could be useful to me, \& those which I do not know well but do not see how they could be useful to me, \& all this evolves with time, so I finally wonder if it is reasonable to classify mathematics as being pure or applied. I consider myself as an ``applied'' mathematician, although I give it a French meaning (a mathematician interested in other fields of science), opposed to a British meaning (a specialists of continuum mechanics, allowed to use an incomplete mathematical proof without having to call the result a conjecture), \& in French universities, applied mathematicians in the British style are found in departments of m\'ecanique. Probably for the reason of funding, which strangely enough is given more easily to people who pretend to do applied research, some who have studied to become mathematicians practice the art of using words which make naive people wrongly believe that they know continuum mechanics or physics, \& I find this attitude potentially dangerous for the university system.} however, I am also human \& my memory is not perfect \& I may have made mistakes. I think that the right attitude in mathematics is to be able to explain all the statements that one makes, but in a course one has to assume that the reader already has some basic knowledge of mathematics, \& some proofs of a more elementary nature are omitted. Here \& there I mention a result that I have heard of, but for which I never read a proof or did not make up my own proof, \& I usually say so. If many proofs are mine it does not necessarily mean that I was the 1st to prove the corresponding result, but that I am not aware of a prior proof, maybe because I never read much. Actually, my advisor mentioned to me that it is useful to read only the statement of a theorem \& one should read the proof only if one cannot supply one.\footnote{The MacTutor archive mentions an interesting anecdote in this respect concerning a visit of {\sc Antoni Zygmund} to the University of Buenos Aires, Argentina, in 1948; {\sc Alberto Calder\'on} was a student there \& he was puzzled by a question that {\sc Zygmund} had asked, \& he said that the answer was in {\sc Zygmund}'s own book {\it Trigonometric Series}, but there was disagreement on this point; what had happened was that {\sc Calder\'on} had read a statement in the book \& supplied his own proof, which was more general than the one written, so it also answered the question that {\sc Zygmund} had just asked, but {\sc Calder\'on} had wrongly assumed that {\sc Zygmund}'s proof in his book, which he had never checked, was similar to his. {\sc Franco Brezzi} mentioned to me that {\sc Ennio De Giorgi} had once told {\sc Claudio Baiocchi} something similar, that he almost never read a proof, \& that he did his own proofs for the interesting theorems but that he did not bother to think about the uninteresting ones.}
 	
@@ -2889,7 +3202,7 @@ In summary, if the original (strong) problem was to find a $|\alpha|$-times diff
 	
 	In bringing the text up to date, we have luckily not had to bridge a full 15-year gap. Significant modernizations were incorporated into 2e versions in Fortran 90 (1996)\footnote{``Alas, poor Fortran 90! We knew him, Horatio: a programming language of infinite jest, of most excellent fancy: he hath borne us on his back 1000 times.''
 	
-	-- Than ôi, Fortran tội nghiệp 90! Chúng tôi biết anh ấy, Horatio: một ngôn ngữ lập trình vô cùng hài hước, tuyệt vời nhất: anh ấy đã cõng chúng tôi trên lưng 1000 lần.} \& C++ (2002), in which, notably, the last vestiges of unit-based arrays were expunged in favor of C-style 0-based indexing. Only with this 3e, however, have we incorporated a substantial amount (several hundred pages!) of completely new material. Highlights include:
+	-- Than ôi, Fortran tội nghiệp 90! Chúng tôi biết anh ấy, Horatio: 1 ngôn ngữ lập trình vô cùng hài hước, tuyệt vời nhất: anh ấy đã cõng chúng tôi trên lưng 1000 lần.} \& C++ (2002), in which, notably, the last vestiges of unit-based arrays were expunged in favor of C-style 0-based indexing. Only with this 3e, however, have we incorporated a substantial amount (several hundred pages!) of completely new material. Highlights include:
 	\begin{itemize}
 		\item a new chapter on classification \& inference, including such topics as Gaussian mixture models, hidden Markov modeling, hierarchical clustering (phylogenetic trees), \& support vector machines
 		\item a new chapter on computational geometry, including topics like KD trees, quad- \& octrees, Delaunay triangulation \& applications, \& many useful algorithms for lines, polygons, triangles, spheres, etc.
@@ -3900,7 +4213,7 @@ Both father \& son have received honorary doctorates from \href{https://en.wikip
 \subsection{Phan Thành Nam}
 ``2008, sang Đan Mạch \& làm TS tại ĐH Copenhagen dưới sự hướng dẫn của Prof. {\sc Jan Philip Solovej}. Bảo vệ luận văn về ngành Vật Lý Toán năm 2011 với nhan đề {\it``Contributions to the Rigorous Study of the Structure of Atoms''}. 2011--2013: làm nghiên cứu viên sau tiến sĩ tại Đại học Cergy-Pontoise (Pháp) dưới sự hướng dẫn của Prof. {\sc Mathieu Lewin}. 2013--2016,  làm nghiên cứu viên sau tiến sĩ tại Viện khoa học \& công nghệ Áo (IST) dưới sự hướng dẫn của Prof. {\sc Robert Seiringer}. 2016: sang Cộng hòa Séc làm giáo sư trợ giảng tại Đại học Masaryk. 2017--now: GS tại Đại học Ludwig Maximilian Munich, CHLB Đức. 2020: đạt giải thưởng Hội Toán học Châu Âu EMS Prize.
 \begin{quotation}
-	``{\sc Phan Thành Nam} (1985--?) đã có những công trình đáng chú ý về toán học của hệ đa vật lượng tử (quantum many-body system) bao gồm hệ nguyên tử, phân tử cũng như các khí Bose \& Fermi. Kết quả của anh anh liên quan đến sự cân bằng \& tính chất động lực học của những hệ như vậy. Nhiều kết quả nổi tiếng trong lãnh vực này là do công của Nam. Chúng bao gồm những chặn tốt nhất cho ion hóa cực đại của các nguyên tử \& những hằng số nổi tiếng của của bất đẳng thức Lieb--Thirring lừng danh. Hơn nữa, Nam \& các cộng sự đã phát triển một cách tiếp cận tổng quát để thiết lập giới hạn trường trung bình (mean-field limit) của các hệ boson dựa trên định lý de Finetti lượng tử. Đó là thứ mà bây giờ trở tiêu chuẩn vàng trong lãnh vực này.'' -- Prof. {\sc Jan Philip Solovej}
+	``{\sc Phan Thành Nam} (1985--?) đã có những công trình đáng chú ý về toán học của hệ đa vật lượng tử (quantum many-body system) bao gồm hệ nguyên tử, phân tử cũng như các khí Bose \& Fermi. Kết quả của anh anh liên quan đến sự cân bằng \& tính chất động lực học của những hệ như vậy. Nhiều kết quả nổi tiếng trong lãnh vực này là do công của Nam. Chúng bao gồm những chặn tốt nhất cho ion hóa cực đại của các nguyên tử \& những hằng số nổi tiếng của của bất đẳng thức Lieb--Thirring lừng danh. Hơn nữa, Nam \& các cộng sự đã phát triển 1 cách tiếp cận tổng quát để thiết lập giới hạn trường trung bình (mean-field limit) của các hệ boson dựa trên định lý de Finetti lượng tử. Đó là thứ mà bây giờ trở tiêu chuẩn vàng trong lãnh vực này.'' -- Prof. {\sc Jan Philip Solovej}
 \end{quotation}
 Các lĩnh vực nghiên cứu của GS Phan Thành Nam là giải tích \& vật lý toán, đặc biệt là cơ học lượng tử nhiều hạt, lý thuyết phổ, phép tính biến phân \& phương trình đạo hàm riêng, giải tích số.'' -- \href{https://vi.wikipedia.org/wiki/Phan_Th%C3%A0nh_Nam}{Wikipedia{\tt/}Phan Thành Nam}
 

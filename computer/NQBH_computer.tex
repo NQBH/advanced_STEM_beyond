@@ -250,9 +250,169 @@ After the summarizing phrase comes a description in words \& symbols of some {\i
 {\it The Most Trusted Distribution for Data Science}. Anaconda Distribution is a Python{\tt/}R data science distribution that contains:
 \begin{itemize}
 	\item \href{https://docs.conda.io/en/latest}{conda} - a package \& environment manager for your command line interface
-	\item \href{https://docs.anaconda.com/navigator/}{Anaconda Navigator} - a desktip application built on conda, with options to launch other development applications from your managed environments.
+	\item \href{https://docs.anaconda.com/navigator/}{Anaconda Navigator} - a desktop application built on conda, with options to launch other development applications from your managed environments.
+	\item \href{https://docs.anaconda.com/anaconda/release-notes/}{$> 300$ automatically-installed packages} that work well together out of box
+	\item Access to \href{https://repo.anaconda.com/pkgs/}{Anaconda Public Repository}, with 8000 open-source DS \& ML packages
 \end{itemize}
 
+\subsubsection{System requirements}
+
+\begin{itemize}
+	\item License: Free for individuals \& small organizations ($< 200$ employees). A paid license is required for larger organizations \& anyone embedding or mirroring Anaconda. See \href{https://legal.anaconda.com/policies/en/}{TOS} for details.
+	\item OS: Windows 10 or later, 64-bit macOS 10.15+ (for Intel) or 64-bit macOS 11.1+ (for Apple Silicon), or Linux, including Ubuntu, RedHat, CentOS 7+, \& others.
+	\item If OS is older than what is currently supported, can find older versions of Anaconda installers in \href{https://repo.anaconda.com/archive/}{archive} that might work for you. See \href{https://docs.anaconda.com/anaconda/advanced-install/old-os/#older-versions-distro}{Using Anaconda on older OSs} for version recommendations.
+	\item System architecture: Windows - 64-bit x86; MacOS - 64-bit x86 or Apple Silicon (ARM64); Linux - 64-bit x86, 64-bit aarch64 (AWS Graviton2), or s390x (Linux on IBM Z \& LinuxONE).
+	\item {\tt linux-aarch64} Miniconda installer requires {\tt glibc >=2.26} \& thus will not work with CentOS 7, Ubuntu 16.04, or Debian 9 (``stretch'').
+	\item {\tt linux-aarch64} package builds might not be compatible with certain Raspberry Pi setups, as Anaconda uses compiler options that target server-class Neoverse N1{\tt/}N2 microarchitecture.
+	\item Minimum 5 GB disk space to download \& install.
+\end{itemize}
+
+\begin{remark}
+	Best practice to install Anaconda Distribution for local user, which does not require administrator permissions \& is most robust type of installation. However, if have administrator permissions, can install Anaconda Distribution system-wide.
+\end{remark}
+
+\subsubsection{Installing Anaconda Distribution}
+Provides instructions for installing Anaconda Distribution on Windows, macOS, \& Linux.
+
+\begin{remark}
+	If prefer an installation without extensive collection of packages included in Anaconda Distribution, install Miniconda instead.
+	
+	Miniconda is a free, miniature installation of Anaconda Distribution that includes only conda, Python, packages they both depend on, \& a small number of other useful packages.
+\end{remark}
+
+\begin{itemize}
+	\item {\sf Basic install instructions.}
+	
+	\begin{remark}
+		If you've installed multiple versions of Anaconda Distribution, system defaults to using most current version, as long as you haven't altered default install path.
+	\end{remark}
+	{\sf Linux installer.} Anaconder Navigator is included with Anaconda Distribution by default. However, following extended dependencies might be required for certain versions of Anaconda Distribution in order to use Anaconda Navigator (\& other GUI packages) with Linux:
+	\begin{itemize}
+		\item {\bf Debian.}
+		\begin{verbatim}
+			nqbh@nqbh-dell:~$ sudo apt-get install libgl1-mesa-glx libegl1-mesa libxrandr2 libxrandr2 libxss1 libxcursor1 libxcomposite1 libasound2 libxi6 libxtst6
+			sudo: unable to resolve host nqbh-dell: Name or service not known
+			[sudo] password for nqbh: 
+			Reading package lists... Done
+			Building dependency tree... Done
+			Reading state information... Done
+			Package libasound2 is a virtual package provided by:
+			liboss4-salsa-asound2 4.2-build2020-1ubuntu3
+			libasound2t64 1.2.11-1build2 (= 1.2.11-1build2)
+			You should explicitly select one to install.
+			
+			Package libgl1-mesa-glx is not available, but is referred to by another package.
+			This may mean that the package is missing, has been obsoleted, or
+			is only available from another source
+			
+			E: Package 'libgl1-mesa-glx' has no installation candidate
+			E: Unable to locate package libegl1-mesa
+			E: Package 'libasound2' has no installation candidate
+			
+			nqbh@nqbh-dell:~$ curl -O https://repo.anaconda.com/archive/Anaconda3-2024.10-1-Linux-x86_64.sh
+		\end{verbatim}
+		Ensure that you are downloading an installer that is compatible with your operating system!
+		
+		(Recommended) Verify the integrity of your installer to ensure that it was not corrupted or tampered with during download. To ensure that your downloaded installer has not been tampered with or corrupted, generate its SHA-256 hash value \& compare it to the official hash provided in \href{https://repo.anaconda.com/archive/}{archive}. E.g.,
+		\begin{verbatim}
+			nqbh@nqbh-dell:~$ shasum -a 256 ~/Anaconda3-2024.10-1-Linux-x86_64.sh
+			3ba0a298155c32fbfd80cbc238298560bf69a2df511783054adfc151b76d80d8  /home/nqbh/Anaconda3-2024.10-1-Linux-x86_64.sh
+		\end{verbatim}
+		Note: generated SHA-256 hash value from the output. Visit \url{repo.anaconda.com/archive} to find the official SHA-256 hash for your installer. Compare the hash values. If they match, the installer is safe to use.
+		
+		Install Anaconda Distribution by running 1 of following commands (depending on your Linux architecture):
+		\begin{verbatim}
+			bash ~/Anaconda3-2024.10-1-Linux-x86_64.sh
+		\end{verbatim}
+		Press return to review license agreement \& hold return to scroll. Enter yes to agree to the license agreement.
+		\begin{verbatim}
+			Downloading and Extracting Packages:
+			
+			Preparing transaction: done
+			Executing transaction: done
+			installation finished.
+			Do you wish to update your shell profile to automatically initialize conda?
+			This will activate conda on startup and change the command prompt when activated.
+			If you'd prefer that conda's base environment not be activated on startup,
+			run the following command when conda is activated:
+			
+			conda config --set auto_activate_base false
+			
+			You can undo this by running `conda init --reverse $SHELL`? [yes|no]
+			[no] >>>
+			
+			You have chosen to not have conda modify your shell scripts at all.
+			To activate conda's base environment in your current shell session:
+			
+			eval "$(/home/nqbh/anaconda3/bin/conda shell.YOUR_SHELL_NAME hook)" 
+			
+			To install conda's shell functions for easier access, first activate, then:
+			
+			conda init
+			
+			Thank you for installing Anaconda3!
+		\end{verbatim}
+		Press return to accept default install location (\verb|PREFIX=/Users/<USER>/anaconda3|), or enter another file path to specify an alternate installation directory. Installation might take a few minutes to complete. Choose an initialization options:
+		\begin{itemize}
+			\item Yes - conda modifies your shell configuration to initialize conda whenever you open a new shell \& to recognize conda commands automatically.
+			\item No - conda will not modify your shell scripts. After installation, if you want to initialize, you must do so manually. For more information, see \href{https://docs.anaconda.com/anaconda/install/#manual-shell-init-linux}{Manual Shell Initialization}.
+		\end{itemize}
+		Installer finishes and displays, ``Thank you for installing Anaconda3!'' Close \& re-open your terminal window for the installation to fully take effect, or use the following command to refresh the terminal, depending on your shell: \verb|source ~/.bashrc|.
+		
+		{\bf Manual Shell Initialization.} Once installation has successfully completed, initialize your shell by running following command:
+		\begin{verbatim}
+			# Replace <PATH_TO_CONDA> with the path to your conda install
+			source <PATH_TO_CONDA>/bin/activate
+			conda init
+			
+			qbh@nqbh-dell:~$ source ~/anaconda3/bin/activate 
+			(base) nqbh@nqbh-dell:~$ conda init
+			no change     /home/nqbh/anaconda3/condabin/conda
+			no change     /home/nqbh/anaconda3/bin/conda
+			no change     /home/nqbh/anaconda3/bin/conda-env
+			no change     /home/nqbh/anaconda3/bin/activate
+			no change     /home/nqbh/anaconda3/bin/deactivate
+			no change     /home/nqbh/anaconda3/etc/profile.d/conda.sh
+			no change     /home/nqbh/anaconda3/etc/fish/conf.d/conda.fish
+			no change     /home/nqbh/anaconda3/shell/condabin/Conda.psm1
+			no change     /home/nqbh/anaconda3/shell/condabin/conda-hook.ps1
+			no change     /home/nqbh/anaconda3/lib/python3.12/site-packages/xontrib/conda.xsh
+			no change     /home/nqbh/anaconda3/etc/profile.d/conda.csh
+			modified      /home/nqbh/.bashrc
+			
+			==> For changes to take effect, close and re-open your current shell. <==
+			
+			(base) nqbh@nqbh-dell:~$
+		\end{verbatim}
+		
+		\begin{remark}
+			You can also control whether or not your shell has the base environment activated each time it opens. Following commands only work if conda has been initialized 1st:
+			\begin{itemize}
+				\item Activated by default: \verb|conda config --set auto_activate_base True|
+				\item Not activated by default: \verb|conda config --set auto_activate_base False|
+			\end{itemize}
+		\end{remark}
+		{\bf Verify install.} Anaconda Navigator, Graphical User Interface (GUI) for conda, should automatically open after successful installation of Anaconda Distribution. If it does not, verify your installation by opening the application manually, or by using the CLI:
+		\begin{itemize}
+			\item Opening Navigator manually: Open Navigator by running the following command: \verb|anaconda-navigator|
+			\item Using conda to verify manually: Access the CLI for your operating system. You should see (base) in the command line prompt. This tells you that you're in your base conda environment. To learn more about environments, see \href{https://docs.anaconda.com/working-with-conda/environments/}{Environments}. Run any conda command, e.g.:
+			\begin{itemize}
+				\item {\tt conda list} - Displays a list of packages installed in your active environment \& their versions.
+				\item {\tt anaconda-navigator} - Opens Anaconda Navigator.
+			\end{itemize}
+		\end{itemize}
+	\end{itemize}
+	\item {\sf Advanced install options.} For more advanced installation instructions, such as installing with silent mode, installing on older operating systems, or multi-user installs, see \href{https://docs.anaconda.com/anaconda/advanced-install/}{Advanced installation}.
+	\item {\sf Other ways to get Anaconda or Miniconda.} For instructions on using Anaconda Docker images or the Anaconda Cloudera Distributed Hadoop cluster, see  \href{https://docs.anaconda.com/working-with-conda/applications/}{Applications{\tt/}Integrations}.
+\end{itemize}
+
+\subsubsection{Advanced installation}
+
+\subsubsection{Getting started}
+
+\subsubsection{Anaconda Distribution release notes}
+
+\subsubsection{Uninstalling Anaconda Distribution}
 
 \subsection{Miniconda}
 \url{https://docs.anaconda.com/miniconda/}. Miniconda is a free, miniature installation of Anaconda Distribution that includes only conda, Python, packages they both depend on, \& a small number of other useful packages.

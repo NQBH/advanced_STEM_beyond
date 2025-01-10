@@ -1178,7 +1178,265 @@
 				I.e., when see {\tt np.arrange}, this is a reference to {\tt arrange} function in NumPy. This is done because it's considered bad practice in Python software development to import everything {\tt from numpy import *} from a large package like NumPy.
 			\end{itemize}
 		\end{itemize}
-		\item {\sf2. Python Language Basics, IPython, \& Jupyter Notebooks.}
+		\item {\sf2. Python Language Basics, IPython, \& Jupyter Notebooks.} When wrote 1e of this book in 2011--2012, there were fewer resources available for learning about doing data analysis in Python. This was partially a chicken-\&-egg problem; many libraries that we know take for granted, like {\tt pandas, scikit-learn, statsmodels}, were comparatively immature back then. Now in 2022, there is now a growing literature on DS, data analysis, \& ML, supplementing prior works on general-purpose scientific computing geared toward computational scientists, physicists, \& professionals in other research fields. There are also excellent books about learning Python programming language itself \& becoming an effective software engineer.
+		
+		As this book is intended as an introductory text in working with data in Python, feel valuable to have a self-contained overview of some of most important features of Python's built-in data structures \& libraries from perspective of data manipulation. So, will only present roughly enough information in Chaps. 2--3 to enable you to follow along with rest of book.
+		
+		Much of this book focuses on table-based analytics \& data preparation tools for working with datasets that are small enough to fit on your personal computer. to use these tools you must sometimes do some wrangling to arrange messy data into a more nicely tabular (or {\it structured}) form. Fortunately, Python is an ideal language for doing this. Greater your facility with Python language \& its built-in data types, easier it will be for you to prepare new datasets for analysis.
+		
+		Some of tools in this book are best explored from a live IPython or Jupyter session. Once learn how to start up IPython \& Jupyter session. Once learn how to start up IPython \& Jupyter, recommend: follow along with examples so can experiment \& try different things. As with any keyboard-driven console-like environment, developing familiarity with common commands is also part of learning curve.
+		
+		\begin{remark}
+			There are introductory Python concepts that this chap does not cover, like classes \& object-oriented programming, which may find useful in your foray ()cuộc đột kích, cướp phá, xâm lược) into data analysis in Python.
+			
+			To deepen Python language knowledge, recommend: supplement this chap with \href{http://docs.python.org}{official Python tutorial} \& potentially 1 of many excellent books on general-purpose Python programming. Some recommendations to get you started include:
+			\begin{itemize}
+				\item {\it Python Cookbook}, 3e, by {\sc David Beazley, Brian K. Jones}
+				\item {\it Fluent Python} by {\sc Luciano Ramalho}
+				\item {\it Effective Python}, 2e, by {\sc Brett Slatkin}
+			\end{itemize}
+		\end{remark}
+		
+		\begin{itemize}
+			\item {\sf2.1. Python Interpreter.} Python is an {\it interpreted} language. Python interpreter runs a program by executing 1 statement at a time. Standard interactive Python interpreter can be invoked on command line with {\tt python} command:
+			\begin{verbatim}
+				(pydata-book) nqbh@nqbh-dell:~$ python
+				Python 3.12.7 | packaged by conda-forge | (main, Oct  4 2024, 16:05:46) [GCC 13.3.0] on linux                                                        
+				Type "help", "copyright", "credits" or "license" for more information.            
+				>>>
+			\end{verbatim}
+			{\tt>>>} is {\it prompt} after which you'll type code expressions. To exit Python interpreter, can either type {\tt exit()} or press Ctrl-D (works on Linux \& macOS only).
+			
+			Running Python programs is as simple as calling {\tt python} with a {\tt.py} file as its 1st argument.
+			
+			While some Python programmers execute all of their Python code in this way, those doing data analysis or scientific computing make use of IPython, an enhanced Python interpreter, or Jupyter notebooks, web-based code notebooks originally created within IPython project. Give an introduction to using IPython \& Jupyter in this chap \& have included a deeper look at IPython functionality in Appendix A. When use \verb|%run| command, IPython executes code in specified file in same process, enabling to explore results interactively when it's done:
+			\begin{verbatim}
+				(pydata-book) nqbh@nqbh-dell:~$ ipython                            
+				Python 3.12.7 | packaged by conda-forge | (main, Oct  4 2024, 16:05:46) [GCC 13.3.0]                                                                                Type 'copyright', 'credits' or 'license' for more information      
+				IPython 8.31.0 -- An enhanced Interactive Python. Type '?' for help.                                                                                                In [1]: %run hello_world.py
+				Hello world
+				
+				In [2]:
+			\end{verbatim}
+			Default IPython prompt adopts numbered {\tt In [2]:} style, cf. standard {\tt>>>} prompt.
+			\item {\sf2.2. IPython Basics.} Run with IPython shell \& Jupyter notebook, \& introduce to some of essential concepts.
+			\begin{itemize}
+				\item {\sf Running IPython Shell.} Can launch IPython shell on command line just like launching regular Python interpreter except with {\tt ipython} command {\tt ipython}. You can execute arbitrary Python statements by typing them \& pressing Return (or Enter). When type just a variable into IPython, it renders a string representation of object:
+				\begin{verbatim}
+					In [5]: import numpy as np
+					
+					In [6]: data = [np.random.standard_normal() for i in range(7)]
+					
+					In [7]: data
+					Out[7]: 
+					[-0.960515015233981,
+					0.29199995965351516,
+					0.656773965407049,
+					1.0319443387105414,
+					-0.15623460611892206,
+					-0.17214640580390445,
+					0.5260760636382895]
+				\end{verbatim}
+				1st 2 lines are Python code statements; 2nd statement creates a variable named {\tt data} that refers to a newly created Python dictionary. Last line prints value of {\tt data} in console.
+				
+				Many kinds of Python objects are formatted to be more readable, or {\it pretty-printed}, which is distinct from normal printing with {\tt print}. If printed above {\tt data} variable in standard Python interpreter, it would be much less readable:
+				\begin{verbatim}
+					>>> import numpy as np
+					>>> data = [np.random.standard_normal() for i in range(7)]
+					>>> print(data)
+					>>> data
+					[-0.5767699931966723, -0.1010317773535111, -1.7841005313329152,
+					-1.524392126408841, 0.22191374220117385, -1.9835710588082562,
+					-1.6081963964963528]
+				\end{verbatim}
+				IPython also provides facilities to execute arbitrary blocks of code (via a somewhat glorified copy-\&-paste approach) \& whole Python scripts. Can also use Jupyter notebook to work with larger blocks of code.
+				\item {\sf Running Jupyter Notebook.} 1 of major components of Jupyter project is {\it notebook}, a type of interactive document for code, text (including Markdown), data visualizations, \& other output. Jupyter notebook interacts with {\it kernels}, which are implementations of Jupyter interactive computing protocol specific to different programming languages. Python Jupyter kernel uses IPython system for its underlying behavior.
+				
+				To start up Jupyter, run command {\tt jupyter notebook} in a terminal:
+				\begin{verbatim}
+					$ jupyter notebook
+					[I 15:20:52.739 NotebookApp] Serving notebooks from local directory:
+					/home/wesm/code/pydata-book
+					[I 15:20:52.739 NotebookApp] 0 active kernels
+					[I 15:20:52.739 NotebookApp] The Jupyter Notebook is running at:
+					http://localhost:8888/?token=0a77b52fefe52ab83e3c35dff8de121e4bb443a63f2d...
+					[I 15:20:52.740 NotebookApp] Use Control-C to stop this server and shut down
+					all kernels (twice to skip confirmation).
+					Created new window in existing browser session.
+					To access the notebook, open this file in a browser:
+					file:///home/wesm/.local/share/jupyter/runtime/nbserver-185259-open.html
+					Or copy and paste one of these URLs:
+					http://localhost:8888/?token=0a77b52fefe52ab83e3c35dff8de121e4...
+					or http://127.0.0.1:8888/?token=0a77b52fefe52ab83e3c35dff8de121e4...
+				\end{verbatim}
+				NQBH's:
+				\begin{verbatim}
+					(base) nqbh@nqbh-dell:~$ conda activate pydata-book
+					(pydata-book) nqbh@nqbh-dell:~$ jupyter notebook
+					[I 2025-01-10 15:13:58.486 ServerApp] jupyter_lsp | extension was successfully linked.
+					[I 2025-01-10 15:13:58.488 ServerApp] jupyter_server_terminals | extension was successfully linked.
+					[I 2025-01-10 15:13:58.491 ServerApp] jupyterlab | extension was successfully linked.
+					[I 2025-01-10 15:13:58.493 ServerApp] notebook | extension was successfully linked.
+					[I 2025-01-10 15:13:58.610 ServerApp] notebook_shim | extension was successfully linked.
+					[I 2025-01-10 15:13:58.622 ServerApp] notebook_shim | extension was successfully loaded.
+					[I 2025-01-10 15:13:58.623 ServerApp] jupyter_lsp | extension was successfully loaded.
+					[I 2025-01-10 15:13:58.624 ServerApp] jupyter_server_terminals | extension was successfully loaded.
+					[I 2025-01-10 15:13:58.624 LabApp] JupyterLab extension loaded from /home/nqbh/anaconda3/envs/pydata-book/lib/python3.12/site-packages/jupyterlab
+					[I 2025-01-10 15:13:58.624 LabApp] JupyterLab application directory is /home/nqbh/anaconda3/envs/pydata-book/share/jupyter/lab
+					[I 2025-01-10 15:13:58.624 LabApp] Extension Manager is 'pypi'.
+					[I 2025-01-10 15:13:58.661 ServerApp] jupyterlab | extension was successfully loaded.
+					[I 2025-01-10 15:13:58.663 ServerApp] notebook | extension was successfully loaded.
+					[I 2025-01-10 15:13:58.663 ServerApp] Serving notebooks from local directory: /home/nqbh
+					[I 2025-01-10 15:13:58.663 ServerApp] Jupyter Server 2.15.0 is running at:
+					[I 2025-01-10 15:13:58.663 ServerApp] http://localhost:8888/tree?token=6f7ecdf66d339bf97d3a73aa22ceff2f9eb3957d2aa3d4a6
+					[I 2025-01-10 15:13:58.663 ServerApp]     http://127.0.0.1:8888/tree?token=6f7ecdf66d339bf97d3a73aa22ceff2f9eb3957d2aa3d4a6
+					[I 2025-01-10 15:13:58.663 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+					[C 2025-01-10 15:13:58.684 ServerApp] 
+					
+					To access the server, open this file in a browser:
+					file:///home/nqbh/.local/share/jupyter/runtime/jpserver-73029-open.html
+					Or copy and paste one of these URLs:
+					http://localhost:8888/tree?token=6f7ecdf66d339bf97d3a73aa22ceff2f9eb3957d2aa3d4a6
+					http://127.0.0.1:8888/tree?token=6f7ecdf66d339bf97d3a73aa22ceff2f9eb3957d2aa3d4a6
+					[I 2025-01-10 15:13:58.695 ServerApp] Skipped non-installed server(s): bash-language-server, dockerfile-language-server-nodejs, javascript-typescript-langserver, jedi-language-server, julia-language-server, pyright, python-language-server, python-lsp-server, r-languageserver, sql-language-server, texlab, typescript-language-server, unified-language-server, vscode-css-languageserver-bin, vscode-html-languageserver-bin, vscode-json-languageserver-bin, yaml-language-server
+					Gtk-Message: 15:13:58.798: Not loading module "atk-bridge": The functionality is provided by GTK natively. Please try to not load it.
+					[73110, Main Thread] WARNING: GTK+ module /snap/firefox/5561/gnome-platform/usr/lib/gtk-2.0/modules/libcanberra-gtk-module.so cannot be loaded.
+					GTK+ 2.x symbols detected. Using GTK+ 2.x and GTK+ 3 in the same process is not supported.: 'glib warning', file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:201
+					
+					(firefox:73110): Gtk-WARNING **: 15:13:58.845: GTK+ module /snap/firefox/5561/gnome-platform/usr/lib/gtk-2.0/modules/libcanberra-gtk-module.so cannot be loaded.
+					GTK+ 2.x symbols detected. Using GTK+ 2.x and GTK+ 3 in the same process is not supported.
+					Gtk-Message: 15:13:58.845: Failed to load module "canberra-gtk-module"
+					[73110, Main Thread] WARNING: GTK+ module /snap/firefox/5561/gnome-platform/usr/lib/gtk-2.0/modules/libcanberra-gtk-module.so cannot be loaded.
+					GTK+ 2.x symbols detected. Using GTK+ 2.x and GTK+ 3 in the same process is not supported.: 'glib warning', file /build/firefox/parts/firefox/build/toolkit/xre/nsSigHandlers.cpp:201
+					
+					(firefox:73110): Gtk-WARNING **: 15:13:58.846: GTK+ module /snap/firefox/5561/gnome-platform/usr/lib/gtk-2.0/modules/libcanberra-gtk-module.so cannot be loaded.
+					GTK+ 2.x symbols detected. Using GTK+ 2.x and GTK+ 3 in the same process is not supported.
+					Gtk-Message: 15:13:58.846: Failed to load module "canberra-gtk-module"
+				\end{verbatim}
+				On many platforms, Jupyter will automatically open in default web browser (unless start it with {\tt--no-browser}). Otherwise, can navigate to HTTP address printed when started notebook, here \url{http://localhost:8888/?token=0a77b52fefe52ab83e3c35dff8de121e4bb443a63f2d3055}. See {\sf Fig. 2.1: Jupyter notebook landing page} for what this looks like in Google Chrome.
+				
+				\begin{remark}
+					Many people use Jupyter as a local computing environment, but it can also be deployed on servers \& accessed remotely. Won't cover those details here, but encourage to explore this topic on internet if it's relevant to your needs.
+				\end{remark}
+				To create a new notebook, click {\tt New} button \& select {\tt Python 3} option. Should see sth like {\sf Fig. 2.2: Jupyter new notebook view}. If this is 1st time, try clicking on empty code ``cell'' \& entering a line of Python code. Then press Shift-Enter to execute it.
+				
+				When save notebook (see {\tt Save \& Checkpoint} under notebook {\tt File} menu), it creates a file with extension {\tt.ipynb}: a self-contained file format containing all of content (including any evaluated code output) currently in notebook. These can be loaded \& edited by other Jupyter users.
+				
+				To rename an open notebook, click on notebook title at top of page \& type new title, pressing {\tt Enter} when finished.
+				
+				To load an existing notebook, put file in same directory where started notebook process (or in a subfolder within it), then click name from landing page. Can try it out with notebooks from {\tt wesm/pydata-book} repository on GitHub {\sf Fig. 2.3: Jupyter example view for an existing notebook}.
+				
+				When want to close a notebook, click File menu \& select {\tt Close \& Halt}. If simply close browser tab, Python process associated with notebook will keep running in background.
+				
+				While Jupyter notebook may feel like a distinct experience from IPython shell, nearly all of commands \& tools in this chap can be used in either environment.
+				\item {\sf Tab Completion.} On surface, IPython shell looks like a cosmetically different version (phiên bản khác biệt về mặt thẩm mỹ) of standard terminal Python interpreter (invoked with {\tt python}). 1 of major improvements over standard Python shell is {\it tab completion}, found in many IDEs or other interactive computing analysis environments. While entering expressions in shell, pressing {\tt Tab} key will search namespace for any variables (objects, functions, etc.) matching characters you have typed so far \& show results in a convenient drop-down menu:
+				\begin{verbatim}
+					In [1]: an_apple = 27
+					In [2]: an_example = 42
+					In [3]: an<Tab>
+					an_apple an_example  any
+				\end{verbatim}
+				Note: IPython displayed both of 2 variables I defined, as well as built-in function {\tt any}. Also, you can also complete methods \& attributes on any object after typing a period:
+				\begin{verbatim}
+					In [3]: b = [1, 2, 3]
+					
+					In [4]:  b.<Tab>
+					append()  count()   insert()  reverse()
+					clear()   extend()  pop()     sort()   
+					copy()    index()   remove()           
+				\end{verbatim}
+				Same is true for modules:
+				\begin{verbatim}
+					In [1]:  import datetime
+					
+					In [2]: datetime.
+					date          MAXYEAR       timedelta     UTC          
+					datetime      MINYEAR       timezone                   
+					datetime_CAPI time          tzinfo                     
+				\end{verbatim}
+				
+				\begin{remark}
+					IPython by default hides methods \& attributes starting with underscores, e.g. magic methods \& internal ``private'' methods \& attributes, in order to avoid cluttering display (\& confusing novice users -- gây bối rối cho người dùng mới!). These, too, can be tab-completed, but must 1st type an underscore to see them. If prefer to always see such methods in tab completion, can change this setting in IPython configuration. See \href{https://ipython.readthedocs.io}{IPython documentation} to find out how to do this.
+				\end{remark}
+				Tab completion works in many contexts outside of searching interactive namespace \& completng object or module attributes. When typing anything that looks like a file path (even in a Python string), pressing Tab key will complete anything on your computer's filesystem matching what you've typed.
+				
+				Combined with \verb|%run| command, this functionality can save you many keystrokes.
+				
+				Another area where tab completion saves time is in completion of function keyword arguments (including $=$ sign!) {\sf Fig. 2.4: Autocomplete function keywords in a Jupyter notebook}.
+				
+				Have a closer look at functions in a little bit:
+				\item {\sf Introspection.} Using a question mark {\tt?} before or after a variable will display some general information about object:
+				\begin{verbatim}
+					In [12]: b?
+					Type:        list
+					String form: [1, 2, 3]
+					Length:      3
+					Docstring:  
+					Built-in mutable sequence.
+					
+					If no argument is given, the constructor creates a new empty list.
+					The argument must be an iterable if specified.
+					
+					In [13]: ?b
+					Type:        list
+					String form: [1, 2, 3]
+					Length:      3
+					Docstring:  
+					Built-in mutable sequence.
+					
+					If no argument is given, the constructor creates a new empty list.
+					The argument must be an iterable if specified.
+					
+					In [14]: print?
+					Signature: print(*args, sep=' ', end='\n', file=None, flush=False)
+					Docstring:
+					Prints the values to a stream, or to sys.stdout by default.
+					
+					sep
+					string inserted between values, default a space.
+					end
+					string appended after the last value, default a newline.
+					file
+					a file-like object (stream); defaults to the current sys.stdout.
+					flush
+					whether to forcibly flush the stream.
+					Type:      builtin_function_or_method
+				\end{verbatim}
+				This is referred to as {\it object introspection}. If object is a function or instance method, docstring, if defined, will also be shown. Suppose we'd written following function (which you can reproduce in IPython or Jupyter):
+				\begin{verbatim}
+					def add_numbers(a, b):
+					    """
+					    Add two numbers together
+					    Returns
+					    -------
+					    the_sum : type of arguments
+					    """
+					return a + b
+				\end{verbatim}
+				Then using {\tt?} shows us docstring:
+				\begin{verbatim}
+					In [6]: add_numbers?
+					Signature: add_numbers(a, b)
+					Docstring:
+					Add two numbers together
+					Returns
+					-------
+					the_sum : type of arguments
+					File:    <ipython-input-9-6a548a216e27>
+					Type:    function
+				\end{verbatim}
+				{\tt?} has a final usage, which is for searching IPython namespace in a manner similar to standard Unix or Windows command line. A number of characters combined with wildcard {\tt*} will show all names matching wildcard expression. E.g., could get a list of all functions in top-level NumPy namespace containing {\tt load}: [Missing line: {\tt np.loads} cf. book]
+				\begin{verbatim}
+					In [16]: import numpy as np
+					
+					In [17]: np.*load*?
+					np.__loader__
+					np.load
+					np.loadtxt
+				\end{verbatim}
+			\end{itemize}
+			\item {\sf2.3. Python Language Basics.} Give an overview of essential Python programming concepts \& language mechanics. In Chap. 3, go into more detail about Python data structures, functions, \& other built-in tools.
+		\end{itemize}
 		\item {\sf3. Built-In Data Structures, Functions, \& Files.}
 		\item {\sf4. {\tt NumPy} Basics: Arrays \& Vectorized Computation.}
 		\item {\sf5. Getting Started with pandas.}

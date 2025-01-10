@@ -1427,15 +1427,238 @@
 				\end{verbatim}
 				{\tt?} has a final usage, which is for searching IPython namespace in a manner similar to standard Unix or Windows command line. A number of characters combined with wildcard {\tt*} will show all names matching wildcard expression. E.g., could get a list of all functions in top-level NumPy namespace containing {\tt load}: [Missing line: {\tt np.loads} cf. book]
 				\begin{verbatim}
-					In [16]: import numpy as np
+					In [1]: import numpy as np
 					
-					In [17]: np.*load*?
+					In [2]: np.*load*?
 					np.__loader__
 					np.load
 					np.loadtxt
 				\end{verbatim}
 			\end{itemize}
 			\item {\sf2.3. Python Language Basics.} Give an overview of essential Python programming concepts \& language mechanics. In Chap. 3, go into more detail about Python data structures, functions, \& other built-in tools.
+			\begin{itemize}
+				\item {\sf Language Semantics.} Python language design is distinguished by its emphasis on readability, simplicity, \& explicitness. Some people go so far as to liken it to ``executable pseudocode.''
+				\begin{itemize}
+					\item {\tt Indentation, not braces.} Python uses whitespace (tabs or spaces) to structure code instead of using braces as in many other languages like R, C++, Java, \& Perl. Consider a {\tt for} loop from a sorting algorithm:
+					\begin{verbatim}
+						for x in array:
+						    if x < pivot:
+						        less.append(x)
+						    else:
+						        greater.append(x)
+					\end{verbatim}
+					A colon denotes start of an indented code block after which all of code must be indented by same amount until end of block.
+					
+					Love it or hate it, significant whitespace is a fact of life for Python programmers. While it may seem foreign at 1st, will hopefully grow accustomed to it in time.
+					
+					\begin{remark}
+						Strong recommend using \emph{4 spaces} as your default indentation \& replacing tabs with 4 spaces. Many text editors have a setting that will replace tab stops with spaces automatically insert 4 spaces on new lines following a colon \& replace tabs by 4 spaces.
+					\end{remark}
+					As you can see by now, Python statements also do not need to be terminated by semicolons. Semicolons can be used, however, to separate multiple statements on a single line:
+					\begin{verbatim}
+						a = 5; b = 6; c = 7
+					\end{verbatim}
+					Putting multiple statements on 1 line is generally discouraged in Python as it can make code less readable.
+					\item {\sf Everything is an object.} An important characteristic of Python language is consistency of its {\it object model}. Every number, string, data structure, function, class, module, \& so on exists in Python interpreter in its own ``box,'' which is referred to as a {\it Python object}. Each object has an associated {\it type} (e.g., {\it integer, string}, or {\it function}) \& internal data. In practice this makes language very flexible, as even functions can be treated like any other object.
+					\item {\sf Comments.} Any text preceded by hash mark (pound sign) \verb|#| is ignored by Python interpreter. Often used to add comments to code. At times may also want to exclude certain blocks of code without deleting them. 1 solution: {\it comment out} code:
+					\begin{verbatim}
+						results = []
+						for line in file_handle:
+						    # keep the empty lines for now
+						    # if len(line) == 0:
+						    #   continue
+						    results.append(line.replace("foo", "bar"))
+					\end{verbatim}
+					Comments can also occur after a line of executed code. While some programmers prefer comments to be placed in line preceding a particular line of code, this can be useful at times:
+					\begin{verbatim}
+						print("Reached this line") # Simple status report
+					\end{verbatim}
+					\item {\sf Function \& object method calls.} Call functions using parentheses \& passing 0 or more arguments, optionally assigning returned value to a variable:
+					\begin{verbatim}
+						result = f(x, y, z)
+						g()
+					\end{verbatim}
+					Almost every object in Python has attached functions, known as {\it methods}, that have access to object's internal contents. Can call them using following syntax:
+					\begin{verbatim}
+						obj.some_method(x, y, z)
+					\end{verbatim}
+					Functions can take both {\it positional \& keyword} arguments:
+					\begin{verbatim}
+						result = f(a, b, c, d=5, e="foo")
+					\end{verbatim}
+					\item {\sf Variables \& argument passing.} When assigning a variable (or {\it name}) in Python, you are creating a {\it reference} to object shown on RHS of equals sign. In practical terms, consider a list of integers:
+					\begin{verbatim}
+						In [8]: a = [1, 2, 3]
+					\end{verbatim}
+					Suppose: assign {\tt a} to a new variable {\tt b}:
+					\begin{verbatim}
+						In [9]: b = a
+						
+						In [10]: b
+						Out[10]: [1, 2, 3]
+					\end{verbatim}
+					In some languages, assignment if {\tt b} will cause data {\tt[1, 2, 3]} to be copied. In Python, {\tt a} \& {\tt b} actually now refer to same object, original list {\tt[1, 2, 3]} (see {\sf Fig. 2.5: 2 references for same object} for a mock-up). Can prove this by appending an element to {\tt a} \& then examining {\tt b}:
+					\begin{verbatim}
+						In [11]: a.append(4)
+						
+						In [12]: b
+						Out[12]: [1, 2, 3, 4]
+					\end{verbatim}
+					Understanding semantics of references in Python, \& when, how, \& why data is copied, is especially critical when you are working with larger datasets in Python.
+					
+					-- Hiểu được ngữ nghĩa của các tham chiếu trong Python, \& khi nào, như thế nào, \& lý do tại sao dữ liệu được sao chép, đặc biệt quan trọng khi bạn làm việc với các tập dữ liệu lớn hơn trong Python.
+					
+					\begin{remark}
+						Assignment is also referred to as {\rm binding}, as we are binding a name to an object. Variable names that have been assigned may occasionally be referred to as bound variables.
+					\end{remark}
+					When pass objects as arguments to a function, new local variables are created referencing original objects without any copying. If bind a new object to a variable inside a function, that will not overwrite a variable of same name in ``scope'' outside of function (``parent scope''). Therefore possible to alter internals of a mutable argument. Suppose had following function:
+					\begin{verbatim}
+						In [13]: def append_element(some_list, element):
+						   ....:     some_list.append(element)
+					\end{verbatim}
+					Then have:
+					\begin{verbatim}
+						In [14]: data = [1, 2, 3]
+						
+						In [15]: append_element(data, 4)
+						
+						In [16]: data
+						Out[16]: [1, 2, 3, 4]
+					\end{verbatim}
+					\item {\sf Dynamic references, strong types.} Variables in Python have no inherent type associated with them; a variable can refer to a different type of object simply by doing an assignment. There is no problem with following:
+					\begin{verbatim}
+						In [17]: a = 5
+						
+						In [18]: type(a)
+						Out[18]: int
+						
+						In [19]: a = "foo"
+						
+						In [20]: type(a)
+						Out[20]: str
+					\end{verbatim}
+					Variables are names for objects within a particular namespace; type information is stored in object itself. Some observers might hastily conclude: Python is not a ``typed language.'' Wrong: consider:
+					\begin{verbatim}
+						In [21]: "5" + 5
+						---------------------------------------------------------------------------
+						TypeError
+						Traceback (most recent call last)
+						<ipython-input-21-7fe5aa79f268> in <module>
+						----> 1 "5" + 5
+						TypeError: can only concatenate str (not "int") to str
+					\end{verbatim}
+					In some languages, string {\tt'5'} might get implicitly converted (or {\it cast}) to an integer, thus yielding 10. In other languages integer {\tt5} might be cast to a string, yielding concatenated string {\tt'55'}. In Python, such implicit casts are not allowed. In this regard, say: Python is a {\it strongly typed} language, i.e., every object has a specific type (or {\it class}), \& implicit conversions will occur only in certain permitted circumstances, e.g.:
+					\begin{verbatim}
+						In [22]: a = 4.5
+						
+						In [23]: b = 2
+						
+						# String formatting, to be visited later
+						In [24]: print(f"a is {type(a)}, b is {type(b)}")
+						a is <class 'float'>, b is <class 'int'>
+						
+						In [25]: a / b
+						Out[25]: 2.25
+					\end{verbatim}
+					Here, even though {\tt b} is an integer, it is implicitly converted to a float for division operation.
+					
+					Knowing type of an object is important, \& useful to be able to write functions that can handle many different kinds of input. Can check: an object is an instance of a particular type using {\tt isinstance} function:
+					\begin{verbatim}
+						In [26]: a = 5
+						
+						In [27]: isinstance(a, int)
+						Out[27]: True
+					\end{verbatim}
+					{\tt isinstance} can accept a type of types if want to check: an object's type is among those present in tuple:
+					\begin{verbatim}
+						In [28]: a = 5; b = 4.5
+						
+						In [29]: isinstance(a, (int, float))
+						Out[29]: True
+						
+						In [30]: isinstance(b, (int, float))
+						Out[30]: True
+					\end{verbatim}
+					\item {\sf Attributes \& methods.} Objects n Python typically have both attributes (other Python objects stored ``inside'' object) \& methods (functions associated with an object that can have access to object's internal data). Both of them are accessed via syntax \verb|obj.attribute_name|:
+					\begin{verbatim}
+In [1]: a = "foo"
+
+In [2]: a.<Press Tab>
+capitalize()   encode()       format()       isalpha()      isidentifier() isspace()      ljust()        partition()    rfind()        rsplit()       startswith()   translate()   
+casefold()     endswith()     format_map()   isascii()      islower()      istitle()      lower()        removeprefix() rindex()       rstrip()       strip()        upper()       
+center()       expandtabs()   index()        isdecimal()    isnumeric()    isupper()      lstrip()       removesuffix() rjust()        split()        swapcase()     zfill()       
+count()        find()         isalnum()      isdigit()      isprintable()  join()         maketrans()    replace()      rpartition()   splitlines()   title()                      
+					\end{verbatim}
+					Attributes \& methods can also be accessed by name via {\tt getattr} function:
+					\begin{verbatim}
+						In [32]: getattr(a, "split")
+						Out[32]: <function str.split(sep=None, maxsplit=-1)>
+					\end{verbatim}
+					While will not extensively use functions {\tt getattr} \& related functions {\tt hasattr} \& {\tt setattr} in this book, they can be used very effectively to write generic, reusable code.
+					\item {\sf Duck typing.} Often may not care about type of an object but rather only whether it has certain methods or behavior. This is sometimes called {\it duck typing}, after saying ``If it walks like a duck \& quacks like a duck, then it's a duck.'' E.g., you can verify: an object is iterable if it implements {\it iterator protocol}. For many objects, this means it has an \verb|__iter__| ``magic method,'' though an alternative \& better way to check is to try using {\tt iter} function:
+					\begin{verbatim}
+						In [33]: def isiterable(obj):
+						   ....:     try:
+						   ....:         iter(obj)
+						   ....:         return True
+						   ....:     except TypeError: # not iterable
+						   ....:         return False
+					\end{verbatim}
+					This function would return {\tt True} for strings as well as most Python collection types:
+					\begin{verbatim}
+						In [34]: isiterable("a string")
+						Out[34]: True
+						
+						In [35]: isiterable([1, 2, 3])
+						Out[35]: True
+						
+						In [36]: isiterable(5)
+						Out[36]: False
+					\end{verbatim}
+					\item {\sf Imports.} In Python, a {\it module} is simply a file with {\tt.py} extension containing Python code. Suppose had following module:
+					\begin{verbatim}
+						# some_module.py
+						PI = 3.14159
+						
+						def f(x):
+						    return x + 2
+						    
+						def g(a, b):
+						    return a + b
+					\end{verbatim}
+					If wanted to access variables \& functions defined in \verb|some_module.py|, from another file in same directory, could do:
+					\begin{verbatim}
+						import some_module
+						result = some_module.f(5)
+						pi = some_module.PI
+					\end{verbatim}
+					Or alternately:
+					\begin{verbatim}
+						from some_module import g, PI
+						result = g(5, PI)
+					\end{verbatim}
+					By using {\tt as} keyword, can give imports different variable names:
+					\begin{verbatim}
+						import some_module as sm
+						from some_module import PI as pi, g as gf
+						
+						r1 = sm.f(pi)
+						r2 = gf(6, pi)
+					\end{verbatim}
+					\item {\sf Binary operators \& comparisons.} Most of binary math operations \& comparisons use familiar mathematical syntax used in other programming languages:
+					\begin{verbatim}
+						In [37]: 5 - 7
+						Out[37]: -2
+						
+						In [38]: 12 + 21.5
+						Out[38]: 33.5
+						
+						In [39]: 5 <= 2
+						Out[39]: False
+					\end{verbatim}
+					See {\sf Table 2.1: Binary operators} for all of available binary operators.
+				\end{itemize}
+			\end{itemize}
 		\end{itemize}
 		\item {\sf3. Built-In Data Structures, Functions, \& Files.}
 		\item {\sf4. {\tt NumPy} Basics: Arrays \& Vectorized Computation.}

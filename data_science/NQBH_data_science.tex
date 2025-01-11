@@ -1657,8 +1657,519 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 						Out[39]: False
 					\end{verbatim}
 					See {\sf Table 2.1: Binary operators} for all of available binary operators.
+					
+					To check if 2 variables refer to same object, use {\tt is} keyword. Use {\tt is not} to check that 2 objects are not the same:
+					\begin{verbatim}
+						In [40]: a = [1, 2, 3]
+						
+						In [41]: b = a
+						
+						In [42]: c = list(a)
+						
+						In [43]: a is b
+						Out[43]: True
+						
+						In [44]: a is not c
+						Out[44]: True
+					\end{verbatim}
+					Since {\tt list} function always creates a new Python list (i.e., a copy), can be sure: {\tt c} is distinct from {\tt a}. Comparing with {\tt is} is not same as {\tt==} operator, because in this case have:
+					\begin{verbatim}
+						In [45]: a == c
+						Out[45]: True
+					\end{verbatim}
+					A common use of {\tt is} \& {\tt is not} is to check if a variable is {\tt None}, since there is only 1 instance of {\tt None}:
+					\begin{verbatim}
+						In [46]: a = None
+						
+						In [47]: a is None
+						Out[47]: True
+					\end{verbatim}
+					\item {\sf Mutable \& immutable objects.} Many objects in Python, e.g. lists, dictionaries, NumPy arrays, \& most user-defined types (classes), are {\it mutable} (có thể thay đổi). I.e., object or values that they contain can be modified:
+					\begin{verbatim}
+						In [48]: a_list = ["foo", 2, [4, 5]]
+						
+						In [49]: a_list[2] = (3, 4)
+						
+						In [50]: a_list
+						Out[50]: ['foo', 2, (3, 4)]
+					\end{verbatim}
+					Others, like strings \& tuples, are immutable, which means their internal data cannot be changed:
+					\begin{verbatim}
+						In [51]: a_tuple = (3, 5, (4, 5))
+						In [52]: a_tuple[1] = "four"
+						---------------------------------------------------------------------------
+						TypeError
+						Traceback (most recent call last)
+						<ipython-input-52-cd2a018a7529> in <module>
+						----> 1 a_tuple[1] = "four"
+						TypeError: 'tuple' object does not support item assignment
+					\end{verbatim}
+					Remember: just because you {\it can} mutate an object does not mean that you always {\it should}. Such actions are known as {\it side effects}. E.g., when writing a function, any side effects should be explicitly communicated to user in function's documentation or comments. If possible, recommend trying to avoid side effects \& {\it favor immutability}, even though there may be mutable objects involved.
+				\end{itemize}
+				\item {\sc Scalar Types.} Python has a small set of built-in types for handling numerical data, strings, Boolean ({\tt True} or {\tt False}) values, \& dates \& time. These ``single value'' types are sometimes called {\it scalar types}, \& refer to them in this book as {\it scalars}. See {\sf Table 2.2: Standard Python scalar types}
+				\begin{itemize}
+					\item {\tt None}: Python ``null'' value (only 1 instance of {\tt None} object exists)
+					\item {\tt str}: String type; holds Unicode strings
+					\item {\tt bytes}: Raw binary data
+					\item {\tt float}: Double-precision floating-point number (note there is no separate {\tt double} type)
+					\item {\tt bool}: A Boolean {\tt True} or {\tt False} value
+					\item {\tt int}: Arbitrary precision integer
+				\end{itemize}
+				for a list of main scalar types. Date \& time handling will be discussed separately, as these are provided by {\tt datetime} module in standard library.
+				\begin{itemize}
+					\item {\sf Numeric types.} Primary Python types for numbers are {\tt int} \& {\tt float}. An {\tt int} can store arbitrarily large numbers:
+					\begin{verbatim}
+						In [53]: ival = 17239871
+						
+						In [54]: ival ** 6
+						Out[54]: 26254519291092456596965462913230729701102721
+					\end{verbatim}
+					Floating-point numbers are represented with Python {\tt float} type. Under hood, each one is a double-precision value. They can also be expressed with scientific notation:
+					\begin{verbatim}
+						In [55]: fval = 7.243
+						
+						In [56]: fval2 = 6.78e-5
+					\end{verbatim}
+					Integer division not resulting in a whole number will always yield a floating-point number:
+					\begin{verbatim}
+						In [57]: 3 / 2
+						Out[57]: 1.5
+					\end{verbatim}
+					To get C-style integer division (which drops fractional part if result is not a whole number), use floor division operator {\tt//}:
+					\begin{verbatim}
+						In [58]: 3 // 2
+						Out[58]: 1
+					\end{verbatim}
+					\item {\sf Strings.} Many people use Python for its built-in string handling capabilities. Can write {\it string literals} using either single quotes {\tt'} or double quotes {\tt"} (double quotes are generally favored):
+					\begin{verbatim}
+						a = 'one way of writing a string'
+						b = "another way"
+					\end{verbatim}
+					Python string type is {\tt str}.
+					
+					For multiline strings with line breaks, can use triple quotes, either {\tt'''} or {\tt"""}:
+					\begin{verbatim}
+						c = """
+						This is a longer string that
+						spans multiple lines
+						"""
+					\end{verbatim}
+					It may surprise: this string {\tt c} actually contains 4 lines of text; line breaks after {\tt"""} \& after {\tt lines} are included in string. Can count new line characters with {\tt count} method on {\tt c}:
+					\begin{verbatim}
+						In [60]: c.count("\n")
+						Out[60]: 3
+					\end{verbatim}
+					Python strings are immutable; you cannot modify a string:
+					\begin{verbatim}
+						In [61]: a = "this is a string"
+						
+						In [62]: a[10] = "f"
+						---------------------------------------------------------------------------
+						TypeError
+						Traceback (most recent call last)
+						<ipython-input-62-3b2d95f10db4> in <module>
+						----> 1 a[10] = "f"
+						TypeError: 'str' object does not support item assignment
+					\end{verbatim}
+					To interpret this error message, read from bottom up. Tried to replace character (``item'') at position 10 with letter {\tt"f"}, but this is not allowed for string objects. If need to modify a string, have to use a function or method that creates a new string, e.g. string {\tt replace} method:
+					\begin{verbatim}
+						In [63]: b = a.replace("string", "longer string")
+						
+						In [64]: b
+						Out[64]: 'this is a longer string'
+					\end{verbatim}
+					After this operation, variable {\tt a} is unmodified:
+					\begin{verbatim}
+						In [65]: a
+						Out[65]: 'this is a string'
+					\end{verbatim}
+					Many Python objects can be converted to a string using {\tt str} function:
+					\begin{verbatim}
+						In [66]: a = 5.6
+						In [67]: s = str(a)
+						In [68]: print(s)
+						5.6
+					\end{verbatim}
+					Strings are a sequence of Unicode characters \& therefore can be treated like other sequences, e.g. lists \& tuples:
+					\begin{verbatim}
+						In [69]: s = "python"
+						
+						In [70]: list(s)
+						Out[70]: ['p', 'y', 't', 'h', 'o', 'n']
+						
+						In [71]: s[:3]
+						Out[71]: 'pyt'
+					\end{verbatim}
+					Syntax {\tt s[:3]} is called {\it slicing} \& is implemented for many kinds of Python sequences. This will be explained in more detail later on, as it is used extensively in this book.
+					
+					Backslash character \verb|\| is an {\it escape character}, i.e., it is used to specify special characters like newline \verb|\n| or Unicode characters. To write a string literal with backslashes, need to escape them:
+					\begin{verbatim}
+						In [72]: s = "12\\34"
+						
+						In [73]: print(s)
+						12\34
+					\end{verbatim}
+					If have a string with a lot of backslashes \& no special characters, might find this a bit annoying. Fortunately, can preface leading quote of string with {\tt r}, i.e.,  characters should be interpreted as is:
+					\begin{verbatim}
+						In [74]: s = r"this\has\no\special\characters"
+						
+						In [75]: s
+						Out[75]: 'this\\has\\no\\special\\characters'
+					\end{verbatim}
+					{\tt r} stands for {\it raw}.
+					
+					Adding 2 strings together concatenates them \& produces a new string:
+					\begin{verbatim}
+						In [76]: a = "this is the first half "
+						
+						In [77]: b = "and this is the second half"
+						
+						In [78]: a + b
+						Out[78]: 'this is the first half and this is the second half'
+					\end{verbatim}
+					String templating or formatting is another important topic. Number of ways to do so has expanded with advent of Python 3, \& here briefly describe mechanics of 1 of main interfaces. String objects have a {\tt format} method that can be used to substitute formatted arguments into string, producing a new string:
+					\begin{verbatim}
+						In [79]: template = "{0:.2f} {1:s} are worth US${2:d}"
+					\end{verbatim}
+					In this string: \verb|{0:.2f}| means to format 1st argument as a floating-point number with no decimal places. \verb|{1:s}| means to format 2nd argument as a string. \verb|{2:d}| means to format 3rd argument as an exact integer.
+					
+					To substitute arguments for these format parameters, pass a sequence of arguments to {\tt format} method:
+					\begin{verbatim}
+						In [80]: template.format(88.46, "Argentine Pesos", 1)
+						Out[80]: '88.46 Argentine Pesos are worth US$1'
+					\end{verbatim}
+					Python 3.6 introduced a new feature called {\it f-strings} (short for {\it formatted string literals}) which can make creating formatted strings even more convenient. To create an f-string, write character {\tt f} immediately preceding a string literal. Within string, enclose Python expressions in curly braces to substitute value of expression into formatted string:
+					\begin{verbatim}
+						In [81]: amount = 10
+						
+						In [82]: rate = 88.46
+						
+						In [83]: currency = "Pesos"
+						
+						In [84]: result = f"{amount} {currency} is worth US${amount / rate}"
+					\end{verbatim}
+					Format specifiers can be added after each expression using same syntax as with string templates above:
+					\begin{verbatim}
+						In [85]: f"{amount} {currency} is worth US${amount / rate:.2f}"
+						Out[85]: '10 Pesos is worth US$0.11'
+					\end{verbatim}
+					String formatting is a deep topic; there are multiple methods \& numerous options \& tweaks available to control how values are formatted in resulting string. To learn more, consult \url{https://docs.python.org/3/library/string.html}.
+					\item {\sf Bytes \& Unicode.} In modern Python (i.e., Python 3.0 \& up), Unicode has become 1st-class string type to enable more consistent handling of ASCII \& non-ASCII text. In older versions of Python, strings were all bytes without any explicit Unicode encoding. Could convert to Unicode assuming knew character encoding. An example Unicode string with non-ASCII characters:
+					\begin{verbatim}
+						In [86]: val = "español"
+						
+						In [87]: val
+						Out[87]: 'español'
+					\end{verbatim}
+					Can convert this Unicode string to its UTF-8 bytes representation using {\tt encode} method:
+					\begin{verbatim}
+						In [88]: val_utf8 = val.encode("utf-8")
+						
+						In [89]: val_utf8
+						Out[89]: b'espa\xc3\xb1ol'
+						
+						In [90]: type(val_utf8)
+						Out[90]: bytes
+					\end{verbatim}
+					Assuming know Unicode encoding of a {\tt bytes} object, can go back using {\tt decode} method:
+					\begin{verbatim}
+						In [91]: val_utf8.decode("utf-8")
+						Out[91]: 'español'
+					\end{verbatim}
+					While now preferable to use UTF-8 for any encoding, for historical reasons, may encounter data in any number of different encodings:
+					\begin{verbatim}
+						In [92]: val.encode("latin1")
+						Out[92]: b'espa\xf1ol'
+						
+						In [93]: val.encode("utf-16")
+						Out[93]: b'\xff\xfee\x00s\x00p\x00a\x00\xf1\x00o\x00l\x00'
+						
+						In [94]: val.encode("utf-16le")
+						Out[94]: b'e\x00s\x00p\x00a\x00\xf1\x00o\x00l\x00'
+					\end{verbatim}
+					Most common to encounter {\tt bytes} object in context of working with files, where implicitly decoding all data to Unicode strings may not be desired.
+					\item {\sf Booleans.} 2 Boolean values in Python are written as {\tt True, False}. Comparisons \& other conditional expressions evaluate to either {\tt True} or {\tt False}. Boolean values are combined with {\tt and} \& {\tt or} keywords:
+					\begin{verbatim}
+						In [95]: True and True
+						Out[95]: True
+						
+						In [96]: False or True
+						Out[96]: True
+					\end{verbatim}
+					When converted to numbers, {\tt False} becomes {\tt0} \& {\tt True} becomes {\tt1}:
+					\begin{verbatim}
+						In [97]: int(False)
+						Out[97]: 0
+						
+						In [98]: int(True)
+						Out[98]: 1
+					\end{verbatim}
+					Keyword {\tt not} flips a Boolean value from {\tt True} to {\tt False} or vice versa:
+					\begin{verbatim}
+						In [99]: a = True
+						
+						In [100]: b = False
+						
+						In [101]: not a
+						Out[101]: False
+						
+						In [102]: not b
+						Out[102]: True
+					\end{verbatim}
+					\item {\sf Type casting.} {\tt str, bool, int, float} types are also functions that can be used to cast values to those types:
+					\begin{verbatim}
+						In [103]: s = "3.14159"
+						
+						In [104]: fval = float(s)
+						
+						In [105]: type(fval)
+						Out[105]: float
+						
+						In [106]: int(fval)
+						Out[106]: 3
+						
+						In [107]: bool(fval)
+						Out[107]: True
+						
+						In [108]: bool(0)
+						Out[108]: False
+					\end{verbatim}
+					Note: most nonzero values when cast to {\tt bool} become {\tt True}.
+					\item {\sf None.} {\tt None} is Python null value type:
+					\begin{verbatim}
+						In [109]: a = None
+						
+						In [110]: a is None
+						Out[110]: True
+						
+						In [111]: b = 5
+						
+						In [112]: b is not None
+						Out[112]: True
+					\end{verbatim}
+					{\tt None} is also a common default value for function arguments:
+					\begin{verbatim}
+						def add_and_maybe_multiply(a, b, c = None):
+						    result = a + b
+						    
+						    if c is not None:
+						        result = result * c
+						    
+						    return result
+					\end{verbatim}
+					\item {\sf Dates \& times.} Built-in Python {\tt datetime} module provides {\tt datetime, date, time} types. {\tt datetime} type combines information stored in {\tt date} \& {\tt time} \& is most commonly used:
+					\begin{verbatim}
+						In [113]: from datetime import datetime, date, time
+						
+						In [114]: dt = datetime(2011, 10, 29, 20, 30, 21)
+						
+						In [115]: dt.day
+						Out[115]: 29
+						
+						In [116]: dt.minute
+						Out[116]: 30
+					\end{verbatim}
+					Given a {\tt datetime} instance, can extract equivalent {\tt date} \& {\tt time} objects by calling methods on {\tt datetime} of same name:
+					\begin{verbatim}
+						In [117]: dt.date()
+						Out[117]: datetime.date(2011, 10, 29)
+						
+						In [118]: dt.time()
+						Out[118]: datetime.time(20, 30, 21)
+					\end{verbatim}
+					{\tt strftime} method formats a {\tt datetime} as a string:
+					\begin{verbatim}
+						In [119]: dt.strftime("%Y-%m-%d %H:%M")
+						Out[119]: '2011-10-29 20:30'
+					\end{verbatim}
+					Strings can be converted (parsed) into {\tt datetime} objects with {\tt strptime} function:
+					\begin{verbatim}
+						In [120]: datetime.strptime("20091031", "%Y%m%d")
+						Out[120]: datetime.datetime(2009, 10, 31, 0, 0)
+					\end{verbatim}
+					See {\sf Table 11.2: {\tt datetime} format specification (ISO C89 compatible)} for a full list of format specifications.
+					
+					When aggregating or otherwise group time series data, it will occasionally be useful to replace time fields of a series of {\tt datetimes} -- e.g., replacing {\tt minute, second} fields with 0:
+					\begin{verbatim}
+						In [121]: dt_hour = dt.replace(minute=0, second=0)
+						
+						In [122]: dt_hour
+						Out[122]: datetime.datetime(2011, 10, 29, 20, 0)
+					\end{verbatim}
+					Since {\tt datetime.datetime} is an immutable type, methods like these always produce new objects. So in previous example, {\tt dt} is not modified by {\tt replace}:
+					\begin{verbatim}
+						In [123]: dt
+						Out[123]: datetime.datetime(2011, 10, 29, 20, 30, 21)
+					\end{verbatim}
+					Difference of 2 {\tt datetime} objects produces a {\tt datetime.timedelta} type:
+					\begin{verbatim}
+						In [124]: dt2 = datetime(2011, 11, 15, 22, 30)
+						
+						In [125]: delta = dt2 - dt
+						
+						In [126]: delta
+						Out[126]: datetime.timedelta(days=17, seconds=7179)
+						
+						In [127]: type(delta)
+						Out[127]: datetime.timedelta
+					\end{verbatim}
+					Output {\tt timedelta(17, 7179)} indicates: {\tt timedelta} encodes an offset of 17 days \& 7178 seconds.
+					
+					Adding a {\tt timedelta} to a {\tt datetime} produces a new shifted {\tt datetime}:
+					\begin{verbatim}
+						In [128]: dt
+						Out[128]: datetime.datetime(2011, 10, 29, 20, 30, 21)
+						
+						In [129]: dt + delta
+						Out[129]: datetime.datetime(2011, 11, 15, 22, 30)
+					\end{verbatim}
+				\end{itemize}
+				\item {\sf Control Flow.} Python has several built-in keywords for conditional logic, loops, \& other standard {\it control flow} concepts found in other programming languages.
+				\begin{itemize}
+					\item {\sf if, elif, \& else.} {\tt if} statement is 1 of most well-known control flow statement types. It checks a condition that, if {\tt True}, evaluates code in block that follows:
+					\begin{verbatim}
+						x = -5
+						if x < 0:
+						    print("It's negative")
+					\end{verbatim}
+					\& {\tt if} statement can be optionally followed by 1 or more {\tt elif} blocks \& a catchall {\tt else} block if all of conditions are {\tt False}:
+					\begin{verbatim}
+						if x < 0:
+						    print("It's negative")
+						elif x == 0:
+						    print("Equal to zero")
+						elif 0 < x < 5:
+						    print("Positive but smaller than 5")
+						else:
+						    print("Positive and larger than or equal to 5")
+					\end{verbatim}
+					If any of conditions are {\tt True}, no further {\tt elif} or {\tt else} blocks will be reached. With a compound condition using {\tt and} or {\tt or}, conditions are evaluated left to right \& will short-circuit:
+					\begin{verbatim}
+						In [130]: a = 5; b = 7
+						
+						In [131]: c = 8; d = 4
+						
+						In [132]: if a < b or c > d:
+						   .....:
+						print("Made it")
+						Made it
+					\end{verbatim}
+					In this example, comparison {\tt c > d} never gets evaluated because 1st comparison was {\tt True}.
+					
+					Also possible to chain comparisons:
+					\begin{verbatim}
+						In [133]: 4 > 3 > 2 > 1
+						Out[133]: True
+					\end{verbatim}
+					\item {\sf for loops.} {\tt for} loops are for iterating over a collection (like a list or tuple) or an iterater. Standard syntax for a {\tt for} loop is:
+					\begin{verbatim}
+						for value in collection:
+						    # do something with value
+					\end{verbatim}
+					Can advance a {\tt for} loop to next iteration, skipping remainder of block, using {\tt continue} keyword. Consider this code, which sums up integers in a list \& skips {\tt None} values:
+					\begin{verbatim}
+						sequence = [1, 2, None, 4, None, 5]
+						total = 0
+						for value in sequence:
+						    if value is None:
+						        continue
+						    total += value
+					\end{verbatim}
+					A {\tt for} loop can be exited altogether with {\tt break} keyword. This code sums elements of list until a 5 is reached:
+					\begin{verbatim}
+						sequence = [1, 2, 0, 4, 6, 5, 2, 1]
+						total_until_5 = 0
+						for value in sequence:
+						    if value == 5:
+						         break
+						    total_until_5 += value
+					\end{verbatim}
+					{\tt break} keyword only terminates innermost {\tt for} loop; any outer {\tt for} loops will continue to run:
+					\begin{verbatim}
+						In [134]: for i in range(4):
+						   .....:     for j in range(4):
+						   .....:         if j > i:
+						   .....:             break
+						   .....:         print((i, j))
+						   .....:
+						(0, 0)
+						(1, 0)
+						(1, 1)
+						(2, 0)
+						(2, 1)
+						(2, 2)
+						(3, 0)
+						(3, 1)
+						(3, 2)
+						(3, 3)
+					\end{verbatim}
+					If elements in collection or iterator are sequences (tuples or lists, say), they can be conveniently {\it unpacked} into variables in {\tt for} loop statement:
+					\begin{verbatim}
+						for a, b, c in iterator:
+						    # do something
+					\end{verbatim}
+					\item {\sf while loops.} A {\tt while} loop specifies a condition \& a block of code that is to be executed until condition evaluates to {\tt False} or loop is explicitly ended with {\tt break}:
+					\begin{verbatim}
+						x = 256
+						total = 0
+						while x > 0:
+						    if total > 500:
+						        break
+						    total += x
+						    x = x // 2
+					\end{verbatim}
+					\item {\sf pass.} {\tt pass} is ``no-op'' (or ``do nothing'') statement in Python. It can be used in blocks where no action is to be taken (or as a placeholder for code not yet implemented); it is required only because Python uses whitespace to delimit blocks:
+					\begin{verbatim}
+						if x < 0:
+						    print("negative!")
+						elif x == 0:
+						    # TODO: put something smart here
+						    pass
+						else:
+						    print("positive!")
+					\end{verbatim}
+					\item {\sf range.} {\tt range} function generates a sequence of evenly spaced integers:
+					\begin{verbatim}
+						In [135]: range(10)
+						Out[135]: range(0, 10)
+						
+						In [136]: list(range(10))
+						Out[136]: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					\end{verbatim}
+					A start, end, \& step (which may be negative) can be given:
+					\begin{verbatim}
+						In [137]: list(range(0, 20, 2))
+						Out[137]: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
+						
+						In [138]: list(range(5, 0, -1))
+						Out[138]: [5, 4, 3, 2, 1]
+					\end{verbatim}
+					{\tt range} produces integers up to but not including endpoint. A common use of {\tt range} is for iterating through sequences by index:
+					\begin{verbatim}
+						In [139]: seq = [1, 2, 3, 4]
+						
+						In [140]: for i in range(len(seq)):
+						   .....:     print(f"element {i}: {seq[i]}")
+						element 0: 1
+						element 1: 2
+						element 2: 3
+						element 3: 4
+					\end{verbatim}
+					While can use functions like {\tt list} to store all integers generated by {\tt range} in some other data structure, often default iterator form will be what you want. This snippet sums all numbers from 0 to 99999 that are multiples of 3 or 5:
+					\begin{verbatim}
+						In [141]: total = 0
+						In [142]: for i in range(100_000):
+						   .....:     # % is the modulo operator
+						   .....:     if i % 3 == 0 or i % 5 == 0:
+						   .....:         total += i
+						   
+						In [143]: print(total)
+						2333316668
+					\end{verbatim}
+					While range generated can be arbitrarily large, memory use at any given time may be very small.
 				\end{itemize}
 			\end{itemize}
+			\item {\sf2.4. Conclusion.} This chap provided a brief introduction to some basic Python language concepts \& IPython \& Jupyter programming environments. In Chap. 3, discuss many built-in data types, functions, \& input-output utilities that will be used continuously throughout rest of book.
 		\end{itemize}
 		\item {\sf3. Built-In Data Structures, Functions, \& Files.}
 		\item {\sf4. {\tt NumPy} Basics: Arrays \& Vectorized Computation.}

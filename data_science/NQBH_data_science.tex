@@ -3229,7 +3229,7 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 						11 def calling_things():
 						AssertionError:
 					\end{verbatim}
-					Having additional context by itself is a big advantage over standard Python interpreter (which does not provide any additional context). Can control amount of context shown using \verb|%xmode| magic command, from {\tt Plain} (same as standard Python interpreter) to {\tt Verbose} (which inlines function argument values \& more). See in Appendix B, can step {\it into stack} (using \verb|% debug| or \verb|%pdb| (phở{\tt/}phân đầu{\tt/}đuôi bò{\tt/}buồi? or phở{\tt/}phân đặc biệt) magics) after an error has occurred for interactive postmortem debugging.
+					Having additional context by itself is a big advantage over standard Python interpreter (which does not provide any additional context). Can control amount of context shown using \verb|%xmode| magic command, from {\tt Plain} (same as standard Python interpreter) to {\tt Verbose} (which inlines function argument values \& more). See in Appendix B, can step {\it into stack} (using \verb|% debug| (``địt em béo ú gay'' or ``dái em béo ú ghê'' or ``đi ẻ bị u gan'') or \verb|%pdb| (``phở{\tt/}phân đầu{\tt/}đuôi bò{\tt/}buồi'' or ``phở{\tt/}phân đặc biệt'') magics) after an error has occurred for interactive postmortem debugging.
 				\end{itemize}
 			\end{itemize}
 			\item {\sf3.3. Files \& OS.} Most of this book uses high-level tools like \verb|pandas.read_csv| to read data files from disk into Python data structures. However, important to understand basics of how to work with files in Python. Fortunately, relatively straightforward, which is 1 reason Python is so popular for text \& file munging.
@@ -3240,7 +3240,177 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 				In [234]: f = open(path, encoding="utf-8")
 			\end{verbatim}
 			Here, pass {\tt encoding="utf-8"} as a best practice because default Unicode encoding for reading files varies from platform to platform.
-			\item {\sf3.4. Conclusion.}
+			
+			By default, file is opened in read-only model {\tt"r"}. Can then treat file object {\tt f} like a list \& iterate over lines like so:
+			\begin{verbatim}
+				for line in f:
+				    print(line)
+			\end{verbatim}
+			Lines come out of file with end-of-line (EOL) markers intact, often see code to get an EOL-free list of lines in a file like:
+			\begin{verbatim}
+				In [235]: lines = [x.rstrip() for x in open(path, encoding="utf-8")]
+				In [236]: lines
+				Out[236]:
+				['Sueña el rico en su riqueza,',
+				'que más cuidados le ofrece;',
+				'',
+				'sueña el pobre que padece',
+				'su miseria y su pobreza;',
+				'',
+				'sueña el que a medrar empieza,',
+				'sueña el que afana y pretende,',
+				'sueña el que agravia y ofende,',
+				'',
+				'y en el mundo, en conclusión,',
+				'todos sueñan lo que son,',
+				'aunque ninguno lo entiende.',
+				'']
+			\end{verbatim}
+			When use {\tt open} to create file objects, recommended to close file when finished with it. Closing file releases its resources back to OS:
+			\begin{verbatim}
+				In [237]: f.close()
+			\end{verbatim}
+			1 of ways to make it easier to clean up open files: use {\tt with} statement:
+			\begin{verbatim}
+				In [238]: with open(path, encoding="utf-8") as f:
+				   .....:     lines = [x.rstrip() for x in f]
+			\end{verbatim}
+			This will automatically close file {\tt f} when exiting {\tt with} block. Failing to ensure that files are closed will not cause problems in many small programs or scripts, but it can be an issue in programs that need to interact with a large number of files.
+			
+			If had typed {\tt f = open(path, "w")}, a {\it new file} at {\tt examples/segismundo.txt} would have been created (be careful!), overwriting any file in its place. There is also {\tt"x"} file mode, which creates a writable file but fails if file path already exists. See {\sf Table 3.3: Python file modes} for a list of all valid file read{\tt/}write modes.
+			
+			For readable files, some of most commonly used methods are {\tt read, seek, tell}. {\tt read} returns a certain number of characters from file. What constitutes a ``character'' is determined by file encoding or simply raw bytes if file is opened in binary mode:
+			\begin{verbatim}
+				In [239]: f1 = open(path)
+				In [240]: f1.read(10)
+				Out[240]: 'Sueña el r'
+				In [241]: f2 = open(path, mode="rb") # Binary mode
+				In [242]: f2.read(10)
+				Out[242]: b'Sue\xc3\xb1a el '
+			\end{verbatim}
+			{\tt read} method advances file object position by number of bytes read. {\tt tell} gives current position:
+			\begin{verbatim}
+				In [243]: f1.tell()
+				Out[243]: 11
+				In [244]: f2.tell()
+				Out[244]: 10
+			\end{verbatim}
+			Even though read 10 characters from file {\tt f1} opened in text mode, position is 11 because it took that many bytes to decode 10 characters using default encoding. Can check default encoding in {\tt sys} module:
+			\begin{verbatim}
+				In [245]: import sys
+				In [246]: sys.getdefaultencoding()
+				Out[246]: 'utf-8'
+			\end{verbatim}
+			To get consistent behavior across platforms, best to pass an encoding (e.g. {\tt encoding="utf-8"}, which is widely used) when opening files.
+			
+			{\tt seek} changes file position to indicated byte in file:
+			\begin{verbatim}
+				In [247]: f1.seek(3)
+				Out[247]: 3
+				In [248]: f1.read(1)
+				Out[248]: 'ñ'
+				In [249]: f1.tell()
+				Out[249]: 5
+			\end{verbatim}
+			Lastly, remember to close files:
+			\begin{verbatim}
+				In [250]: f1.close()
+				In [251]: f2.close()
+			\end{verbatim}
+			To write text to a file, can use file's {\tt write} or {\tt writelines} methods. E.g., could create a version of {\tt examples/segismundo.txt} with no blank lines like so:
+			\begin{verbatim}
+				In [252]: path
+				Out[252]: 'examples/segismundo.txt'
+				In [253]: with open("tmp.txt", mode="w") as handle:
+				   .....:     handle.writelines(x for x in open(path) if len(x) > 1)
+				In [254]: with open("tmp.txt") as f:
+				   .....:     lines = f.readlines()
+				In [255]: lines
+				Out[255]:
+				['Sueña el rico en su riqueza,\n',
+				 'que más cuidados le ofrece;\n',
+				 'sueña el pobre que padece\n',
+				 'su miseria y su pobreza;\n',
+				 'sueña el que a medrar empieza,\n',
+				 'sueña el que afana y pretende,\n',
+				 'sueña el que agravia y ofende,\n',
+				 'y en el mundo, en conclusión,\n',
+				 'todos sueñan lo que son,\n',
+				 'aunque ninguno lo entiende.\n']
+			\end{verbatim}
+			See {\sf Table 3.4: Important Python file methods or attributes} for many of most commonly used file methods.
+			\begin{itemize}
+				\item {\sf Bytes \& Unicode with Files.} Default behavior for Python files (whether readable or writable) is {\it text mode}, i.e., intend to work with Python strings (i.e., Unicode). This contrasts with {\it binary mode}, which can obtain by appending {\tt b} to file mode. Revisiting file (which contains non-ASCII characters with UTF-8 encoding) from previous sect, have:
+				\begin{verbatim}
+					In [258]: with open(path) as f:
+					   .....:     chars = f.read(10)
+					In [259]: chars
+					Out[259]: 'Sueña el r'
+					In [260]: len(chars)
+					Out[260]: 10
+				\end{verbatim}
+				UTF-8 is a variable-length Unicode encoding, so when request some number of characters from file, Python reads enough bytes (which could be as few as 10 or as many as 40 bytes) from file to decode that many characters. If open file in {\tt"rb"} mode instead, {\tt read} requests that exact number of bytes:
+				\begin{verbatim}
+					In [261]: with open(path, mode="rb") as f:
+					   .....:      data = f.read(10)
+				    In [262]: data
+				    Out[262]: b'Sue\xc3\xb1a el '
+				\end{verbatim}
+				Depending on text encoding, may be able to decode bytes to a {\tt str} object yourself, but only if each of encoded Unicode characters is fully formed:
+				\begin{verbatim}
+					In [263]: data.decode("utf-8")
+					Out[263]: 'Sueña el '
+					In [264]: data[:4].decode("utf-8")
+					---------------------------------------------------------------------------
+					UnicodeDecodeError
+					Traceback (most recent call last)
+					<ipython-input-264-846a5c2fed34> in <module>
+					----> 1 data[:4].decode("utf-8")
+					UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc3 in position 3: unexpecte
+					d end of data
+				\end{verbatim}
+				Text mode, combined with {\tt encoding} option of {\tt open}, provides a convenient way to convert from 1 Unicode encoding to another:
+				\begin{verbatim}
+					In [265]: sink_path = "sink.txt"
+					In [266]: with open(path) as source:
+					   .....:    with open(sink_path, "x", encoding="iso-8859-1") as sink:
+					   .....:        sink.write(source.read())
+			        In [267]: with open(sink_path, encoding="iso-8859-1") as f:
+			           .....:     print(f.read(10))
+			        Sueña el r
+				\end{verbatim}
+				Beware using {\tt seek} when opening files in any mode other than binary. If file position falls in middle of bytes defining a Unicode character, then subsequent reads will result in an error:
+				\begin{verbatim}
+					In [269]: f = open(path, encoding='utf-8')
+					In [270]: f.read(5)
+					Out[270]: 'Sueña'
+					In [271]: f.seek(4)
+					Out[271]: 4
+					In [272]: f.read(1)
+					---------------------------------------------------------------------------
+					UnicodeDecodeError
+					Traceback (most recent call last)
+					<ipython-input-272-5a354f952aa4> in <module>
+					----> 1 f.read(1)
+					/miniconda/envs/book-env/lib/python3.10/codecs.py in decode(self, input, final)
+					320
+					# decode input (taking the buffer into account)
+					321
+					data = self.buffer + input
+					--> 322
+					(result, consumed) = self._buffer_decode(data, self.errors, final
+					)
+					323
+					# keep undecoded input until the next call
+					324
+					self.buffer = data[consumed:]
+					UnicodeDecodeError: 'utf-8' codec can't decode byte 0xb1 in position 0: invalid s
+					tart byte
+					In [273]: f.close()
+				\end{verbatim}
+				If find yourself regularly doing data analysis on non-ASCII text data, mastering Python's Unicode functionality will prove valuable. See \url{https://docs.python.org} for much more.
+			\end{itemize}
+			\item {\sf3.4. Conclusion.} With some of basics of Python environment \& language now under your belt, time to move on \& learn about NumPy \& array-oriented computing in Python.
 		\end{itemize}
 		\item {\sf4. {\tt NumPy} Basics: Arrays \& Vectorized Computation.}
 		\begin{itemize}

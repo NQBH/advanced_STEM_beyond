@@ -2811,7 +2811,427 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 				\end{verbatim}
 				This produces a list of lists, rather than a flattened list of all of inner elements.
 			\end{itemize}
-			\item {\sf3.2. Functions.}
+			\item {\sf3.2. Functions.} {\it Functions} are primary \& most important method of code organization \& reuse in Python. As a rule of thumb, if anticipate needing to repeat same or very similar code more than once, it may be worth writing a reusable function. Functions can also help make your code more readable by giving a name to a group of Python statements.
+			
+			Functions are declared with {\tt def} keyword. A function contains a block of code with an optional use of {\tt return} keyword:
+			\begin{verbatim}
+				In [173]: def my_function(x, y):
+				   .....:      return x + y
+			\end{verbatim}
+			When a line with {\tt return} is reached, value or expression after {\tt return} is sent to context where function was called, e.g.:
+			\begin{verbatim}
+				In [174]: my_function(1, 2)
+				Out[174]: 3
+				In [175]: result = my_function(1, 2)
+				In [176]: result
+				Out[176]: 3
+			\end{verbatim}
+			There is no issue with having multiple {\tt return} statements. If Python reaches end of a function without encountering a {\tt return} statement, {\tt None} is returned automatically. E.g.:
+			\begin{verbatim}
+				In [177]: def function_without_return(x):
+				   .....:     print(x)
+				In [178]: result = function_without_return("hello!")
+				hello!
+				In [179]: print(result)
+				None
+			\end{verbatim}
+			Each function can have {\it positional} arguments \& {\it keyword} arguments. Keyword arguments are most commonly used to specify default values or optional arguments. Here define a function with an optional {\tt z} argument with default value {\tt1.5}:
+			\begin{verbatim}
+				def my_function2(x, y, z=1.5):
+				    if z > 1:
+				        return z * (x + y)
+				    else:
+				        return z / (x + y)
+			\end{verbatim}
+			While keyword arguments are optional, all positional arguments must be specified when calling a function.
+			
+			Can pass values to {\tt z} argument with or without keyword provided, though using keyword is encouraged:
+			\begin{verbatim}
+				In [181]: my_function2(5, 6, z=0.7)
+				Out[181]: 0.06363636363636363
+				In [182]: my_function2(3.14, 7, 3.5)
+				Out[182]: 35.49
+				In [183]: my_function2(10, 20)
+				Out[183]: 45.0
+			\end{verbatim}
+			Main restriction on function arguments: keyword arguments {\it must} follow positional arguments (if any). Can specify keyword arguments in any order. This frees you from having to remember order in which function arguments were specified. Need to remember only what their names are.
+			\begin{itemize}
+				\item {\sf Namespaces, Scope, \& Local Functions.} Functions can access variables created inside function as well as those outside function in higher (or even {\it global}) scopes. An alternative \& more descriptive name describing a variable scope in Python is a {\it namespace}. Any variables that are assigned within a function by default are assigned to local namespace. Local namespace is created when function is called \& is immediately populated by function's arguments. After function is finished, local namespace is destroyed (with some exceptions that are outside purview (phạm vi) of this chap). Consider following function:
+				\begin{verbatim}
+					def func():
+					    a = []
+					    for i in range(5):
+					        a.append(i)
+				\end{verbatim}
+				When {\tt func()} is called, empty list {\tt a} is created, 5 elements are appended, \& then {\tt a} is destroyed when function exists. Suppose instead had declared {\tt a} as follows:
+				\begin{verbatim}
+					In [184]: a = []
+					In [185]: def func():
+					   .....:     for i in range(5):
+					   .....:         a.append(i)
+				\end{verbatim}
+				Each call to {\tt func} will modify list {\tt a}:
+				\begin{verbatim}
+					In [186]: func()
+					In [187]: a
+					Out[187]: [0, 1, 2, 3, 4]
+					In [188]: func()
+					In [189]: a
+					Out[189]: [0, 1, 2, 3, 4, 0, 1, 2, 3, 4]
+				\end{verbatim}
+				Assigning variables outside of function's scope is possible, but those variables must be declared explicitly using either {\tt global} or {\tt nonlocal} keywords:
+				\begin{verbatim}
+					In [190]: a = None
+					In [191]: def bind_a_variable():
+					   .....:     global a
+					   .....:     a = []
+					   .....: bind_a_variable(a)
+					   .....:
+					In [192]: print(a)
+					[]
+				\end{verbatim}
+				{\tt nonlocal} allows a function to modify variables defined in a higher-level scope that is not global. Since its use is somewhat esoteric (bí truyền, bí mật) (I never use it in this book), refer to Python documentation to learn more about it.
+				\begin{remark}
+					Generally discourage use of {\tt global} keyword. Typically, global variables are used to store some kind of state in a system. If fiond yourself using a lot of them, it may indicate a need for object-oriented programming (using classes).
+				\end{remark}
+				\item {\sf Returning Multiple Values.} When 1st programmed in Python after having programmed in Java \& C++, 1 of favorite features was ability to return multiple values from a function with simple syntax. E.g.:
+				\begin{verbatim}
+					def f():
+					    a = 5
+					    b = 6
+					    c = 7
+					    return a, b, c
+					    
+					a, b, c = f()
+				\end{verbatim}
+				In data analysis \& other scientific applications, may find yourself doing this often. What's happening here: function is actually just returning {\it1} object, a tuple, which is then being unpacked into result variables. In preceding example, could have done this instead:
+				\begin{verbatim}
+					return_value = f()
+				\end{verbatim}
+				In this case, \verb|return_value| would be a 3-tuple with 3 returned variables. A potentially attractive alternative to returning multiple values like before might be to return a dictionary instead:
+				\begin{verbatim}
+					def f():
+					    a = 5
+					    b = 6
+					    c = 7
+					    return {"a" : a, "b" : b, "c" : c}
+				\end{verbatim}
+				This alternative technique can be useful depending on what you are trying to do.
+				\item {\sf Functions Are Objects.} Since Python functions are objects, many constructs can be easily expressed that are difficult to do in other languages. Suppose were doing some data cleaning \& needed to apply a bunch of transformations to following list of strings:
+				\begin{verbatim}
+					In [193]: states = ["Alabama ", "Georgia!", "Georgia", "georgia", "FlOrIda",
+					                    "south carolina##", "West virginia?"]
+				\end{verbatim}
+				Anyone who has ever worked with user-submitted survey data has seen messy results like these. Lots of things need to happen to make this list of strings uniform \& ready for analysis: stripping whitespace, removing punctuation symbols, \& standardizing proper capitalization. 1 way to do this: use built-in string methods along with {\tt re} standard library module for regular expressions:
+				\begin{verbatim}
+					import re
+					
+					def clean_strings(strings):
+					    result = []
+					    for value in strings:
+					        value = value.strip()
+					        value = re.sub("[!#?]", "", value)
+					        value = value.title()
+					        result.append(value)
+					    return result
+				\end{verbatim}
+				Result looks like this:
+				\begin{verbatim}
+					In [195]: clean_strings(states)
+					Out[195]:
+					['Alabama',
+					 'Georgia',
+					 'Georgia',
+					 'Georgia',
+					 'Florida',
+					 'South    Carolina',
+					 'West Virginia']
+				\end{verbatim}
+				An alternative approach that you may find useful: make a list of operations you want to apply to a particular set of strings:
+				\begin{verbatim}
+					def remove_punctuation(value):
+					    return re.sub("[!#?]", "", value)
+					    
+					clean_ops = [str.strip, remove_punctuation, str.title]
+					
+					def clean_strings(strings, ops):
+					    result = []
+					    for value in strings:
+					        for func in ops:
+					            value = func(value)
+					        result.append(value)
+					    return result
+				\end{verbatim}
+				Then have following:
+				\begin{verbatim}
+					In [197]: clean_strings(states, clean_ops)
+					Out[197]:
+					['Alabama',
+					 'Georgia',
+					 'Georgia',
+					 'Georgia',
+					 'Florida',
+					 'South   Carolina',
+					 'West Virginia']
+				\end{verbatim}
+				A more {\it functional} pattern like this enables you to easily modify how strings are transformed at a very high level. \verb|clean_strings| function is also now more reusable \& generic.
+				
+				Can use functions as arguments to other functions like built-in {\tt map} function, which applies a function to a sequence of some kind:
+				\begin{verbatim}
+					In [198]: for x in map(remove_punctuation, states):
+					   .....:     print(x)
+					Alabama
+					Georgia
+					Georgia
+					georgia
+					FlOrIda
+					south   carolina
+					West virginia
+				\end{verbatim}
+				{\tt map} can be used as an alternative to list comprehensions without any filter.
+				\item {\sf Anonymous (Lambda) Functions.} Python has support for {\it anonymous} or{\it lambda} functions, which are a way of writing functions consisting of a single statement, result of which is return of writing functions consisting of a single statement, result of which is return value. They are defined with {\tt lambda} keyword, which has no meaning other than ``we are declaring an anonymous function'':
+				\begin{verbatim}
+					In [199]: def short_function(x):
+					   .....:     return x * 2
+					In [200]: equiv_anon = lambda x: x * 2
+				\end{verbatim}
+				Usually refer to these as lambda functions in rest of book. They are especially convenient in data analysis because there are many cases where data transformation functions will take functions as arguments. Often less typing (\& clearer) to pass a lambda function as opposed to writing a full-out function declaration or even assigning lambda function to a local variable. E.g.:
+				\begin{verbatim}
+					In [201]: def apply_to_list(some_list, f):
+					   .....:     return [f(x) for x in some_list]
+					In [202]: ints = [4, 0, 1, 5, 6]
+					In [203]: apply_to_list(ints, lambda x: x * 2)
+					Out[203]: [8, 0, 2, 10, 12]
+				\end{verbatim}
+				Could also have written {\tt [x * 2 for x in ints]}, but here were able to succinctly pass a custom operator to \verb|apply_to_list| function.
+				
+				As another example, suppose wanted to sort a collection of strings by number of distinct letters in each string:
+				\begin{verbatim}
+					In [204]: strings = ["foo", "card", "bar", "aaaa", "abab"]
+				\end{verbatim}
+				Here could pass a lambda function to list's {\tt sort} method:
+				\begin{verbatim}
+					In [205]: strings.sort(key=lambda x: len(set(x)))
+					In [206]: strings
+					Out[206]: ['aaaa', 'foo', 'abab', 'bar', 'card']
+				\end{verbatim}
+				\item {\sf Generators.} Many objects in Python support iteration, e.g. over objects in a list or lines in a file. This is accomplished by means of {\it iterator protocol}, a generic way to make objects iterable. E.g., iterating over a dictionary yields dictionary keys:
+				\begin{verbatim}
+					In [207]: some_dict = {"a": 1, "b": 2, "c": 3}
+					In [208]: for key in some_dict:
+					   .....:     print(key)
+					a
+					b
+					c
+				\end{verbatim}
+				When write \verb|for key in some_dict|, Python interpreter 1st attempts to create an iterator out of \verb|some_dict|:
+				\begin{verbatim}
+					In [209]: dict_iterator = iter(some_dict)
+					In [210]: dict_iterator
+					Out[210]: <dict_keyiterator at 0x7fefe45465c0>
+				\end{verbatim}
+				An iterator is any object that will yield objects to Python interpreter when used in a context like a {\tt for loop}. Most methods expecting a list or list-like object will also accept any iterable object. This includes built-in methods e.g. {\tt min, max, sum} \& type constructors like {\tt list, tuple}:
+				\begin{verbatim}
+					In [211]: list(dict_iterator)
+					Out[211]: ['a', 'b', 'c']
+				\end{verbatim}
+				A {\it generator} is a convenient way, similar to writing a normal function, to construct a new iterable object. Whereas normal functions execute \& return a single result at a time, generators can return a sequence of multiple values by pausing \& resuming execution each time generator is used. To create a generator, use {\tt yield} keyword instead of {\tt return} in a function:
+				\begin{verbatim}
+					def squares(n=10):
+					    print(f"Generating squares from 1 to {n ** 2}")
+					    for i in range(1, n + 1):
+					        yield i ** 2
+				\end{verbatim}
+				When actually call generator, no code is immediately executed:
+				\begin{verbatim}
+					In [213]: gen = squares()
+					In [214]: gen
+					Out[214]: <generator object squares at 0x7fefe437d620>
+				\end{verbatim}
+				Not until you request elements from generator that it begins executing its code:
+				\begin{verbatim}
+					In [215]: for x in gen:
+					   .....:     print(x, end=" ")
+					Generating squares from 1 to 100
+					1 4 9 16 25 36 49 64 81 100
+				\end{verbatim}
+				
+				\begin{remark}
+					Since generators produce output 1 element at a time vs. an entire list all at once, it can help your program use less memory.
+				\end{remark}
+				\begin{itemize}
+					\item {\sf Generator expressions.} Another way to make a generator is by using a {\it generator expression}. This is a generator analogue to list, dictionary, \& set comprehensions. To create one, enclose what would otherwise be a list comprehension within parentheses instead of brackets:
+					\begin{verbatim}
+						In [216]: gen = (x ** 2 for x in range(100))
+						In [217]: gen
+						Out[217]: <generator object <genexpr> at 0x7fefe437d000>
+					\end{verbatim}
+					$\Leftrightarrow$ following verbose generator:
+					\begin{verbatim}
+						def _make_gen():
+						    for x in range(100):
+						        yield  ** 2
+						gen = _make_gen()
+					\end{verbatim}
+					Generator expressions can be used instead of list comprehensions as function arguments in some cases:
+					\begin{verbatim}
+						In [218]: sum(x ** 2 for x in range(100))
+						Out[218]: 328350
+						In [219]: dict((i, i ** 2) for i in range(5))
+						Out[219]: {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
+					\end{verbatim}
+					Depending on number of elements produced by comprehension expression, generator version can sometimes by meaningfully faster.
+					\item {\sf itertools module.} Standard library {\tt itertools} module has a collection of generators for many common data algorithms. E.g., {\tt groupby} takes any sequence \& a function, grouping consecutive elements in sequence by return value of function. E.g.:
+					\begin{verbatim}
+						In [220]: import itertools
+						In [221]: def first_letter(x):
+						   .....:     return x[0]
+						In [222]: names = ["Alan", "Adam", "Wes", "Will", "Albert", "Steven"]
+						In [223]: for letter, names in itertools.groupby(names, first_letter):
+						   .....:     print(letter, list(names)) # names is a generator
+						A ['Alan', 'Adam']
+						W ['Wes', 'Will']
+						A ['Albert']
+						S ['Steven']
+					\end{verbatim}
+					See {\sf Table 3.2: Some useful {\tt itertools} functions} for a list of a few other {\tt itertools} functions frequently found helpful. Check out \url{https://docs.python.org/3/library/itertools.html} for more on this useful built-in utility module. {\sf Function: Description}
+					\begin{enumerate}
+						\item {\tt chain(*iterables)}: Generates a sequence by chaining iterators together. Once elements from 1st iterator are exhausted, elements from next iterator are returned, \& so on.
+						\item {\tt combinations(iterable, k)}: Generates a sequence of all possible $k$-tuples of elements in iterable, ignoring order \& without replacement (see also companion function \verb|combinations_with_replacement|).
+						\item {\tt permutations(iterate, k)}: Generates a sequence of all possible $k$-tuples of elements in iterable, respecting order.
+						\item {\tt groupby(iterable[, keyfunc])}: Generates {\tt(key, sub-iterator)} for each unique key.
+						\item {\tt product(*iterables, repeat=1)}: Generates Cartesian product of input iterables as tuples, similar to a nested {\tt for} loop.
+					\end{enumerate}
+				\end{itemize}
+				\item {\sf Errors \& Exception Handling.} Handling Python errors or {\it exceptions} gracefully is an important part of building robust programs. In data analysis applications, many functions work only on certain kinds of input. E.g., Python's {\tt float} function is capable of casting a string to a floating-point number, but it fails with {\tt ValueError} on improper inputs:
+				\begin{verbatim}
+					In [224]: float("1.2345")
+					Out[224]: 1.2345
+					In [225]: float("something")
+					---------------------------------------------------------------------------
+					ValueError
+					Traceback (most recent call last)
+					<ipython-input-225-5ccfe07933f4> in <module>
+					----> 1 float("something")
+					ValueError: could not convert string to float: 'something'
+				\end{verbatim}
+				Suppose wanted a version of {\tt float} that fails gracefully, returning input argument. Can do this by writing a function that encloses call to {\tt float} in a {\tt try/except} block (execute this code in IPython):
+				\begin{verbatim}
+					def attempt_float(x):
+					    try:
+					        return float(x)
+					    except:
+					        return x
+				\end{verbatim}
+				Code in {\tt except} part of block will only be executed if {\tt float(x)} raises an exception:
+				\begin{verbatim}
+					In [227]: attempt_float("1.2345")
+					Out[227]: 1.2345
+					In [228]: attempt_float("something")
+					Out[228]: 'something'
+				\end{verbatim}
+				Might notice: {\tt float} can raise exceptions other than {\tt ValueError}:
+				\begin{verbatim}
+					In [229]: float((1, 2))
+					---------------------------------------------------------------------------
+					TypeError
+					Traceback (most recent call last)
+					<ipython-input-229-82f777b0e564> in <module>
+					----> 1 float((1, 2))
+					TypeError: float() argument must be a string or a real number, not 'tuple'
+				\end{verbatim}
+				Might want to suppress only {\tt ValueError}, since a {\tt TypeError} (input was not a string or numeric value) might indicate a legitimate bug in your program. To do that, write exception type after {\tt except}:
+				\begin{verbatim}
+					def attempt_float(x):
+					    try:
+					        return float(x)
+					    except ValueError:
+					        return x
+				\end{verbatim}
+				Have then:
+				\begin{verbatim}
+					In [231]: attempt_float((1, 2))
+					---------------------------------------------------------------------------
+					TypeError
+					Traceback (most recent call last)
+					<ipython-input-231-8b0026e9e6b7> in <module>
+					----> 1 attempt_float((1, 2))
+					<ipython-input-230-6209ddecd2b5> in attempt_float(x)
+					1 def attempt_float(x):
+					2
+					try:
+					----> 3
+					return float(x)
+					4
+					except ValueError:
+					5
+					return x
+					TypeError: float() argument must be a string or a real number, not 'tuple'
+				\end{verbatim}
+				Can catch multiple exception types by writing a tuple of exception types instead (parentheses are required):
+				\begin{verbatim}
+					def attempt_float(x):
+					    try:
+					        return float(x)
+					    except (TypeError, ValueError):
+					        return x
+				\end{verbatim}
+				In some cases, may not want to suppress an exception, but want some code to be executed regardless of whether or not code in {\tt try} block succeeds. To do this, use {\tt finally}:
+				\begin{verbatim}
+					f = open(path, mode="w")
+					
+					try:
+					    write_to_file(f)
+					finally:
+					    f.close()
+				\end{verbatim}
+				Here, file object {\tt f} will {\it always} get closed. Similarly, can have code that executes only if {\tt try:} block succeeds using {\tt else}:
+				\begin{verbatim}
+					f = open(path, mode="w")
+					
+					try:
+					    write_to_file(f)
+					except:
+					    print("Failed")
+					else:
+					    print("Succeeded")
+					finally:
+					    f.close()
+				\end{verbatim}
+				\begin{itemize}
+					\item {\sf Exceptions in IPython.} If an exception is raised while you are \verb|%run|-ing a script or executing any statement, IPython will by default print a full call stack trace (traceback) with a few lines of context around position at each point in stack:
+					\begin{verbatim}
+						In [10]: %run examples/ipython_bug.py
+						---------------------------------------------------------------------------
+						AssertionError
+						Traceback (most recent call last)
+						/home/wesm/code/pydata-book/examples/ipython_bug.py in <module>()
+						13
+						throws_an_exception()
+						14
+						---> 15 calling_things()
+						/home/wesm/code/pydata-book/examples/ipython_bug.py in calling_things()
+						11 def calling_things():
+						12
+						works_fine()
+						---> 13
+						throws_an_exception()
+						14
+						15 calling_things()
+						/home/wesm/code/pydata-book/examples/ipython_bug.py in throws_an_exception()
+						7
+						a = 5
+						8
+						b = 6
+						----> 9
+						assert(a + b == 10)
+						10
+						11 def calling_things():
+						AssertionError:
+					\end{verbatim}
+					Having additional context by itself is a big advantage over standard Python interpreter (which does not provide any additional context). Can control amount of context shown using \verb|%xmode| magic command, from {\tt Plain} (same as standard Python interpreter) to {\tt Verbose} (which inlines function argument values \& more). See in Appendix B, can step {\it into stack} (using \verb|% debug| or \verb|%pdb| (phở đầu bò{\tt/}buồi?) magics) after an error has occurred for interactive postmortem debugging.
+				\end{itemize}
+			\end{itemize}
 			\item {\sf3.3. Files \& OS.}
 			\item {\sf3.4. Conclusion.}
 		\end{itemize}

@@ -1145,7 +1145,7 @@
 				Changed default console output settings in {\tt NumPy} \& {\tt pandas} to improve readability \& brevity throughout book. E.g., may see more digits of precision printed in numeric data. To exactly match output shown in book, can execute following Python code before running code examples:
 				\begin{verbatim}
 					import numpy as np
-					import pandas as pd
+					import {\tt pandas} as pd
 					pd.options.display.max_columns = 20
 					pd.options.display.max_rows = 20
 					pd.options.display.max_colwidth = 80
@@ -1168,7 +1168,7 @@
 				\begin{verbatim}
 					import numpy as np
 					import matplotlib.pyplot as plt
-					import pandas as pd
+					import {\tt pandas} as pd
 					import seaborn as sns
 					import statsmodels as sm
 				\end{verbatim}
@@ -2164,7 +2164,7 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 			\end{itemize}
 			\item {\sf2.4. Conclusion.} This chap provided a brief introduction to some basic Python language concepts \& IPython \& Jupyter programming environments. In Chap. 3, discuss many built-in data types, functions, \& input-output utilities that will be used continuously throughout rest of book.
 		\end{itemize}
-		\item {\sf3. Built-In Data Structures, Functions, \& Files.} This chap discusses capabilities built into Python language that will be used ubiquitously throughout book. While add-on libraries like pandas \& NumPy add advanced computational functionality for larger datasets, they are designed to be used together with Python's built-in data manipulation tools.
+		\item {\sf3. Built-In Data Structures, Functions, \& Files.} This chap discusses capabilities built into Python language that will be used ubiquitously throughout book. While add-on libraries like {\tt pandas} \& NumPy add advanced computational functionality for larger datasets, they are designed to be used together with Python's built-in data manipulation tools.
 		
 		Start with PYthon's workhorse data structures: tuples, lists, dictionaries, \& sets. Discuss creating your own reusable Python functions. Look at mechanics of Python file objects \& interacting with local hard drive.
 		\begin{itemize}
@@ -3412,7 +3412,56 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 			\end{itemize}
 			\item {\sf3.4. Conclusion.} With some of basics of Python environment \& language now under your belt, time to move on \& learn about NumPy \& array-oriented computing in Python.
 		\end{itemize}
-		\item {\sf4. {\tt NumPy} Basics: Arrays \& Vectorized Computation.}
+		\item {\sf4. {\tt NumPy} Basics: Arrays \& Vectorized Computation.} NumPy, short for Numerical Python, is 1 of most important foundational packages for numerical computing in Python. Many computational packages providing scientific functionality use NumPy's array objects as 1 of standard interface {\it lingua francas} for data exchange. Much of knowledge about NumPy covered is transferable to {\tt pandas} as well.
+		
+		Some of things you'll find in Numpy:
+		\begin{itemize}
+			\item {\tt ndarray}, an efficient multidimensional array providing fast array-oriented arithmetic operations \& flexible {\it broadcasting} capabilities
+			\item Mathematical functions for fast operations on entire arrays of data without having to write loops
+			\item Tools for reading{\tt/}writing array data to disk \& working with memory-mapped files
+			\item Linear algebra, random number generation, \& Fourier transform capabilities
+			\item A C API for connecting NumPy with libraries written in C, C++, or FORTRAN
+		\end{itemize}
+		Because NumPy provides a comprehensive \& well-documented C API, straightforward to pass data to external libraries written in a low-level language, \& for external libraries to return data to Python as NumPy arrays. This feature has made Python a language of choice for wrapping legacy C, C++, or FORTRAN codebases \& giving them a dynamic \& accessible interface.
+		
+		While NumPy by itself does not provide modeling or scientific functionality, having an understanding of NumPy arrays \& array-oriented computing will help you use tools with array computing semantics, like {\tt pandas}, much more effectively. Since NumPy is a large topic, will cover many advanced NumPy features like broadcasting in more depth later (see Appendix A). Many of these advanced features are not needed to follow rest of book, but they may help you as you go deeper into scientific computing in Python.
+		
+		For most data analysis applications, main areas of functionality focused on are:
+		\begin{itemize}
+			\item Fast array-based operations for data munging \& cleaning, subsetting \& filtering, transformation, \& any other kind of computation
+			\item Common array algorithms like sorting, unique, \& set operations
+			\item Efficient descriptive statistics \& aggregating{\tt/}summarizing data
+			\item Data alignment \& relational data manipulations for merging \& joining heterogeneous datasets
+			\item Expressing conditional logic as array expressions instead of loops with {\tt if-elif-else} branches
+			\item Group-wise data manipulations (aggregation, transformation, \& function application)
+		\end{itemize}
+		While NumPy provides a computational foundation for general numerical data processing, many readers will want to use {\tt pandas} as basis for most kinds of statistics or analytics, especially on tabular data. Also, {\tt pandas} provides some more domain-specific functionality like time series manipulation, which is not present in NumPy.
+		\begin{remark}
+			Array-oriented computing in Python traces its roots back to 1995, when {\sc Jim Hugunin} created Numeric library. Over next 10 years, many scientific programming communities began doing array programming in Python, but library ecosystem had became fragmented in early 2000s. In 2005, {\sc Travis Oliphant} was able to forge NumPy project from then Numeric \& Numarray projects to bring community together around a single array computing framework.
+		\end{remark}
+		1 of reasons NumPy is so important for numerical computations in Python is because it is designed for efficiency on large arrays of data. There are a number of reasons for this:
+		\begin{itemize}
+			\item NumPy internally stores data in a contiguous block of memory, independent of other built-in Python objects. NumPy's library of algorithms written in C language can operate on this memory without any type checking or other overhead. NumPy arrays also use much less memory than built-in Python sequences.
+			
+			-- NumPy lưu trữ dữ liệu nội bộ trong một khối bộ nhớ liền kề, độc lập với các đối tượng Python tích hợp khác. Thư viện thuật toán của NumPy được viết bằng ngôn ngữ C có thể hoạt động trên bộ nhớ này mà không cần kiểm tra kiểu hoặc bất kỳ chi phí nào khác. Mảng NumPy cũng sử dụng ít bộ nhớ hơn nhiều so với chuỗi Python tích hợp.
+			\item NumPy operations perform complex computations on entire arrays without need for Python {\tt for} loops, which can be slow for large sequences. NumPy is faster than regular Python code because its C-based algorithms avoid overhead present with regular interpreted Python code.
+			
+			-- Các hoạt động NumPy thực hiện các phép tính phức tạp trên toàn bộ mảng mà không cần vòng lặp Python {\tt for}, có thể chậm đối với các chuỗi lớn. NumPy nhanh hơn mã Python thông thường vì các thuật toán dựa trên C của nó tránh được chi phí phát sinh trong mã Python được biên dịch thông thường.
+		\end{itemize}
+		To give an idea of performance difference, consider a NumPy array of 1 million integers, \& equivalent Python list:
+		\begin{verbatim}
+			In [7]: import numpy as np
+			In [8]: my_arr = np.arange(1_000_000)
+			In [9]: my_list = list(range(1_000_000))
+		\end{verbatim}
+		Multiply each sequence by 2:
+		\begin{verbatim}
+			In [10]: %timeit my_arr2 = my_arr * 2
+			715 us +- 13.2 us per loop (mean +- std. dev. of 7 runs, 1000 loops each)
+			In [11]: %timeit my_list2 = [x * 2 for x in my_list]
+			48.8 ms +- 298 us per loop (mean +- std. dev. of 7 runs, 10 loops each)
+		\end{verbatim}
+		NumPy-based algorithms are generally 10--100 times faster (or more) than their pure Python counterparts \& use significantly less memory.
 		\begin{itemize}
 			\item {\sf4.1. NumPy ndarray: A Multidimensional Array Object.}
 			\item {\sf4.2. Pseudorandom Number Generation.}
@@ -3425,7 +3474,7 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 		\end{itemize}
 		\item {\sf5. Getting Started with pandas.}
 		\begin{itemize}
-			\item {\sf5.1. Introduction to pandas Data Structures.}
+			\item {\sf5.1. Introduction to {\tt pandas} Data Structures.}
 			\item {\sf5.2. Essential Functionality.}
 			\item {\sf5.3. Summarizing \& Computing Descriptive Statistics.}
 			\item {\sf5.4. Conclusion.}
@@ -3457,7 +3506,7 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 		\item {\sf9. Plotting \& Visualization.}
 		\begin{itemize}
 			\item {\sf9.1. A Brief matplotlib API Primer.}
-			\item {\sf9.2. Plotting with pandas \& seaborn.}
+			\item {\sf9.2. Plotting with {\tt pandas} \& seaborn.}
 			\item {\sf9.3. Other Python Visualization Tools.}
 			\item {\sf9.4. Conclusion.}
 		\end{itemize}
@@ -3483,7 +3532,7 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 		\end{itemize}
 		\item {\sf12. Introduction to Modeling Libraries in Python.}
 		\begin{itemize}
-			\item {\sf12.1. Interfacing Between pandas \& Model Code.}
+			\item {\sf12.1. Interfacing Between {\tt pandas} \& Model Code.}
 			\item {\sf12.2. Creating Model Descriptions with Patsy.}
 			\item {\sf12.3. Introduction to statsmodels.}
 			\item {\sf12.4. Introduction to scikit-learn.}

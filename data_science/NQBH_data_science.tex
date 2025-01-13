@@ -4592,8 +4592,106 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 				\item {\tt solve}: Solve linear system $A{\bf x} = {\bf b}$ for ${\bf x}$, where $A$: a square matrix
 				\item {\sf lstsq}: Compute least-squares solution to $A{\bf x} = {\bf b}$
 			\end{itemize}
-			\item {\sf4.7. Example: Random Walks.}
-			\item {\sf4.8. Conclusion.}
+			\item {\sf4.7. Example: Random Walks.} Simulation of \href{https://en.wikipedia.org/wiki/Random_walk}{random walks} provides an illustrative application of utilizing array operations. 1st consider a simple random walk starting at 0 with steps of 1 \& $-1$ occurring with equal probability.
+			
+			A pure Python way to implement a single random walk with 1000 steps using built-in {\tt random} module:
+			\begin{verbatim}
+				#! blockstart
+				import random
+				position = 0
+				walk = [position]
+				nsteps = 1000
+				for _ in range(nsteps):
+				    step = 1 if random.randint(0, 1) else -1
+				    position += step
+				    walk.append(position)
+				#! blockend
+			\end{verbatim}
+			See {\sf Fig. 4.4: A simple random walk} for an example plot of 1st 100 values on 1 of these random walks:
+			\begin{verbatim}
+				In [255]: plt.plot(walk[:100])
+			\end{verbatim}
+			Might make observation: {\tt walk} is cumulative sum of random steps \& could be evaluated as an array expression. Thus, use {\tt numpy.random} module to draw 1000 coin flips at once, set these to $\pm1$, \& compute cumulative sum:
+			\begin{verbatim}
+				In [256]: nsteps = 1000
+				In [257]: rng = np.random.default_rng(seed=12345) # fresh random generator
+				In [258]: draws = rng.integers(0, 2, size=nsteps)
+				In [259]: steps = np.where(draws == 0, 1, -1)
+				In [260]: walk = steps.cumsum()
+			\end{verbatim}
+			From this, can begin to extract statistics like minimum \& maximum value along walk's trajectory:
+			\begin{verbatim}
+				In [261]: walk.min()
+				Out[261]: -8
+				In [262]: walk.max()
+				Out[262]: 50
+			\end{verbatim}
+			A more complicated statistic: {\it1st crossing time}, step at which random walk reaches a particular value. Here might want to know how long it took random walk to get at least 10 steps away from origin 0 in either direction. {\tt np.abs(walk) >= 10} gives us a Boolean array indicating where walk has reached or exceeded 10, but want index of {\it1st} 10 or $-10$. Turns out, can compute this using {\tt argmax}, which returns 1st index of maximum value in Boolean array ({\tt True} is maximum value):
+			\begin{verbatim}
+				In [263]: (np.abs(walk) >= 10).argmax()
+				Out[263]: 155
+			\end{verbatim}
+			Note: using {\tt argmax} here is not always efficient because it always makes a full scan of array. In this special case, once a {\tt True} is observed we know it to be maximum value. 
+			\begin{itemize}
+				\item {\sf Simulating Many Random Walks at Once.} If goal was to simulate many random walks, say 5000 of them, can generate all of random walks with minor modifications to preceding code. If passed a 2-tuple, {\tt numpy.random} functions will generate a 2D array of draws, \& can compute cumulative sum for each row to compute all 5000 random walks in 1 shot:
+				\begin{verbatim}
+				In [65]: nwalks = 5000
+				
+				In [66]: nsteps = 1000
+				
+				In [67]: draws = rng.integers(0, 2, size=(nwalks, nsteps)) # 0 or 1
+				
+				In [68]: steps = np.where(draws > 0, 1, -1)
+				
+				In [69]: walks = steps.cumsum(axis=1)
+				
+				In [70]: walks
+				Out[70]: 
+				array([[  1,   2,   1, ..., -34, -33, -34],
+				       [ -1,  -2,  -1, ...,   2,   3,   2],
+				       [  1,   0,   1, ..., -26, -27, -26],
+				       ...,
+				       [  1,   0,   1, ...,  24,  23,  24],
+				       [  1,   0,   1, ...,   4,   3,   2],
+				       [  1,   2,   3, ...,  12,  11,  10]])	
+				\end{verbatim}
+				Now, can compute maximum \& minimum values obtained over all of walks:
+				\begin{verbatim}
+					In [270]: walks.max()
+					Out[270]: 114
+					In [271]: walks.min()
+					Out[271]: -120
+				\end{verbatim}
+				Out of these walks, compute minimum crossing time to $\pm30$. This is strictly tricky because not all 5000 of them reach 30. Can check this using {\tt any} method:
+				\begin{verbatim}
+					In [272]: hits30 = (np.abs(walks) >= 30).any(axis=1)
+					In [273]: hits30
+					Out[273]: array([False, True,
+					True, ..., True, False, True])
+					In [274]: hits30.sum() # Number that hit 30 or -30
+					Out[274]: 3395
+				\end{verbatim}
+				Can use this Boolean array to select rows of {\tt walks} that actually cross absolute 30 level, \& call {\tt argmax} across axis 1 to get crossing times:
+				\begin{verbatim}
+					In [275]: crossing_times = (np.abs(walks[hits30]) >= 30).argmax(axis=1)
+					In [276]: crossing_times
+					Out[276]: array([201, 491, 283, ..., 219, 259, 541])
+				\end{verbatim}
+				Lastly, compute average minimum crossing time:
+				\begin{verbatim}
+					In [277]: crossing_times.mean()
+					Out[277]: 500.5699558173785
+				\end{verbatim}
+				Feel free to experiment with other distributions for steps other than equalized coin flips. Need only use a different random generator method, like \verb|standard_normal| to generate normally distributed steps with some mean \& standard deviation:
+				\begin{verbatim}
+					In [278]: draws = 0.25 * rng.standard_normal((nwalks, nsteps))
+				\end{verbatim}
+				
+				\begin{remark}
+					Keep in mind: this vectorized approach requires creating an array with {\tt nwalks * nsteps} elements, which may use a large amount of memory for large simulations. If memory is more constrained, then a different approach will be required.
+				\end{remark}
+			\end{itemize}
+			\item {\sf4.8. Conclusion.} While much of rest of book will focus on building data wrangling skills with pandas -- xây dựng kỹ năng xử lý dữ liệu với pandas, continue to work in a similar array-based style. In Appendix A, dig deeper into NumPy features to help you further develop your array computing skills.
 		\end{itemize}
 		\item {\sf5. Getting Started with pandas.}
 		\begin{itemize}

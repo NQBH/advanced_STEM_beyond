@@ -4142,7 +4142,92 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 				\item {\tt gamma}: Draw samples from a gamma distribution
 				\item {\tt uniform}: Draw samples from a uniform $[0,1)$ distribution
 			\end{itemize}
-			\item {\sf4.3. Universal Functions: Fast Element-Wise Array Functions.}
+			\item {\sf4.3. Universal Functions: Fast Element-Wise Array Functions.} A A universal function, or {\tt ufunc}, is a function that performs element-wise operations on data in ndarrays. Can think of them as fast vectorized wrappers for simple functions that take 1 or more scalar values \& produce 1 or more scalar results.
+			
+			Many ufuncs are simple element-wise transformations, like {\tt numpy.sqrt} or {\tt numpy.exp}:
+			\begin{verbatim}
+				In [150]: arr = np.arange(10)
+				In [151]: arr
+				Out[151]: array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+				In [152]: np.sqrt(arr)
+				In [152]: np.sqrt(arr)
+				Out[152]: 
+				array([0.        , 1.        , 1.41421356, 1.73205081, 2.        ,
+				2.23606798, 2.44948974, 2.64575131, 2.82842712, 3.        ])
+				
+				In [153]: np.exp(arr)
+				Out[153]: 
+				array([1.00000000e+00, 2.71828183e+00, 7.38905610e+00, 2.00855369e+01,
+				5.45981500e+01, 1.48413159e+02, 4.03428793e+02, 1.09663316e+03,
+				2.98095799e+03, 8.10308393e+03])
+			\end{verbatim}
+			These are referred to as {\it unary} ufuncs. Others, e.g. {\tt numpy.add} or {\tt numpy.maximum}, take 2 arrays (thus, {\it binary} ufuncs) \& return a single array as result:
+			\begin{verbatim}
+				In [154]: x = rng.standard_normal(8)
+				
+				In [155]: y = rng.standard_normal(8)
+				
+				In [156]: x
+				Out[156]: 
+				array([-1.3677927 ,  0.6488928 ,  0.36105811, -1.95286306,  2.34740965,
+				0.96849691, -0.75938718,  0.90219827])
+				
+				In [157]: y
+				Out[157]: 
+				array([-0.46695317, -0.06068952,  0.78884434, -1.25666813,  0.57585751,
+				1.39897899,  1.32229806, -0.29969852])
+				
+				In [158]: np.maximum(x, y)
+				Out[158]: 
+				array([-0.46695317,  0.6488928 ,  0.78884434, -1.25666813,  2.34740965,
+				1.39897899,  1.32229806,  0.90219827])
+			\end{verbatim}
+			In this example, {\tt numpy.maximum} computed element-wise maximum of elements in {\tt x, y}.
+			
+			While not common, a ufunc can return multiple arrays. {\tt numpy.modf} is 1 example: a vectorized version of built-in Python {\tt math.modf}, it returns fractional \& integral parts of a floating-point array:
+			\begin{verbatim}
+				In [35]: arr = rng.standard_normal(7) * 5
+				
+				In [36]: arr
+				Out[36]: 
+				array([ 4.51459671, -8.10791367, -0.7909463 ,  2.24741966, -6.71800536,
+				-0.40843795,  8.62369966])
+				
+				In [37]: remainder, whole_part = np.modf(arr)
+				
+				In [38]: remainder
+				Out[38]: 
+				array([ 0.51459671, -0.10791367, -0.7909463 ,  0.24741966, -0.71800536,
+				-0.40843795,  0.62369966])
+				
+				In [39]: whole_part
+				Out[39]: array([ 4., -8., -0.,  2., -6., -0.,  8.])
+			\end{verbatim}
+			Ufuncs accept an optional {\tt out} argument that allows them to assign their results into an existing array rather than create a new one:
+			\begin{verbatim}
+				In [40]: arr
+				Out[40]: 
+				array([ 4.51459671, -8.10791367, -0.7909463 ,  2.24741966, -6.71800536,
+				-0.40843795,  8.62369966])
+				
+				In [41]: out = np.zeros_like(arr)
+				
+				In [42]: np.add(arr, 1)
+				Out[42]: 
+				array([ 5.51459671, -7.10791367,  0.2090537 ,  3.24741966, -5.71800536,
+				0.59156205,  9.62369966])
+				
+				In [43]: np.add(arr, 1, out=out)
+				Out[43]: 
+				array([ 5.51459671, -7.10791367,  0.2090537 ,  3.24741966, -5.71800536,
+				0.59156205,  9.62369966])
+				
+				In [44]: out
+				Out[44]: 
+				array([ 5.51459671, -7.10791367,  0.2090537 ,  3.24741966, -5.71800536,
+				0.59156205,  9.62369966])
+			\end{verbatim}
+			See {\sf Table 4.4: Some unary universal functions} \& {\sf Table 4.5: Some binary universal functions} for a listing of some of NumPy's ufuncs. New ufuncs continue to be added to NumPy, so consulting online NumPy documentation is best way to get a comprehensive listing \& stay up to date.
 			\item {\sf4.4. Array-Oriented Programming with Arrays.}
 			\item {\sf4.5. File Input \& Output with Arrays.}
 			\item {\sf4.6. Linear Algebra.}

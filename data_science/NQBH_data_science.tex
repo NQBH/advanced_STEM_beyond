@@ -4517,7 +4517,81 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 			\begin{verbatim}
 				In [237]: np.savez_compressed("arrays_compressed.npz", a=arr, b=arr)
 			\end{verbatim}
-			\item {\sf4.6. Linear Algebra.}
+			\item {\sf4.6. Linear Algebra.} Linear algebra operations, like matrix multiplication, decompositions, determinants, \& other square matrix math, are an important part of many array libraries. Multiplying 2 2D arrays with {\tt*} is an element-wise product, while matrix multiplications require using a function. Thus, there is a function {\tt dot}, both an array method \& a function in {\tt numpy} namespace, for matrix multiplication:
+			\begin{verbatim}
+				In [241]: x = np.array([[1., 2., 3.], [4., 5., 6.]])
+				In [242]: y = np.array([[6., 23.], [-1, 7], [8, 9]])
+				In [243]: x
+				Out[243]:
+				array([[1., 2., 3.],
+				       [4., 5., 6.]])
+				In [244]: y
+				Out[244]:
+				array([[ 6., 23.],
+				       [-1., 7.],
+				       [ 8., 9.]])
+				In [245]: x.dot(y)
+				Out[245]:
+				array([[ 28., 64.],
+				       [ 67., 181.]])
+			\end{verbatim}
+			{\tt x.dot(y)} $\Leftrightarrow$ {\tt np.dot(x, y)}:
+			\begin{verbatim}
+				In [246]: np.dot(x, y)
+				Out[246]:
+				array([[ 28., 64.],
+				       [ 67., 181.]])
+			\end{verbatim}
+			A matrix product between a 2D array \& a suitably sized 1D array results in a 1D array:
+			\begin{verbatim}
+				In [247]: x @ np.ones(3)
+				Out[247]: array([ 6., 15.])
+			\end{verbatim}
+			{\tt numpy.linalg} has a standard set of matrix decompositions \& things like inverse \& determinant:
+			\begin{verbatim}
+				In [58]: from numpy.linalg import inv, qr
+				
+				In [59]: X = rng.standard_normal((5, 5))
+				
+				In [60]: mat = X.T @ X
+				
+				In [61]: inv(mat)
+				Out[61]: 
+				array([[10.58672281, -5.77153265, -5.93417247,  4.21878576, -0.98785662],
+				       [-5.77153265,  3.80844049,  3.598377  , -2.30090931,  0.38710317],
+				       [-5.93417247,  3.598377  ,  4.15734351, -2.40805923,  0.08345156],
+				       [ 4.21878576, -2.30090931, -2.40805923,  3.05312068, -0.07713403],
+				       [-0.98785662,  0.38710317,  0.08345156, -0.07713403,  0.55496624]])
+				
+				In [62]: mat @ inv(mat)
+				Out[62]: 
+				array([[ 1.00000000e+00, -7.58919943e-16, -1.86401885e-15,
+				-2.42458295e-15, -5.77969161e-17],
+				       [ 5.29870145e-16,  1.00000000e+00, -3.45485441e-16,
+				       3.05312695e-16,  1.43017029e-16],
+				       [-6.35265213e-15, -2.20265557e-16,  1.00000000e+00,
+				       -2.42543158e-15,  4.46456528e-16],
+				       [ 4.74051610e-16, -8.60778149e-16,  5.01637067e-16,
+				       1.00000000e+00, -1.77867729e-16],
+				       [-1.78072592e-15,  1.16156604e-15,  4.76405781e-16,
+				       -3.51857823e-16,  1.00000000e+00]])
+			\end{verbatim}
+			Expression {\tt X.T.dot(X)} computes dot product of {\tt X} with its transpose {\tt X.T}.
+			
+			See {\sf Table 4.8: Commonly used {\tt numpy.linalg} functions} for a list of some of most commonly used linear algebra functions.
+			\begin{itemize}
+				\item {\tt diag}: Return diagonal (or off-diagonal) elements of a square matrix as a 1D array, or convert a 1D array into a square matrix with 0s on off-diagonal
+				\item {\tt dot}: Matrix multiplication
+				\item {\tt trace}: Compute sum of diagonal elements
+				\item {\tt det}: Compute matrix determinant
+				\item {\tt eig}: Compute eigenvalues \& eigenvectors of a square matrix
+				\item {\tt inv}: Compute inverse of a square matrix
+				\item {\tt pinv}: Compute Moore--Penrose pseudoinverse of a matrix
+				\item {\tt qr}: Compute QR decomposition
+				\item {\tt svd}: Compute singular value decomposition (SVD)
+				\item {\tt solve}: Solve linear system $A{\bf x} = {\bf b}$ for ${\bf x}$, where $A$: a square matrix
+				\item {\sf lstsq}: Compute least-squares solution to $A{\bf x} = {\bf b}$
+			\end{itemize}
 			\item {\sf4.7. Example: Random Walks.}
 			\item {\sf4.8. Conclusion.}
 		\end{itemize}

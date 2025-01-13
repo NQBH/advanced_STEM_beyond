@@ -3500,10 +3500,604 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 			\begin{remark}
 				Whenever see ``array,'' ``NumPy array,'' or ``ndarray'' in book text, in most cases they all refer to {\tt ndarray} object.
 			\end{remark}
+			
 			\begin{itemize}
-				\item {\sf Creating {\tt ndarrays}.}
-				\item {\sf Data Types for {\tt ndarrays}.}
-				\item {\sf Arithmetic with NumPy Arrays.}
+				\item {\sf Creating {\tt ndarrays}.} Easiest way to create an array is to use {\tt array} function. This accepts any sequence-like object (including other arrays) \& produces a new NumPy array containing passed data. E.g., a list is a good candidate for conversion:
+				\begin{verbatim}
+					In [19]: data1 = [6, 7.5, 8, 0, 1]
+					In [20]: arr1 = np.array(data1)
+					In [21]: arr1
+					Out[21]: array([6. , 7.5, 8. , 0. , 1. ])
+				\end{verbatim}
+				Nested sequences, like a list of equal-length lists, will be converted into a multidimensional array:
+				\begin{verbatim}
+					In [22]: data2 = [[1, 2, 3, 4], [5, 6, 7, 8]]
+					In [23]: arr2 = np.array(data2)
+					In [24]: arr2
+					Out[24]:
+					array([[1, 2, 3, 4],
+					       [5, 6, 7, 8]])
+				\end{verbatim}
+				Since {\tt data2} was a list of lists, NumPy array {\tt arr2} has 2D, with shape inferred from data. Can confirm this by inspecting {\tt ndim} \& {\tt shape} attributes:
+				\begin{verbatim}
+					In [25]: arr2.ndim
+					Out[25]: 2
+					In [26]: arr2.shape
+					Out[26]: (2, 4)
+				\end{verbatim}
+				Unless explicitly specified, {\tt numpy.array} tries to infer a good data type for array that it creates. Data type is stored in a special {\tt dtype} metadata object; e.g., in previous 2 examples have:
+				\begin{verbatim}
+					In [27]: arr1.dtype
+					Out[27]: dtype('float64')
+					In [28]: arr2.dtype
+					Out[28]: dtype('int64')
+				\end{verbatim}
+				In addition to {\tt numpy.array}, there are a number of other functions for creating new arrays. As examples, {\tt numpy.zeros} \& {\tt numpy.ones} create arrays of 0s or 1s, resp., with a given length or shape. {\tt numpy.empty} creates an array without initializing its values to any particular value. To create a higher dimensional array with these methods, pass a tuple for shape:
+				\begin{verbatim}
+					In [29]: np.zeros(10)
+					Out[29]: array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
+					In [30]: np.zeros((3, 6))
+					Out[30]:
+					array([[0., 0., 0., 0., 0., 0.],
+					      [0., 0., 0., 0., 0., 0.],
+					     [0., 0., 0., 0., 0., 0.]])
+					In [31]: np.empty((2, 3, 2))
+					Out[31]:
+					array([[[0., 0.],
+					        [0., 0.],
+					        [0., 0.]],
+					       [[0., 0.],
+					        [0., 0.],
+					        [0., 0.]]])
+				\end{verbatim}
+				
+				\begin{remark}
+					Not safe to assume {\tt numpy.empty} will return an array of all 0s. This function returns uninitialized memory \& thus may contain nonzero ``garbage'' values. Should use this function only if intend to populate new array with data.
+				\end{remark}
+				{\tt numpy.arrange} is an array-valued version of built-in Python {\tt range} function:
+				\begin{verbatim}
+					In [32]: np.arange(15)
+					Out[32]: array([ 0, 1,
+					2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+				\end{verbatim}
+				See {\sf Table 4.1: Some important NumPy array creation functions} for a short list of standard array creation functions. Since NumPy is focused on numerical computing, data type, if not specified, will in many cases be {\tt float64} (floating point). {\tt Function: Description}
+				\begin{itemize}
+					\item {\tt array}: Convert input data (list, tuple, array, or other sequence type) to an ndarray either by inferring a data type or explicitly specifying a data type; copies input data by default
+					\item {\tt asarray}: Convert input to ndarray, but do not copy if input is already an ndarray
+					\item {\tt arrange}: Like built-in {\tt range} but returns an ndarray instead of a list
+					\item \verb|ones, ones_like|: Produce an array of all 1s with given shape \& data type; \verb|ones_like| takes another array \& produces a {\tt ones} array of same shape \& data type
+					\item \verb|zeros, zeros_like|: Like \verb|ones, ones_like| but producing arrays of 0s instead
+					\item \verb|empty, empty_like|: Create new arrays by allocating new memory, but do not populate with any values like {\tt ones, zeros}
+					\item \verb|full, full_like|: Produce an array of given shape \& data type with all values set to indicated ``fill value''; \verb|full_like| takes another array \& produces a filled array of same shape \& data type
+					\item {\tt eye, identity}: Create a square $N\times N$ identity matrix (1s on diagonal \& 0s elsewhere)
+				\end{itemize}
+				\item {\sf Data Types for {\tt ndarrays}.} {\it Data type} or {\tt dtype} is a special object containing information (or {\it metadata}, data about data) ndarray needs to interpret a chunk of memory as a particular type of data:
+				\begin{verbatim}
+					In [33]: arr1 = np.array([1, 2, 3], dtype=np.float64)
+					In [34]: arr2 = np.array([1, 2, 3], dtype=np.int32)
+					In [35]: arr1.dtype
+					Out[35]: dtype('float64')
+					In [36]: arr2.dtype
+					Out[36]: dtype('int32')
+				\end{verbatim}
+				Data types are a source of NumPy's flexibility for interacting with data coming from other systems. In most cases they provide a mapping directly onto an underlying disk or memory representation, which makes it possible to read \& write binary streams of data to disk \&  to connect to code written in a low-level language like C or FORTRAN. Numerical data types are named same way: a type name, like {\tt float} or {\tt int}, followed by a number indicating number of bits per element. A standard double-precision floating-point value (what's used under hood in Python's {\tt float} object) takes up 8 bytes or 64 bits. Thus, this type is known in NumPy as {\tt float64}. See {\sf Table 4.2: NumPy data types} for a full listing of NumPy's supported data types.
+				\begin{remark}
+					Don't worry about memorizing NumPy data types, especially if you're a new user. Often only necessary to care about general \emph{kind} of data you're dealing with, whether floating point, complex, integer, Boolean, string, or general Python object. When need more control over how data is stored in memory \& on disk, especially large datasets, good to know what you have control over storage type.
+				\end{remark}
+				
+				\begin{remark}
+					There are both \emph{signed, unsigned} integer types, \& many readers will not be familiar with this terminology. A \emph{signed} integer can represent both positive \& negative integers, while an \emph{unsigned} integer can only represent nonzero integers. E.g., {\tt int8} (signed 8-bit integer) can represent integers from $-128$ to $127$ (inclusive), while {\tt uint8} (unsigned 8- bit integer) can represent  0 through 255.
+				\end{remark}
+				Can explicitly convert or {\it cast} an array from 1 data type to another using ndarray's {\tt astype} method:
+				\begin{verbatim}
+					In [37]: arr = np.array([1, 2, 3, 4, 5])
+					In [38]: arr.dtype
+					Out[38]: dtype('int64')
+					In [39]: float_arr = arr.astype(np.float64)
+					In [40]: float_arr
+					Out[40]: array([1., 2., 3., 4., 5.])
+					In [41]: float_arr.dtype
+					Out[41]: dtype('float64')
+				\end{verbatim}
+				In this example, integers were cast to floating point. If cast some floating-point numbers to be of integer data type, decimal part will be truncated:
+				\begin{verbatim}
+					In [42]: arr = np.array([3.7, -1.2, -2.6, 0.5, 12.9, 10.1])
+					In [43]: arr
+					Out[43]: array([ 3.7, -1.2, -2.6,
+					0.5, 12.9, 10.1])
+					In [44]: arr.astype(np.int32)
+					Out[44]: array([ 3, -1, -2, 0, 12, 10], dtype=int32)
+				\end{verbatim}
+				If have an array of strings representing numbers, can use {\tt astype} to convert them to numeric form:
+				\begin{verbatim}
+					In [45]: numeric_strings = np.array(["1.25", "-9.6", "42"], dtype=np.string_)
+					In [46]: numeric_strings.astype(float)
+					Out[46]: array([ 1.25, -9.6 , 42. ])
+				\end{verbatim}
+				
+				\begin{remark}
+					Be cautious when using \verb|numpy.string_| type, as string data in NumPy is fixed size \& may truncate input without warning. pandas has more intuitive out-of-box behavior or non-numeric data.
+				\end{remark}
+				If casting were to fail for some reason (like a string that cannot be converted to {\tt float64}), a {\tt ValueError} will be raised. Before, was a bit lazy \& wrote {\tt float} instead of {\tt np.float64}; NumPy aliases Python types to its own equivalent data types.
+				
+				Can also use another array's {\tt dtype} attribute:
+				\begin{verbatim}
+					In [47]: int_array = np.arange(10)
+					In [48]: calibers = np.array([.22, .270, .357, .380, .44, .50], dtype=np.float64)
+					In [49]: int_array.astype(calibers.dtype)
+					Out[49]: array([0., 1., 2., 3., 4., 5., 6., 7., 8., 9.])
+				\end{verbatim}
+				There are shorthand type code strings you can also use to refer to a {\tt dtype}:
+				\begin{verbatim}
+					In [50]: zeros_uint32 = np.zeros(8, dtype="u4")
+					In [51]: zeros_uint32
+					Out[51]: array([0, 0, 0, 0, 0, 0, 0, 0], dtype=uint32)
+				\end{verbatim}
+				
+				\begin{remark}
+					Call {\tt astype} \emph{always} creates a new array (a copy of data), even if new data type is same as old data type.
+				\end{remark}
+				\item {\sf Arithmetic with NumPy Arrays.} Arrays are important because they enable you to express batch operations on data without writing any {\tt for} loops. NumPy users call this {\it vectorization}. Any arithmetic operations between equal-size arrays apply operation element-wise:
+				\begin{verbatim}
+					In [52]: arr = np.array([[1., 2., 3.], [4., 5., 6.]])
+					In [53]: arr
+					Out[53]:
+					array([[1., 2., 3.],
+					       [4., 5., 6.]])
+					In [54]: arr * arr
+					Out[54]:
+					array([[ 1., 4., 9.],
+					       [16., 25., 36.]])
+					In [55]: arr - arr
+					Out[55]:
+					array([[0., 0., 0.],
+					       [0., 0., 0.]])
+				\end{verbatim}
+				Arithmetic operations with scalars propagate scalar argument to each element in array:
+				\begin{verbatim}
+					In [56]: 1 / arr
+					Out[56]:
+					array([[1.   , 0.5, 0.3333],
+					       [0.25 , 0.2, 0.1667]])
+					
+					
+					In [57]: arr ** 2
+					Out[57]:
+					array([[ 1., 4., 9.],
+					      [16., 25., 36.]])
+				\end{verbatim}
+				Comparisons between arrays of same size yield Boolean arrays:
+				\begin{verbatim}
+					In [58]: arr2 = np.array([[0., 4., 1.], [7., 2., 12.]])
+					In [59]: arr2
+					Out[59]:
+					array([[ 0., 4., 1.],
+					       [ 7., 2., 12.]])
+					In [60]: arr2 > arr
+					Out[60]:
+					array([[False, True, False],
+					       [ True, False, True]])
+				\end{verbatim}
+				Evaluating operations between differently sized arrays is called {\it broadcasting} (see Appendix A). Having a deep understanding of broadcasting is not necessary for most of this book.
+				\item {\sf Basic Indexing \& Slicing.} NumPy array indexing is a deep topic, as there are many ways you may want to select a subset of your data or individual elements. 1D arrays are simple; on surface they act similarly to Python lists:
+				\begin{verbatim}
+					In [61]: arr = np.arange(10)
+					In [62]: arr
+					Out[62]: array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+					In [63]: arr[5]
+					Out[63]: 5
+					In [64]: arr[5:8]
+					Out[64]: array([5, 6, 7])
+					In [65]: arr[5:8] = 12
+					In [66]: arr
+					Out[66]: array([ 0, 1, 2, 3, 4, 12, 12, 12, 8, 9])	
+				\end{verbatim}
+				If assign a scalar value to a slice, as in {\tt arr[5:8] = 12}, value is propagated (or {\it broadcast} henceforth) to entire selection.
+				\begin{remark}
+					An important 1st distinction from Python's built-in lists: array slices are views on original array. I.e., data is not copied, \& any modifications to view will be reflected in source array.
+				\end{remark}
+				E.g., 1st create a slice of {\tt arr}:
+				\begin{verbatim}
+					In [67]: arr_slice = arr[5:8]
+					In [68]: arr_slice
+					Out[68]: array([12, 12, 12])
+				\end{verbatim}
+				Now, when change values in \verb|arr_slice|, mutations are reflected in original array {\tt arr}:
+				\begin{verbatim}
+					In [69]: arr_slice[1] = 12345
+					In [70]: arr
+					Out[70]:
+					array([ 0, 1, 2, 3, 4, 12, 12345, 12, 8, 9])
+				\end{verbatim}
+				``Bare'' slice {\tt[:]} will assign to all values in an array:
+				\begin{verbatim}
+					In [71]: arr_slice[:] = 64
+					In [72]: arr
+					Out[72]: array([ 0, 1, 2, 3, 4, 64, 64, 64, 8, 9])
+				\end{verbatim}
+				If new to NumPy, might be surprised by this, especially if have used other array programming languages that copy data more eagerly. As NumPy has been designed to be able to work with very large arrays, could imagine performance \& memory problems if NumPy insisted on always copying data.
+				\begin{remark}
+					If want to copy of a slice of an ndarray instead of a view, will need to explicitly copy array -- e.g., {\tt arr[5:8].copy()}. pandas works this way, too.
+				\end{remark}
+				With higher dimensional arrays, have many more options. In a 2D array, elements at each index are no longer scalars but rather 1D arrays:
+				\begin{verbatim}
+					In [73]: arr2d = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+					In [74]: arr2d[2]
+					Out[74]: array([7, 8, 9])
+				\end{verbatim}
+				Thus, individual elements can be accessed recursively. But that is a bit too much work, so can pass a comma-separated list of indices to select individual elements. So these are equivalent:
+				\begin{verbatim}
+					In [75]: arr2d[0][2]
+					Out[75]: 3
+					In [76]: arr2d[0, 2]
+					Out[76]: 3
+				\end{verbatim}
+				See {\sf Fig. 4.1: Indexing elements in a NumPy array} for an illustration of indexing on a 2D array. Find it helpful to think of axis 0 as ``rows'' of array \& axis 1 as ``columns.''
+				
+				In multidimensional arrays, if omit later indices, returned object will be a lower dimensional ndarray consisting of all data along higher dimensions. So in $2\times2\times3$ array {\tt arr3d}:
+				\begin{verbatim}
+					In [77]: arr3d = np.array([[[1, 2, 3], [4, 5, 6]], [[7, 8, 9], [10, 11, 12]]])
+					In [78]: arr3d
+					Out[78]:
+					array([[[ 1, 2, 3],
+					        [ 4, 5, 6]],
+					       [[ 7, 8, 9],
+					        [10, 11, 12]]])
+				\end{verbatim}
+				{\tt arr3d[0]} is a $2\times3$ array:
+				\begin{verbatim}
+					In [79]: arr3d[0]
+					Out[79]:
+					array([[1, 2, 3],
+					       [4, 5, 6]])
+				\end{verbatim}
+				Both scalar values \& arrays can be assigned to {\tt arr3d[0]}:
+				\begin{verbatim}
+					In [80]: old_values = arr3d[0].copy()
+					In [81]: arr3d[0] = 42
+					In [82]: arr3d
+					Out[82]:
+					array([[[42, 42, 42],
+					        [42, 42, 42]],
+					       [[ 7, 8, 9],
+					        [10, 11, 12]]])
+					In [83]: arr3d[0] = old_values
+					In [84]: arr3d
+					Out[84]:
+					array([[[ 1, 2, 3],
+					        [ 4, 5, 6]],
+					       [[ 7, 8, 9],
+					        [10, 11, 12]]])
+				\end{verbatim}
+				Similarly, {\tt arr3d[1, 0]} gives all of values whose indices start with {\tt(1, 0)}, forming a 1D array:
+				\begin{verbatim}
+					In [85]: arr3d[1, 0]
+					Out[85]: array([7, 8, 9])
+				\end{verbatim}
+				This expression is same as though had indexed in 2 steps:
+				\begin{verbatim}
+					In [86]: x = arr3d[1]
+					In [87]: x
+					Out[87]:
+					array([[ 7, 8, 9],
+					       [10, 11, 12]])
+					In [88]: x[0]
+					Out[88]: array([7, 8, 9])
+				\end{verbatim}
+				Note: in all of these cases where subsections of array have been selected, returned arrays are views.
+				\begin{remark}
+					This multidimensional indexing syntax for NumPy arrays will not work with regular Python objects, e.g. lists of lists.
+				\end{remark}
+				\begin{itemize}
+					\item {\sf Indexing with slices.} Like 1D objects e.g. Python lists, ndarrays can be sliced with familiar syntax:
+					\begin{verbatim}
+						In [89]: arr
+						Out[89]: array([ 0, 1, 2, 3, 4, 64, 64, 8, 9])
+						In [90]: arr[1:6]
+						Out[90]: array([ 1, 2, 3, 4, 64])
+					\end{verbatim}
+					Consider 2D array from before, {\tt arr2d}. Slicing this array is a bit different:
+					\begin{verbatim}
+						In [91]: arr2d
+						Out[91]:
+						array([[1, 2, 3],
+						      [4, 5, 6],
+						      [7, 8, 9]])
+						In [92]: arr2d[:2]
+						Out[92]:
+						array([[1, 2, 3],
+						       [4, 5, 6]])
+					\end{verbatim}
+					It has sliced along axis 0, 1st axis. A slice, therefore, selects a range of elements along an axis. It can be helpful to read expression {\tt arr2d[:2]} as ``select 1st 2 rows of {\tt arr2d}.''
+					
+					Can pass multiple slices just like you can pass multiple indexes:
+					\begin{verbatim}
+						In [93]: arr2d[:2, 1:]
+						Out[93]:
+						array([[2, 3],
+						       [5, 6]])
+					\end{verbatim}
+					When slicing like this, always obtain array reviews of same number of dimensions. By mixing integer indexes \& slices, get lower dimensional slices.
+				
+					E.g., can select 2nd row but only 1st 2 columns, like so:
+					\begin{verbatim}
+						In [94]: lower_dim_slice = arr2d[1, :2]
+					\end{verbatim}
+					Here, while {\tt arr2d} is 2D, \verb|lower_dim_slice| is 1D, \& its shape is a tuple with 1 axis size:
+					\begin{verbatim}
+						In [95]: lower_dim_slice.shape
+						Out[95]: (2,)
+					\end{verbatim}
+					Similarly, can select 3rd column but only 1st 2 rows, like so:
+					\begin{verbatim}
+						In [96]: arr2d[:2, 2]
+						Out[96]: array([3, 6])
+					\end{verbatim}
+					See {\sf Fig. 4.2: 2D array slicing} for an illustration. note: a colon by itself means to take entire axis, so can slice only higher dimensional axes by doing:
+					\begin{verbatim}
+						In [97]: arr2d[:, :1]
+						Out[97]:
+						array([[1],
+						       [4],
+						       [7]])
+					\end{verbatim}
+					Of course, assigning to a slice expression assigns to whole selection:
+					\begin{verbatim}
+						In [98]: arr2d[:2, 1:] = 0
+						In [99]: arr2d
+						Out[99]:
+						array([[1, 0, 0],
+						       [4, 0, 0],
+						       [7, 8, 9]])
+					\end{verbatim}
+				\end{itemize}
+				\item {\sf Boolean Indexing.} Consider an example where have some data in an array \& an array of names with duplicates:
+				\begin{verbatim}
+					In [100]: names = np.array(["Bob", "Joe", "Will", "Bob", "Will", "Joe", "Joe"])
+					In [101]: data = np.array([[4, 7], [0, 2], [-5, 6], [0, 0], [1, 2],
+					   .....:                   [-12, -4], [3, 4]])
+					In [102]: names
+					Out[102]: array(['Bob', 'Joe', 'Will', 'Bob', 'Will', 'Joe', 'Joe'], dtype='<U4')
+					In [103]: data
+					Out[103]:
+					array([[ 4, 7],
+						   [ 0, 2],
+						   [-5, 6],
+						   [ 0, 0],
+						   [ 1, 2],
+						   [-12, -4],
+						   [ 3, 4]]),
+				\end{verbatim}
+				Suppose each name corresponds to a row in {\tt data} array \& wanted to select all rows with corresponding name {\tt"Bob"}. Like arithmetic operations, comparisons (e.g. {\tt==}) with arrays are also vectorized. Thus, comparing {\tt names} with string {\tt"Bob"} yields a Boolean array:
+				\begin{verbatim}
+					In [104]: names == "Bob"
+					Out[104]: array([ True, False, False, True, False, False, False])
+				\end{verbatim}
+				This Boolean array can be passed when indexing array:
+				\begin{verbatim}
+					In [105]: data[names == "Bob"]
+					Out[105]:
+					array([[4, 7],
+					      [0, 0]])
+				\end{verbatim}
+				Boolean array must be of same length as array axis it's indexing. Can even mix \& match Boolean arrays with slices or integers (or sequences of integers; more on this later).
+				
+				In these examples, select from rows where {\tt names == "Bob"} \& index columns, too:
+				\begin{verbatim}
+					In [106]: data[names == "Bob", 1:]
+					Out[106]:
+					array([[7],
+					       [0]])
+					In [107]: data[names == "Bob", 1]
+					Out[107]: array([7, 0])
+				\end{verbatim}
+				To select everything but {\tt"Bob"} can either use {\tt!=} or negate condition using \verb|~|:
+				\begin{verbatim}
+					In [108]: names != "Bob"
+					Out[108]: array([False, True, True, False, True, True, True])
+					In [109]: ~(names == "Bob")
+					Out[109]: array([False, True,
+					True, False, True, True, True])
+					In [110]: data[~(names == "Bob")]
+					Out[110]:
+					array([[ 0, 2],
+					       [-5, 6],
+					       [ 1, 2],
+					       [-12,-4],
+					       [ 3, 4]])
+				\end{verbatim}
+				\verb|~| operator can be useful when want to invert a Boolean array referenced by a variable:
+				\begin{verbatim}
+					In [111]: cond = names == "Bob"
+					In [112]: data[~cond]
+					Out[112]:
+					array([[ 0, 2],
+					[-5, 6],
+					[ 1, 2],
+					[-12,-4],
+					[ 3, 4]])
+				\end{verbatim}
+				To select 2 of 3 names to combine multiple Boolean conditions, use Boolean arithmetic operators like {\tt\&} (and) \& {\tt|} (or):
+				\begin{verbatim}
+					In [113]: mask = (names == "Bob") | (names == "Will")
+					In [114]: mask
+					Out[114]: array([ True, False,
+					True, True, True, False, False])
+					In [115]: data[mask]
+					Out[115]:
+					array([[ 4, 7],
+					       [-5, 6],
+					       [ 0, 0],
+					       [ 1, 2]])
+				\end{verbatim}
+				Selecting data from an array by Boolean indexing \& assigning result to a new variable {\it always} create a copy of data, even if returned array is unchanged.
+				\begin{remark}
+					Python keywords {\tt and, or} do not work with Boolean arrays. Use {\tt\&} (and) \& {\tt|} (or) instead.
+				\end{remark}
+				Setting values with Boolean arrays works by substituting value or values on RHS into locations where Boolean array's  values are {\tt True}. To set all of negative value in {\tt data} to 0, need only do:
+				\begin{verbatim}
+					In [116]: data[data < 0] = 0
+					In [117]: data
+					Out[117]:
+					array([[4, 7],
+					       [0, 2],
+					       [0, 6],
+					       [0, 0],
+					       [1, 2],
+					       [0, 0],
+					       [3, 4]])
+				\end{verbatim}
+				Can also set whole rows or columns using a 1D Boolean array:
+				\begin{verbatim}
+					In [118]: data[names != "Joe"] = 7
+					In [119]: data
+					Out[119]:
+					array([[7, 7],
+					       [0, 2],
+					       [7, 7],
+					       [7, 7],
+					       [7, 7],
+					       [0, 0],
+					       [3, 4]])
+				\end{verbatim}
+				These types of operations on 2D data are convenient to do with pandas.
+				\item {\sf Fancy Indexing.} {\it Fancy indexing} is a term adopted by NumPy to describe indexing using integer arrays. Suppose had an $8\times4$ array:
+				\begin{verbatim}
+					In [120]: arr = np.zeros((8, 4))
+					In [121]: for i in range(8):
+					   .....:
+					arr[i] = i
+					In [122]: arr
+					Out[122]:
+					array([[0., 0., 0., 0.],
+					       [1., 1., 1., 1.],
+					       [2., 2., 2., 2.],
+					       [3., 3., 3., 3.],
+					       [4., 4., 4., 4.],
+					       [5., 5., 5., 5.],
+					       [6., 6., 6., 6.],
+					       [7., 7., 7., 7.]])
+				\end{verbatim}
+				To select a subset of rows in a particular order, can simply pass a list or ndarray of integers specifying desired order:
+				\begin{verbatim}
+					In [123]: arr[[4, 3, 0, 6]]
+					Out[123]:
+					array([[4., 4., 4., 4.],
+					       [3., 3., 3., 3.],
+					       [0., 0., 0., 0.],
+					       [6., 6., 6., 6.]])
+				\end{verbatim}
+				Hopefully this code did what you expected! Using negative indices select rows from end:
+				\begin{verbatim}
+					In [124]: arr[[-3, -5, -7]]
+					Out[124]:
+					array([[5., 5., 5., 5.],
+					       [3., 3., 3., 3.],
+					       [1., 1., 1., 1.]])
+				\end{verbatim}
+				Passing multiple index arrays does something slightly different; it selects a 1D array of elements corresponding to each tuple of indices:
+				\begin{verbatim}
+					In [125]: arr = np.arange(32).reshape((8, 4))
+					In [126]: arr
+					Out[126]:
+					array([[ 0, 1, 2, 3],
+					       [ 4, 5, 6, 7],
+					       [ 8, 9, 10, 11],
+					       [12, 13, 14, 15],
+					       [16, 17, 18, 19],
+					       [20, 21, 22, 23],
+					       [24, 25, 26, 27],
+					       [28, 29, 30, 31]])
+					In [127]: arr[[1, 5, 7, 2], [0, 3, 1, 2]]
+					Out[127]: array([ 4, 23, 29, 10])
+				\end{verbatim}
+				To learn more about {\tt reshape} method, have a look at Appendix A.
+				
+				Here elements {\tt(1, 0), (5, 3), (7, 1), (2, 2)} were selected. Result of fancy indexing with as many integer arrays as there are axes is always 1D.
+				
+				Behavior of fancy indexing in this case is a bit different from what some users might have expected, which is rectangular region formed by selecting a subset of matrix's rows \& columns. 1 way to get that:
+				\begin{verbatim}
+					In [128]: arr[[1, 5, 7, 2]][:, [0, 3, 1, 2]]
+					Out[128]:
+					array([[ 4, 7, 5, 6],
+					       [20, 23, 21, 22],
+					       [28, 31, 29, 30],
+					       [ 8, 11, 9, 10]])
+				\end{verbatim}
+				Keep in mind: fancy indexing, unlike slicing, always copies data into a new array when assigning result to a new variable. If assign values with fancy indexing, indexed values will be modified:
+				\begin{verbatim}
+					In [129]: arr[[1, 5, 7, 2], [0, 3, 1, 2]]
+					Out[129]: array([ 4, 23, 29, 10])
+					In [130]: arr[[1, 5, 7, 2], [0, 3, 1, 2]] = 0
+					In [131]: arr
+					Out[131]:
+					array([[ 0, 1, 2, 3],
+					       [ 0, 5, 6, 7],
+					       [ 8, 9, 0, 11],
+					       [12, 13, 14, 15],
+					       [16, 17, 18, 19],
+					       [20, 21, 22, 0],
+					       [24, 25, 26, 27],
+					       [28, 0, 30, 31]])
+				\end{verbatim}
+				\item {\sf Transposing Arrays \& Swapping Axes.} Transposing is a special form of reshaping that similarly returns a view on underlying data without copying anything. Arrays have {\tt transpose} method \& special {\tt T} attribute:
+				\begin{verbatim}
+					In [132]: arr = np.arange(15).reshape((3, 5))
+					In [133]: arr
+					Out[133]:
+					array([[ 0, 1, 2, 3, 4],
+					       [ 5, 6, 7, 8, 9],
+					[10, 11, 12, 13, 14]])
+					In [134]: arr.T
+					Out[134]:
+					array([[ 0, 5, 10],
+					       [ 1, 6, 11],
+					       [ 2, 7, 12],
+					       [ 3, 8, 13],
+					       [ 4, 9, 14]])
+				\end{verbatim}
+				When doing matrix computations, may do this very often -- e.g., when computing inner matrix product using {\tt numpy.dot}:
+				\begin{verbatim}
+					In [135]: arr = np.array([[0, 1, 0], [1, 2, -2], [6, 3, 2], [-1, 0, -1], [1, 0, 1]])
+					
+					In [16]: arr
+					Out[16]: 
+					array([[ 0,  1,  0],
+					       [ 1,  2, -2],
+					       [ 6,  3,  2],
+					       [-1,  0, -1],
+					       [ 1,  0,  1]])
+					
+					In [17]: np.dot(arr.T, arr)
+					Out[17]: 
+					array([[39, 20, 12],
+					       [20, 14,  2],
+					       [12,  2, 10]])
+				\end{verbatim}
+				\verb|@infix| operator is another way to do matrix multiplication:
+				\begin{verbatim}
+					In [138]: arr.T @ arr
+					Out[138]:
+					array([[39, 20, 12],
+					       [20, 14, 2],
+					       [12, 2, 10]])
+				\end{verbatim}
+				Simple transposing with {\tt.T} is a special case of swapping axes. ndarray has method {\tt swapaxes}, which takes a pair of axis numbers \& switches indicated axes to rearrange data:
+				\begin{verbatim}
+					In [139]: arr
+					Out[139]:
+					array([[ 0, 1, 0],
+					       [ 1, 2, -2],
+					       [ 6, 3, 2],
+					       [-1, 0, -1],
+					       [ 1, 0, 1]])
+					In [140]: arr.swapaxes(0, 1)
+					Out[140]:
+					array([[ 0, 1, 6, -1, 1],
+					       [ 1, 2, 3, 0, 0],
+					       [ 0, -2, 2, -1, 1]])
+				\end{verbatim}
+				{\tt swapaxes} similarly returns a view on data without making a copy.
 			\end{itemize}
 			\item {\sf4.2. Pseudorandom Number Generation.}
 			\item {\sf4.3. Universal Functions: Fast Element-Wise Array Functions.}

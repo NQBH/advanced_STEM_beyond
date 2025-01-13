@@ -4228,7 +4228,269 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 				0.59156205,  9.62369966])
 			\end{verbatim}
 			See {\sf Table 4.4: Some unary universal functions} \& {\sf Table 4.5: Some binary universal functions} for a listing of some of NumPy's ufuncs. New ufuncs continue to be added to NumPy, so consulting online NumPy documentation is best way to get a comprehensive listing \& stay up to date.
-			\item {\sf4.4. Array-Oriented Programming with Arrays.}
+			\item {\sf4.4. Array-Oriented Programming with Arrays.} Using NumPy arrays enables you to express many kinds of data processing tasks as concise array expressions that might otherwise require writing loops. This practice of replacing explicit loops with array expressions is referred to by some people as {\it vectorization}. In general, vectorized array operations will usually be significantly faster than their pure Python equivalents, with biggest impact in any kind of numerical computations. Later, in Appendix A, explain {\it broadcasting}, a powerful method for vectorizing computations.
+			
+			E.g., suppose wished to evaluate function \verb|sqrt(x^2 + y^2)| across a regular grid of values. {\tt numpy.meshgrid} function takes 2 1D arrays \& produces 2 2D matrices corresponding to all pairs of {\tt(x, y)} in 2 arrays:
+			\begin{verbatim}
+				In [169]: points = np.arange(-5, 5, 0.01) # 100 equally spaced points
+				In [170]: xs, ys = np.meshgrid(points, points)
+				In [171]: ys
+				Out[171]:
+				array([[-5. , -5. , -5. , ..., -5. , -5. , -5. ],
+				       [-4.99, -4.99, -4.99, ..., -4.99, -4.99, -4.99],
+				       [-4.98, -4.98, -4.98, ..., -4.98, -4.98, -4.98],
+				       ...,
+				       [ 4.97, 4.97, 4.97, ..., 4.97, 4.97, 4.97],
+				       [ 4.98, 4.98, 4.98, ..., 4.98, 4.98, 4.98],
+				       [ 4.99, 4.99, 4.99, ..., 4.99, 4.99, 4.99]])
+			\end{verbatim}
+			Now, evaluating function is a matter of writing same expression you would write with 2 points:
+			\begin{verbatim}
+				In [172]: z = np.sqrt(xs ** 2 + ys ** 2)
+				In [173]: z
+				Out[173]:
+				array([[7.0711, 7.064 , 7.0569, ..., 7.0499, 7.0569, 7.064 ],
+				       [7.064 , 7.0569, 7.0499, ..., 7.0428, 7.0499, 7.0569],
+				       [7.0569, 7.0499, 7.0428, ..., 7.0357, 7.0428, 7.0499],
+				       ...,
+				       [7.0499, 7.0428, 7.0357, ..., 7.0286, 7.0357, 7.0428],
+				       [7.0569, 7.0499, 7.0428, ..., 7.0357, 7.0428, 7.0499],
+				       [7.064 , 7.0569, 7.0499, ..., 7.0428, 7.0499, 7.0569]])
+			\end{verbatim}
+			As a preview of Chap. 9, use matplotlib to create visualizations of this 2D array:
+			\begin{verbatim}
+				In [174]: import matplotlib.pyplot as plt
+				In [175]: plt.imshow(z, cmap=plt.cm.gray, extent=[-5, 5, -5, 5])
+				Out[175]: <matplotlib.image.AxesImage at 0x7f624ae73b20>
+				In [176]: plt.colorbar()
+				Out[176]: <matplotlib.colorbar.Colorbar at 0x7f6253e43ee0>
+				In [177]: plt.title("Image plot of $\sqrt{x^2 + y^2}$ for a grid of values")
+				Out[177]: Text(0.5, 1.0, 'Image plot of $\\sqrt{x^2 + y^2}$ for a grid of values')
+			\end{verbatim}
+			In {\sf Fig. 4.3: Plot of function evaluated on a grid}, used matplotlib function {\tt imshow} to create an image plot from a 2D array of function values.
+			
+			If working in IPython, can close all open plot windows by executing {\tt plt.close("all")}:
+			\begin{verbatim}
+				In [179]: plt.close("all")
+			\end{verbatim}
+			
+			\begin{remark}
+				Term \emph{vectorization} is used to describe some other computer science concepts, but in this book use it to describe operations on whole arrays of data at once rather than going value by value using a Python {\tt for} loop.
+			\end{remark}
+			\begin{itemize}
+				\item {\sf Expressing Conditional Logic as Array Operations.} {\tt numpy.where} function is a vectorized version of ternary expression {\tt x if condition else y}. Suppose had a Boolean array \& 2 arrays of values:
+				\begin{verbatim}
+					In [180]: xarr = np.array([1.1, 1.2, 1.3, 1.4, 1.5])
+					In [181]: yarr = np.array([2.1, 2.2, 2.3, 2.4, 2.5])
+					In [182]: cond = np.array([True, False, True, True, False])
+				\end{verbatim}
+				Suppose wanted to take a value from {\tt xarr} whenever corresponding value in {\tt cond} is {\tt True}, \& otherwise take value from {\tt yarr}. A list comprehension doing this might look like:
+				\begin{verbatim}
+					In [183]: result = [(x if c else y)
+					   .....:           for x, y, c in zip(xarr, yarr, cond)]
+					In [184]: result
+					Out[184]: [1.1, 2.2, 1.3, 1.4, 2.5]
+				\end{verbatim}
+				This has multiple problems. 1st, it will not be very fast for large arrays (because all work is being done in interpreted Python code). 2nd, it will not work with multidimensional arrays. With {\tt numpy.where} you can do this with a single function call:
+				\begin{verbatim}
+					In [185]: result = np.where(cond, xarr, yarr)
+					In [186]: result
+					Out[186]: array([1.1, 2.2, 1.3, 1.4, 2.5])
+				\end{verbatim}
+				2nd \& 3rd arguments to {\tt numpy.where} don't need to be arrays; 1 or both of them can be scalars. A typical use of {\tt where} in data analysis is to produce a new array of values based on another array. Suppose had a matrix of randomly generated data \& wanted to replace all positive values with 2 \& all negative values with $-2$. This is possible to do with {\tt numpy.where}:
+				\begin{verbatim}
+					In [187]: arr = rng.standard_normal((4, 4))
+					In [188]: arr
+					Out[188]:
+					array([[ 2.6182, 0.7774, 0.8286, -0.959 ],
+					       [-1.2094, -1.4123, 0.5415, 0.7519],
+					       [-0.6588, -1.2287, 0.2576, 0.3129],
+					       [-0.1308, 1.27 , -0.093 , -0.0662]])
+					In [189]: arr > 0
+					Out[189]:
+					array([[ True, True, True, False],
+					       [False, False, True, True],
+					       [False, False, True, True],
+					       [False, True, False, False]])
+					In [190]: np.where(arr > 0, 2, -2)
+					Out[190]:
+					array([[ 2, 2, 2, -2],
+					       [-2, -2, 2, 2],
+					       [-2, -2, 2, 2],
+					       [-2, 2, -2, -2]])
+				\end{verbatim}
+				Can combine scalars \& arrays when using {\tt numpy.where}. E.g., can replace all positive values in {\tt arr} with constant 2, like so:
+				\begin{verbatim}
+					In [191]: np.where(arr > 0, 2, arr) # set only positive values to 2
+				\end{verbatim}
+				\item {\sf Mathematical \& Statistical Methods.} A set of mathematical functions that compute statistics about an entire array or about data along an axis are accessible as methods of array class. Can use aggregations (sometimes called {\it reductions}) like {\tt sum, mean, std} (standard deviation) either by calling array instance method or using top-level NumPy function. When use NumPy function, like {\tt numpy.sum}, have to pass array you want to aggregate as 1st argument -- phải truyền mảng bạn muốn tổng hợp làm đối số thứ nhất.
+				
+				Here generate some normally distributed random data \& compute some aggregate statistics:
+				\begin{verbatim}
+					In [192]: arr = rng.standard_normal((5, 4))
+					In [193]: arr
+					Out[193]:
+					array([[-1.1082, 0.136 , 1.3471, 0.0611],
+					       [ 0.0709, 0.4337, 0.2775, 0.5303],
+					       [ 0.5367, 0.6184, -0.795 , 0.3
+					],
+					       [-1.6027, 0.2668, -1.2616, -0.0713],
+					       [ 0.474 , -0.4149, 0.0977, -1.6404]])
+					In [194]: arr.mean()
+					Out[194]: -0.08719744457434529
+					In [195]: np.mean(arr)
+					Out[195]: -0.08719744457434529
+					In [196]: arr.sum()
+					Out[196]: -1.743948891486906
+				\end{verbatim}
+				Functions like {\tt mean, sum} take an optional {\tt axis} argument that computes statistic over given axis, resulting in an array with 1 less dimension:
+				\begin{verbatim}
+					In [197]: arr.mean(axis=1)
+					Out[197]: array([ 0.109 , 0.3281, 0.165 , -0.6672, -0.3709])
+					In [198]: arr.sum(axis=0)
+					Out[198]: array([-1.6292, 1.0399, -0.3344, -0.8203])
+				\end{verbatim}
+				Here, {\tt arr.mean(axis=1)} means ``compute mean across columns,'' where {\tt arr.sum(axis=0)} means ``compute sum down rows.''
+				
+				Other methods like {\tt cumsum} (tổng xuất tinh!) \& {\tt cumprod} (sản phẩm{\tt/}tích tụ xuất tinh!) do not aggregate, instead producing an array of intermediate results:
+				\begin{verbatim}
+					In [199]: arr = np.array([0, 1, 2, 3, 4, 5, 6, 7])
+					In [200]: arr.cumsum()
+					Out[200]: array([ 0, 1, 3, 6, 10, 15, 21, 28])
+				\end{verbatim}
+				In multidimensional arrays, accumulation functions like {\tt cumsum} return an array of same size but with partial aggregates computed along indicated axis according to each lower dimensional slice:
+				\begin{verbatim}
+					In [201]: arr = np.array([[0, 1, 2], [3, 4, 5], [6, 7, 8]])
+					In [202]: arr
+					Out[202]:
+					array([[0, 1, 2],
+					       [3, 4, 5],
+					       [6, 7, 8]])
+				\end{verbatim}
+				Expression {\tt arr.cumsum(axis=0)} computes cumulative sum along rows, while {\tt arr.cumsum(axis=1)} computes sums along columns:
+				\begin{verbatim}
+					In [203]: arr.cumsum(axis=0)
+					Out[203]:
+					array([[ 0, 1, 2],
+					       [ 3, 5, 7],
+					       [ 9, 12, 15]])
+					In [204]: arr.cumsum(axis=1)
+					Out[204]:
+					array([[ 0, 1, 3],
+					       [ 3, 7, 12],
+					       [ 6, 13, 21]])
+				\end{verbatim}
+				See {\sf Table 4.6: Basic array statistical methods} for a full listing. See many examples of these methods in action in later chaps. {\sf Method: Description}
+				\begin{itemize}
+					\item {\tt sum}: Sum of all elements in array or along an axis; zero-length arrays have sum 0
+					\item {\tt mean}: Arithmetic mean; invalid (returns {\tt NaN}) on zero-length arrays
+					\item {\tt std, var}: Standard deviation \& variance, resp.
+					\item {\tt min, max}: Minimum \& maximum
+					\item {\tt argmin, argmax}: Indices of minimum \& maximum elements, resp.
+					\item {\tt cumsum}: Cumulative sum of elements starting from 0
+					\item {\tt cumprod}: Cumulative product of elements starting from 1
+				\end{itemize}
+				\item {\sf Methods for Boolean Arrays.} Boolean values are coerced to 1 ({\tt True}) \& 0 ({\tt False}) in preceding methods. Thus, {\tt sum} is often used as a means of counting {\tt True} values in a Boolean array:
+				\begin{verbatim}
+					In [205]: arr = rng.standard_normal(100)
+					In [206]: (arr > 0).sum() # Number of positive values
+					Out[206]: 48
+					In [207]: (arr <= 0).sum() # Number of non-positive values
+					Out[207]: 52
+				\end{verbatim}
+				Parentheses here in expression {\tt (arr > 0).sum()} are necessary to be able to call {\tt sum()} on temporary result of {\tt arr > 0}.
+				
+				2 additional methods, \fbox{$\forall,\exists$} {\tt any, all} are useful especially for Boolean arrays. {\tt any} tests whether 1 or more values in an array is {\tt True}, while {\tt all} checks if every value is {\tt True}:
+				\begin{verbatim}
+					In [208]: bools = np.array([False, False, True, False])
+					In [209]: bools.any()
+					Out[209]: True
+					In [210]: bools.all()
+					Out[210]: False
+				\end{verbatim}
+				These methods also work with non-Boolean arrays, where nonzero elements are treated as {\tt True}.
+				\item {\sf Sorting.} Like Python's built-in list type, NumPy arrays can be sorted in place with {\tt sort} method:
+				\begin{verbatim}
+					In [45]: arr = rng.standard_normal(6)
+					
+					In [46]: arr
+					Out[46]: 
+					array([ 2.61815943,  0.77736134,  0.8286332 , -0.95898831, -1.20938829,
+					-1.41229201])
+					
+					In [47]: arr.sort()
+					
+					In [48]: arr
+					Out[48]: 
+					array([-1.41229201, -1.20938829, -0.95898831,  0.77736134,  0.8286332 ,
+					2.61815943])
+				\end{verbatim}
+				Can sort each 1D section of values in a multidimensional array in place along an axis by passing axis number to {\tt sort}. In this example data:
+				\begin{verbatim}
+					In [49]: arr = rng.standard_normal((5, 3))
+					
+					In [50]: arr
+					Out[50]: 
+					array([[ 0.54154683,  0.7519394 , -0.65876032],
+					[-1.22867499,  0.25755777,  0.31290292],
+					[-0.13081169,  1.26998312, -0.09296246],
+					[-0.06615089, -1.10821447,  0.13595685],
+					[ 1.34707776,  0.06114402,  0.0709146 ]])
+				\end{verbatim}
+				{\tt arr.sort(axis=0)} sorts values within each column, while {\tt arr.sort(axis=1)} sorts across each row:
+				\begin{verbatim}
+					In [51]: arr.sort(axis=0)
+					
+					In [52]: arr
+					Out[52]: 
+					array([[-1.22867499, -1.10821447, -0.65876032],
+					[-0.13081169,  0.06114402, -0.09296246],
+					[-0.06615089,  0.25755777,  0.0709146 ],
+					[ 0.54154683,  0.7519394 ,  0.13595685],
+					[ 1.34707776,  1.26998312,  0.31290292]])
+					
+					In [53]: arr.sort(axis=1)
+					
+					In [54]: arr
+					Out[54]: 
+					array([[-1.22867499, -1.10821447, -0.65876032],
+					[-0.13081169, -0.09296246,  0.06114402],
+					[-0.06615089,  0.0709146 ,  0.25755777],
+					[ 0.13595685,  0.54154683,  0.7519394 ],
+					[ 0.31290292,  1.26998312,  1.34707776]])
+				\end{verbatim}
+				Top-level method {\tt numpy.sort} returns a sorted copy of an array (like Python built-in function {\tt sorted}) instead of modifying array in place. E.g.:
+				\begin{verbatim}
+					In [221]: arr2 = np.array([5, -10, 7, 1, 0, -3])
+					In [222]: sorted_arr2 = np.sort(arr2)
+					In [223]: sorted_arr2
+					Out[57]: array([-10,  -3,   0,   1,   5,   7])
+				\end{verbatim}
+				For more details on using NumPy's sorting methods, \& more advanced techniques like indirect sorts, see Appendix A. Several other kinds of data manipulations related to sorting (e.g., sorting a table of data by 1 or more columns) can also be found in pandas.
+				\item {\sf Unique \& Other Set Logic.} NumPy has some basic set operations for 1D ndarrays. A commonly used one is {\tt numpy.unique}, which returns sorted unique values in an array:
+				\begin{verbatim}
+					In [224]: names = np.array(["Bob", "Will", "Joe", "Bob", "Will", "Joe", "Joe"])
+					In [225]: np.unique(names)
+					Out[225]: array(['Bob', 'Joe', 'Will'], dtype='<U4')
+					In [226]: ints = np.array([3, 3, 3, 2, 2, 1, 1, 4, 4])
+					In [227]: np.unique(ints)
+					Out[227]: array([1, 2, 3, 4])
+				\end{verbatim}
+				Contrast {\tt numpy.unique} with pure Python alternative:
+				\begin{verbatim}
+					In [228]: sorted(set(names))
+					Out[228]: ['Bob', 'Joe', 'Will']
+				\end{verbatim}
+				In many cases, NumPy version is faster \& returns a NumPy array rather than a Python list.
+				
+				Another function, {\tt numpy.in1d}, tests membership of values in 1 array in another, returning a Boolean array"
+				\begin{verbatim}
+					In [229]: values = np.array([6, 0, 0, 3, 2, 5, 6])
+					In [230]: np.in1d(values, [2, 3, 6])
+					Out[230]: array([ True, False, False, True, True, False, True])
+				\end{verbatim}
+				See {\sf Table 4.7: Array set operations} for a listing of array set operations in NumPy.
+			\end{itemize}
 			\item {\sf4.5. File Input \& Output with Arrays.}
 			\item {\sf4.6. Linear Algebra.}
 			\item {\sf4.7. Example: Random Walks.}

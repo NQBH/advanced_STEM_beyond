@@ -4491,7 +4491,32 @@ count()        find()         isalnum()      isdigit()      isprintable()  join(
 				\end{verbatim}
 				See {\sf Table 4.7: Array set operations} for a listing of array set operations in NumPy.
 			\end{itemize}
-			\item {\sf4.5. File Input \& Output with Arrays.}
+			\item {\sf4.5. File Input \& Output with Arrays.} NumPy is able to save \& load data to \& from disk in some text or binary formats. In this sect, discuss only NumPy's built-in binary format, since most users will prefer pandas \& other tools for loading text or tabular data (see Chap. 6 for much more).
+			
+			\fbox{{\tt numpy.save, numpy.load} are 2 workhorse functions for efficiently saving \& loading array data on disk.} Arrays are saved by default in an uncompressed raw binary format with file extension {\tt.npy}:
+			\begin{verbatim}
+				In [231]: arr = np.arange(10)
+				In [232]: np.save("some_array", arr)
+			\end{verbatim}
+			If file path does not already end in {\tt.npy}, extension will be appended. Array on disk can then be loaded with {\tt numpy.load}:
+			\begin{verbatim}
+				 In [233]: np.load("some_array.npy")
+				 Out[233]: array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+			\end{verbatim}
+			Can save multiple arrays in an uncompressed archive using {\tt numpy.savez} \& passing arrays as keyword arguments:
+			\begin{verbatim}
+				In [234]: np.savez("array_archive.npz", a=arr, b=arr)
+			\end{verbatim}
+			When loading an {\tt.npz} file, get back a dictionary-like object that loads individual arrays lazily:
+			\begin{verbatim}
+				In [235]: arch = np.load("array_archive.npz")
+				In [236]: arch["b"]
+				Out[236]: array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+			\end{verbatim}
+			If your data compresses well, may wish to use \verb|numpy.savez_compressed| instead:
+			\begin{verbatim}
+				In [237]: np.savez_compressed("arrays_compressed.npz", a=arr, b=arr)
+			\end{verbatim}
 			\item {\sf4.6. Linear Algebra.}
 			\item {\sf4.7. Example: Random Walks.}
 			\item {\sf4.8. Conclusion.}

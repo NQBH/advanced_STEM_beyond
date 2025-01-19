@@ -706,8 +706,40 @@
 	\end{itemize}
 	Building on strengths \& limitations of these approaches, our proposed MP-PINN framework aims to address gaps in both model-driven \& data-driven methods.
 	\item {\sf3. Preliminaries.}
-	\item {\sf4. Methods.}
+	\begin{itemize}
+		\item {\sf3.1. Mechanistic Compartment Models.} In epidemiology \& other fields where behavior of large populations is studied, compartment models are models in which population are divided into a discrete set of qualitatively-distinct states{\tt/}types{\tt/}classes{\tt/}groups, so-called {\it compartments} (ngăn). These models also define transition between compartments. Focus on SIR (Susceptible-Infected-Recovered), most popular compartments model used to model spread of infectious diseases in epidemiology [10]. SIR contains 3 compartments: (1) Susceptible (Dễ bị tổn thương), (2) Infected (Bị lây nhiễm), (3) Recovered{\tt/}removed populations (Dân số được phục hồi/loại bỏ) which are denoted as $S(t),I(t),R(t)$ as a function of time $t$, resp. At time $t$, an individual in population is classified into 1 of these compartments, typically transiting from being susceptible to infected \& finally recovered (or removed). Hence, size of population $N$ is sum of number of susceptible, infectious, \& recovered persons, i.e., $N = S(t) + I(t) + R(t)$. Here, considered a {\it single outbreak} SIR model comprises a set of ODEs that describe transitions between 3 compartments:
+		\begin{align}
+			\frac{dS(t)}{dt} &= -\frac{\beta}{N}S(t)I(t),\\
+			\frac{dI(t)}{dt} &= \frac{\beta}{N}S(t)I(t) - \gamma I(t),\\
+			\frac{dR(t)}{dt} &= \gamma I(t),
+		\end{align}
+		where parameters of model $\beta > 0,\gamma\in(0,1)$: {\it infection rate \& recovery rate}, resp. In real-world \& more complex models, these parameters can also vary over time or depend on different factors e.g. policy or other properties of population. Initial condition of ODEs are $S(0) > 0,I(0) > 0,R(0)\ge0$.
+		
+		An important assumption of SIR model: all recovered individuals (in $R$ group) are completely immune \& cannot return to susceptible $S$ or infected $I$ groups, \& total population $N$ remains constant. However, $N$ does not always represent entire population, especially in real-world scenarios. E.g., 1 assumption of SIR model [8] : population mixes homogeneously, meaning everyone has same level of interaction with others. However, during early stages of COVID-19 outbreak in 2020, it was impractical to consider entire population as susceptible. Instead, $N$ might only represent a fraction of population. Moreover, population could therefore be divided into 2 distinct groups [32]: those with inherited immunity \& those without. These distinctions imply: total number of susceptible individuals $S(t)$ may not always correspond to entire population $N$, but rather to a specific portion of it, depending on factors e.g. inherited immunity or other epidemiological considerations.
+		\item {\sf3.2. Physics-Informed Neural Networks (PINNs).} PINNs [23] are neural networks equipped with physical constraints of domain, either through network architecture or as a regularization term during training process. These physical laws often involve parameters that need to be estimated. During training of a PINN, both neural network weights \& physical parameters are optimized to achieve best fit to observed data while simultaneously satisfying physical constraints.
+		
+		More formally, given a training dataset ${\cal D}$, learning searches for a neural network $f\in{\cal H}$ by solving an optimization problem:
+		\begin{equation}
+			f^* = \min_{f\in{\cal H}} {\cal L}(f;{\cal D}) + \lambda\Omega(f),
+		\end{equation}
+		where ${\cal L}(f;{\cal D})$: usual data loss function, $\Omega(f)$: a regularization term that introduces physical prior knowledge into learning process, \& $\lambda > 0$: a balancing weight. When prior is specified as PDEs, regularization typically takes form of PDE residual loss:
+		\begin{equation}
+			\Omega(f) = \frac{1}{L}\sum_{i=1}^L (\partial f_{\rm NN}(x_i) - \partial f_{\rm PDE}(x_i))^2,
+		\end{equation}
+		where $\partial f_{\rm NN}(x_i)$ denotes partial derivative of neural network evaluated at $x_i$ \& $\partial f_{\rm PDE}(x_i)$ denotes corresponding partial derivative specified by PDEs. Evaluation points $i = 1,2,\ldots,L$ are sampled so that function $f$ \& its derivative are well supported.
+	\end{itemize}
+	\item {\sf4. Methods.} Present main contributions of developing PINNs for epidemic forecasting. Overall framework is depicted in {\sf Fig. 2: Multi-phase Physics-Informed Neural Network (MP-PINN) Framework for Epidemic Forecasting. Framework illustrates integration of expert knowledge \& data-driven approaches to estimate parameters in a multi-phase scenario, where key parameters e.g. infection rate $\beta$ \& recovery rate $\gamma$ vary across phases.} Start from a single-phase assumption, then advance into multi-phase model. Both single-phase \& multi-phase models integrate expert knowledge \& a data-driven parameter estimation process. In multi-phase model, however, parameters e.g. infection rate $\beta$ \& recovery rate $\gamma$ vary between phases, enhancing model's ability to adapt to complex real-world scenarios. Single-phase approach is described in Sect. 4.1 \& multi-phase approach is detailed in Sect. 4.2.
+	
+	More concretely, using SIR model described in Sect. 3.1 as \fbox{physics prior}, build a PINN framework with separate neural networks $f_{\psi_1}^S(t),f_{\psi_2}^S(t)$ where $f_{\psi_i}$ that takes $t$ as input to predict Susceptible $S(t)$ \& Infected $I(t)$, resp. For clarity, present case where input is only time $t$, but any other features, static or dynamic can be applicable. Note: do not need to model Recovered $R(t)$ because of constraint $S(t) + I(t) + R(t) = N$.
+	\begin{itemize}
+		\item {\sf4.1. Single-Phase PINN (SP-PINN).}
+		\item {\sf4.2. Multi-Phase PINN (MP-PINN).}
+	\end{itemize}
 	\item {\sf5. Experiments.}
+	\begin{itemize}
+		\item {\sf5.1. Settings.}
+		\item {\sf5.2. Results.}
+	\end{itemize}
 	\item {\sf6. Conclusions.} Introduced MP-PINN (Multi-Phase Physics-Informed Neural Network), a novel approach to epidemic forecasting that addresses limitations of both traditional model-driven \& data-driven methods. By integrating mechanistic understanding of SIR models with flexibility of neural networks \& allowing for multiple SIR parameters across phases, MP-PINN achieves superior performance in both short-term \& long-term forecasting of COVID-19 spread. Our experiments on COVID-19 data from 21 regions in Italy demonstrate: MP-PINN outperforms traditional SIR models, pure data-driven approaches (MLP), \& single-phase PINNs. Ability to capture evolving dynamics through multiple phases proves crucial in reflecting impact of changing interventions \& public behaviors throughout course of epidemic. MP-PINN's success highlights potential of hybrid approaches that combine domain knowledge with data-driven learning. By allowing for incorporation of expert insights \& prior knowledge about parameter ranges, our method provides a flexible framework that can adapt to complex, evolving nature of real-world epidemics. Future work could explore automatic detection of phase transition points \& incorporation of additional epidemiological factors. Finally, emphasize: MP-PINN framework is generally applicable to any outbreaks where underlying dynamics may shift over time.
 \end{itemize}
 

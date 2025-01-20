@@ -835,6 +835,48 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 			\begin{remark}
 				In ML literature, there can be a somewhat arbitrary separation between (random) ``variables'' \& ``parameters''. While parameters are estimated (e.g., via maximum likelihood), variables are usually marginalized out. In this book, not so strict with this separation because, in principle, can replace a prior on any parameter \& integrate it out, which would then turn parameter into a random variable according to aforementioned separation.
 			\end{remark}
+			\item {\sf8.4.3. Latent-Variable Models.} In practice, sometimes useful to have additional {\it latent variables} ${\bf z}$ (besides model parameters $\boldsymbol{\theta}$) as part of model (Moustaki et al., 2015). These latent variables are different from model parameters $\boldsymbol{\theta}$ as they do not parameterize model explicitly. Latent variables may describe data-generating process, thereby contributing to interpretability of model. They also often simplify structure of model \& allow us to define simper \& richer model structures. Simplification of model structure often goes hand in hand with a smaller number of model parameters (Paquet, 2008; Murphy, 2012). Learning in latent-variable models (at least via maximum likelihood) can be done in a principled way using expectation maximization (EM) algorithm (Dempster et al., 1977; Bishop, 2006). Examples, where such latent variables (biến tiềm ẩn) are helpful, are principle component analysis for dimensionality reduction (Chap. 10), Gaussian mixture models for density estimation (Chap. 11), hidden Markov models (Maybeck, 1979) or dynamical systems (Ghahramani and Roweis, 1999; Ljung, 1999) for time-series modeling, \& meta learning \& task generalization (Hausman et al., 2018; S\ae mundsson et al., 2018). Although introduction of these latent variables may make model structure \& generative process easier, learning in latent-variable models is generally hard, as see in Chap. 11.
+			
+			Since latent-variable models also allow us to define process that generates data from parameters, have a look at this generative process. Denoting data by ${\bf x}$, model parameters by $\boldsymbol{\theta}$ \& latent variables by ${\bf z}$, obtain conditional distribution $p({\bf x}|{\bf z},\boldsymbol{\theta})$ that allows us to generate data for any model parameters \& latent variables. Given that ${\bf z}$ are latent variables, place a prior $p({\b z})$ on them.
+			
+			As models discussed previously, models with latent variables can be used for parameter learning \& inference within frameworks discussed in Sects. 8.3 \& 8.4.2. To facilitate learning (e.g., by means of maximum likelihood estimation or Bayesian inference), follow a 2-step procedure. 1st, compute likelihood $p({\bf x}|\boldsymbol{\theta})$ of model, which does not depend on latent variables. 2nd, use this likelihood for parameter estimation or Bayesian inference, where use exactly same expressions as in Sects. 8.3 \& 8.4.2, resp.
+			
+			Since likelihood function $p({\bf x}|\boldsymbol{\theta})$ is predictive distribution of data given model parameters, need to marginalize out latent variables so that (8.25)
+			\begin{equation}
+				p({\bf x}|\boldsymbol{\theta}) = \int p({\bf x}|{\bf z},\boldsymbol{\theta})p({\bf z})\,{\rm d}{\bf z},
+			\end{equation}
+			where $p({\bf x}|{\bf z},\boldsymbol{\theta})$ is given in (8.24) \& $p({\bf z})$ is prior on latent variables. Note: likelihood must not depend on latent variables ${\bf z}$, but it is only a function of data ${\bf x}$ \& model parameters $\boldsymbol{\theta}$.
+			\begin{quote}
+				Likelihood is a function of data \& model parameters, but is independent of latent variables.
+			\end{quote}
+			Likelihood in (8.25) directly allows for parameter estimation via maximum likelihood. MAP estimation is also straightforward with an additional prior on model parameters $\boldsymbol{\theta}$ as discussed in Sect. 8.3.2. Moreover, with likelihood (8.25) Bayesian inference (Sect. 8.4.2) in a latent-variable model works in usual way: Place a prior $p(\boldsymbol{\theta})$ on model parameters \& use Bayes' theorem to obtain a posterior distribution (8.26)
+			\begin{equation}
+				p(\boldsymbol{\theta}|{\cal X}) = \frac{p({\cal X}|\boldsymbol{\theta})p(\boldsymbol{\theta})}{p({\cal X})}
+			\end{equation}
+			over model parameters given  a dataset ${\cal X}$. Posterior in (8.26) can be used for predictions within a Bayesian inference framework; see (8.23).
+			
+			1 challenge have in this latent-variable model: likelihood $p({\cal X}|\boldsymbol{\theta})$ requires marginalization of latent variables according to (8.25). Except when choose a conjugate prior $p({\bf z})$ for $p({\bf x}|{\bf z},\boldsymbol{\theta})$, marginalization in (8.25) is not analytically tractable, \& need to resort to approximations (Bishop, 2006; Paquet, 2008; Murphy, 2012; Moustaki et al., 2015).
+			
+			Similar to parameter posterior (8.26), can compute a posterior on latent variables according to
+			\begin{equation}
+				p({\bf z}|{\cal X}) = \frac{p({\cal X}|{\bf z})p({\bf z})}{p({\cal X})},\ p({\cal X}|{\bf z}) = \int p({\cal X}|{\bf z},\boldsymbol{\theta})p(\boldsymbol{\theta})\,{\rm d}\boldsymbol{\theta},
+			\end{equation}
+			where $p({\bf z})$: prior on latent variables \& $p({\cal X}|{\bf z})$ requires us to integrate out model parameters $\boldsymbol{\theta}$.
+			
+			Given difficulty of solving integrals analytically, clear: marginalizing out both latent variables \& model parameters at same time is not possible in general (Bishop, 2006; Murphy, 2012). A quantity that is easier to compute is posterior distribution on latent variables, but conditioned on model parameters, i.e.,
+			\begin{equation}
+				p({\bf z}|{\cal X},\boldsymbol{\theta}) = \frac{p({\cal X}|{\bf z},\boldsymbol{\theta})p({\bf z})}{p({\cal X}|\boldsymbol{\theta})},
+			\end{equation}
+			where $p({\bf z})$: prior on latent variables \& $p({\cal X}|{\bf z},\boldsymbol{\theta})$ is given i (8.24).
+			
+			In Chaps. 10--11, derive likelihood functions for PCA \& Gaussian mixture models, resp. Moreover, compute posterior distributions (8.28) on latent variables for both PCA \& Gaussian mixture models.
+			\begin{remark}
+				In following chaps, may not be drawing such a clear distinction between latent variables ${\bf z}$ \& uncertain model parameters $\boldsymbol{\theta}$ \& call model parameters ``latent'' or ``hidden'' as well because they are unobserved. In Chaps. 10--11, where use latent variables ${\bf z}$, will pay attention to difference as will have 2 different types of hidden variables: model parameters $\boldsymbol{\theta}$ \& latent variables ${\bf z}$.
+			\end{remark}
+			Can exploit fact: all elements of a probabilistic model are random variables to define a unified language for representing them. In Sect. 8.5, see a concise graphical language for representing structure of probabilistic models. Use this graphical language to describe probabilistic models in subsequent chaps.			
+			\item {\sf8.4.4. Further Reading.} Probabilistic models in ML (Bishop, 2006; Barber, 2012; Murphy, 2012) provide a way for users to capture uncertainty about data \& predictive models in a principled fashion. Ghahramani (2015) presents a short review of probabilistic models in ML. Given a probabilistic model, may be lucky enough to be able to compute parameters of interest analytically. However, in general, analytic solutions are rare, \& computational methods e.g. sampling (Gilks et al., 1996; Brooks et al., 2011) \& variational inference (Jordan et al., 1999; Blei et al., 2017) are used. Moustaki et al. (2015) and Paquet (2008) provide a good overview of Bayesian inference in latent-variable models.
+			
+			In recent years, several programming languages have been proposed that aim to treat variables defined in software as random variables corresponding to probability distributions. Objective: be able to write complex functions of probability distributions, while under hood compiler automatically takes care of rules of Bayesian inference. This rapidly changing field is called {\it probabilistic programming}.
 		\end{itemize}
 		\item {\sf8.5. Directed Graphical Models.}
 		\item {\sf8.6. Model Selection.}

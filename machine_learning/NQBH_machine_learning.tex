@@ -695,13 +695,55 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 			However, cross-validation is an {\it embarrassingly parallel} problem, i.e., little effort is needed to separate problem into a number of parallel tasks. Given sufficient computing resources (e.g., cloud computing, server farms), cross-validation does not require longer than a single performance assessment.
 			
 			In this sect, saw: empirical risk minimization is based on following concepts: hypothesis class of functions, loss function \& regularization. In Sect. 8.3, see effect of using a probability distribution to replace idea of loss functions \& regularization.
-			\item {\sf8.2.5. Further Reading.} Due to fact: original development of empirical risk minimization (Vapnik, 1998) was couched in heavily theoretical language, many of subsequent developments have been theoretical. Area of study is called {\it statistical learning theory} (Vapnik, 1999; Evgeniou et al., 2000; Hastie et al., 2001; von Luxburg and Schölkopf, 2011). A recent ML textbook that builds on theoretical foundations \& develops efficient learning algorithms is Shalev-Shwartz \& Ben-David (2014).
+			\item {\sf8.2.5. Further Reading.} Due to fact: original development of empirical risk minimization (Vapnik, 1998) was couched in heavily theoretical language, many of subsequent developments have been theoretical. Area of study is called {\it statistical learning theory} (Vapnik, 1999; Evgeniou et al., 2000; Hastie et al., 2001; von Luxburg \& Schölkopf, 2011). A recent ML textbook that builds on theoretical foundations \& develops efficient learning algorithms is Shalev-Shwartz \& Ben-David (2014).
 			
-			Concept of regularization has its roots in solution of ill-posed inverse problems (Neumaier, 1998). Approach presented here is called {\it Tikhonov regularization}, \& there is a closely related constrained version called {\it Ivanov regularization}. Tikhonov regularization has deep relationships to bias-variance trade-off \& feature selection (Bühlmann \& Van De Geer, 2011). An alternative to cross-validation: bootstrap \& jackknife (Efron and Tibshirani, 1993; Davidson and Hinkley, 1997; Hall, 1992).
+			Concept of regularization has its roots in solution of ill-posed inverse problems (Neumaier, 1998). Approach presented here is called {\it Tikhonov regularization}, \& there is a closely related constrained version called {\it Ivanov regularization}. Tikhonov regularization has deep relationships to bias-variance trade-off \& feature selection (Bühlmann \& Van De Geer, 2011). An alternative to cross-validation: bootstrap \& jackknife (Efron \& Tibshirani, 1993; Davidson \& Hinkley, 1997; Hall, 1992).
 			
 			Thinking about empirical risk minimization (Sect. 8.2) as ``probability free'' is incorrect. There is an underlying unknown probability distribution $p({\bf x},y)$ that governs data generation. However, approach of empirical risk minimization is agnostic to that choice of distribution. This is in contrast to standard statistical approaches that explicitly require knowledge of $p({\bf x},y)$. Furthermore, since distribution is a joint distribution on both examples ${\bf x}$ \& labels $y$, labels can be non-deterministic. In contrast to standard statistics, do not need to specify noise distribution for labels $y$.
 		\end{itemize}		
-		\item {\sf8.3. Parameter Estimation.} See also \cite{Aster_Borchers_Thurber2018}. 
+		\item {\sf8.3. Parameter Estimation.} See also \cite{Aster_Borchers_Thurber2018}. In Sect. 8.2, did not explicitly model our problem using probability distributions. In this sect, see how to use probability distributions to model our uncertainty due to observation process \& our uncertainty in parameters of our predictors. In Sect. 8.3.1, introduce likelihood, which is analogous to concept of loss functions (Sect. 8.2.2)  in empirical risk minimization. Concept of priors (Sect. 8.3.2) is analogous to concept of regularization (Sect. 8.2.3).
+		\begin{itemize}
+			\item {\sf8.3.1. Maximum Likelihood Estimation.} Idea behind {\it maximum likelihood estimation} (MLE): define a function of parameters that enables us to find a model that fits data well. Estimation problem is focused on {\it likelihood} function, or more precisely its negative logarithm. For data represented by a random variable ${\bf x}$ \& for a family of probability densities $p({\bf x}|\boldsymbol{\theta})$ parameterized by $\boldsymbol{\theta}$, {\it negative log-likelihood} is given by
+			\begin{equation}
+				{\cal L}_{\bf x}(\boldsymbol{\theta}) = -\log p({\bf x}|\boldsymbol{\theta}).
+			\end{equation}
+			Notation ${\cal L}_{\bf x}(\boldsymbol{\theta})$ emphasizes fact: parameter $\boldsymbol{\theta}$ is varying \& data ${\bf x}$ is fixed. Very often drop reference to ${\bf x}$ when writing negative log-likelihood, as it is really a function of $\boldsymbol{\theta}$, \& write it as ${\cal L}(\boldsymbol{\theta})$ when random variable representing uncertainty in data is clear from context.
+			
+			Interpret what probability density $p({\bf x}|\boldsymbol{\theta})$ is modeling for a fixed value of $\boldsymbol{\theta}$. It is a distribution that models uncertainty of data. I.e., once have chosen type of function we want as a predictor, likelihood provides probability of observing data ${\bf x}$.
+			
+			In a complementary view, if consider data to be fixed (because it has been observed), \& vary parameters $\boldsymbol{\theta}$, what does ${\cal L}(\boldsymbol{\theta})$ tell us? It tells us how likely a particular setting of $\boldsymbol{\theta}$ is for observations ${\bf x}$. Based on this 2nd view, maximum likelihood estimator gives us most likely parameter $\boldsymbol{\theta}$ for set of data.
+			
+			Consider supervised learning setting, where obtain pairs $({\bf x}_1,y_1),\ldots,({\bf x}_N,y_N)$ with ${\bf x}_n\in\mathbb{R}^D$ \& labels $y_n\in\mathbb{R}$. Interested in constructing a predictor that takes a feature vector ${\bf x}_n$ as input \& produces a prediction $y_n$ (or sth close to it), i.e., given a vector ${\bf x}_n$ we want probability distribution of label $y_n$. I.e., specify conditional probability distribution of labels given examples for particular parameter settings $\boldsymbol{\theta}$.
+			\begin{example}
+				1st example often used: specify: conditional probability of labels given examples is a Gaussian distribution. I.e., assume: can explain our observation uncertainty by independent Gaussian noise (refer to Sect. 6.5) with zero mean, $\varepsilon_n\sim{\cal N}(0,\sigma^2)$. Further assume: linear model ${\bf x}_n^\top\boldsymbol{\theta}$ is used for prediction. I.e., specify a Gaussian likelihood for each example label pair ${\bf x}_n,y_n$,
+				\begin{equation}
+					p(y_n|{\bf x}_n,\boldsymbol{\theta}) = {\cal N}(y_n|{\bf x}_n^\top\boldsymbol{\theta},\sigma^2).
+				\end{equation}
+				An illustration of a Gaussian likelihood for a given parameter $\boldsymbol{\theta}$ is shown in {\sf Fig. 8.3}. Sect. 9.2: how to explicitly expand preceding expression out in terms of Gaussian distribution.
+			\end{example}
+			Assume: set of examples $(x_1,y_1),\ldots,(x_N,y_N)$ are {\it independent \& identically distributed} (i.i.d.). Word ``independent'' (Sect. 6.4.5) implies: likelihood of whole dataset ${\cal Y} = \{y_1,\ldots,y_N\}$ \& ${\cal X} = \{{\bf x}_1,\ldots,{\bf x}_N\}$ factorizes into a product of likelihoods of each individual example (8.16)
+			\begin{equation}
+				p({\cal Y}|{\cal X},\boldsymbol{\theta}) = \prod_{n=1}^N p(y_n|{\bf x}_n,\boldsymbol{\theta}),
+			\end{equation}
+			where $p(y_n|{\bf x}_n,\boldsymbol{\theta})$ is a particular distribution (which was Gaussian in Example 8.4). Expression ``identically distributed'' means: each term in product (8.16) is of same distribution, \& all of them share same parameters. Often easier from an optimization viewpoint to compute functions that can be decomposed into sums of simpler functions. Hence, in ML, often consider negative log-likelihood (8.17)
+			\begin{equation}
+				{\cal L}(\boldsymbol{\theta}) = -\log p({\cal Y}|{\cal X},\boldsymbol{\theta}) = -\sum_{n=1}^N \log p(y_n|{\bf x}_n,\boldsymbol{\theta}).
+			\end{equation}
+			While it is tempting to interpret fact: $\boldsymbol{\theta}$ is on right of conditioning in $p(y_n|{\bf x}_n,\boldsymbol{\theta})$ (8.15), \& hence should be interpreted as observed \& fixed, this \fbox{interpretation is incorrect}. Negative log-likelihood ${\cal L}(\boldsymbol{\theta})$ is a function of $\boldsymbol{\theta}$. Therefore, to find a good parameter vector $\boldsymbol{\theta}$ that explains data $({\bf x}_1,y_1),\ldots,({\bf x}_N,y_N)$ well, minimize negative log-likelihood ${\cal L}(\boldsymbol{\theta})$ w.r.t. $\boldsymbol{\theta}$.
+			\begin{remark}
+				Negative sign in (8.17) is a historical artifact that is due to convention that we want to maximize likelihood, but numerical optimization literature tends to study minimization of functions.
+			\end{remark}
+			
+			\begin{example}
+				Continuing on our example of Gaussian likelihoods (8.15), negative log-likelihood can be rewritten as
+				\begin{equation}
+					{\cal L}(\boldsymbol{\theta}) = \cdots = \frac{1}{2\sigma^2}\sum_{n=1}^N (y_n - {\bf x}_n^\top\boldsymbol{\theta})^2 - \sum_{n=1}^N \log\frac{1}{\sqrt{2\pi\sigma^2}}.
+				\end{equation}
+				As $\sigma$ is given, 2nd term in the last formula is constant, \& minimizing ${\cal L}(\boldsymbol{\theta})$ corresponds to solving least-squares problem (cf. (8.8)) expressed in 1st term.
+			\end{example}
+			Turn out: for Gaussian likelihoods resulting optimization problem corresponding to maximum likelihood estimation has a closed-form solution. See more details on this in Chap. 9. {\sf Fig. 8.5: For given data, maximum likelihood estimate of parameters results in black diagonal line. Orange square shows value of maximum likelihood prediction at $x = 60$.} shows a regression dataset \& function that is induced by maximum-likelihood parameters. Maximum likelihood estimation may suffer from overfitting (Sect. 8.3.3), analogous to unregularized empirical risk minimization (Sect. 9.2.3). For other likelihood functions, i..e, if model our noise with non-Gaussian distributions, maximum likelihood estimation may not have a closed-form analytic solution. In this case, resort to numerical optimization methods discussed in Chap. 7.
+			\item {\sf8.3.2. Maximum A Posteriori Estimation.}
+		\end{itemize}
 		\item {\sf8.4. Probabilistic Modeling \& Inference.}
 		\item {\sf8.5. Directed Graphical Models.}
 		\item {\sf8.6. Model Selection.}

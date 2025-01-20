@@ -878,7 +878,60 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 			
 			In recent years, several programming languages have been proposed that aim to treat variables defined in software as random variables corresponding to probability distributions. Objective: be able to write complex functions of probability distributions, while under hood compiler automatically takes care of rules of Bayesian inference. This rapidly changing field is called {\it probabilistic programming}.
 		\end{itemize}
-		\item {\sf8.5. Directed Graphical Models.}
+		\item {\sf8.5. Directed Graphical Models.} In this sect, introduce a graphical language for specifying a probabilistic model, called {\it directed graphical model}. It provides a compact \& succinct way to specify probabilistic models, \& allows reader to visually parse dependencies between random variables. A graphical model visually captures way in which joint distribution over all random variables can be decomposed into a product of factors depending only on a subset of these variables. In Sect. 8.4, we identified joint distribution of a probabilistic model as key quantity of interest because it comprises information about prior, likelihood, \& posterior. However, joint distribution by itself can be quite complicated, \& it does not tell us anything about structural properties of probabilistic model. E..g, joint distribution $p(a,b,c)$ does not tell us anything abut independence relations. This is point where graphical models come into play. This sect relies on concepts of independence \& conditional independence, as described in Sect. 6.4.5.		
+		\begin{quote}
+			Directed graphical models are also known as Bayesian networks.
+		\end{quote}
+		It a {\it graphical model}, nodes are random variables. In {\sf Fig. 8.9: Examples of directed graphical models: (a) Fully connected. (b) Not fully connected}(a), nodes represent random variables $a,b,c$. Edges represent probabilistic relations between variables, e.g., conditional probabilities.
+		\begin{remark}
+			Not every distribution can be represented in a particular choice of graphical model. A discussion of this can be found in Bishop (2006).
+		\end{remark}
+		Probabilistic graphical models have some convenient properties:
+		\begin{itemize}
+			\item they are a simple way to visualize structure of a probabilistic model.
+			\item Inspection of graph alone gives us insight into properties, e.g., conditional independence.
+			\item Complex computations for inference \& learning in statistical models can be expressed in terms of graphical manipulations.
+		\end{itemize}
+		\begin{itemize}
+			\item {\sf8.5.1. Graph Semantics.} (Ngữ nghĩa đồ thị) {\it Directed graphical models{\tt/}Bayesian networks} are a method for representing conditional dependencies in a probabilistic model. They provide a visual description of conditional probabilities, hence, providing a simple language for describing complex interdependence. Modular description also entails computational simplification. Directed links (arrows) between 2 nodes (random variables) indicate conditional probabilities. E.g., arrow between $a,b$ in {\sf Fig. 8.9(a)} gives conditional probability $p(b|a)$ of $b$ given $a$.
+			\begin{quote}
+				With additional assumptions, arrows can be used to indicate causal relationships (Pearl, 2009).
+			\end{quote}
+			Directed graphical models can be derived from joint distributions if know sth about their factorization.
+			\begin{example}
+				Consider joint distribution $p(a,b,c) = p(c|a,b)p(b|a)p(a)$ (8.29) of 3 random variables $a,b,c$. Factorization of joint distribution in (8.29) tells us sth about relationship between random variables: $c$ depends directly on $a$ \& $b$, $b$ depends directly on $a$, $a$ depends neither on $b$ nor on $c$.
+				
+				For factorization in (8.29), obtain directed graphical model in {\sf Fig. 8.9(a)}.
+			\end{example}
+			In general, can construct corresponding directed graphical model from a factorized joint distribution as follows:
+			\begin{enumerate}
+				\item Create a node $\forall$ random variables.
+				\item For each conditional distribution, add a directed link (arrow) to graph from nodes corresponding to variables on which distribution is conditioned.
+			\end{enumerate}
+			\fbox{Graph layout depends on factorization of joint distribution.} Graph layout depends on choice of factorization of joint distribution.
+			
+			Discussed how to get from a known factorization of joint distribution to corresponding directed graphical model. Now, will do exactly opposite \& describe how to extract joint distribution of a set of random variables from a given graphical model.
+			\begin{example}
+				Looking at graphical model in {\sf Fig. 8.9(b)}, exploit 2 properties: (i) Joint distribution $p(x_1,\ldots,x_5)$ we seek is product of a set of conditionals, one for each node in graph. In this particular example, need 5 conditionals. (ii) Each conditional depends only on parents of corresponding node in graph. E.g., $x_4$ will be conditioned on $x_2$.
+				
+				These 2 properties yield desired factorization of joint distribution $p(x_1,x_2,x_3,x_4,x_5) = p(x_1)p(x_5)p(x_2|x_5)p(x_3|x_1,x_2)p(x_4|x_2)$.
+			\end{example}
+			In general, joint distribution $p({\bf x}) = p(x_1,\ldots,x_K)$ is given as
+			\begin{equation}
+				p({\bf x}) = \prod_{k=1}^K p(x_k|{\sf Pa}_k),
+			\end{equation}
+			where ${\sf Pa}_k$ means ``parent nodes of $x_k$''. Parent nodes of $x_k$ are nodes that have arrows pointing to $x_k$.
+			
+			Conclude this subsection with a concrete example of coin-flip experiment. Consider a Bernoulli experiment (Example 6.8) where probability that outcome $x$ of this experiment is ``heads'' is
+			\begin{equation}
+				p(x|\mu) = {\rm Ber}(\mu).
+			\end{equation}
+			Now repeat this experiment $N$ times \& observe outcomes $x_1,\ldots,x_N$ so that obtain joint distribution
+			\begin{equation}
+				p(x_1,\ldots,x_N|\mu) = \prod_{n=1}^N p(x_n|\mu).
+			\end{equation}
+			Expression on RHS is a product of Bernoulli distributions on each individual outcome because experiments are independent. Recall from Sect. 6.4.5: statistical independence means: distribution factorizes. To write graphical model down for this setting, make distinction between unobserved{\tt/}latent variables \& observed variables. Graphically, observed variables are denoted by shaded nodes so that obtain graphical model in {\sf Fig. 8.10(a): Graphical models for a repeated Bernoulli experiment: (a) Versions with $x_n$ explicit. (b) Version with plate notation. (c) Hyperparameters $\alpha,\beta$ on latent $\mu$.} See: single parameter $\mu$ is same $\forall x_n$, $n = 1,\ldots,N$ as outcomes $x_n$ are identically distributed. A more compact, but equivalent, graphical model for this setting is given in {\sf Fig. 8.10(b)}, where use {\it plate} notation. Plate (box) repeats everything inside (in this case, observations $x_n$) $N$ times. Therefore, both graphical models are equivalent, but plate notation is more compact. Graphical models immediately allow us to place a hyperprior on $\mu$. A {\it hyperprior} is a 2nd layer of prior distributions on parameters of 1st layer of priors. {\sf Fig. 8.10(c)} places a ${\rm Beta}(\alpha,\beta)$ prior on latent variable $\mu$. If treat $\alpha,\beta$ as deterministic parameters, i.e., not random variables, omit circle around it.
+		\end{itemize}
 		\item {\sf8.6. Model Selection.}
 	\end{itemize}
 	\item {\sf9. Linear Regression.}

@@ -786,9 +786,56 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 			
 			Maximum likelihood estimation has a rich history, \& was originally proposed by Sir {\sc Ronald Fisher} in 1930s. Will expand upon idea of a probabilistic model in Sect. 8.4. 1 debate among researchers who use probabilistic models: discussion between Bayesian \& frequentist statistics. As mentioned in Sect. 6.1.1, it boils down to def of probability. Recall from Sect. 6.1: one can consider probability to be a generalization (by allowing uncertainty) of local reasoning (Cheeseman, 1985; Jaynes, 2003). Method of maximum likelihood estimation is frequentist in nature, \& interested reader is pointed to Efron \& Hastie (2016) for a balanced view of both Bayesian \& frequentist statistics.
 			
-			There are some probabilistic models where maximum likelihood estimation may not be possible. Reader is referred to more advanced statistical textbooks, e.g., Casella and Berger (2002), for approaches, e.g. method of moments, $M$-estimation, \& estimating equations.
+			\fbox{There are some probabilistic models where maximum likelihood estimation may not be possible.} Reader is referred to more advanced statistical textbooks, e.g., Casella and Berger (2002), for approaches, e.g. method of moments, $M$-estimation, \& estimating equations.
 		\end{itemize}
-		\item {\sf8.4. Probabilistic Modeling \& Inference.}
+		\item {\sf8.4. Probabilistic Modeling \& Inference.} In ML, frequently concerned with interpretation \& analysis of data, e.g., for prediction of future events \& decision making. To make this task more tractable (dễ uốn nắn{\tt/}làm{\tt/}sai khiến), often build models that describe {\it generative process} that generates observed data.
+		
+		E.g., can describe outcome of a coin-flip experiment (``heads'' or ``tails'') in 2 steps. 1st, define a parameter $\mu$, which describes probability of ``heads'' as parameter of a Bernoulli distribution (Chap. 6); 2nd, can sample an outcome $x\in\{{\rm head, tail}\}$ from Bernoulli distribution $p(x|\mu) = {\rm Ber}(\mu)$. Parameter $\mu$ gives rise to a specific dataset ${\cal X}$ \& depends on coin used. Since $\mu$ is unknown in advance \& can never be observed directly, need mechanisms to learn sth about $\mu$ given observed outcomes of coin-flip experiments. In following, discuss how probabilistic modeling can be used for this purpose.
+		\begin{itemize}
+			\item {\sf8.4.1. Probabilistic models.}
+			\begin{quote}
+				A probabilistic model is specified by joint distribution of all random variables.
+			\end{quote}
+			Probabilistic models represent uncertain aspects of an experiment as probability distributions. Benefit of using probabilistic models: they offer a unified \& consistent set of tools from probability theory (Chap. 6) for modeling, inference, prediction, \& model selection.
+			
+			In probabilistic modeling, joint distribution $p({\bf x},\boldsymbol{\theta})$ of observed variables ${\bf x}$ \& hidden parameters $\boldsymbol{\theta}$ of observed variables ${\bf x}$ \& hidden parameters $\boldsymbol{\theta}$ is of central importance: It encapsulates information from following:
+			\begin{itemize}
+				\item Prior \& likelihood (product rule, Sect. 6.3).
+				\item Marginal likelihood $p({\bf x})$, which will play an important role in model selection (Sect. 8.6), can be computed by taking joint distribution \& integrating out parameters (sum rule, Sect. 6.3).
+				\item Posterior, which can be obtained by dividing joint by marginal likelihood.
+			\end{itemize}
+			Only joint distribution has this property. Therefore, a probabilistic model is specified by joint distribution of all its random variables.
+			\item {\sf8.4.2. Bayesian Inference.}
+			\begin{quote}
+				Parameter estimation can be phrased as an optimization problem.
+			\end{quote}
+			A key task in ML: take a model \& data to uncover values of model's hidden variables $\boldsymbol{\theta}$ given observed variables ${\bf x}$. In Sect. 8.3.1, already discussed 2 ways for estimating model parameters $\boldsymbol{\theta}$ using maximum likelihood or maximum a posteriori estimation. In both cases, obtain a single-best value for $\boldsymbol{\theta}$ so that key algorithmic problem of parameter estimation is solving an optimization problem. Once these point estimates $\boldsymbol{\theta}^*$ are known, use them to make predictions. More specifically, predictive distribution will be $p({\bf x}|\boldsymbol{\theta}^*)$, where use $\boldsymbol{\theta}^*$ in likelihood function.
+			
+			As discussed in Sect. 6.3, focusing solely on some statistics of posterior distribution (e.g. parameter $\boldsymbol{\theta}^*$ that maximizes posterior) leads to loss of information, which can be critical in a system that uses prediction $p({\bf x}|\boldsymbol{\theta}^*)$ to make decisions. These decision-making systems typically have different objective functions than likelihood, a squared-error loss or a mis-classification error. Therefore, having full posterior distribution around can be extremely useful \& leads to more robust decisions. {\it Bayesian inference} is about finding this posterior distribution (Gelman et al., 2004). For a dataset ${\cal X}$, a parameter prior $p(\boldsymbol{\theta})$ \& a likelihood function, posterior
+			\begin{equation}
+				p(\boldsymbol{\theta}|{\cal X}) = \frac{p({\cal X}|\boldsymbol{\theta})p(\boldsymbol{\theta})}{p({\cal X})},\ p({\cal X}) = \int p({\cal X}|\boldsymbol{\theta})p(\boldsymbol{\theta})\,{\rm d}\boldsymbol{\theta},
+			\end{equation}
+			is obtained by applying Bayes' theorem. Key idea: exploit Bayes' theorem to invert relationship between parameters $\boldsymbol{\theta}$ \& data ${\cal X}$ (given by likelihood) to obtain posterior distribution $p(\boldsymbol{\theta}|{\cal X})$.
+			\begin{quote}
+				Bayesian inference is about learning distribution of random variables.
+				
+				Bayesian inference inverts relationship between parameters \& data.
+			\end{quote}
+			Implication of having a posterior distribution on parameters: it can be used to propagate uncertainty from parameters to data. More specifically, with a distribution $p(\boldsymbol{\theta})$ on parameters, our predictions will be (8.23)
+			\begin{equation}
+				p({\bf x}) = \int p({\bf x}|\boldsymbol{\theta})p(\boldsymbol{\theta})\,{\rm d}\boldsymbol{\theta} = \mathbb{E}_{\boldsymbol{\theta}}[p({\bf x}|\boldsymbol{\theta})],
+			\end{equation}
+			\& they no longer depend on model parameters $\boldsymbol{\theta}$, which have been marginalized{\tt/}integrated out. (8.23) reveals: prediction is an average over all plausible parameter values $\boldsymbol{\theta}$, where plausibility is encapsulated by parameter distribution $p(\boldsymbol{\theta})$.
+			
+			Having discussed parameter estimation in Sect. 8.3 \& Bayesian inference here, compare these 2 approaches to learning. Parameter estimation via maximum likelihood or MAP estimation yields a consistent point estimate $\boldsymbol{\theta}^*$ of parameters, \& key computational problem to be solved is optimization. In contrast, Bayesian inference yields a (posterior) distribution, \& key computational problem to be solved is integration. Predictions with point estimates are straightforward, whereas predictions in Bayesian framework require solving another integration problem; see (8.23). However, Bayesian inference gives us a principled way to incorporate prior knowledge, account for side information, \& incorporate structural knowledge, all of which is not easily done in context of parameter estimation. Moreover, propagation of parameter uncertainty to prediction can be valuable in decision-making systems for risk assessment \& exploration in context of data-efficient learning (Deisenroth et al., 2015; Kamthe and Deisenroth, 2018).
+			
+			While Bayesian inference is a mathematically principled framework for learning about parameters \& making predictions, there are some practical challenges that come with it because of integration problems need to solve; see (8.22) \& (8.23). More specifically, if do not choose a conjugate prior on parameters (Sect. 6.6.1), integrals in (8.22) \& (8.23) are not analytically tractable, \& cannot compute posterior, predictions, or marginal likelihood in closed form. In these cases, need to resort to approximations. Here, can use stochastic approximations, e.g. Markov chain Monte Carlo (MCMC) (Gilks et al., 1996), or deterministic approximations, e.g. Laplace approximation (Bishop, 2006; Barber, 2012; Murphy, 2012), variational inference (Jordan et al., 1999; Blei et al., 2017), or expectation propagation (Minka, 2001a).
+			
+			Despite these challenges, Bayesian inference has been successfully applied to a variety of problems, including large-scale topic modeling(Hoffman et al., 2013), click-through-rate prediction (Graepel et al., 2010), data-efficient reinforcement learning in control systems (Deisenroth et al., 2015), online ranking systems (Herbrich et al., 2007), \& large-scale recommender systems. There are generic tools, e.g. Bayesian optimization (Brochu et al., 2009; Snoek et al., 2012; Shahriari et al., 2016), that are very useful ingredients for an efficient search of meta parameters of models or algorithms.
+			\begin{remark}
+				In ML literature, there can be a somewhat arbitrary separation between (random) ``variables'' \& ``parameters''. While parameters are estimated (e.g., via maximum likelihood), variables are usually marginalized out. In this book, not so strict with this separation because, in principle, can replace a prior on any parameter \& integrate it out, which would then turn parameter into a random variable according to aforementioned separation.
+			\end{remark}
+		\end{itemize}
 		\item {\sf8.5. Directed Graphical Models.}
 		\item {\sf8.6. Model Selection.}
 	\end{itemize}

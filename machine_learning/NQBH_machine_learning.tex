@@ -742,7 +742,29 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 				As $\sigma$ is given, 2nd term in the last formula is constant, \& minimizing ${\cal L}(\boldsymbol{\theta})$ corresponds to solving least-squares problem (cf. (8.8)) expressed in 1st term.
 			\end{example}
 			Turn out: for Gaussian likelihoods resulting optimization problem corresponding to maximum likelihood estimation has a closed-form solution. See more details on this in Chap. 9. {\sf Fig. 8.5: For given data, maximum likelihood estimate of parameters results in black diagonal line. Orange square shows value of maximum likelihood prediction at $x = 60$.} shows a regression dataset \& function that is induced by maximum-likelihood parameters. Maximum likelihood estimation may suffer from overfitting (Sect. 8.3.3), analogous to unregularized empirical risk minimization (Sect. 9.2.3). For other likelihood functions, i..e, if model our noise with non-Gaussian distributions, maximum likelihood estimation may not have a closed-form analytic solution. In this case, resort to numerical optimization methods discussed in Chap. 7.
-			\item {\sf8.3.2. Maximum A Posteriori Estimation.}
+			\item {\sf8.3.2. Maximum A Posteriori Estimation.} If have prior knowledge about distribution of parameters $\boldsymbol{\theta}$, can multiply an additional term to likelihood. This additional term is a prior probability distribution on parameters $p(\boldsymbol{\theta})$. For a given prior, after observing some data ${\bf x}$, how should we update distribution of $\boldsymbol{\theta}$? I.e., how should we represent fact: have more specific knowledge of $\boldsymbol{\theta}$ after observing data ${\bf x}$? Bayes' theorem (Sect. 6.3) gives us a principled tool to update our probability distributions of random variables. It allows us to compute a {\it posterior} distribution $p(\boldsymbol{\theta}|{\bf x})$ (more specific knowledge) on parameters $\boldsymbol{\theta}$ from general {\it prior} statements (prior distribution) $p(\boldsymbol{\theta})$ \& function $p({\bf x}|\boldsymbol{\theta})$ that links parameters $\boldsymbol{\theta}$ \& observed data ${\bf x}$ (called {\it likelihood}):
+			\begin{equation}
+				p(\boldsymbol{\theta}|{\bf x}) = \frac{p({\bf x}|\boldsymbol{\theta})p(\boldsymbol{\theta})}{p({\bf x})}.
+			\end{equation}
+			Recall: interested in finding parameter $\boldsymbol{\theta}$ that maximizes posterior. Since distribution $p({\bf x})$ does not depend on $\boldsymbol{\theta}$, can ignore value of denominator for optimization \& obtain
+			\begin{equation}
+				p(\boldsymbol{\theta}|{\bf x})\asymp p({\bf x}|\boldsymbol{\theta})p(\boldsymbol{\theta}).
+			\end{equation}
+			Preceding proportion relation hides density of data $p({\bf x})$, which may be difficult to estimate. Instead of estimating minimum of negative log-likelihood, now estimate minimum of negative log-posterior, which is referred to as {\it maximum a posteriori estimation (MAP estimation)}. An illustration of effect of adding a zero-mean Gaussian prior is shown in {\sf Fig. 8.6: Comparing predictions with maximum likelihood estimate \& MAP estimate at $x = 60$. Prior biases slope to be less steep \& intercept to be closer to 0. In this example, bias that moves intercept closer to 0 actually increases slope.}
+			\begin{example}
+				In addition to assumption of Gaussian likelihood in previous example, assume: parameter vector is distributed as a multivariate Gaussian with zero mean, i.e., $p(\boldsymbol{\theta}) = {\cal N}({\bf0},\boldsymbol{\Sigma})$, where $\boldsymbol{\Sigma}$: covariance matrix (Sect. 6.5). Note: conjugate prior of a Gaussian is also a Gaussian (Sect. 6.6.1), \& therefore expect posterior distribution to also be a Gaussian. See details of maximum a posteriori estimation in Chap. 9.
+			\end{example}
+			Idea of including prior knowledge about where good parameters lie is widespread in ML. An alternative view, which saw in Sect. 8.2.3, is \fbox{idea of regularization}, which introduces an additional term that biases resulting parameters to be close to origin. Maximum a posteriori estimation can be considered to bridge non-probabilistic \& probabilistic worlds as it explicitly acknowledges need for a prior distribution but it still only produces a point estimate of parameters.
+			\begin{remark}
+				Maximum likelihood estimate $\boldsymbol{\theta}_{\rm ML}$ possesses following properties (Lehmann and Casella, 1998; Efron and Hastie, 2016):
+				\begin{itemize}
+					\item Asymptotic consistency: MLE converges to true value in limit of infinitely many observations, plus a random error that is approximately normal.
+					\item Size of samples necessary to achieve these properties can be quite large.
+					\item Error's variance decays in $\frac{1}{N}$, where $N$: number of data points.
+					\item Especially, in ``small'' data regime, maximum likelihood estimation can lead to \emph{overfitting}.
+				\end{itemize}
+			\end{remark}
+			Principle of maximum likelihood estimation (\& maximum a posteriori estimation) uses probabilistic modeling to reason abut uncertainty in data \& model parameters. However, have not yet taken probabilistic modeling to its full extent. In this sect, resulting training procedure still produces a point estimate of predictor, i.e., training returns 1 single set of parameter values that represent best predictor. In Sect. 8.4, will take view: parameter values should also be treated as random variables, \& instead of estimating ``best'' values of that distribution, use full parameter distribution when making predictions.
 		\end{itemize}
 		\item {\sf8.4. Probabilistic Modeling \& Inference.}
 		\item {\sf8.5. Directed Graphical Models.}

@@ -665,6 +665,25 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 			\begin{remark}
 				Many ML tasks are specified with an associated performance measure, e.g., accuracy of prediction or root mean squared error. Performance measure could be more complex, be cost sensitive, \& capture details about particular application. In principle, design of loss function for empirical risk minimization should correspond directly to performance measure specified by ML task. In practice, there is often a mismatch between design of loss function \& performance measure. This could be due to issues e.g. ease of implementation or efficiency of optimization.
 			\end{remark}
+			\item {\sf8.2.3. Regularization to Reduce Overfitting.} This sect describes an addition to empirical risk minimization that allows it to generalize well (approximately minimizing expected risk). Recall: aim of training a ML predictor is so that we can perform well on unseen data, i.e., predictor generalizes well. Simulate this unseen data by holding out a proportion of whole dataset. This hold out set is referred to as {\it test set}. Given a sufficiently rich class of functions for predictor $f$, can essentially memorize training data to obtain zero empirical risk. While this is great to minimize loss (\& therefore risk) on training data, would not expect predictor to generalize well to unseen data. In practice, have only a finite set of data, \& hence split our data into a training \& a test set. Training set is used to fit model, \& test set (not seen by ML algorithm during training) is used to evaluate generalization performance. Important for user to not cycle back to a new round of training after having observed test set. Use subscripts ${}_{\rm train},{}_{\rm test}$ to denote training \& test sets, resp. Revisit this idea of using a finite dataset to evaluate expected risk in Sect. 8.2.4.
+			\begin{quote}
+				Even knowing only performance of predictor on test set leaks information (Blum \& Hardt, 2015).
+			\end{quote}
+			Turn out: empirical risk minimization can lead to {\it overfitting}, i.e., predictor fits too closely to training data \& does not generalize well to new data (Mitchell, 1997). This general phenomenon of having very small average loss on training set but large average loss on test set tends to occur when have little data \& a complex hypothesis class. For a particular predictor $f$ (with parameters fixed), phenomenon of overfitting occurs when risk estimate from training data ${\bf R}_{\rm emp}(f,{\bf X}_{\rm train},{\bf y}_{\rm train})$ underestimates expected risk ${\bf R}_{\rm true}(f)$. Since estimate expected risk ${\bf R}_{\rm true}(f)$ by using empirical risk on test set ${\bf R}_{\rm emp}(f,{\bf X}_{\rm test},{\bf y}_{\rm test})$ if test risk is much larger than training risk, this is an indication of overfitting. Revisit idea of overfitting in Sect. 8.3.3.
+			
+			Therefore, need to somehow bias search for minimizer of empirical risk by introducing a penalty term, which makes it harder for optimizer to return an overly flexible predictor. In ML, penalty term is referred to as {\it regularization}. Regularization is a way to compromise between accurate solution of empirical risk minimization \& size or complexity of solution.
+			\begin{example}[Regularized Least Squares]
+				Regularization is an approach that discourages complex or extreme solutions to an optimization problem. Simplest regularization: replace least-squares problem
+				\begin{equation}
+					\min_{\boldsymbol{\theta}} \frac{1}{N}\|{\bf y} - {\bf X}\boldsymbol{\theta}\|^2,
+				\end{equation}
+				in previous example with ``regularized'' problem by adding a penalty term involving only $\boldsymbol{\theta}$:
+				\begin{equation}
+					\min_{\boldsymbol{\theta}} \frac{1}{N}\|{\bf y} - {\bf X}\boldsymbol{\theta}\|^2 + \lambda\|\boldsymbol{\theta}\|^2.
+				\end{equation}
+				Additional term $\|\boldsymbol{\theta}\|^2$ is called {\it regularizer}, \& parameter $\lambda$: {\it regularization parameter}. Regularization parameter trades off minimizing loss on training set \& magnitude of parameters $\boldsymbol{\theta}$. Often happens: magnitude of parameter values become relatively large if run into overfitting (Bishop, 2006).
+			\end{example}
+			Regularization term is sometimes called {\it penalty term}, which biases vector $\boldsymbol{\theta}$ to be closer to origin. Idea of regularization also appears in probabilistic models as prior probability of parameters. Recall from Sect. 6.6: for posterior distribution to be of same form as prior distribution, prior \& likelihood need to be conjugate. Revisit this idea in Sect. 8.3.2. See in Chap. 12: idea of regularizer is equivalent to idea of a large margin.
 		\end{itemize}
 		
 		\item {\sf8.3. Parameter Estimation.}

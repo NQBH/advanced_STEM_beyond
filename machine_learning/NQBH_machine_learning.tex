@@ -956,11 +956,84 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 			
 			1 topic particularly important in real applications that we do not discuss in this book: idea of structured prediction (Bakir et al., 2007; Nowozin et al., 2014), which allows ML models to tackle predictions that are structured, e.g. sequences, trees, \& graphs. Popularity of neural network models has allowed more flexible probabilistic models to be used, resulting in many useful applications of structured models (Goodfellow et al., 2016, Chap. 16). In recent years, there has been a renewed interest in graphical models due to their applications to causal inference (Pearl, 2009; Imbens and Rubin, 2015; Peters et al., 2017; Rosenbaum, 2017).
 		\end{itemize}
-		\item {\sf8.6. Model Selection.}
+		\item {\sf8.6. Model Selection.} In ML, often need to make high-level modeling decisions that critically influence performance of model. Choices we make (e.g., functional form of likelihood) influence number \& type of free parameters in model \& thereby also flexibility \& expressivity of model. More complex models are more flexible in sense that they can be used to describe more datasets. E.g., a polynomial of degree 1 (a line $y = a_0 + a_1x$) can only be used to describe linear relations between inputs $x$ \& observations $y$. A polynomial of degree 2 can additional describe quadratic relationships between inputs $x$ \& observations $y$. A polynomial of degree 2 can additionally describe quadratic relationships between inputs \& observations.
+		
+		One would now think: very flexible models are generally preferable to simple models because they are more expressive. A general problem: at training time can only use training set to evaluate performance of model \& learn its parameters. However, performance on training set is not really what we are interested in. In Sect. 8.3, have seen: maximum likelihood estimation can lead to overfitting, especially when training dataset is small. Ideally, our model (also) works well on test set (which is not available at training time). Therefore, need some mechanisms for assessing how a model {\it generalizes} to unseen test data. {\it Model selection} is concerned with exactly this problem.		
+		\begin{quote}
+			A polynomial $y = a_0 + a_1x + a_2x^2$ can also describe linear functions by setting $a_2 = 0$, i.e., strictly more expressive than a 1st-order polynomial.
+		\end{quote}
+		\item {\sf8.6.1. Nested Cross-Validation.} Have already seen an approach (cross-validation in Sect. 8.2.4) that can be used for model selection. Recall: cross-validation provides an estimate of generalization error by repeatedly splitting dataset into training \& validation sets. Can apply this idea 1 more time, i.e., for each split, can perform another round of cross-validation. This is sometimes referred to as {\it nested cross-validation}; see {\sf Fig. 8.13: Nested cross-validation. Perform 2 levels of $K$-fold cross-validation.} Inner level is used to estimate performance of a particular choice of model or hyperparameter on a internal validation set. Outer level is used to estimate generalization performance for best choice of model chosen by inner loop. Can test different model \& hyperparameter choices in inner loop. To distinguish 2 levels, set used to estimate generalization performance is often called {\it test case} \& set used for choosing best model is called {\it validation set}. Inner loop estimates expected value of generalization error for a given model (8.39), by approximating it using empirical error on validation set, i.e.,
+		\begin{equation}
+			\mathbb{E}_{\cal V}[{\bf R}({\bf V}|M)]\approx\frac{1}{K}\sum_{k=1}^K {\bf R}({\cal V}^{(k)}|M),
+		\end{equation}
+		where ${\bf R}({\cal V}|M)$ is empirical risk (e.g., root mean square error) on validation set ${\cal V}$ for model $M$. Repeat this procedure $\forall$ models \& choose model that performs best. Note: cross-validation not only gives us expected generalization error, but can also obtain high-order statistics, e.g., standard error, an estimate of how uncertain mean estimate is. Once model is chosen, can evaluate final performance on test set.
+		\item {\sf8.6.2. Bayesian Model Selection.}
+		\item {\sf8.6.3. Bayes Factors for Model Comparison.}
+		\item {\sf8.6.4. Further Reading.} Mentioned at start of sect: there are high-level modeling choices that influence performance of model. Examples include:
+		\begin{itemize}
+			\item Degree of a polynomial in a regression setting
+			\item Number of components in a mixture model
+			\item Network architecture of a (deep) neural network
+			\item Type of kernel in a support vector machine
+			\item Dimensionality of latent space in PCA
+			\item Learning rate (schedule) in an optimization algorithm
+		\end{itemize}
+		\begin{quote}
+			In parametric models, number of parameters is often related to complexity of model class.
+		\end{quote}
+		Rasmussen and Ghahramani (2001) showed: automatic Occam's razor does not necessarily penalize number of parameters in a model, but it is active in terms of complexity of functions. Also showed: automatic Occam's razor also holds for Bayesian nonparametric models with many parameters, e.g., Gaussian processes.
+		
+		If focus on maximum likelihood estimate, there exist a number of heuristics for model selection that discourage overfitting. They are called {\it information criteria}, \& choose model with largest value. {\it Akaike information criterion} (ALC) (Akaike, 1974) $\log p({\bf x}|\boldsymbol{\theta}) - M$ corrects for bias of maximum likelihood estimator by addition of a penalty term to compensate for overfitting of more complex models with lots of parameters. Here, $M$: number of model parameters. AIC estimates relative information lost by a given model.
+		
+		{\it Bayesian information criterion} (BIC) (Schwarz, 1978)
+		\begin{equation}
+			\log p({\bf x}) = \log\int p({\bf x}|\boldsymbol{\theta})p(\boldsymbol{\theta})\,{\rm d}\boldsymbol{\theta}\approx\log p({\bf x}|\boldsymbol{\theta}) - \frac{1}{2}M\log N
+		\end{equation}
+		can be used for exponential family distributions. Here, $N$: number of data points \& $M$: number of parameters. BIC penalizes model complexity more heavily than AIC.
 	\end{itemize}
-	\item {\sf9. Linear Regression.}
+	\item {\sf9. Linear Regression.} In following, will apply mathematical concepts from Chaps. 2, 5, 6, \& 7 to solve linear regression (curve fitting) problems. In {\it regression}, aim: find a function $f$ that maps input ${\bf x}\in\mathbb{R}^D$ to corresponding function values $f({\bf x})\in\mathbb{R}$. Assume: given a set of training inputs ${\bf x}_n$ \& corresponding noisy observations $y_n = f({\bf x}_n) + \varepsilon$, where $\varepsilon$ is an i.i.d. random variable that describes measurement{\tt/}observation noise \& potentially unmodeled processes (which will not consider further in this chap). Throughout this chap, assume zero-mean Gaussian noise. Our task: find a function that not only models training data, but generalizes well to predicting function values at input locations that are not part of training data (see Chap. 8). An illustration of such a regression problem is given in {\sf Fig. 9.1: (a) Dataset: Regression problem: observed noisy function values from which we wish to infer underlying function that generated data. (b) Possible solution to regression problem: Regression solution: possible function that could have generated data (blue) with indication of measurement noise of function value at corresponding inputs (orange distributions).} A typical regression setting is given in {\sf Fig. 9.1(a)}: For some input values $x_n$, observe (noisy) function values $y_n = f(x_n) + \epsilon$. Task: infer function $f$ that generated data \& generalizes well to function values at new input locations. A possible solution is given in {\sf Fig. 9.1(b)}, where we also show 3 distributions centered at function values $f(x)$ that represent noise in data.
+	
+	Regression is a fundamental problem in ML, \& regression problems appear in a diverse range of research areas \& applications, including time-series analysis (e.g., system identification), control \& robotics (e.g, reinforcement learning, forward{\tt/}inverse model learning), optimization (e.g., line searches, global optimization), \& DL applications (e.g., computer games, speech-to-text translation, image recognition, automatic video annotation). Regression is also a key ingredient of classification algorithms. Finding a regression function requires solving a variety of problems, including following:
 	\begin{itemize}
-		\item {\sf9.1. Problem Formulation.}
+		\item {\bf Choice of model (type) \& parametrization} of regression function. Given a dataset, what function classes (e.g., polynomials) are good candidates for modeling data, \& what particular parametrization (e.g., degree of polynomial) should we choose? Model selection, as discussed in Sect. 8.6, allows us to compare various models to find simplest model that explains training data reasonably well.
+		\item {\bf Finding good parameters.} Having chosen a model of regression function, how to we find good model parameters? Here, need to look at different loss{\tt/}objective functions (they determine what a ``good'' fit is) \& optimization algorithms that allow us to minimize this loss.
+		\item {\bf Overfitting \& model selection.} Overfitting is a problem when regression function fits training data ``too well'' but does not generalize to unseen test data. Overfitting typically occurs if underlying model (or its parameterization) is overly flexible \& expressive; see Sect. 8.6. Look at underlying reasons \& discuss ways to mitigate effect of overfitting in context of linear regression.
+		\item {\bf Relationship between loss functions \& parameter priors.} Loss functions (optimization objectives) are often motivated \& included by probabilistic models. Look at connection between loss functions \& underlying prior assumptions that induce these losses.
+		\item {\bf Uncertainty modeling.} In any practical setting, have access to only a finite, potentially large, amount of (training) data for selecting model class \& corresponding parameters. Given that this finite amount of training data does not cover all possible scenarios, may want to describe remaining parameter uncertainty to obtain a measure of confidence of model's prediction at test time; smaller training set, more important uncertainty modeling. Consistent modeling of uncertainty equips model predictions with confidence bounds.
+	\end{itemize}
+	In following, will be using mathematical tools from Chaps. 3, 5, 6, \& to solve linear regression problems. Discuss maximum likelihood \& maximum a posteriori (MAP) estimation to find optimal model parameters. Using these parameter estimates, have a brief look at generalization errors \& overfitting. Toward end of this chap, will discuss Bayesian linear regression, which allows us to reason about model parameters at a high level, thereby removing some of problems encountered in maximum likelihood \& MAP estimation.
+	\begin{itemize}
+		\item {\sf9.1. Problem Formulation.} Because of presence of observation noise, adopt a probabilistic approach \& explicitly  model noise using a likelihood function. More specifically, throughout this chap, consider a regression problem with likelihood function (9.1)
+		\begin{equation}
+			p(y|{\bf x}) = {\cal N}(y|f({\bf x}),\sigma^2).
+		\end{equation}
+		Here ${\bf x}\in\mathbb{R}^D$: inputs \& $y\in\mathbb{R}$: noisy function values (targets). With (9.1), functional relationship between ${\bf x}$ \& $y$ is given as
+		\begin{equation}
+			y = f({\bf x}) + \epsilon,
+		\end{equation}
+		where $\epsilon\sim{\cal N}(0,\sigma^2)$ is independent, identically distributed (i.i.d.) Gaussian measurement noise with mean 0 \& variance $\sigma^2$. Objective: find a function that is close (similar) to unknown function $f$ that generated data \& that generalizes well.
+		
+		In this chap, focus on parametric models, i.e., choose a parametrized function \& find parameters $\boldsymbol{\theta}$ that ``work well'' for modeling data. For time being, assume: noise variance $\sigma^2$ is known \& focus on learning model parameters $\boldsymbol{\theta}$. In linear regression, consider special case: parameters $\boldsymbol{\theta}$ appear linearly in our model. An example of linear regression is given by (9.3)--(9.4)
+		\begin{equation}
+			p(y|{\bf x},\boldsymbol{\theta}) = {\cal N}(y|{\bf x}^\top\boldsymbol{\theta},\sigma^2)\Leftrightarrow y = {\bf x}^\top\boldsymbol{\theta} + \epsilon,\ \epsilon\sim{\cal N}(0,\sigma^2),
+		\end{equation}
+		where $\boldsymbol{\theta}\in\mathbb{R}^D$: parameters we seek. Class of functions described by (9.4) are straight lines that pass through origin. In (9.4), chose a parametrization $f({\bf x}) = {\bf x}^\top\boldsymbol{\theta}$.
+		
+		{\it Likelihood} in (9.3) is probability density function of $y$ evaluated at ${\bf x}^\top\boldsymbol{\theta}$. Note: only source of uncertainty originates from observation noise (as ${\bf x}$ \& $\boldsymbol{\theta}$ are assumed known in (9.3)). Without observation noise, relationship between ${\bf x}$ \& $y$ would be deterministic \& (9.3) would be a Dirac delta.
+		\begin{quote}
+			A Dirac delta (delta function) is zero everywhere except at a single point, \& its integral is 1. It can be considered a Gaussian in limit of $\sigma^2\to0$.
+		\end{quote}
+		
+		\begin{example}
+			For $x,\theta\in\mathbb{R}$ linear regression model in (9.4) describes straight lines (linear functions), \& parameter $\theta$: slope of line. {\sf Fig. 9.2(a) Linear regression example. (a) Example functions that fall into this category: Example functions (straight lines) that can be described using linear model in (9.4). (b) training set. (c) maximum likelihood estimate.} shows some example functions for different values of $\theta$.
+		\end{example}
+		
+		\begin{quote}
+			Linear regression refers to models that are linear in parameters.
+		\end{quote}
+		Linear regression model in (9.3)--(9.4) is not only linear in parameters, but also linear in inputs $x$. {\sf Fig. 9.2(a)} shows examples of such functions. $y = \boldsymbol{\phi}^\top({\bf x})\boldsymbol{\theta}$ for nonlinear transformations $\phi$ is also a linear regression model because ``linear regression'' refers to models that are ``linear in parameters'', i.e., models that describe a function by a linear combination of input features. Here, a ``feature'' is a representation $\boldsymbol{\phi}({\bf x})$ of inputs ${\bf x}$.
+		
+		In following, discuss in more detail how to find good parameters $\boldsymbol{\theta}$ \& how to evaluate whether a parameter set ``works well''. For time being, assume: noise variation $\sigma^2$ is known.		
 		\item {\sf9.2. Parameter Estimation.}
 		\item {\sf9.3. Bayesian Linear Regression.}
 		\item {\sf9.4. Maximum Likelihood as Orthogonal Projection.}

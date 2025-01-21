@@ -5,7 +5,7 @@
 \usepackage{tocloft}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
-\usepackage{amsmath,amssymb,amsthm,enumitem,float,graphicx,mathtools,tikz}
+\usepackage{amsmath,amssymb,amsthm,enumitem,float,graphicx,mathtools,tikz} % txfonts
 \usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
 \allowdisplaybreaks
 \newtheorem{assumption}{Assumption}
@@ -38,6 +38,7 @@
 \DeclareRobustCommand{\divby}{%
 	\mathrel{\vbox{\baselineskip.65ex\lineskiplimit0pt\hbox{.}\hbox{.}\hbox{.}}}%
 }
+\newcommand{\bigCI}{\mathrel{\text{\scalebox{1.07}{$\perp\mkern-10mu\perp$}}}}
 \setlist[itemize]{leftmargin=*}
 \setlist[enumerate]{leftmargin=*}
 
@@ -931,6 +932,29 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 				p(x_1,\ldots,x_N|\mu) = \prod_{n=1}^N p(x_n|\mu).
 			\end{equation}
 			Expression on RHS is a product of Bernoulli distributions on each individual outcome because experiments are independent. Recall from Sect. 6.4.5: statistical independence means: distribution factorizes. To write graphical model down for this setting, make distinction between unobserved{\tt/}latent variables \& observed variables. Graphically, observed variables are denoted by shaded nodes so that obtain graphical model in {\sf Fig. 8.10(a): Graphical models for a repeated Bernoulli experiment: (a) Versions with $x_n$ explicit. (b) Version with plate notation. (c) Hyperparameters $\alpha,\beta$ on latent $\mu$.} See: single parameter $\mu$ is same $\forall x_n$, $n = 1,\ldots,N$ as outcomes $x_n$ are identically distributed. A more compact, but equivalent, graphical model for this setting is given in {\sf Fig. 8.10(b)}, where use {\it plate} notation. Plate (box) repeats everything inside (in this case, observations $x_n$) $N$ times. Therefore, both graphical models are equivalent, but plate notation is more compact. Graphical models immediately allow us to place a hyperprior on $\mu$. A {\it hyperprior} is a 2nd layer of prior distributions on parameters of 1st layer of priors. {\sf Fig. 8.10(c)} places a ${\rm Beta}(\alpha,\beta)$ prior on latent variable $\mu$. If treat $\alpha,\beta$ as deterministic parameters, i.e., not random variables, omit circle around it.
+			\item {\sf8.5.2. Conditional Independence \& $d$-Separation.} Directed graphical models allow us to find conditional independence (Sect. 6.4.5) relationship properties of joint distribution only by looking at graph. A concept called {\it$d$-separation} (Pearl, 1988) is key to this.
+			
+			Consider a general directed graph in which ${\cal A,B,C}$ are arbitrary nonintersecting sets of nodes (whose union may be smaller than complete set of nodes in graph). Wish to ascertain whether a particular conditional independence statement, ``${\cal A}$ is conditionally independent of ${\cal B}$ given ${\cal C}$'', denoted by ${\cal A}\bigCI{\cal B}|{\cal C}$, is implied by a given directed acyclic graph. To do so, consider all possible trails (paths that ignore direction of arrows) from any node in ${\cal A}$ to any nodes in ${\cal B}$. Any such path is said to be {\it blocked} if it includes any node s.t. either of following are true:
+			\begin{itemize}
+				\item Arrows on path meet either  head to tail or tail to tail at node, \& node is in set ${\cal C}$.
+				\item Arrows meet head to head at node, \& neither node nor any of its descendants is in set ${\cal C}$.
+			\end{itemize}
+			If all paths are blocked, then ${\cal A}$ is said to be {\it$d$-separated} from ${\cal B}$ by ${\cal C}$, \& joint distribution over all of variables in graph will satisfy ${\cal A}\bigCI{\cal B}|{\cal C}$.
+			\begin{example}[Conditional Independence]
+				Consider  graphical model in {\sf Fig. 8.11: $D$-separation example.} Visual inspection gives us $b\bigCI d|a,c$, $a\bigCI c|b$, $b\not{\bigCI}d|c$, $a\not{\bigCI}c|b,e$.
+			\end{example}
+			Directed graphical models allow a compact representation of probabilistic models, \& will see examples of directed graphical models in Chaps. 9--11. Representation, along with concept of conditional independence, allows us to factorize respective probabilistic models into expressions that are easier to optimize.
+			
+			Graphical representation of probabilistic model allows us to visually see impact of design choices we have made on structure of model. Often need to make high-level assumptions about structure of model. These modeling assumptions (hyperparameters) affect prediction performance, but cannot be selected directly using approaches have seen so far. Discuss different ways to choose structure in Sect. 8.6.
+			\item {\sf8.5.3. Further Reading.} An introduction to probabilistic graphical models can be found in Bishop (2006, Chap. 8), \& an extensive description of different applications \& corresponding algorithmic implications can be found in book by Koller and Friedman (2009). There are 3 main types of probabilistic graphical models
+			\begin{itemize}
+				\item {\it Directed graphical models (Bayesian networks)}; see {\sf Fig. 8.12(a): 3 types of graphical models: (a) Directed graphical models (Bayesian networks); (b) Undirected graphical models (Markov random fields); (c) Factor graphs.}
+				\item {\it Undirected graphical models (Markov random fields)}; see Fig. 8.12(a)
+				\item {\it Factor graphs}; see Fig. 8.12(c)
+			\end{itemize}
+			Graphical models allow for graph-based algorithms for inference \& learning, e.g., via local message passing. Application range from ranking in online games (Herbrich et al., 2007) \& computer vision (e.g., image segmentation, semantic labeling, image denoising, image restoration (Kittler and Föglein, 1984; Sucar and Gillies, 1994; Shotton et al., 2006; Szeliski et al., 2008)) to coding theory (McEliece et al., 1998), solving linear equation systems (Shental et al., 2008), \& iterative Bayesian state estimation in signal processing (Bickson et al., 2007; Deisenroth and Mohamed, 2012).
+			
+			1 topic particularly important in real applications that we do not discuss in this book: idea of structured prediction (Bakir et al., 2007; Nowozin et al., 2014), which allows ML models to tackle predictions that are structured, e.g. sequences, trees, \& graphs. Popularity of neural network models has allowed more flexible probabilistic models to be used, resulting in many useful applications of structured models (Goodfellow et al., 2016, Chap. 16). In recent years, there has been a renewed interest in graphical models due to their applications to causal inference (Pearl, 2009; Imbens and Rubin, 2015; Peters et al., 2017; Rosenbaum, 2017).
 		\end{itemize}
 		\item {\sf8.6. Model Selection.}
 	\end{itemize}

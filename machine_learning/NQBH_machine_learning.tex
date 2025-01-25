@@ -836,7 +836,7 @@ Including extra time for quizzes, projects, \& exams, these course contents shou
 			\end{itemize}
 			\item {\sf7.3.2. CNN Audio Example: WavenNet.} Slightly contrary to above discussion, begin examples of CNNs with WaveNet, a model which actually does not act on image-like 2D representations (piano roll, spectrogram, etc.); WaveNet is a deep generative model used to process raw audio waveforms.
 			
-			WaveNet has been shown to generate speech mimicing human voice\footnote{Examples are available from DeepMind at \url{https://www.deepmind.com/blog/wavenet-a-generative-model-for-raw-audio}.} \& synthesize musical audio signals. WaveNet directly models raw audio waveform sample-by-sample, in direct contrast to historical methods of speech synthesis where phonemes (âm vị) from a bank can be concatenated to create words, or vocoders can produce synthetic sound fragments. This allows for improved realism \& flexibiity in model, but why has this approach been a long-standing challenge?
+			WaveNet has been shown to generate speech mimicking human voice\footnote{Examples are available from DeepMind at \url{https://www.deepmind.com/blog/wavenet-a-generative-model-for-raw-audio}.} \& synthesize musical audio signals. WaveNet directly models raw audio waveform sample-by-sample, in direct contrast to historical methods of speech synthesis where phonemes (âm vị) from a bank can be concatenated to create words, or vocoders can produce synthetic sound fragments. This allows for improved realism \& flexibiity in model, but why has this approach been a long-standing challenge?
 			
 			Large issue at play: rate of prediction necessary to support sample-level modeling; while phonemes may change on scale of milliseconds, audio files change value at a rate of 16000 samples (or more!) per sec. To make matters worse, have seen from our earlier discussion on deep neural networks that long-term patterns become increasingly hard to model further back they exist in time (relative to current predictive position); when we are moving at 16000 samples per second, there is a huge gap between our current position \& information we may need to effectively model sound!
 			
@@ -1905,6 +1905,121 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 		\item {\sf12.5. Numerical Solution.}
 		\item {\sf12.6. Further Reading.}
 	\end{itemize}
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsection{\cite{Kutyniok2023}. {\sc Gitta Kutyniok}. Mathematics of Artificial Intelligence}
+
+\begin{itemize}
+	\item {\sf Abstract.} Currently witness spectacular success of AI in both science \& public life. However, development of a rigorous mathematical foundation is still at an early stage. In this survey article, which is based on an invited lecture at ICM2022, in particular focus on current ``workhorse'' of AI, namely deep neural networks. Present main theoretical directions along with several exemplary results \& discuss key open problems.
+	\item {\sf Keywords.} applied harmonic analysis, approximation theory, DL, inverse problems, PDEs
+	\item {\sf1. Introduction.} AI is currently leading to 1 breakthrough after another, both in public with, e.g., autonomous driving \& speech recognition, \& in sciences in areas e.g. medical diagnostics or molecular dynamics. In addition, research on AI \&, in particular, on its theoretical foundations is progressing at an unprecedented rate. One can envision: corresponding methodologies will in future drastically change way we live in numerous respects.
+	\begin{itemize}
+		\item {\sf1.1. Rise of AI.} AI is, however, not a new phenomenon. In fact, already in 1943, McCulloch and Pitts started to develop algorithmic approaches to learning by mimicking functionality of human brain, through artificial neurons which are connected \& arranged in several layers to form artificial neural networks. Already at that time, they had a vision for implementation of AI. However, community did not fully recognize potential of neural networks. Therefore, this 1st wave of AI was not successful \& vanished. Around 1980, ML became popular again, \& several highlights can be reported from that period.
+		
+		Real breakthrough \& with it a new wave of AI came around 2010 with extensive application of {\it deep} neural networks. Today, this model might be considered ``workhorse'' of AI, \& in this article, focus predominantly on this approach. Structure of deep neural networks is precisely structure McCulloch and Pitts introduced, namely numerous consecutive layers of artificial neurons. Today 2 main obstacles from previous years have also been eliminated; due to drastic improvement of computing power, training of neural networks with hundreds of layers in sense of {\it deep} neural networks is feasible, \& we are living in age of data, hence vast amounts of training data are easily available.
+		\item {\sf1.2. Impact on mathematics.} Rise of AI also had a significant impact on various fields of mathematics. Maybe 1st area which embraced these novel methods was area of inverse problems, in particular, imaging science, where such approaches have been used to solve highly ill-posed problems e.g. denoising, inpainting, superresolution, or (limited-angle) computed tomography, to name a few. One might note: due to lack of a precise mathematical model of what an image is, this area is particularly suitable for learning methods. Thus, after a few years, a change of paradigm could be observed, \& novel solvers are typically at least to some extent based on methods from AI.
+		
+		Area of PDEs was much slower to embrace these new techniques, reason being: it was not per se evident what advantage of methods from AI for this field would be. Indeed, there seems to be no need to utilize learning-type methods, since a PDE is a rigorous mathematical model. But, lately, observation: deep neural networks are able to beat curse of dimensionality in high-dimensional settings led to a change of paradigm in this area as well. Research at intersection of numerical analysis of PDEs \& AI therefore accelerated since abut 2017. Will delve further into this topic in Sect. 4.2.
+		\item {\sf1.3. Problems of AI.} However, as promising as all these developments seem to be, a word of caution is required. besides fact: practical limitations of methods e.g. deep neural networks have not been explored at all \& at present neural networks are still considered a ``jack-of-all-trades,'' even more worrisome that a comprehensive theoretical foundation is completely lacking. This was very prominently stated during major conference on AI \& ML, which is NIPS (today called NeurIPS) in 2017, when {\sc Ali Rahimi} from Google received Test of Time Award \& during his plenary talk stated: ``ML has become a form of alchemy.'' (Học máy đã trở thành một hình thức thuật giả kim). This raised a heated discussion to which extent a theoretical foundation does exist \& is necessary at all. From a mathematical viewpoint, crystal clear: a fundamental mathematical understanding of AI is inevitably necessary, \& one has to admit: its development is currently in a preliminary state at best.
+		
+		This lack of mathematical foundations, e.g., in case of deep neural networks, results in a time-consuming search for a suitable network architecture, a highly delicate trial-\&-error-based (training) process, \& missing error bounds for performance of trained neural network. One needs to stress: in addition, such approaches also sometimes unexpectedly fail dramatically when a small perturbation of input data causes a drastic change of output leading to radically different -- \& often wrong -- decisions. Such adversarial examples are a well-known problem, which becomes severe in sensitive applications e.g. when minor alterations of traffic signs, e.g., placement of stickers, cause autonomous vehicles to suddenly reach an entirely wrong decision. Evident: such robustness problems can only be tackled by a profound mathematical approach.
+		\item {\sf1.4. A need for mathematics.} These considerations show: there is a tremendous need for mathematics in area of AI. One can currently witness: numerous mathematicians move to this field, bringing in their own expertise. Indeed, discussed in Sect. 2.4, basically all areas of mathematics are required to tackle various difficult, but exciting challenges in area of AI.
+		
+		One can identify 2 different research directions at intersection of mathematics \& AI:
+		\begin{itemize}
+			\item {\it Mathematical Foundations for AI.} This direction aims for deriving a deep mathematical understanding. Based on this, it strives to overcome current obstacles e.g. lack of robustness or places entire training process on a solid theoretical foundation.
+			\item {\it AI for Mathematical Problems.} This direction focuses on mathematical problem settings e.g. inverse problems \& PDEs with goal of employing methodologies from AI to develop superior solvers.
+		\end{itemize}
+		\item {\sf1.5. Outline.} Both research directions will be discussed in this survey paper, showcasing some novel results \& pointing out key future challenges for mathematics. Start with an introduction into mathematical setting, stating main defs \& notations (Sect. 2). Next, in Sect. 3, delve into 1st main direction, namely mathematical foundations for AI, \& discuss research threads of expressivity, optimization, generalization, \& explainability. Sect. 4 is then devoted to 2nd main direction, which is AI for mathematical problems, \& highlight some exemplary results. Finally, Sect. 5 states 7 main mathematical problems \& concludes.
+	\end{itemize}
+	\item {\sf2. Mathematical Setting of AI.} Get into more details on precise def of a deep neural network, which is after all a purely mathematical object. Also touch upon typical application setting \& training process, as well as current key mathematical directions.
+	\begin{itemize}
+		\item {\sf2.1. Def of deep neural networks.} Core building blocks are artificial neurons. For their def, recall structure \& functionality of a neuron in human brain. Basic elements of such a neuron are dendrites, through which signals are transmitted to its soma while being scaled{\tt/}amplified due to structural properties of respective dendrites. In soma of neuron, those incoming signals are accumulated, \& a decision is reached whether to fire to other neurons or not, \& also with which strength.
+		
+		-- Các khối xây dựng cốt lõi là các tế bào thần kinh nhân tạo. Đối với định nghĩa của chúng, hãy nhớ lại cấu trúc \& chức năng của một tế bào thần kinh trong não người. Các thành phần cơ bản của một tế bào thần kinh như vậy là các nhánh cây, qua đó các tín hiệu được truyền đến thân tế bào của nó trong khi được mở rộng{\tt/}khuếch đại do các đặc tính cấu trúc của các nhánh cây tương ứng. Trong thân tế bào thần kinh, các tín hiệu đến đó được tích lũy, \& một quyết định được đưa ra là có nên kích hoạt đến các tế bào thần kinh khác hay không, \& cũng như với cường độ nào.
+		
+		This forms basis for a mathematical def of an artificial neuron.
+		\begin{definition}
+			An \emph{artificial neuron} with \emph{weights} $w_1,\ldots,w_n\in\mathbb{R}$, bias $b\in\mathbb{R}$, \& \emph{activation function} $\rho:\mathbb{R}\to\mathbb{R}$ is defined as function $f:\mathbb{R}^n\to\mathbb{R}$ given by
+			\begin{equation}
+				f(x_1,\ldots,x_n) = \rho\left(\sum_{i=1}^n x_iw_i - b\right) = \rho\left(\langle{\bf x},{\bf w}\rangle - b\right),
+			\end{equation}
+			where ${\bf w} = (w_1,\ldots,w_n),{\bf x} = (x_1,\ldots,x_n)$.
+		\end{definition}
+		By now, there exists a zoo of activation functions with most well-known ones being as follows:
+		\begin{enumerate}
+			\item Heaviside function
+			\begin{equation}
+				\rho(x) = \left\{\begin{split}
+					&1&&x > 0,\\
+					&0&&x\le0.
+				\end{split}\right.
+			\end{equation}
+			\item Sigmoid function $\rho(x) = \frac{1}{1 + e^{-x}}$.
+			\item Rectifiable Linear Unit (ReLU) $\rho(x) = \max\{0,x\}$.
+		\end{enumerate}
+		Remark that of these examples, by far most extensively used activation function is ReLU due to its simple piecewise-linear structure, which is advantageous in training process \& still allows suprior performance.
+		
+		Similar to structure of a human brain, these artificial neurons are now being concatenated \& arranged in layers, leading to an (artificial feed-forward) neural network. Due to particular structure of artificial neurons, such a neural network consists of compositions of affine linear maps \& activation functions. Traditionally, a deep neural network is then defined as resulting function. From a mathematical standpoint, this bears difficulty that different arrangements lead to same function. Therefore, sometimes a distinction is made between architecture of a neural network \& corresponding realization function (see, e.g., [6]). For this article, will, however, avoid such technical delicacies \& present most standard def.
+		\begin{definition}
+			Let $d\in\mathbb{N}$ be dimension of input layer, $L$ number of layers, $N_0\coloneqq d,N_l,l = 1,\ldots,L$, dimensions of hidden \& last layer, $\rho:\mathbb{R}\to\mathbb{R}$ a (nonlinear) activation function, \&, for $l = 1,\ldots,L$, let $T_l$ be affine functions
+			\begin{equation}
+				T_l:\mathbb{R}^{N_{l-1}}\to\mathbb{R}^{N_l},\ T_l{\bf x} = W^{(l)}{\bf x} + b^{(l)},
+			\end{equation}
+			with $W^{(l)}\in\mathbb{R}^{N_l\times N_{l-1}}$ being weight matrices \& $b^{(l)}\in\mathbb{R}^{N_l}$ bias vectors of $l$th layer. Then $\Phi:\mathbb{R}^d\to\mathbb{R}^{N_L}$, given by $\Phi(x) = T_L\rho(T_{L-1}\rho(\cdots\rho(T_1(x))))$, $x\in\mathbb{R}^d$, is called a \emph{(deep) neural network} of \emph{depth} $L$.
+		\end{definition}
+		Weights \& biases are free parameters which will be learned during training process. An illustration of multilayered structure of a deep neural network can be found in {\sf Fig. 1: Deep neural network $\Phi:\mathbb{R}^4\to\mathbb{R}$ with depth $5$.}
+		\item {\sf2.2. Application of a deep neural network.} Aiming to identify main mathematical research threads, 1st have to understand how a deep neural network is used for a given application setting.
+		\begin{itemize}
+			\item {\it Step 1 (Train-test split of dataset).} Assume given samples $({\bf x}^{(i)},y^{(i)})_{i=1}^{\tilde{m}}$ of inputs \& outputs. Task of deep neural network is then to identify relation between those. E.g., in a classification problem, each output $y^{(i)}$ is considered to be label of respective class to which input ${\bf x}^{(i)}$ belongs. One can also take viewpoint: $({\bf x}^{(i)},y^{(i)})_{i=1}^{\tilde{m}}$ arise as samples from a function e.g. $g:{\cal M}\to\{1,2,\ldots,K\}$, where ${\cal M}$ might be a lower-dimensional manifold of $\mathbb{R}^d$, in sense of $y^{(i)} = g({\bf x}^{(i)})$ $\forall i = 1,\ldots,\tilde{m}$.
+			
+			Set $({\bf x}^{(i)},y^{(i)})_{i=1}^{\tilde{m}}$ is then split into a training data set $({\bf x}^{(i)},y^{(i)})_{i=1}^m$ \& a test data set $({\bf x}^{(i)},y^{(i)})_{i=m+1}^{\tilde{m}}$. Training data set is -- as name indicates -- used for training, whereas test data set will later on be solely exploited for testing performance of trained network. Emphasize: neural network is not exposed to test data set during entire training process.
+			\item {\it Step 2 (Choice of architecture).} For preparation of learning algorithm, architecture of neural network needs to be decided upon, i.e., number of layers $L$, number of neurons in each layer $(N_l)_{l=1}^L$, \& activation function $\rho$ have to be selected. Known: a fully connected neural network is often difficult to train, hence, in addition, one typically preselects certain entries of weight matrices $(W^{(l)})_{l=1}^L$ to already be set to 0 at this point.
+			
+			For later purposes, define selected class of deep neural networks by ${\cal NN}_\theta$ with $\theta$ encoding this chosen architecture.
+			\item {\it Step 3 (Training).} Next step is actual training process, which consists of learning affine functions $(T_l)_{l=1}^L = (W^{(l)}\cdot + b^{(l)})_{l=1}^L$. This is accomplished by minimizing {\it empirical risk} (2.1)
+			\begin{equation}
+				\widehat{\cal R}(\Phi_{(W^{(l)},b^{(l)})_l})\coloneqq\frac{1}{m}\sum_{i=1}^m (\Phi_{(W^{(l)},b^{(l)})_l}({\bf x}^{(i)}) - y^{(i)})^2.
+			\end{equation}
+			A more general form of optimization problem: (2.2)
+			\begin{equation}
+				\min_{(W^{(l)},b^{(l)})_l} \sum_{i=1}^m {\cal L}(\Phi_{(W^{(l)},b^{(l)})_l}({\bf x}^{(i)}),y^{(i)}) + \lambda{\cal P}((W^{(l)},b^{(l)})_l),
+			\end{equation}
+			where ${\cal L}$: a loss function to determine a measure of closeness between network evaluated in training samples \& (known) values $y^{(i)}$, with ${\cal P}$ being a penalty{\tt/}regularization term to impose additional constraints on weight matrices \& bias vectors.
+			
+			1 common algorithmic approach is gradient descent. Since, however, $m$ is typically very large, this is computationally not feasible. This problem is circumvented by randomly selecting only a few gradients in each iteration, assuming: they constitute a reasonable average, which is coined {\it stochastic gradient descent}.
+			
+			Solving optimization problem then yields a network $\Phi_{(W^{(l)},b^{(l)})_l}:\mathbb{R}^d\to\mathbb{R}^{N_L}$, where
+			\begin{equation}
+				\Phi_{(W^{(l)},b^{(l)})_l}({\bf x}) = T_L\rho(T_{L-1}\rho(\cdots\rho(T_1({\bf x})))).
+			\end{equation}
+			\item {\it Step 4 (Testing).} Finally, performance (often also called {\it generalization ability}) of trained neural network is tested using test data set $({\bf x}^{(i)},y^{(i)})_{i=m+1}^{\tilde{m}}$ by analyzing whether
+			\begin{equation}
+				\Phi_{(W^{(l)},b^{(l)})_l}({\bf x}^{(i)})\approx y^{(i)},\ \forall i = m + 1,\ldots,\tilde{m}.
+			\end{equation}
+		\end{itemize}
+		\item {\sf2.3. Relation to a statistical learning problem.} From procedure above, can already identify selection of architecture, optimization problem, \& generalization ability as key research directions for mathematical foundations of deep neural network. Considering entire learning process of a deep neural network as a statistical learning problem reveals those 3 research directions as indeed natural ones for analyzing overall error.
+		
+		For this, assume: there exists a function $g:\mathbb{R}^d\to\mathbb{R}$ s.t. training data $({\bf x}^{(i)},y^{(i)})_{i=1}^m$ is of form $({\bf x}^{(i)},g({\bf x}^{(i)}))_{i=1}^m$ \& ${\bf x}^{(i)}\in[0,1]^d$ $\forall i = 1,\ldots,m$. A typical continuum viewpoint to measure success of training: consider {\it risk} of a function $f:\mathbb{R}^d\to\mathbb{R}$ given by
+		\begin{equation}
+			{\cal R}(f)\coloneqq\int_{[0,1]^d} (f({\bf x}) - g({\bf x}))^2\,{\rm d}{\bf x},
+		\end{equation}
+		where used $L^2$-norm to measure distance between $f,g$. Error between trained deep neural network $\Phi^0(\coloneqq\Phi_{(W^{(l)},b^{(l)})_l})\in{\cal NN}_\theta$ \& optimal function $g$ can then be estimated by ($\le$ Optimization error $+$ Generalization error $+$ Approximation error)
+		\begin{equation}
+			{\cal R}(\Phi^0)\le[\widehat{\cal R}(\Phi^0) - \inf_{\Phi\in{\cal NN}_\theta} \widehat{\cal R}(\Phi)] + 2\sup_{\Phi\in{\cal NN}_\theta} |{\cal R}(\Phi) - \widehat{\cal R}(\Phi)| + \inf_{\Phi\in{\cal NN}_\theta} {\cal R}(\Phi).
+		\end{equation}
+		These considerations lead to main research threads described in:
+		\item {\sf2.4. Main research threads.} Can identify 2 conceptually different research threads, 1st being focused on developing mathematical foundations of AI \& 2nd aiming to use methodologies from AI to solve mathematical problems. Intriguing to see how both have already led to some extent to a paradigm shift in some mathematical research areas, most prominently area of numerical analysis.
+		\begin{itemize}
+			\item {\sf2.4.1. Mathematical foundations for AI.}
+			\item {\sf2.4.2. AI for mathematical problems.}
+		\end{itemize}
+	\end{itemize}
+	\item {\sf3. Mathematical Foundations for AI.}
+	\item {\sf4. AI for Mathematical Problems.}
+	\item {\sf5. Conclusion: 7 Mathematical Key Problems.}
 \end{itemize}
 
 %------------------------------------------------------------------------------%

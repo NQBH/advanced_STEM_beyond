@@ -528,6 +528,285 @@ Including extra time for quizzes, projects, \& exams, these course contents shou
 			\end{itemize}
 		\end{itemize}
 		\item {\sf7.2. Recurrent Neural Network for Music.}
+		\begin{itemize}
+			\item {\sf7.2.1. Sequence Modeling with RNNs.} RNNs are a way to model time sequences, an early neural network application. They are used to represent a function where output depends on input as well as previous output. I.e., model must have memory for what has happened before, maintaining some representation of interval state.
+			
+			Can imagine RNN to be learning probability of a sequence of tokens, $P(w_1,\ldots,w_n)$, from a collection of example sequences used in training.
+			
+			Once this language model is learned, can solve problem of predicting next token of a sequence (i.e., computing $P(w_n|w_1,\ldots,w_n)$).
+			
+			This can be framed as a supervised learning problem, in which sequence $(w_1,\ldots,w_{n-1})$ acts as input which corresponds to output $w_n$.
+			
+			Essentially, an RNN is 2 neural networks: one which acts on input, \& one which acts on hidden state.
+			\begin{align}
+				h_t &= f(h_{t-1},x_t)\mbox{ (general form)},\\
+				h_t &= \tanh(W_{hh}h_{t-1} + W_{xh}X_t)\mbox{ (NN with activation)},\\
+				o_t &= W_{hy}h_t\mbox{ (output)}
+			\end{align}
+			In these equations, $h$ represents hidden state \& $x$ represents input.
+			\begin{example}[Hello World from an RNN]
+				To introduce RNN architecture, build an example which learns to say ``Hello World''. More accurately, this model will learn to output a sequence of letters that match sequences it has been trained on (in this case, ``Hello World''). Given a starting letter (or set of letters), model generates next character of output. Continue building this example through sec as cover foundations of RNNs.
+				
+				1st, how shall we represent input to this network? Because mathematical operations in neural network must operate on numbers, must covert our letter data (``h'', ``e'', ``l'', ``l'', ``o'') into numerical data.
+				
+				For simplicity, work in a hypothetical world with a reduced alphabet: E-D-H-L-O-R-W.
+				
+				1 scheme for encoding letter ``h'' would be to replace letter with its positional index in alphabet (2, in case of our reduced alphabet [\& using 0-indexing]). However, this introduces an issue as value of different numbers will carry different apparent weights; mathematically, recognize $5 > 2$, but would not say: letter R has a different implicit significance than letter H.
+				
+				Solution for this is to use previously introduced 1-hot encoding. In this schema, letters are treated as categorical (rather than quantitative) variables, so any 1 letter is replaced by a 7-vector of 0s -- with exception of index associated with letter we represent, where we find a one. In this way, every letter has an equal magnitude in representation, while information distinguishing between letters is preserved.
+				
+				Important: this method fails for large (or expanding) vocabulary sizes. To overcome these particular challenges (or simply to reduce input dimensionality), technique of embedding can be used, a concept recurring through our discussion in prior \& following chaps.
+				
+				But even though we've learned to encode single letters to vectors, input is still not ready for RNN. RNNs are meant to operate on \emph{sequences} rather than singular input. So, input \emph{length} may actually vary depending on use cases. In Hello World example, use an input length of 3 (so a $3\times7$ matrix when considering encoding for each sequence element), but in other problems this length can grow to 1000s of values. Explore challenges associated with large input sequence lengths in this chap.
+				
+				What about output? Like other classification problems, our network will output a fixed-length probability vector, representing probability that next token is a particular word from a predefined vocabulary set. Think about how dimensionality of this vector may change between domains; for forming English words, have 26 letters, but for forming English language, there are $> 171000$ words in dictionary alone (excluding all sorts of proper nouns). For Western music, have 12 chroma, but for a single instrument, vocabulary may span entire playable range, \& for some instruments (e.g. piano), our vocabulary grows exponentially with number of possible simultaneous notes possible in a chord.
+				
+				Start RNN example by preparing 1-hot encoding scheme. 1st, import necessary packages:
+				\begin{verbatim}
+					import numpy as np
+					import tensorflow as tf
+					from tensorflow import keras
+					from tensorflow.keras import layers
+					import tensorflow.keras.backend as K
+				\end{verbatim}
+				Define our letter encoding:
+				\begin{verbatim}
+					def letter_to_encoding(letter):
+					    letters = ['e','d','h','l','o','r','w']
+					    vec = np.zeros((7),dtype="float32")
+					    vec[letters.index(letter)] = 1
+					    return vec
+				\end{verbatim}
+				Can see effects of this encoding with this sample:
+				\begin{verbatim}
+					for letter in "hello":
+					    print(letter_to_encoding(letter))
+				\end{verbatim}
+				which gives output
+				\begin{verbatim}
+					[0. 0. 1. 0. 0. 0. 0.]
+					[1. 0. 0. 0. 0. 0. 0.]
+					[0. 0. 0. 1. 0. 0. 0.]
+					[0. 0. 0. 1. 0. 0. 0.]
+					[0. 0. 0. 0. 1. 0. 0.]
+				\end{verbatim}
+				
+				\begin{remark}[NQBH]
+					If use {\tt import keras.backend as K} then get error
+					\begin{verbatim}
+						Traceback (most recent call last):
+						  File "/home/nqbh/advanced_STEM_beyond/machine_learning/Python/hello_world.py", line 53, in <module>
+						    print_output = K.eval(out)
+						                   ^^^^^^
+						AttributeError: module 'keras.backend' has no attribute 'eval'
+					\end{verbatim}
+					then change it to {\tt import tensorflow.keras.backend as K}. Link: \url{https://stackoverflow.com/questions/58047454/how-to-fix-module-keras-backend-tensorflow-backend-has-no-attribute-is-tf}.
+				\end{remark}
+				For our example, use a single-layer RNN. Network will take an input with shape $3\times7\times N$, where 3 represents input sequence length, 7 represents size of data vector associated with each input, \& $N$: number of samples in a training batch.
+				
+				RNN layer is a Keras SimpleRNN; each of 3 nodes of this RNN will create a 7-dimensional output (again used to represent likelihood associated with a single character in our alphabet). Though each length-3 input will map to a length-3 output, take only 3rd (final) output to represent predicted ``next character'' of our phrase. Had we left off \verb|return_sequences| parameter, network would output only this final character (but for sake of example, it will be interesting to see entire predicted sequence). To normalize raw output into a probability-like representation, apply a softmax activation function prior to output.
+				
+				Model definition:
+				\begin{verbatim}
+					model = keras.Sequential()
+					model.add(keras.Input(shape=(3,7,)))
+					model.add(layers.SimpleRNN(7, activation="softmax", return_sequences=True))
+					model.summary()
+				\end{verbatim}
+				Exercises at end of chap asks you to think about why this network has 105 trainable parameters. As a hint, recall: input to RNN node is made up of input vector, plus hidden state, plus a bias term, \& these inputs are fully connected to generated output.
+				
+				In below code, create our training data. In our hypothetical world, only phrase that exists is ``helloworld'', so train network on fragments of this phrase. For those following along by running code, can see in below example: for each 3-letter portion, output matches next predicted letter following each letter of input.
+				\begin{verbatim}
+					train_text = "helloworld"*30
+					def generate_train_set(train_text, as_words=False):
+					    x_train = []
+					    y_train = []
+					    for i in range(len(train_text) - 4):
+					        if as_words:
+					            x_train += [[train_text[i:i+3]]]
+					            y_train += [[train_text[i+1:i+4]]]
+					        else:
+					            x_train += [[letter_to_encoding(letter) for letter in train_text[i:i+3]]]
+					            y_train += [[letter_to_encoding(letter) for letter in train_text[i+1:i+4]]]
+				    	if as_words:
+					        print(x_train[0][:5])
+					        print(y_train[0][:5])
+					    else:
+					        print(np.array(x_train)[0,:5])
+					        print(np.array(x_train).shape)
+					    return np.array(x_train), np.array(y_train)
+					
+					generate_train_set(train_text, True)
+					x_train, y_train = generate_train_set(train_text)
+				\end{verbatim}
+				So what happens when we generate an output phrase using untrained network?
+				\begin{verbatim}
+					# What happens when generate an output phrase using untrained network?
+					letters = ['e','d','h','l','o','r','w']
+					
+					seed = "hel"
+					result = "hel"
+					input_data = np.array([[letter_to_encoding(letter) for letter in seed]])
+					model.get_weights()
+					
+					for i in range(7):
+					    out = model(input_data)
+					    print_output = K.eval(out)
+					    for row in print_output[0]:
+					        next_letter = letters[np.argmax(row)]
+					    result += next_letter
+					    print(result)
+					    input_data = np.array([[letter_to_encoding(letter) for letter in result[-3:]]])
+				\end{verbatim}
+				After running above code, reach sth like this:
+				\begin{verbatim}
+					hele
+					helee
+					heleee
+					heleeee
+					heleeeee
+					heleeeeee
+					heleeeeeee
+				\end{verbatim}
+				Model weights are not yet optimized; train with following lines:
+				\begin{verbatim}
+					model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.01), loss=tf.keras.losses.CategoricalCrossentropy())
+					model.fit(x_train, y_train, batch_size=24, epochs=300, verbose=0)
+				\end{verbatim}
+				After training, try again to produce output:
+				\begin{verbatim}
+					input_data = np.array([[letter_to_encoding(letter) for letter in seed]])
+					model.get_weights()
+					result = "hel"
+					for i in range(7):
+					    out = model(input_data)
+					    print_output = K.eval(out)
+					    for row in print_output[0]:
+					        next_letter = letters[np.argmax(row)]
+					    result += next_letter
+					    print(result)
+					    input_data = np.array([[letter_to_encoding(letter) for letter in result[-3:]]])
+				\end{verbatim}
+				Give following output from our simple RNN:
+				\begin{verbatim}
+					hell
+					hello
+					hellow
+					hellowo
+					hellowor
+					helloworl
+					helloworld
+				\end{verbatim}
+			\end{example}
+			Is a recurrent neural model of music appropriate for generating music that ``sounds like'' other music by a particular composer or within a genre? An ideal statistical model would learn from all possible sequence inputs to create an expected musical output, but size of possible inputs is $v^n$, where $v$: vocabulary size \& $n$: input sequence length. Even considering just 88 piano keys \& 10 notes in a sequence creates $2.785^{19}$ combinations!
+			
+			To overcome this, think back to Markov assumption introduced in Chap. 2. If approximate: a prediction depends only on a small number of preceding tokens, problem becomes much more tractable to model. But, in doing so, lose ability to model long-range effects or earlier tokens.
+			
+			So, how do neural models maintain long-range effects?
+			
+			A 1st attempt to solve this problem could consider combining sequence of input tokens into 1 mega-token, for which a corresponding prediction can be made. A neural network can be applied over this input matrix, with dimensions of vocabulary size or embedding vector length by number of elements in input sequence. Note: have a built-in limitation with such a model: tokens further away than number of elements in input sequence cannot influence model output.
+			
+			\fbox{\bf Pros of RNNs.} Recurrent neural networks overcome this constraint; i.e., recurrent neural networks can learn extensive long-range influences despite limited-length input sequences. It does so by encoding sequential history into a hidden state, which will refer to at time $t$ by $h_t$ in this discussion (can imagine ``h'' to stand for ``history''). This state $h_t$ is updated with input $x_t$, then used in predicting output $y_t$. Encasing this history state in a black box, RNN appears to receive a sequence of vectors $x_0,x_1,\ldots,x_T$ as input, \& produces a sequence of vectors $o_0,o_1,\ldots,o_T$ as output. Internally, can imagine process to begin with computation of history state:
+			\begin{equation}
+				h_t = F(h_{t-1},x_t),
+			\end{equation}
+			then prediction of output using updated history:
+			\begin{equation}
+				o_t = G(h_t).
+			\end{equation}
+			Relationships between inputs, multi-dimensional hidden history state, \& outputs can be learned with neural network training procedures, as studied in previous chaps. These relationships are represented by functions $F,G$, which may be composed as:
+			\begin{align}
+				F(h,x) &= A_1(W_{hh}*h + W_{xh}*x),\\
+				G(h) &= A_2(W_{ho}*h).
+			\end{align}
+			In this notation, $A_i$ stands for an {\bf a}ctivation function, \& $W_{\rm IO}$ stands for a matrix of learnable {\bf w}eights which map from dimensionality of matrix's {\bf i}nput vector class to matrix's {\bf o}utput vector class. $W_{xh}$ describes influence of input on next state, $W_{hh}$ describes influence of current state on next state, \& $W_{ho}$ describes influence of next state on next output. An illustration of relationship between input, hidden state, \& output are shown in {\sf Fig. 7.8: In its compact form (left), \& RNN consists of a learned hidden state $h$, which is driven by both current input \& past values, \& itself drives output $o$, as described in RNN equations. To make explicit development of state $h$ over time \& its relationship to input \& output, can imagine RNN in its ``unfolded'' form (right).}
+			
+			If ignore intermediate outputs $o_1,\ldots,o_{N-1}$, this is really just a feedforward network, with initial inputs $h_0$ \& $x_1$, \& with additional inputs concatenated to outputs of particular intermediate layers. However, in a traditional feedforward network, weights between layers are uniquely learned. In case of an RNN, these weights are {\it shared}, i.e., same weights will act on input $x_t$ regardless of time, \& same weights will act on 1 state $h_t$ to create next state (or to create output) regardless of time.
+			
+			How do we learn in this shared-weight scenario? In previous backpropagation example, derivative of loss w.r.t. a particular weight could be calculated, \& weights adjusted accordingly. Now, for same weight, have multiple possible derivatives since there are multiple inputs influenced by that parameter!
+			
+			Without diving too deep into theory, consider an approach by which we take average of these gradient contributions. I.e., for any of $N$ instances of $w_i$ in network, which can call $w_{i_n}$, can compute $\frac{\partial L}{\partial w_{i_n}}$. Then, when deciding how to modify shared parameter $w_i$, use
+			\begin{equation}
+				\frac{\partial L}{\partial w_i} = \frac{1}{N}\sum_{n=1}^N \frac{\partial L}{\partial w_{i_n}}.
+			\end{equation}
+			In principle, average should move us closer toward an optimal solution since largest amount of ``mistake'' explained by weight applied at a particular layer will have largest amount of influence on this averaged gradient component.
+			
+			-- Về nguyên tắc, giá trị trung bình sẽ đưa chúng ta đến gần hơn với giải pháp tối ưu vì lượng ``sai sót'' lớn nhất được giải thích bằng trọng lượng áp dụng cho một lớp cụ thể sẽ có ảnh hưởng lớn nhất đến thành phần gradient trung bình này.
+			
+			There is 1 critical issue with this approach (\& in fact, with any networks sufficiently deep), referred to as {\it vanishing gradient problem}, as discussed in Chap. 6. This problem is particularly notable for modeling sequential data since it effectively limits how far back in time a model can learn to ``reach'' to influence its output; while RNN is capable of representing long sequences of data, it loses ability to learn at length.
+			
+			-- Có 1 vấn đề quan trọng với cách tiếp cận này (thực tế là với bất kỳ mạng nào đủ sâu), được gọi là {\it sự cố gradient biến mất}, như đã thảo luận trong Chương 6. Sự cố này đặc biệt đáng chú ý đối với việc mô hình hóa dữ liệu tuần tự vì nó hạn chế hiệu quả khoảng thời gian mà một mô hình có thể học để ``tiếp cận'' nhằm tác động đến đầu ra của nó; trong khi RNN có khả năng biểu diễn các chuỗi dữ liệu dài, thì nó lại mất khả năng học theo chiều dài.
+			
+			Methods to mitigate problem of long-range influence have been developed, including Gated Recurrent Unit (GRU) \& Long Short-Term Memory (LSTM) network.
+			\begin{example}[Gated Architectures: Long Short-Term Memory Network \& Gated Recurrent Unit]
+				A Long Short-Term Memory network, or LSTM, is an RNN architecture designed to deal with vanishing gradient problem that plagues traditional RNNs, causing difficulty in learning long-term dependencies commonly found in music \& audio.
+				
+				LSTM architecture introduces a new type of unit called \emph{memory cell} that can store information for long periods of time. This represents ``long'' component of LSTM. Memory cell is controlled by 3 gates:
+				\begin{enumerate}
+					\item input gate,
+					\item forget gate,
+					\item output gate.
+				\end{enumerate}
+				Each gate is typically activated using a sigmoid function which determines how much of input should be let through to memory cell, how much of memory cell's contents should be forgotten, \& how much of memory cell's contents should be output.
+				
+				``Short-term'' component of LSTM is accounted for by addition of a hidden state at each time $t$, similar to an RNN. Hidden state is updated based on current input, previous hidden state, \& (a key distinction) memory cell output. This state can help to carry time forward from each step of input sequence as well as call upon long-term information.
+				
+				All 3 gates of memory cell receive current input \& previous hidden state to inform their evaluation. By using memory cells \& gates to control flow of information, LSTMs are better able to learn long-term dependencies in input sequence.
+				
+				Like classic RNN \& LSTM, a Gated Recurrent Unit architecture, or GRU, processes input 1 sequence element at a time \& maintains a hidden state updated by a combination of both current input \& previous hidden state. What differentiates GRUs is addition of new types of gating mechanisms to control flow of information through network. GRUs use 2 types of gates:
+				\begin{enumerate}
+					\item an update gate, to decide how much information from previous state should be retained \& incorporated into new hidden state, \&
+					\item a reset gate, to decide how much of previous hidden state should be discarded.
+				\end{enumerate}
+				Benefit of GRU is its simpler architecture, with fewer parameters than a comparable LSTM. This helps to avoid overfitting on small datasets, a common problem to overparameterized models. Both LSTMs \& GRUs offer a gated mechanism for modeling long-term dependencies, \& choice between architectures ultimately falls to considerations related to task at hand, e.g. dataset size, expected time dependencies, \& computational constraints.
+			\end{example}
+			\item {\sf7.2.2. Sequence-to-Sequence Modeling with RNNs.} Sometimes seek not to learn only an estimated distribution for a sequential pattern, but a mapping from 1 sequence to another. E.g., pretend you are a jazz saxophonist, \& you attend a friend's classical piano recital (buổi độc tấu piano cổ điển). A striking melody from 1 of their pieces catches your attention, \& you'd like to improvise on it when you practice later that day. In this case, you are taking an input sequence of melody in a classical context, \& translating it to a jazz melody (which may have different styles of ornamentation). Such a problem is solved using sequence-to-sequence (often abbreviated seq2seq) modeling.
+			
+			Formally, can describe such problems this way: Given vocabularies $V_z,V_x$ \& training data pairs $(z_n,x_n)$ independently \& identically distributed from some distribution $p$, can we estimate distribution $p(x|z)$?
+			
+			Framing above problem in this notation, $V_z$ are possible notes from piano, \& $V_x$ are possible notes from saxophone. Can collect samples of same melody played once by classical pianist $z_n$ \& again by jazz saxophonist $x_n$, \& use these to learn a distribution of what we expect jazz saxophone to sound like $x$ for a given piano melody $z$. There are numerous other problems we can frame as {\tt seq2seq}, including problem of transcription (given an audio sequence, returning same represented music in symbolic notation).
+			\item {\sf7.2.3. Performance RNN.} Now, extend our RNN exploration to a musical example. Performance RNN [101] is a network which generates performance-quality MIDI piano output\footnote{Performance RNN is a product of Google Magenta, introduced in Appendix A. Can learn more about Performance RNN on authors' blog \url{https://magenta.tensorflow.org/performance-rnn}, \& run code yourself with instructions available in their GitHub Repository \url{https://github.com/magenta/magenta/tree/main/magenta/models/performance_rnn}.} In fact, Performance RNN was project which introduced MIDI-Like tokenization scheme introduced in previous sect. To understand Performance RNN, examine its components:
+			\begin{itemize}
+				\item Data: Performance RNN is trained on Yamaha e-Piano Competition dataset (introduced in Appendix D). This is a collection of $\approx1400$ MIDI files, generated by recording keypresses of highly skilled classical pianists. Accordingly, music is expressive in both timing (rubato) \& velocity (dynamics).
+				\item Tokenization: MIDI-Like tokenization is employed. At each step, input to RNN is a single 1-hot 413-dimensional vector representing 413 possible note-on, note-off, velocity, \& time-shift events.
+				\item Model Architecture: 3 hidden layers of LSTMs with 512 cells.
+				\item Training \& Loss: Model is trained using RNN technique of {\it teacher forcing}.
+				\begin{example}
+					\emph{Teacher forcing} helps models reach stable convergence during training by providing correct (rather than predicted) output as input to each sequential step. E.g., imagine a model meant to learn a C-major scale (C-D-E-F-G-A-B-C). In a non-forced training, if model is given input C to 1st cell, \& incorrectly predicts an output of E, E would propagate as input to 2nd sequential is forced to D to match ground truth. While this is beneficial to efficiently learn given pattern, it should be noted: this reduces model's ability to learn from variations on pattern which may not be represented in training data (but may exist otherwise). For generative models which seek to perform \& innovate (rather than replicate), this could be detrimental in some cases.
+				\end{example}
+				Log loss (i.e. categorical cross-entropy) is loss function used to drive training backpropagation.
+				\item Output Generation: beam search.
+				\begin{example}[Beam Search]
+					Beam search is a heuristic search algorithm used to find most likely sequence of output given an input sequence. It is a variant of \emph{breadth-1st search} algorithm (thuật toán tìm kiếm theo chiều rộng), which attempts to \fbox{balance exploration \& exploitation}, a problem common to search algorithms as well as AI subfield of reinforcement learning.\footnote{While reinforcement learning is outside scope of this book, readers are encouraged to consider: generation in a creative or imaginative sense requires this same consideration of exploring new ideas vs. utilizing known patterns.}
+					
+					Basic idea behind beam search: generate multiple possible outputs at each step, but keep only top-$K$ most probable candidates. This value $K$ is referred to as \emph{beam width}. Algorithm then proceeds to next step, generating a new set of candidate outputs for each of previous $K$ candidates, continuing until a stopping criterion is met.
+					
+					In theory, beam search algorithm eliminates low-probability candidates early on to speed up \& improve quality of output sequence search. However, beam search can also suffer from problem of getting \fbox{stuck in local optima}, where most likely candidates at each step do not necessarily lead to overall most likely output sequence or reflect desired long-term behavior.
+					
+					E.g., consider a diatonic melody (giai điệu diatonic) which starts on C, \& will choose next note from C major scale. Predictive model may output probabilities for each of these notes: $(C,0.1),(D,0.1),(E,0.1),(F,0.2),(G,0.3),(A,0.15),(B,0.05)$. If use a beam width of 3, select top 3 most likely possible sequences, CF, CG, CA, \& associate these with respective probabilities $0.2,0.3,0.15$.
+					
+					Now, next 3 sets of next sequence options are generated, conditioned on \emph{each} of these selections; this may be sth like
+					\begin{enumerate}
+						\item CF: $(C, 0.05), (D, 0.025), (E, 0.25), (F, 0.3), (G, 0.3), (A, 0.05), (B, 0.025)$
+						\item CG: $(C, 0.3), (D, 0.025), (E, 0.25), (F, 0.05), (G, 0.3), (A, 0.05), (B, 0.025)$
+						\item CA: $(C, 0.2), (D, 0.025), (E, 0.2), (F, 0.3), (G, 0.2), (A, 0.05), (B, 0.025)$
+					\end{enumerate}
+					Score for each of resulting possibilities is probability of prior sequence times probability of next token. E.g., considering 1st row above, would have as possibilities $(CFC, 0.01), (CFD, 0.005), (CFE, 0.05), (CFF, 0.06), (CFG, 0.06), (CFA, 0.01), (CFB, 0.005)$. Repeat this $\forall3$ beams, \& from resulting scores, select again top 3 candidate sequences -- these are only sequences which will continue propagating forward. Once desired sequence length is reached, beam search is concluded \& available sequence assigned most probability can be selected.
+				\end{example}
+			\end{itemize}
+			\item {\sf7.2.4. SampleRNN.} In introduction of {\it SampleRNN: An Unconditioned End-to-End Neural Audio Generation Model} [64], Mehri et al. highlight primary challenges associated with audio generation:
+			\begin{enumerate}
+				\item A large discrepancy (sự khác biệt, sự tương phản) between dimensionality of audio signal \& semantically meaningful unit (e.g., 1 word is, on average, around 6000 samples at a 16 kHz sample rate).
+				\item Structure occurs at various scales (correlations between neighboring samples as well as samples thousands of units apart).
+				\item Compression of raw audio to meaningful spectral (or other handcrafted) features.
+				\item Necessary correction of audio after decompression (e.g., consider complexity of Griffin-Lim for reconstructing phase).
+			\end{enumerate}
+			SampleRNN seeks to reduce this complicated, engineering-heavy pipeline by allowing a neural network to learn these compression \& reconstruction processes as well as relationships between many samples comprising meaningful audio signals.
+			
+			SampleRNN approaches this task using a hierarchical framework, where lower-level modules operate on individual samples, but higher-level modules operate at a larger timescale \& lower temporal resolution. This is 1 example approach toward learning audio (or musical) trends which operate at different scales to overcome limitations fo a rudimentary sample-by-sample RNN framework.
+			
+			How are model outputs of SampleRNN evaluated (\&, in general, how can we evaluate performance of generative audio models)? In this case, {\bf AB Testing} with human rates is employed. Pairwise combinations of SampleRNN with other comparative models (including WaveNet) are presented to human raters, who then express preference for ``A'' over ``B'' (or vice versa). Then, one can compute a number of statistics, most common being percentage of times that samples from model in question were preferred over alternative. Subjectivity of evaluating artistic or preference-based generative models creates difficulties in presenting conclusive metrics, but AB preference testing is 1 such approach that is generally accepted \& useful.
+		\end{itemize}
 		\item {\sf7.3. Convolutional Neural Networks for Music \& Audio.}
 		\item {\sf7.4. Pretrained Audio Neural Networks.}
 		\item {\sf7.5. Exercises.}

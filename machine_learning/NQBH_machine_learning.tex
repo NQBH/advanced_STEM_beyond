@@ -353,7 +353,7 @@ Including extra time for quizzes, projects, \& exams, these course contents shou
 				\begin{equation}
 					\frac{\partial L}{\partial w_1} = \frac{\partial(z - z_{\rm truth})^2}{\partial z}\frac{\partial z}{\partial y_1}\frac{\partial y_1}{\partial w_1} = 2(z - z_{\rm truth})w_5x_1 = \cdots = 8.
 				\end{equation}
-				Compute $\nabla L = \left[\frac{\partial L}{\partial w_1},\ldots,frac{\partial L}{\partial w_6},frac{\partial L}{\partial b_1},\ldots,frac{\partial L}{\partial b_3}\right]$: this is where gradient descent comes into play. Adjust weights according to formula given in (6.3), employing a learning rate of 0.1 for our example. $W_{\rm new} = \cdots$. Our loss drops from 16 to $L = (3.72 - 5)^2 = 1.6384$ exactly like we wanted! Could continue our descent until approximately reach a local minimum (or reach suitable performance for particular problem).
+				Compute $\nabla L = \left[\frac{\partial L}{\partial w_1},\ldots,\frac{\partial L}{\partial w_6},\frac{\partial L}{\partial b_1},\ldots,\frac{\partial L}{\partial b_3}\right]$: this is where gradient descent comes into play. Adjust weights according to formula given in (6.3), employing a learning rate of 0.1 for our example. $W_{\rm new} = \cdots$. Our loss drops from 16 to $L = (3.72 - 5)^2 = 1.6384$ exactly like we wanted! Could continue our descent until approximately reach a local minimum (or reach suitable performance for particular problem).
 				
 				While this example illustrates a method for calculating useful gradient, note: these gradients are computed in efficient, vectorized fashion in DL software.
 				\item {\sf6.1.2.3. A Note on Initialization.} Before we can begin training, network weights must be initialized to some value so that a gradient can eventually be computed. Saw: our ``set all weights to 1'' approach in previous example may not have been too effective, especially since both halves of network effectively learned symmetrically, making them redundant. A better option: initialize weights randomly. This is a very important step, because if network weights are too small, corresponding nodes will never be activated by data, \& weights may be too small for loss gradient to enact meaningful changes to weights. Similarly, if network weights begin too large, values may ``explode'', creating too strong of a response from corresponding nodes, \& consume all of gradient descent effects to prevent learning on other network weights (especially when values exceed limits of your programming language's numeric representations \& become NaN or infinite).
@@ -380,15 +380,153 @@ Including extra time for quizzes, projects, \& exams, these course contents shou
 				With these tools in place, now possible to construct neural network architectures which model real-world phenomenon (i.e., patterns which are not necessarily linear) through connections of matrix-multiplication-like layers (often fully-connected tapestries of nodes) followed by activation functions, with successive layers repeated, modified, \& tailored to content of task at hand.
 			\end{itemize}
 		\end{itemize}
-		\item {\sf6.2. Viewing Neural Networks in a Musical Frame.}
+		\item {\sf6.2. Viewing Neural Networks in a Musical Frame.} 1 application of neural networks for music: field of music information retrieval (tìm kiếm thông tin âm nhạc). Information retrieval deals with ability to search \& find content by some query. A few examples of problems in music information retrieval include
+		\begin{enumerate}
+			\item Music Classification: sorting music based on properties e.g. genre, style, mood, etc.,
+			\item Music Recommendation: determining musical similarity between samples \& corresponding suggestion of music based on user history,
+			\item Music Source Separation \& Instrument Identification: separating a mixed audio signal to its original signals, as well as recognizing \& extracting a particular instrument within a mixed signal,
+			\item Music Transcription: converting an audio recording to a symbolic notation, \&
+			\item Music Generation: automatic creation of musical compositions or audio signals.
+		\end{enumerate}
+		Many of above problems require an output used for making a prediction over multiple predefined possibilities. E.g., in classifying music, may be predicting 1 genre out of $n$ possibilities. In generation, may be predicting next note, given $n$ possible notes in instrument's range. Typically represent such outputs using a vector of size $n$, where each entry of vector represents confidence of model in selecting particular element. Often beneficial to treat these values way we treat probabilities, so that their numeric values can be used to generate output that matches some learned distribution. However, this requires values in vector to be between 0 \& 1 (inclusive),  with sum of all entries $= 1$. May wonder, why not just select element of greatest value, without normalizing vector? Such an {\it argmax} function is non-differentiable, so network will lose ability to learn from this structure. To overcome this, {\it softmax} function is used, notable for its normalization property, its ability to preserve numeric ranking among entries, \& its differentiability.
+		\begin{example}[Softmax Learning]
+			{\it Softmax} equation is
+			\begin{equation}
+				{\rm softmax}(v)_i = \frac{\exp v_i}{\sum_{j=0}^{n-1} \exp v_j}.
+			\end{equation}
+			Note: output of softmax is another vector of length $n$. Recall: vector output by softmax can be imagined as a probability distribution over classes.
+			
+			Sometimes, want distribution to be very sharp, with nearly all probability associated with 1 particular value, indicating a strong confidence for a particular class. Other times, particularly with generating so-called creative output, may want a softer distribution, where values still preserve order but may introduce some ambiguity \& lack of confidence (quantified by magnitude of probability). Put differently: there is a tradeoff between distribution flatness \& novelty of repeated sampling. If repeatedly sample a uniform distribution to predict next note of a sequence, will have a very random (aleotoric -- ngẫu nhiên) sequence. By contrast, if repeatedly sample a distribution with probability 1 for note G \& 0 for all other notes, our piece will certainly not contain variance we come to expect in music.
+			
+			Mathematical mechanism we can use to influence these distributions is referred as as {\it temperature}. Temperature is reflected in coefficient $T$, using which we rewrite softmax with temperature:
+			\begin{equation}
+				{\rm softmax}_T(v)_i = \frac{\exp\frac{v_i}{T}}{\sum_{j=0}^{n-1} \exp\frac{v_ij}{T}}.
+			\end{equation}
+			Can think of $T$ as a scaling factor which increases (or decreases) distance between points of $v$ on number line; concavity of exponential function then amplifies these differences, meaning: points pushed further apart on number line have even greater relative values to their neighbors, \& points pushed inward have less strength. Accordingly, $0 < T < 1$ will create a sharper distribution, while $1 < T < \inf$ creates a softer distribution. In exercises at end of chap, show: distribution approaches uniformly when $T$ approaches infinity.
+			
+			Consider again our equation for categorical cross-entropy for classification:
+			\begin{equation}
+				{\rm CCE} = -\sum_{c=1}^C {\bf 1}(c = y_{\rm truth})\log P(c).
+			\end{equation}
+			Using properties of logarithms, can reformulate this as:
+			\begin{equation}
+				{\rm CCE} = -\log\prod_{c=1}^C P(c)^{(c = y_{\rm truth})}.
+			\end{equation}
+			In spirit of temperature, can reformulate this expression for cases when goal is not to learn a single-probability result, but rather a distribution over outcomes. Replace indicator function ${\bf 1}(c = y_{\rm truth})$ with target probability for class $c,t_c$:
+			\begin{equation}
+				{\rm CCE} = -\sum_{c=1}^C t_c\log P(c).
+			\end{equation}
+			Using properties of logarithms, can reformulate this as:
+			\begin{equation}
+				{\rm CCE} = -\log\prod_{c=1}^C P(c)^{t_c}.
+			\end{equation}
+			Term inside logarithm is in fact {\it likelihood function} of network parameters $\theta$ given observation $X = (x,y_{\rm truth})$. This is stylized as ${\cal L}(\boldsymbol{\theta}|X)$ \& it $= P(X|\boldsymbol{\theta})$.
+			
+			Our measure of error depends on these output probabilities $P(c)$, which will refer to as {\it output vector} $y$. Also clear: these probabilities depend on input provided to softmax layer (values that become ``scaled'' into probabilities). Refer to these inputs as vector $z$. A natural question arises in order to backpropagate: how does error change w.r.t. $z$? I.e., what is gradient $\frac{\partial L}{\partial z}$? For any component,
+			\begin{equation}
+				\frac{\partial L}{\partial z_i} = -\sum_{j=1}^c \frac{\partial t_c\log y_i}{\partial z_j} = -\sum_{j=1}^C t_c\frac{\partial\log y_i}{\partial z_j} = -\sum_{j=1}^C t_c\frac{1}{y_j}\frac{\partial y_i}{\partial z_j}.
+			\end{equation}
+			Show: $\frac{\partial y_i}{\partial z_j} = y_i(1 - y_i)$ when $i = j$, \& $\frac{\partial y_i}{\partial z_j} = -y_iy_j$ when $i\ne j$. Use this result in gradient computation:
+			\begin{equation}
+				\frac{\partial L}{\partial z_i} = \cdots = -t_i + y_i\sum_{j=1}^C t_j = y_i - t_i.
+			\end{equation}
+			With this gradient available, our network can learn a distribution associated with a sample using softmax function.
+		\end{example}
+		Now: have shown a way to \fbox{learn by tuning weights}, think through some immediate architectural ideas \& consequences. Begin by considering 2D of contraction or expansion of our network. Can grow vertically (i.e., adding or subtracting neurons to a particular layer) or horizontally (adding additional layers to network).
+		\begin{itemize}
+			\item What happens when we shrink vertically? In this case, may {\it underparameterize} our model; i.e., trying to represent a complex problem or pattern with too few variables. When we do so, model may succeed in generalizing \& perform well in most typical cases, but may fail for nuanced, less frequent cases.
+			\item What happens when we grow vertically? In this case, may {\it overparameterize} our model; have created so many variables that each sample in our data may be fit to its own subset of variables. Model may fail to generalize to underlying pattern in data, so while it may perform perfectly in training, it will be unlikely to perform on unseen data.
+			\item What happens when we shrink horizontally (i.e., make network more ``shallow'')? In this case, model will lose its ability to combine preceding pieces of information, a process refer to as generating higher-level features. In this type of abstract reasoning, may begin to observe a numerical piece \& reason about its individual notes at early layers (e.g., hearing an F\#, then another F\#, then a G $\ldots$). In a middle layer, might combine some of these notes together to form an idea of a small motif (like a scale ascending a minor 3rd). At even deeper layers, motifs may be combined to form a phrase (a scale ascending a minor 3rd, then descending a perfect 5th $\ldots$ ah, perhaps this is Ode to Joy!). Our model's ability to combine features \& learn on these combinations is limited by depth of network.
+			\item Might think: a solution to this shallow learning challenge: make network even deeper. But, what happens when a network is made too deep? This leads to what is commonly referred to as {\it vanishing gradient problem}.
+		\end{itemize}
 		\item {\sf6.3. Learning Audio Representations.}
 		\item {\sf6.4. Audio-Basis Using PCA \& Matrix Factorization.}
 		\item {\sf6.5. Representation Learning with Auto-Encoder.}
 		\item {\sf6.6. Exercises.}
 	\end{itemize}
-	\item {\sf Chap. 7. Representing Voices in Pitch \& Time.}
+	\item {\sf Chap. 7. Representing Voices in Pitch \& Time.} Music \& Audio AI is an interdisciplinary field between computer science \& music. In comparison to more established AI fields e.g. natural language processing (NLP) \& computer vision (CV), it is still in its infancy \& contains a greater number of unexplored topics. As a result of this, DL models from natural language processing \& computer vision are frequently applied to music \& audio processing tasks. Take neural network architectures as an example. Convolutional neural networks (CNNs) have been extensively used in audio classification, separation, \& melody extraction tasks, whereas recurrent neural networks (RNNs) \& transformer models are widely used in music generation \& recommendation tasks. Have seen various models of RNN, CNN, \& transformer gradually outperform traditional methods to achieve new state-of-arts in recent years.
+	
+	In this chap, introduce 2 basic neural network architectures that are used to learn musical structures in time \& pitch or time \& frequency, namely Recurrent Neural Network (RNN) \& Convolutional Neural Network (CNN). However, extent to which these architectures are capable of handling music \& audio tasks remains debatable. In this chap, illustrate similarities of music \& audio problems with NLP \& CV tasks by comparing music generation with text generation, \& music melody extraction with image semantic segmentation. This provides an overview of how RNN, CNN, \& transformer architectures can be applied to these problems. Then, examine uniqueness of music \& audio problems in comparison to tasks in other fields. Previous research has demonstrated that certain designs for these architectures, both in terms of representation \& multitaskstructure, can result in improved performance in music \& audio tasks.
+	
+	RNN caught attention of music research as early as 1990s, after opening up field of neural networks to modeling language \& sequences. In [91], {\sc Peter Todd} describes a connectionist approach to algorithmic composition based on Elman \& Jordan networks.\footnote{Elman network, which became modern RNN, uses feedback connections from hidden units, rather than from output in Jordan design.} Early approaches were mostly monophonic (đơn âm) \& were difficulty to train. With advent of long short-term memory networks (LSTMs) \& success of modern RNNs in Natural Lagrange Processing, these tools became 1st go-to neural architecture for modeling sequential structure in music. Inspired by success of CNNs in computer vision, \& thinking about music as a time-frequency 2D structure, CNNs were also applied to music. Big difference between 2 architectures is in their treatment of relations between frequencies \& times. In RNN model is purely sequential; all temporal relations are summarized into tokens that are used to represent either single or multiple voices. Thus, tokenization will be our 1st topic of study. In CNN, convolutional filters are applied both in time \& across notes (in MIDI pianoroll representation) or frequencies (in audio spectral representation). Main difficulty in using CNNs for music: limited span or ``receptive field'' of convolutional kernel (filter). While RNN has a decaying memory that is arbitrarily long, CNNs field of view is limited to size of filter. Using dilated (giãn nở) CNNs (kernels that skip samples) \& hierarchical structures, e.g. Wavenet, became possible ways to overcome limitation of short-time scope of filter response. Some hybrid variants were proposed as well, including biaxial-RNNs that apply RNNs both to time \& frequency{\tt/}notes axis, or combinations of CNN-RNN that try to combine local feature extraction aspect of CNNs with long term memory aspect of RNNs.
 	\begin{itemize}
-		\item {\sf7.1. Tokenization.}
+		\item {\sf7.1. Tokenization.} How do we pass musical input to a neural network? This is question addressed by tokenization (phân loại), process of converting musical information into smaller units called {\it tokens}.
+		
+		Tokenization is used widely in Natural Language Processing. To illustrate variety of tokenization approaches, consider 2 possible tokenizations of Einstein's sentence, ``If I were not a physicist, I would probably be a musician.'' If 1 such letter-based tokenization, create a representation for each token \{I,f,w,e,r,n,o,t,a,p,h,y,s,c,u,l,d,b,m\}. In a different word-based tokenization, create a representation for each token \{If, I, were, not, a, physicist, would, probably, be, musician\}. What are possible benefits of different tokenization methods? If have a model with which we would like to learn how to spell or construct words, letter-based tokenization will be much more useful. On other hand, if would like to learn relationship between words in a sentence for proper grammatical \& semantic usage, word-based tokenization is more appropriate. Similarly, way we tokenize musical data has a direct impact on what our models can efficiently learn from data, \& types of output they can produce.
+		
+		Now thinking in terms of input \& output, if want to learn end-to-end a complete MIDI file, why is MIDI not best representation? Network would need to learn formatting specifications of MIDI encoding, which are not related to musical information itself. So, can tokenize musical information itself to help our network learn musical patterns -- in essence, extract \& translate musical building blocks from MIDI data.
+		
+		MidiTok [92] is a Python package which implements multiple popular MIDI tokenization schemes:
+		\begin{enumerate}
+			\item MIDI-Like [93]: This scheme contains 413 tokens, including 128 note-on \& note-off events (1 per MIDI pitch), 125 time-shift events (increments of 8ms to 1 sec), \& 32 velocity events. MidiTok added additional quantization parameters in their implementation to allow for different numbers of tokens to accommodate different memory constraints or precision goals.
+			\item Revamped (Đã được cải tiến) MIDI-Derived Events (REMI) [94]: REMI maintains note-on \& note velocity events from MIDI-like. Note-off events are instead replaced with Note Duration events; a single note is therefore represented by 3 consecutive tokens (note-on, note velocity, \& note duration). Authors propose this to be advantageous in modeling rhythm than placing a series of time-shift events between a note-on \& note-off in MIDI-like. Additionally, problem of a ``dangling'' note-on event is resolved, should model fail to learn that note-on \& note-off events must (naturally) appear in pairs.
+			\item Structured [95]: Unlike MIDI-Like, with Structured tokenization, tokens are provided in standardized order of pitch, velocity, duration, time shift. This encoding cannot accommodate rests or chords, so it is only suitable for modeling particular musical examples.
+			\item Compound Word [96]: At this point, may have considered an odd artifact of MIDI encoding. Oftentimes, there are events which are intended to be simultaneous, but due to 1-instruction-at-a-time nature of MIDI, they are provided as a sequence. E.g., a combination of note-on instruction \& its associated note velocity would be provided as a sequence of 2 sequential instructions in MIDI, but these instructions are intended to describe same event. This idiosyncrasy (tính cách lập dị) is corrected in Compound Word. These compound words are supertokens -- i.e., combinations of tokens for pitch (vocabulary size 86), duration (17), velocity (24), chord (133), position (17), tempo (58), track (2), \& family (4). Including ``ignore'' tokens for each category, there are a total of 338 vocabulary items to form a Compound Word supertoken. ``Family'' token allows for distinction between track events, note events, metric events, \& end-of-sequence events. Similar encodings include Octuple [97] \& MuMidi [98].
+		\end{enumerate}
+		MidiTok uses 4 parameters to tokenize for each of implemented schemes:
+		\begin{enumerate}
+			\item Pitch Range: minimum \& maximum pitch values (integers in MIDI).
+			\item Number of Velocities: how many MIDI velocity levels (range 0 to 127) to quantize to.
+			\item Beat Resolution: sample rate per beat, \& beat ranges for which sample rate should be applied. Specifying a high resolution for notes with a short number of beats can improve precision of time shifts \& note durations.
+			\item Additional Tokens: opportunity to specify additional tokens to be included in addition to standard set. This includes:
+			\begin{enumerate}
+				\item Chord: a token which indicates a chord is being played at particular timestep.
+				\item Rest: explicit definition of a time-shift event. Helpful to insert a tokenized rest for understanding input{\tt/}outputk, as opposed to simply placing next note at a later timestep since rests are an important, notated feature of most music.
+				\item Tempo: a token to represent current tempo; a range of possible tempos \& number of tempos to quantize within this range should be provided to MidiTok.
+			\end{enumerate}
+		\end{enumerate}
+		
+		\begin{itemize}
+			\item {\sf7.1.1. Music Generation vs. Text Generation.} What is relation between Music Generation vs. Text? Music generation's objective: create musical content from input data or machine representations. Music content can be in form of symbolic music notes or audio clips. Typically, input data serves as generative condition, e.g. previous musical context, motivation, or other musical information (e.g., chord progression, structure indication, etc.). Text generation's objective: generate natural language in response to a condition. This condition could be a couple of initial words, conclusion of a sequence, or change in mode (e.g., professional, neural, creative, etc.). By \& large, music \& text generation have a similar conditional probability of decomposing formats:
+			\begin{equation}
+				{\bf y} = y(y_1,y_2,\ldots,y_T),\ p({\bf y}|{\bf c}) = \prod_t p(y_t|{\bf y}_{1:t-1},{\bf c}),
+			\end{equation}
+			where $y$ denotes token in different sequential tasks, \& $c$ denotes different conditions as discussed above. In symbolic music generation, this token can be a single musical note or a latent embedding of a measure{\tt/}phrase of music. In text generation, this token can be a single character, a word embedding, or even a sentence embedding with prompt learning.
+			
+			Music \& text generation both follow a similar probability model. As a result, successful RNN \& transformer models for text generation can be easily transferred to music generation tasks. Earlier models of music generation, e.g. MidiNet [99] \& Performance-RNN, directly applied RNN-family architectures (LSTM, GRU) to melody generation task.			
+			\item {\sf7.1.2. Representation Design of Music Data.} While text \& music generation share a time sequential model, music generation is distinguished by 2 characteristics: (1) spatiality of musical content; \& (2) hierarchy of musical conditions.
+			
+			Musical note is fundamental element of music. As illustrated in {\sf Fig. 7.1: Music score of Mozart Sonata K331, 1st variation (top), \& text data from internet (bottom). Black part is given context \& red one is text generation.}, music sequences contain information beyond temporal dimension -- vertical or spatial relationship of notes. Each time step in a text sequence contains a single word or letter; in a music sequence, each time step contain multiple notes. Whereas piano piece depicted in figure is a relatively straightforward form of music composition, multi-track compositions (e.g., symphony, concerto, polyphony) contain more vertical relationships between notes \& even different instruments. This data violates 1 of fundamental assumptions of RNN \& transformer architectures (based on positional encoding) -- sequence naturally contains sequential temporal information for each step of input. Simply encoding music data results in many steps of input containing same temporal information. As a result, architecture introduces erroneous conditional dependencies on various music notes mathematically.
+			
+			2nd, as illustrated in {\sf Fig. 7.2: Music structure analysis of a jazz composition -- Autumn Leaves, by {\sc Bill Evans}.}, music has a more complex structure than text. A piano piece is composed of paragraphs, phrases, sub-phrases, harmonic functions, melodies, \& textures. It becomes even more complex when expressiveness structure is added (volume changes, rhythmic changes). While such a structure may exist in a typical novel's text generation (prologue, scenes, characters, paragraphs, \& content), frequently absent from a large number of text generation samples. More importantly, music's structure is dynamic as well as hierarchical in nature. As illustrated in {\sf Fig. 7.2}, melody \& texture change with each beat; harmonic functions change with certain intervals; phrases \& sub-phrases undergo even greater changes. A significant flaw in current music generation model is absence of long-term structure in generated samples (e.g., repetition \& variation of musical motives). In following secs, discuss some of designs of music data representations \& discuss how they affect performance of music generation models.
+			\begin{itemize}
+				\item {\sf7.1.2.1. 3-state Melody Tokens.} Basic representation of music data is shown in {\sf Fig. 7.3: 3-state melody tokens of music data.} It encodes music into 3 types of tokens:
+				\begin{enumerate}
+					\item Pitch, musical pitch of note, range from [A0, C8].
+					\item Hold, duration of note, to maintain last pitch tone.
+					\item Rest, rest note.
+				\end{enumerate}
+				MidiNet [100], Performance-RNN [101], \& Folk-RNN generated music directly from tokenized representation. Consequently, MusicVAE [102], Music InpaintNet [103], EC2-VAE [104], \& Music SketchNet [105] combined it with variational autoencoder (VAE) to generate latent variables to handle a piece of music as basic generation unit. This is an intuitive representation of music that retains essential musical information. Model's inputs \& outputs are directly representation itself, eliminating need for additional structures to decode. Disadvantage of this representation is also self-evident: it cannot describe polyphonic music (i.e., multiple notes played simultaneously), but only monophonic melodies, because its temporal information has already been bound to sequence's position, as is case with text generation.
+				\item {\sf7.1.2.2. Simultaneous Note Group.} To encode polyphonic music as input, must consider overlapping notes structure. To address this issue, Pianotree-VAE [106] proposes a vertical representation -- simultaneous note group. As illustrated in {\sf Fig. 7.4: Simultaneous note group encoding of music data, by Pianotree-VAE [106]}, it groups simultaneous notes by grouping multiple note events that share same onset, where each note has several attributes e.g. pitch \& duration. Model's input is further encoded using RNN with simultaneous group as fundamental unit, which is further transformed into hidden states by GRU in Pitch-Duration Encoder; in decoder, model is expanded with another GRU layer for predicting pitches of each group \& an final fully connected layer for predicting duration of each note. This results in final latent $z$ vector representation, that captures structure of music for every 2 bars without overlap. Paper compares midi-event tokens, simultaneous note structure \& latent $z$ for a downstream music generative applications, showing: simultaneous notes \& latent vector representation are superior to midi-event encoding.
+				\item {\sf7.1.2.3. MIDI Message.} Although above 3 representations have their own ways to process music data, they miss a crucial part of encoding other music information besides notes. MIDI message encoding, from Music Transformer [107], breaks this limitation by introducing more music content information to music generation task. As shown in {\sf Fig. 7.5: MIDI message encoding of music data}, MIDI message is a 4-state token:
+				\begin{enumerate}
+					\item NOTE-ON (128 pitch classes): starting signal of 1 note.
+					\item NOTE-OFF (128 pitch classes): ending signal of 1 note.
+					\item TIME-SHIFT (32 interval classes): duration mark to move timeline.
+					\item VEL (128 volume classes): velocity changes.
+				\end{enumerate}
+				In REMI [108], MIDI message is expanded into 6 states, including note onset, tempo, bar line, phrase, time, \& volume. With this representation, model is able to acquire additional musical data \& discover new patterns, resulting better well-structure \& varied musical composition.
+				\item {\sf7.1.2.4. Music Compound Word.} Music Compound Word [109] proposes a new structural design for MIDI messages, complete with an improved input \& output network module. As illustrated in {\sf Fig. 7.6: Compound word encoding of music data, cf. MIDI-message encoding.}, state of music input in a compound word transformer is comparable to that of a MIDI message, but input \& output mechanisms are entirely different.
+				
+				Music compound word can be adapted into different scenarios of music generation by changing types of states along with decoding layers. {\sf Fig. 7.7: Compound word encoding of 3 music generation scenarios.} shows 3 types of music compound words for
+				\begin{enumerate}
+					\item music generation with performance labels
+					\item multi-track music generations with multiple instruments
+					\item music generation with structural labels
+				\end{enumerate}
+				Besides that, because music compound word contains position state (e.g., beat, bar, etc.), transformer architecture can be used without any positional encoding. This begins to differentiate music generation task from text generation task when same architecture is used.
+				\item {\sf7.1.2.5. Discussion: Signal Embedding vs. Symbolic Embedding.} In previous chap, saw an embedding of an audio signal that can be used to obtain salient audio components, e.g. audio basis, compression, or noise removal. Used analogy between PCA \& linear AE to get an intuition that embedding is a subspace where meaningful part of signal resides. In particular, showed for sinusoid$+$noise example: this embedding is very similar to signal transformation using Fourier methods. Projection to a lower dimensional space of sinusoids not only allows discarding noise, but can also be used as a representation of ``meaningful'' part of signal. Representation is latent space found by AE \& representation found by Fourier transform share similar basic vectors.
+				
+				But can such embedding also be applied to MIDI? Autoencoding of categorical variables is a poorly defined problem -- after all, neural network embeddings assume: similar concepts are placed nearby in embedding space. These promixities can be used to understand music concepts based on cluster categories. Then, they can also serve as an input to a ML model for a supervised task \& for visualization of concepts \& relations between categories.
+				
+				Natural to represent categorical variables as 1-hot vectors. Operation of 1-hot encoding categorical variables is actually a simple embedding where each category is mapped to a different vector. This process takes discrete entities \& maps each observation to a vectors of 0s \& a single 1 signaling specific category. 1-hot encoding technique has 2 main drawbacks:
+				\begin{enumerate}
+					\item For high-cardinality variables -- those with many unique categories -- dimensionality of transformed vector becomes unmanageable.
+					\item Mapping is completely uninformed: ``similar'' categories are not placed closer to each other in embedding space.
+				\end{enumerate}
+				So embeddings could be obtained using either a manually designed representation, or could try to obtain it from data. This type of contextual embedding is what commonly refer to as ``representation learning''. In case of temporal sequences, might want to obtain a representation of a complete sequence. In many musical applications, RNN is used to pre-process sequences before representation learning happens.
+			\end{itemize}
+		\end{itemize}
 		\item {\sf7.2. Recurrent Neural Network for Music.}
 		\item {\sf7.3. Convolutional Neural Networks for Music \& Audio.}
 		\item {\sf7.4. Pretrained Audio Neural Networks.}

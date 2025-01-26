@@ -2091,8 +2091,80 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 	\end{equation}
 	where $s\in[0,1]$ indexes network depth. Network $f_\theta(x_0)\coloneqq x_1$ maps initialization $x_{s=0}$ to solution $x_{s=1}$ of (8) at time $s = 1$. Parameters are $\theta = (U_s,V_s,b_s)_{s\in[0,1]}$. This formalization, referred to as a {\it neural ODE}, was initially introduced in [6] to leverage tools from adjoint equation theory to reduce memory cost of computing gradient $\nabla E(\theta)$ during backpropapagation. It also establishes a connection to control theory, as training via gradient descent (2) computes an {\it optimal control} $\theta$ that interpolates between data $x^i$ \& labels $y^i$. However, specificity of learning theory compared to control theory lies in goal of computing such control using gradient descent (2). To date, no detailed results exist on this. Nonetheless, in his thesis, {\sc Raphael Barboni} [3] demonstrated: if network is initialized near an interpolating network, gradient descent converges to it.
 	\item {\sf4. Generative AI for Vector Data.}
+	
+	{\bf Self-Supervised Pre-Training.} Remarkable success of large generative AI models for vector data, e.g. images (often referred to as ``diffusion models''), \& for text (large language models for LLMs), relies on use of new large-scale network architectures \& creation of new training tasks known as ``self-supervised''. Manually defining labels $y^i$ through human intervention is too costly, so these are calculated automatically by solving simple tasks. For images, these involve denoising tasks, while for text, they involve predicting next word. A key advantage of these simple tasks (known as pretraining tasks): it becomes possible to use a pre-trained network $f_\theta$ generatively. Starting from an image composed of pure noise \& iterating on network, one can randomly generate a realistic image [27]. Similarly, for text, starting from a prompt \& sequentially predicting next word, possible to generate text, e.g., to answer questions [5]. 1st describe case of vector data generation, e.g. images, \& address LLMs for text in following sect.
+	
+	{\bf Sampling as an Optimization Problem.} Generative AI models aim to generate (or ``sample'') random vectors $x$ according to a distribution $\beta$, which is learned from a large training dataset $(x^i)_i$. This distribution is obtained by ``pushing forward'' a reference distribution $\alpha$ (most commonly an isotropic Gaussian distribution $\alpha = {\cal N}(0,{\rm Id}))$ through a neural network $f_\theta$. Specifically, if $X\sim\alpha$ is distributed according to $\alpha$, then $f_\theta(X)\sim\beta$ follows law $\beta$, which is denoted as $(f_\theta)_\sharp\alpha = \beta$, where ${}_\sharp$ represents pushforward operator (also known as image measure in probability theory).
+	
+	Early approaches to generative AI, e.g. ``Generative Adversarial Networks'' (GANs) [12] attempted to directly optimize a distance $D$ between probability distributions (e.g., an optimal transport distance [22]): (9)
+	\begin{equation}
+		\min_\theta D((f_\theta)_\sharp\alpha,\beta).
+	\end{equation}
+	This problem is challenging to optimize because computing $D$ is expensive, \& $\beta$ must be approximated from data $(x^i)_i$.
+	
+	{\bf Flow-Based Generation.} Recent successes, particularly in generation of vector data, involve neural networks $f_\theta$ that are computed iteratively by integrating a flow [21], similar to a neural differential equation (8): (10)
+	\begin{equation}
+		f_0({\bf x}_0)\coloneqq{\bf x}_1\mbox{ where }\frac{d{\bf x}_s}{ds} = g_\theta({\bf x}_s,s),
+	\end{equation}
+	where $g_\theta:({\bf x},s)\in\mathbb{R}^d\times\mathbb{R}\to\mathbb{R}^d$. Input space includes an additional temporal dimension $s$, compared to $f_\theta$. Most effective neural networks for images are notably U-Nets (UNet) [24].
+	
+	Central mathematical question is how to replace (9) with a simpler optimization problem when $f_\theta$ is computed by integrating a flow (10). An extremely elegant solution was 1st proposed in context of diffusion models [27] (corresponding to specific case $\alpha = {\cal N}(0,{\rm Id})$) \& later generalized under name ``flow matching'' [19].
+	
+	Main idea: if $x_0\sim\alpha$ is initialized randomly, then $x_s$, solution at time $s$ of (10), follows a distribution $\alpha_s$ that interpolates between $\alpha_0 = \alpha$ \& $\alpha_1$, which is desired to match $\beta$. This distribution satisfies a conservation equation: (11)
+	\begin{equation}
+		\partial_s\alpha_s + \nabla\cdot(\alpha_s{\bf v}_s) = 0,
+	\end{equation}
+	where vector field is defined as ${\bf v}_s({\bf x})\coloneqq g_\theta({\bf x},s)$. This equation is similar to evolution of neuron distributions during optimization (6), but it is simpler because ${\bf v}_s$ does not depend on distribution $\alpha_s$, making equation linear in $\alpha_s$.
+	
+	{\bf Denoising Pre-Training.} Question: how to find a vector field ${\bf v}_s({\bf x}) = g_\theta({\bf x},s)$ s.t. $\alpha_1 = \beta$, i.e., final distribution matches desired one. If ${\bf v}_s$ is known, distribution $\alpha_s$ is uniquely determined. Key idea: reason in reverse: starting from an interpolation $\alpha_s$ satisfying $\alpha_0 = \alpha,\alpha_1 = \beta$, how can we compute a vector field ${\bf v}_s$ s.t. (11) holds? There are infinitely many possible solutions (since ${\bf v}_s$ can be modified by a conservative field), but for certain specific interpolations $\alpha_s$, remarkably simple expressions can be derived.
+	
+	1 example: interpolation obtained via barycentric averaging: take a pair $x_0\sim\alpha,x_1\sim\beta$, \& define $\alpha_s$ as distribution of $(1 - s)x_0 + sx_1$. It can be shown [19]: an admissible vector field is given by a simple conditional expectation: (12)
+	\begin{equation}
+		v_s({\bf x}) = \mathbb{E}_{x_0\sim\alpha,x_1\sim\beta}(x_1 - x_0|(1 - s)x_0 + sx_1 = x).
+	\end{equation}
+	Key advantage of this formula: conditional mean corresponds to a linear regression, which can be approximated using a neural network $v_s\approx g_\theta(\cdot,s)$. Expectation over $x_1\sim\beta$ can be replaced by a sum over training data $(x^i)_i$, leading to following optimization problem:
+	\begin{equation}
+		\min_\theta E(\theta)\coloneqq\int_0^1 \mathbb{E}_{x_0\sim\alpha}\sum_i \|x^i - x_0 - g_\theta((1 - s)x_0 + sx^i,s)\|^2\,{\rm d}s.
+	\end{equation}
+	This function $E(\theta)$ is an empirical risk function (1), \& similar optimization techniques are used to find an optimal $\theta$. In particular, stochastic gradient descent efficiently handles both integral $\int_0^1$ \& expectation $\mathbb{E}_{x_0\sim\alpha}$.
+	
+	Problem (12) corresponds to an unsupervised pre-training task: there are no labels $y^i$, but an artificial supervision task is created by adding random noise $x_0$ to data $x^i$. This task is called {\it denoising}. For textual data, a different pre-training task is used:
 	\item {\sf5. Generative AI for Text.}
-	\item {\sf Conclusion.} 
+	
+	{\bf Tokenization \& Next-Word Prediction.} Generative AI methods for text differ from those used for vector data generation. Neural network architectures are different (they involve transformers, as will describe), \& pre-training method is based not on denoising but on next-word prediction [28]. Worth noting: these transformer neural networks are now also used for image generation [9], but specific aspects related to causal nature of text remain crucial. 1st preliminary step, called ``tokenization'', consists of transforming input text into a sequence of vectors $X = (x[1],\ldots,x[P])$, where number $P$ is variable (\& may increase, e.g., when generating text from a prompt). Each token $x[p]$ is a vector that encodes a group of letters, generally at level of a syllable. Neural network $x = f_\theta(X)$ is applied to all tokens \& predicts a new token $x$. During training, a large corpus of text $(X^i)_i$ is available. If denote by $\tilde{X}^i$ text $X^i$ with last token $x^i$ removed, minimize an empirical risk for prediction:
+	\begin{equation}
+		\min_\theta E(\theta)\coloneqq\sum_i l(f_\theta(\tilde{X}^i),x^i),
+	\end{equation}
+	which is exactly similar to (1). When using a pre-trained network $f_\theta$ for text generation, one starts with a prompt $X$ \& iteratively adds a new token in an auto-regressive manner: $X\leftarrow[X,f_\theta(X)]$.
+	
+	{\bf Transformers \& Attention.} Large networks used for text generation tasks are Transformer networks [10]. Unlike ResNet (7), these networks $f_\theta$ no longer operate on a single vector ${\bf x}$, but on a set of vectors $X = (x[1],\ldots,x[P])$ of size $P$. In Transformers, ResNet layer (7), operating on a single vector, is replaced by an {\it attention} layer, where all tokens interact through a barycentric combination of vectors $(Vx[q])_q$ where $V$ is a matrix: (13)
+	\begin{equation}
+		\boxed{A_\omega(X)_p\coloneqq\sum_q M_{p,q}(Vx[q])\mbox{ where } M_{p,q}\coloneqq\frac{e^{\langle Qx[p],Kx[q]\rangle}}{\sum_l e^{\langle Qx[p],Kx[l]\rangle}}\mbox{ with }\omega\coloneqq(Q,K,V).}
+	\end{equation}
+	Coefficients $M_{p,q}$ are computed by normalized correlation between $x[p],x[q]$, depending on 2 parameter matrices $Q,K$. A Transformer $f_\theta(X)$ is then defined similarly to ResNet (7), iterating $L$ attention layers with residual connections: (14)
+	\begin{equation}
+		X_{l+1} = X_l + \frac{1}{L}A_{\omega_l}(X_l).
+	\end{equation}
+	Parameters $\theta$ of Transformer $f_\theta(X_0) = X_L$ with $L$ layers are $\theta = (\omega_l = (Q_l,K_l,V_l))_0^{L-1}$.
+	
+	This description is simplified: in practice, a Transformer network also integrates normalization layers \& MLPs operating independently on each token. For text applications, attention must be causal, imposing $M_{i,j} = 0$ for $j > i$. This constraint is essential for recursively generating text \& ensuring next-word prediction task is meaningful.
+	
+	{\bf Mean-Field Representation of Attention.} Attention mechanism (13) can be viewed as a system of interacting particles, \& (14) describes evolution of tokens across depth. As with ResNet (8), in limit $L\to+\infty$, one can consider a system of coupled ODEs: (15)
+	\begin{equation}
+		\frac{dX_s}{ds} = A_{\omega_s}(X_s).
+	\end{equation}
+	A crucial point: for non-causal Transformers, system $X_s = (x_s[p])_p$ is invariant under permutations of indices. Thus, this system can be represented as a probability distribution $\mu_s\coloneqq\frac{1}{P}\sum_p \delta_{x_s[p]}$ over token space. This perspective was adopted in {\sc Michael Sander}'s thesis [26], which rewrites attention as:
+	\begin{equation}
+		{\cal A}_\omega(x)\coloneqq\frac{\int e^{\langle Qx,Kx'\rangle}Vx'\,{\rm d}\mu(x')}{\int e^{\langle Qx,Kx'\rangle}\,{\rm d}\mu(x')}\mbox{ where }\omega\coloneqq(Q,K,V).
+	\end{equation}
+	Particle system (15) then becomes a conservation equation for advection by vector field ${\cal A}_{\omega_s}(\mu)$: (16)
+	\begin{equation}
+		\partial_s\mu_s + \nabla\cdot(\mu_s{\cal A}_{\omega_s}(\mu_s)) = 0.
+	\end{equation}
+	Surprisingly, this yields a McKean-Vlasov-type equation, similar to the one describing training of 2-layer MLPs (6), but with velocity field ${\cal A}_\omega(\mu)(x)$ replacing ${\cal V}(\rho)(u,v,b)$. However, here evolution occurs in token space $x$ rather than in neuron space $(u,v,b)$, \& evolution variable corresponds to depth $s$, not optimization time $t$.
+	
+	Unlike (6), evolution (16) is not a gradient flow in Wasserstein metric [26]. Nonetheless, in certain cases, this evolution can be analyzed, \& it can be shown: measure $\mu_s$ converges to a single Dirac mass [11] as $s\to\infty$: \fbox{tokens tend to cluster}. Better understanding these evolutions, as well as optimization of parameters $\theta = (Q_s,K_s,V_s)_{s\in[0,1]}$ via gradient descent (2), remains an open problem. This problem can be viewed as a control problem for PDE (16).
+	\item {\sf Conclusion.} Mathematics plays a critical role in understanding \& improving performance of deep architectures while presenting new theoretical challenges. Emergence of Transformers \& generative AI raises immense mathematical problems, particularly for better understanding training of these networks \& exploring structure of ``optimal'' networks. 1 essential question remains: whether LLM merely interpolates training data or is capable of genuine reasoning. Moreover, issues of resource efficiency \& privacy in AI system development demand significant theoretical advancements, where mathematics will play a pivotal role (đóng vai trò then chốt). Whether designing resource-efficient models, ensuring compliance with ethical standards, or exploring fundamental limits of these systems, mathematics is poised to be an indispensable tool for future of AI.
 \end{itemize}
 
 %------------------------------------------------------------------------------%

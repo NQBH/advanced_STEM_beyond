@@ -2019,7 +2019,80 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 	\end{itemize}
 	\item {\sf3. Mathematical Foundations for AI.}
 	\item {\sf4. AI for Mathematical Problems.}
-	\item {\sf5. Conclusion: 7 Mathematical Key Problems.}
+	\item {\sf5. Conclusion: 7 Mathematical Key Problems.} Conclude with 7 mathematical key problems of AI as they were stated in [6]. Those constitute main obstacles in {\it Mathematical Foundations for AI} with its subfields being expressivity, optimization, generalization, \& explainability, as well as in {\it AI for Mathematical Problems}, which focus on application to inverse problems \& PDEs.
+	\begin{enumerate}
+		\item What is role of depth?
+		\item Which aspects of a neural network architecture affect performance of DL?
+		\item Why does stochastic gradient descent converge to good local minima despite nonconvexity of problem?
+		\item Why do large neural networks not overfit?
+		\item Why do neural networks perform well in very high-dimensional environments?
+		\item Which features of data are learned by deep architectures?
+		\item Are neural networks capable of replacing highly specialized numerical algorithms in natural sciences?
+	\end{enumerate}
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsection{{\sf Gabriel Peyr\'e}. The Mathematics of Artificial Intelligence. 2025}
+
+\begin{itemize}
+	\item {\sf Abstract.} This overview article highlights critical role of mathematics in AI, emphasizing: mathematics provides tools to better understand \& enhance AI systems. Conversely, AI raises new problems \& drives development of new mathematics at intersection of various fields. This article focuses on application of analytical \& probabilistic tools to model neural network architectures \& better understand their optimization. Statistical questions (particularly generalization capacity of these networks) are intentionally set aside, though they are of crucial importance. Also shed light on evolution of ideas that have enabled significant advances in AI through architectures tailored to specific tasks, each echoing distinct mathematical techniques. Goal: encourage more mathematicians to take an interest in \& contribute to this exciting field.
+	\item {\sf1. Supervised Learning.} Recent advancements in AI have mainly stemmed from development of neural networks, particularly deep networks. 1st significant successes, after 2010, came from supervised learning, where training pairs $(x^i,y^i)_i$ are provided, with $x^i$ representing data (e.g., images or text) \& $y^i$ corresponding labels (typically, classes describing content of data). More recently, spectacular progress has been achieved in unsupervised learning, where labels $y_i$ are unavailable, thanks to techniques known as generative AI. These methods will be discussed in Sect. 4.
+	
+	{\bf Empirical Risk Minimization.} In supervised learning, objective: construct a function $f_\theta(x)$, dependent on parameters $\theta$, s.t. it approximates data well: $y^i\approx f_\theta(x^i)$. Dominant paradigm involves finding parameters $\theta$ by minimizing an empirical risk function, defined as
+	\begin{equation}
+		\min_\theta E(\theta)\coloneqq\sum_i l(f_\theta(x^i),y^i),
+	\end{equation}
+	where $l$: a loss function, typically $l(y,y') = \|y - y'\|^2$ for vector-valued $(y^i)_i$. Optimization of $E(\theta)$ is performed using gradient descent:
+	\begin{equation}
+		\theta_{t+1} = \theta_t - \tau\nabla E(\theta_t),
+	\end{equation}
+	where $\tau$: step size. In practice, a variant known as {\it stochastic gradient descent} [23] is used to handle large datasets by randomly sampling a subset at each step $t$. A comprehensive theory for convergence of this method exists in cases where $f_\theta$ depends linearly on $\theta$, as $E(\theta)$ is convex. However, in case of deep neural networks, $E(\theta)$ is non-convex, making its theoretical analysis challenging \& still largely unresolved. In some instances, partial mathematical analyses provide insights into observed practical successes \& guide necessary modifications to improve convergence. For a detailed overview of existing results, refer to \cite{Bach2024}.
+	
+	{\bf Automatic Differentiation.} Computing gradient $\nabla E(\theta)$ is fundamental. FDMs or traditional differentiation of composite functions would be too costly, with complexity on order of $O(DT)$, where $D$: dimensionality of $\theta$, $T$: computation time of $f_\theta$. Advances in deep network optimization rely on use of automatic differentiation in reverse mode [13], often referred to as ``backpropagation of gradient'', with complexity on order of $O(T)$.
+	\item {\sf2. 2-Layer Neural Networks.}
+	
+	{\bf Multi-Layer Perceptrons.} A multi-layer network, or multi-layer perceptron (MLP) [25], computes function $f_\theta(x) = x_L$ in $L$ steps (or layers) recursively starting from $x_0 = x$:
+	\begin{equation}
+		x_{l+1} = \sigma(W_lx_l + b_l),
+	\end{equation}
+	where $W_l$: a weight matrix, $b_l$: a bias vector, \& $\sigma$: a nonlinear activation function, e.g. sigmoid $\sigma(s) = \frac{e^s}{1 + e^s}$, which is bounded, or ReLU (Rectified Linear Unit), $\sigma(s) = \max(s,0)$, which is unbounded. Parameters to optimize are weights \& biases $\theta = (W_l,b_l)_l$. If $\sigma$ were linear, then $f_\theta$ would remain linear regardless of number of layers. Nonlinearity of $\sigma$ enriches set of functions representable by $f_\theta$, by increasing both width (dimension of intermediate vectors $x_k$) \& depth (number $L$ of layers).
+	
+	{\bf2-Layer Perceptrons \& Universality.} Mathematically best-understood case is that of $L = 2$ layers. Denoting $W_1 = (v_k)_{k=1}^n$ \& $W_2^\top = (u_k)_{k=1}^n$ as $n$ rows \& columns of 2 matrices (where $n$: network width), can write $f_\theta$ as a sum of contributions from its $n$ neurons: (4)
+	\begin{equation}
+		f_\theta(x) = \frac{1}{n}\sum_{k=1}^n u_k\sigma(\langle v_k,x\rangle + b_k).
+	\end{equation}
+	Parameters are $\theta = (u_k,v_k,b_k)_{k=1}^n$. Here, added a normalization factor $\frac{1}{n}$ (to later study case $n\to\infty$) \& ignored nonlinearity of 2nd layer. A classical result by Cybenko [8] shows: these functions $f_\theta$ can uniformly approximate any continuous function on a compact domain. This result is similar to Weierstrass theorem for polynomial approximation, except (4) defines, for a fixed $n$, a nonlinear function space. Elegant proof by Hornik [15] relies on Stone--Weierstrass theorem, which implies result for $\sigma = \cos$ (since [4]) defines an algebra of functions when $n$ is arbitrary). Proof is then completed by uniformly approximating a cosine in 1D using a sum of sigmoids or piecewise affine functions (e.g., for $\sigma =$ ReLU).
+	
+	{\bf Mean-Field Representation.} This result is, however, disappointing, as it does not specify how many neurons are needed to achieve a given approximation error. Impossible without adding assumptions about regularity of function to approximate. Barron's fundamental result [4] introduces a Banach space of regular functions, defined by semi-norm $\|f\|_B\coloneqq\int |\hat{f}(\omega)||\omega|\,{\rm d}\omega$, where $\hat{f}$ denotes Fourier transform of $f$. Barron shows: in $L^2$ norm, for any $n$, there exists a network $f_\theta$ with $n$ neurons s.t. approximation error on a compact $\Omega$ of radius $R$ is of order $\|f - f_\theta\|_{L^2(\Omega)} = O\left(\frac{R\|f\|_B}{\sqrt{n}}\right)$. This result is remarkable because it avoids ``curse of dimensionality'': unlike polynomial approximation, error does not grow exponentially with dimension $d$ (although dimension affects constant $\|f\|_B$).
+	
+	Barron's proof relies on a ``mean-field'' generalization of [4], where a distribution (a probability measure) $\rho$ is considered over parameter space $(u,v,b)$, \& network is expressed as: (5)
+	\begin{equation}
+		F_\rho(x)\coloneqq\int u\sigma(\langle v,x\rangle + b)\,{\rm d}\rho(u,v,b).
+	\end{equation}
+	A finite-size network (4), $f_\theta = F_{\hat{\rho}}$, is obtained with a discrete measure $\hat{\rho} = \frac{1}{n}\sum_{k=1}^n \delta_{(u_k,v_k,b_k)}$. An advantage of representation (5): $F_\rho$ depends linearly on $\rho$, which is crucial for Barron's proof. This proof uses a probabilistic Monte Carlo-like method (where error decreases as $\frac{1}{\sqrt{n}}$ as desired): it involves constructing a distribution $\rho$ from $f$, then sampling a discrete measure $\hat{\rho}$ whose parameters $(u_k,v_k,b_k)_k$ are distributed according to $\rho$.
+	
+	{\bf Wasserstein Gradient Flow.} In general, analyzing convergence of optimization (2) $\theta_{t+1} = \theta_t - \tau\nabla E(\theta_t)$ is challenging because function $E$ is non-convex. Recent analyses have shown: when number of neurons $n$ is large, dynamics are not trapped in a local minimum. Fundamental result by Chizat \& Bach [7] is based on fact: distribution $\rho_t$ defined by gradient descent (2), as $\tau_t\to0$, follows a gradient flow in space of probability distributions equipped with optimal transport distance. These Wasserstein gradient flows, introduced by [16] \& studied extensively in book [1], satisfy a \fbox{McKean-Vlasov-type PDE}:
+	\begin{equation}
+		\partial_t\rho_t + \nabla\cdot(\rho_t{\cal V}(\rho)) = 0,
+	\end{equation}
+	where $x\to{\cal V}(\rho)(x)$ is a vector field depending on $\rho$, which can be computed explicitly from data $(x^i,y^i)_i$. Result by Chizat \& Bach can be viewed both as a PDE result (convergence to an equilibrium of a class of PDEs with a specific vector field ${\cal V}(\rho)$) \& as a ML result (successful training of a 2-layer network via gradient descent when number of neurons is sufficiently large).
+	\item {\sf3. Very Deep Networks.} Unprecedented recent success of neural networks began with work of [17], which demonstrated: deep networks, when trained on large datasets, achieve unmatched performance. 1st key point: to achieve these performances, necessary to use weight matrices $W_k$ that exploit structure of data. For images, this means using convolutions [18]. However, this approach is not sufficient for extremely deep networks, with number of layers $L$ reaching into hundreds.
+	
+	{\bf Residual Networks.} Major breakthrough that empirically demonstrated that network performance increases with $L$ was introduction of residual connections, known as ResNet [14]. Main idea: ensure: for most layers $x_l$, dimensions of $x_l$ \& $x_{l+1}$ are identical, \& to replace (3) with $L$ steps: (7)
+	\begin{equation}
+		x_{l+1} = x_l + \frac{1}{L}U_l^\top\sigma(V_lx_l + b_l),
+	\end{equation}
+	where $U_l,V_l\in\mathbb{R}^{n\times d}$: weight matrices, with $n$: number of neurons per layer (which, as in (4), can be increased to enlarge function space). Intuition for success of (7): this formula allows, unlike (3), for steps that are small deformations near identity mappings. This makes network $f_\theta(x_0) = x_L$ obtained after $L$ steps wellposed even when $L$ is large, \& it can be rigorously proven [20]: this well-posedness is preserved during optimization via gradient descent (2).
+	
+	{\bf Neural Differential Equation.} As $L$ approaches $\inf$, (7) can be interpreted as a discretization of an ODE: (8)
+	\begin{equation}
+		\frac{dx_s}{ds} = U_s^\top\sigma(V_sx_s + b_s),
+	\end{equation}
+	where $s\in[0,1]$ indexes network depth. Network $f_\theta(x_0)\coloneqq x_1$ maps initialization $x_{s=0}$ to solution $x_{s=1}$ of (8) at time $s = 1$. Parameters are $\theta = (U_s,V_s,b_s)_{s\in[0,1]}$. This formalization, referred to as a {\it neural ODE}, was initially introduced in [6] to leverage tools from adjoint equation theory to reduce memory cost of computing gradient $\nabla E(\theta)$ during backpropapagation. It also establishes a connection to control theory, as training via gradient descent (2) computes an {\it optimal control} $\theta$ that interpolates between data $x^i$ \& labels $y^i$. However, specificity of learning theory compared to control theory lies in goal of computing such control using gradient descent (2). To date, no detailed results exist on this. Nonetheless, in his thesis, {\sc Raphael Barboni} [3] demonstrated: if network is initialized near an interpolating network, gradient descent converges to it.
+	\item {\sf4. Generative AI for Vector Data.}
+	\item {\sf5. Generative AI for Text.}
+	\item {\sf Conclusion.} 
 \end{itemize}
 
 %------------------------------------------------------------------------------%

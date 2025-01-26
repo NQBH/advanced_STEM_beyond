@@ -1910,7 +1910,7 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 %------------------------------------------------------------------------------%
 
 \subsection{\cite{Kutyniok2023}. {\sc Gitta Kutyniok}. Mathematics of Artificial Intelligence}
-
+{\sf[35 citations]}
 \begin{itemize}
 	\item {\sf Abstract.} Currently witness spectacular success of AI in both science \& public life. However, development of a rigorous mathematical foundation is still at an early stage. In this survey article, which is based on an invited lecture at ICM2022, in particular focus on current ``workhorse'' of AI, namely deep neural networks. Present main theoretical directions along with several exemplary results \& discuss key open problems.
 	\item {\sf Keywords.} applied harmonic analysis, approximation theory, DL, inverse problems, PDEs
@@ -2013,12 +2013,83 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 		These considerations lead to main research threads described in:
 		\item {\sf2.4. Main research threads.} Can identify 2 conceptually different research threads, 1st being focused on developing mathematical foundations of AI \& 2nd aiming to use methodologies from AI to solve mathematical problems. Intriguing to see how both have already led to some extent to a paradigm shift in some mathematical research areas, most prominently area of numerical analysis.
 		\begin{itemize}
-			\item {\sf2.4.1. Mathematical foundations for AI.}
-			\item {\sf2.4.2. AI for mathematical problems.}
+			\item {\sf2.4.1. Mathematical foundations for AI.} Following up on discussion in Sect. 2.3, can identify 3 research directions which are related to 3 types of errors which one needs to control in order to estimate overall error of entire training process:
+			\begin{itemize}
+				\item {\it Expressivity.} This direction aims to derive a general understanding whether \& to which extent aspects of a neural network architecture affect best case performance of deep neural networks. More precisely, goal: analyze approximation error $\inf_{\Phi\in{\cal NN}_\theta} {\cal R}(\Phi)$ from (2.4), which estimates approximation accuracy when approximating $g$ by hypothesis class ${\cal NN}_\theta$ of deep neural networks of a particular architecture. Typical methods for approaching this problem are from applied harmonic analysis \& approximation theory.
+				\item {\it Learning{\tt/}Optimization.} Main goal of this direction is analysis of training algorithm e.g. stochastic gradient descent, in particular, asking why it usually converges to suitable local minima even though problem itself is highly nonconvex. This requires analysis of optimization error, which is $\widehat{\cal R}(\Phi^0) - \inf_{\Phi\in{\cal NN}_\theta} \widehat{\cal R}(\Phi)$ (cf. (2.4)) \& which measures accuracy with which learnt neural network $\Phi^0$ minimizes empirical risk (2.1), (2.2). Key methodologies for attacking such problems come from areas of algebraic{\tt/}differential geometry, optimal control, \& optimization.
+				\item {\it Generalization.} This direction aims to derive an understanding of out-of-sample error, namely $\sup_{\Phi\in{\cal NN}_\theta} |{\cal R}(\Phi) - \widehat{\cal R}(\Phi)|$ from (2.4), which measures distance of empirical risk (2.1), (2.2), \& actual risk (2.3). Predominantly, learning theory, probability theory, \& statistics provide required methods for this research thread.
+			\end{itemize}
+			A very exciting \& highly relevant new research direction has recently emerged, coined explainability. At present, it is from standpoint of mathematical foundations still a wide open field.
+			\begin{itemize}
+				\item {\it Explainability.} This direction considers deep neural networks, which are already trained, but no knowledge about training is available; a situation one encounters numerous times in practice. Goal: derive a deep understanding of how a given trained deep neural network reaches decisions in sense of which features of input data are crucial for a decision. Range of required approaches is quite broad, including areas e.g. information theory or uncertainty quantification.
+			\end{itemize}
+			\item {\sf2.4.2. AI for mathematical problems.} Methods of AI have also turned out to be extremely effective for mathematical problem settings. In fact, area of inverse problems, in particular, in imaging sciences, has already undergone a profound paradigm shift. \& area of numerical analysis of PDEs seems to soon follow same path, at least in very high dimensional regime.
+			
+			Briefly characterize those 2 research threads similar to previous subsect on mathematical foundations of AI.
+			\begin{itemize}
+				\item {\it Inverse Problems.} Research in this direction aims to improve classical model-based approaches to solve inverse problems by exploiting methods of AI. In order to not neglect domain knowledge e.g. physics of problem, current approaches aim to take best out of both worlds in sense of optimally combining model- \& data-driven approaches. This research direction requires a variety of techniques, foremost from areas e.g. imaging science, inverse problems, \& microlocal analysis, to name a few.
+				\item {\it PDEs.} Similar to area of inverse problems, goal: improve classical solvers of PDEs by using ideas from AI. A particular focus is on high-dimensional problems in sense of aiming to beat curse of dimensionality. This direction obviously requires methods from areas e.g. numerical mathematics \& PDEs.
+			\end{itemize}
 		\end{itemize}
 	\end{itemize}
-	\item {\sf3. Mathematical Foundations for AI.}
-	\item {\sf4. AI for Mathematical Problems.}
+	\item {\sf3. Mathematical Foundations for AI.} This sect shall serve as an introduction into main research threads aiming to develop a mathematical foundation for AI. Introduce problem settings, showcase some exemplary results, \& discuss open problems.
+	\begin{itemize}
+		\item {\sf3.1. Expressivity.}
+		\item {\sf3.2. Optimization.}
+		\item {\sf3.3. Generalization.}
+		\item {\sf3.4. Explainability.}
+	\end{itemize}
+	\item {\sf4. AI for Mathematical Problems.} Turn to research direction of AI for mathematical problems, with 2 most prominent problems being inverse problems \& PDEs. As before, introduce problem settings, showcase some exemplary results, \& also discuss open problems.	
+	\begin{itemize}
+		\item {\sf4.1. Inverse problems.} Methods of AI, in particular, deep neural networks, have a tremendous impact on area of inverse problems. 1 current major trend: optimally combine classical solvers with DL in sense of taking best out of model- \& data-world.
+		
+		To introduce such results, start by recalling some basics about solvers of inverse problems. For this, assume: given an (ill-posed) inverse problem
+		\begin{equation}
+			Kf = g,
+		\end{equation}
+		where $K:X\to Y$: an operator \& $X,Y$: e.g., Hilbert spaces. Drawing from area of imaging science, examples include denoising, deblurring, or inpainting (recovery of missing parts of an image). Most classical solvers are of form (which includes Tikhonov regularization)
+		\begin{equation}
+			f^\alpha\coloneqq{\arg\min}_f (\|Kf - g\|^2 + \alpha{\cal P}(f)),
+		\end{equation}
+		where $\|Kf - g\|^2$: data fidelity term, ${\cal P}(f)$: penalty{\tt/}regularization term, ${\cal P}:X\to\mathbb{R}$, $f^\alpha\in X,\alpha > 0$: an approximate solution of inverse problem (4.1). 1 very popular \& widely applicable special case is {\it sparse regularization}, where ${\cal P}$ is chosen by ${\cal P}(f)\coloneqq\|(\langle f,\varphi_i\rangle)_{i\in I}\|_1$ \& $(\varphi_i)_{i\in I}$: a suitably selected orthonormal basis or a frame for $X$.
+		
+		Turn to DL approaches to solve inverse problems, which might be categorized into 3 classes:
+		\begin{itemize}
+			\item {\it Supervised approaches.} An ad hoc approach in this regime is given in [14], which 1st applies a classical solver followed by a neural network to remove reconstruction artifacts. More sophisticated approaches typically replace parts of classical solver by a custom-built neural network [26] or a network specifically trained for this task [1].
+			\item {\it Semisupervised approaches.} These approaches encode regularization as a neural network with an example being adversarial regularizers [20].
+			\item {\it Unsupervised approaches.} A representative of this type of approaches: technique of deep image prior [29]. This method interestingly shows: structure of a generator network is sufficient to capture necessary statistics of data prior to any type of learning.
+		\end{itemize}
+		Aiming to illustrate superiority of approaches from AI for inverse problems, now focus on inverse problem of computed tomography (CT) from medical imaging. Forward operator $K$ in this setting is {\it Radon transform}, defined by
+		\begin{equation}
+			{\cal R}f(s,\vartheta) = \int_\mathbb{R} f(s\omega(\vartheta) + t\omega(\varepsilon)^\bot)\,{\rm d}t,\ (s,\vartheta)\in\mathbb{R}\times(0,\pi).
+		\end{equation}
+		Here $\omega(\vartheta)\coloneqq(\cos\vartheta,\sin\vartheta)$: unitary vector with orientation described by angle $\vartheta$ w.r.t. $x_1$-axis \& $\omega(\vartheta)^\bot\coloneqq(-\sin\vartheta,\cos\vartheta)$. Often, only parts of so-called sinogram ${\cal R}f$ can be acquired due to physical constraints as in, e.g., electron tomography. Resulting, more difficult problem is termed {\it limited-angle CT}. Notice: this problem is even harder than problem of low-dose CT, where not an entire block of measurements is missing, but angular component is ``only'' undersampled.
+		
+		Most prominent features in images $f$ are edge structures. This is also due to fact: human visual system reacts most strongly to those. These structures in turn can be accurately modeled by microlocal analysis, in particular, by notion of wavefront sets $WF(f)\subseteq\mathbb{R}^2\times\mathbb{S}$, which -- coarsely speaking -- consist of singularities together with their direction. Basing in this sense application of a deep neural network on microlocal considerations, in particular, also using a DL-based wavefront set detector [2] in regularization term, reconstruction performance significantly outperforms classical solvers e.g. sparse regularization with shearlets (see {\sf Fig. 6: CT reconstruction from Radon measurements with a missing angle of $40^\circ$.}, also refer to [3] for details). Notice: this approach is of a hybrid type \& takes best out of both worlds in sense of combining model- \& AI-based approaches.
+		
+		Finally, DL-based wavefront set extraction itself is yet another evidence of improvements on state-of-art now possible by AI. {\sf Fig. 7: Wavefront set detection by a model-based \& a hybrid approach.} shows a classical result from [23], whereas [2] uses shearlet transform as a coarse edge detector, which is subsequently combined with a deep neural network.		
+		\item {\sf4.2. PDE.s} 2nd main range of mathematical problem settings, where methods from AI are very successfully applied to, are PDEs. Although benefit of such approaches was not initially clear, both theoretical \& numerical results show their superiority in high-dimensional regimes.
+		
+		Most common approach aims to approximate solution of a PDE by a deep neural network, which is trained according to this task by incorporating PDE into loss function. More precisely, given a PDE ${\cal L}(u) =f $, train a neural network $\Phi$ s.t. ${\cal L}(\Phi\approx f$. Since 2017, research in this general direction has significantly accelerated. Some of highlights are Deep Ritz method [10] \& Physics Informed Neural Networks [22], or a very general approach for high-dimensional parabolic PDEs [12].
+		
+		Note: most theoretical results in this regime are of an expressivity type \& also study phenomenon whether \& to which extent deep neural networks are able to beat curse of dimensionality. In sequel, briefly discuss 1 such result as an example. In addition, notice: there already exist contributions -- though very few -- which analyze learning \& generalization aspects.
+		
+		Let ${\cal L}(u_y,y) = f_y$ denote a parametric PDE with $y$ being a parameter from a high-dimensional parameter space ${\cal Y}\subset\mathbb{R}^p$ \& $u_y$ associated solution in a Hilbert space ${\cal H}$. After a high-fidelity discretization, let $b_y(u_y^h,v) = f_y(v)$ be associated variational form with $u_y^h$ now belonging to associated high-dimensional space $U^h$, where set $D\coloneqq\dim U^h$. Denote coefficient vector of $u_y^h$ w.r.t. a suitable basis of $U^h$ by ${\bf u}_y^h$. Of key importance in this area: {\it parametric map} given by
+		\begin{equation}
+			\mathbb{R}^p\supseteq{\cal Y}\ni y\mapsto{\bf u}_y^h\in\mathbb{R}^D\mbox{ s.t. } b_y(u_y^h,v) = f_y(v),\ \forall v,
+		\end{equation}
+		which in multiquery situations e.g. complex design problems needs to be solved several times. If $p$ is very large, curse of dimensionality could lead to an exponential computational cost.
+		
+		Aim to analyze whether parametric map can be solved by a deep neural network, which would provide a very efficient \& flexible method, hopefully also circumventing curse of dimensionality in an automatic manner. From an expressivity viewpoint, one might ask whether, for each $\varepsilon > 0$, there exists a neural network $\Phi$ s.t. (4.2)
+		\begin{equation}
+			\|\Phi(y) - {\bf u}_y^h\|\le\varepsilon\ \forall y\in{\cal Y}.
+		\end{equation}
+		Ability of this approach to tackle curse of dimensionality can then be studied by analyzing how complexity of $\Phi$ depends on $p,D$. A result of this type was proven in [18].
+		\begin{theorem}
+			There exists a neural network $\Phi$ which approximates parametric map, i.e., which satisfies (4.2), \& dependence of $C(\Phi)$ on $p,D$ can be (polynomially) controlled.
+		\end{theorem}
+		Analyzing learning procedure \& generalization ability of neural network in this setting is currently out of reach. Aiming to still determine whether a trained neural networks does not suffer from curse of dimensionality as well in [11] extensive numerical experiments were performed, which indicate: indeed, curse of dimensionality is also beaten in practice.
+	\end{itemize} 
 	\item {\sf5. Conclusion: 7 Mathematical Key Problems.} Conclude with 7 mathematical key problems of AI as they were stated in [6]. Those constitute main obstacles in {\it Mathematical Foundations for AI} with its subfields being expressivity, optimization, generalization, \& explainability, as well as in {\it AI for Mathematical Problems}, which focus on application to inverse problems \& PDEs.
 	\begin{enumerate}
 		\item What is role of depth?

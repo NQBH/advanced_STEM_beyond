@@ -3636,12 +3636,223 @@ PyTorch book of bestselling \& widely acclaimed {\it Python ML} series. Foreword
 		\end{itemize}
 		\item {\sf Adaptive linear neurons \& convergence of learning.} In this sect, take a look at another type of single-layer {\it neural network (NN)
 		: ADAptive LInear NEuron (Adaline)}. Adaline was published by {\sc Bernard Widrow} \& his doctoral student {\sc Tedd hoff} only a few years after Rosenblatt's perceptron algorithm, \& it can be considered an improvement on latter: {\it An Adaptive ``Adaline'' Neuron Using Chemical ``Memistors''}, Technical Report Number 1553-2 by B. Widrow \& colleagues, Stanford Electron Labs, Stanford, CA, October 1960).
-		\item {\sf Summary.}
+		
+		Adaline algorithm is particularly interesting because it illustrates key concepts of defining \& minimizing continuous loss functions. This lays groundwork for understanding ML algorithms for classification, e.g. logistic regression, support vector machines, \& multilayer neural networks, as well as linear regression models.
+		
+		Key difference between Adaline rule (also known as {\it Widrow-Hoff rule}) \& Rosenblatt's perceptron: weights are updated based on a linear activation function rather than a unit step function like in perception. In Adaline, this linear activation function $\sigma(z)$ is simply identity function of net input, so that $\sigma(z)  = z$.
+		
+		While linear activation function is used for learning weights, still us a threshold function to make final prediction, which is similar to unit step function covered earlier.
+		
+		Main differences between perceptron \& Adaline algorithm are highlighted in {\sf Fig. 2.9: A comparison between a perceptron \& Adaline algorithm.}, indicates: Adaline algorithm compares true class labels with linear activation function's continuous valued output to compute model error \& update weights. In contrast, perceptron compares true class labels to predicted class labels.
+		\begin{itemize}
+			\item {\sf Minimizing loss functions with gradient descent.} 1 of key ingredients of supervised ML algorithms is a defined {\it objective function} that is to be optimized during learning process. This objective function is often a loss or cost function that we want to minimize. In case of Adaline, can define loss function $L$ to learn model parameters as {\it mean squared error (MSE)} between calculated outcome \& true class label:
+			\begin{equation}
+				L({\bf w},b) = \frac{1}{n}\sum_{i=1}^{n} (y^{(i)} - \sigma(z^{(i)}))^2.
+			\end{equation}
+			Main advantage of this continuous linear activation function, in contrast to unit step function: loss function becomes differentiable. Another nice property of this loss function: it is convex; thus, can use a very simple yet powerful optimization algorithm called {\it gradient descent} to find weights that minimize our loss function to classify examples in Iris dataset.
+			
+			As illustrated in {\sf Fig. 2.10: How gradient descent works}, can describe main idea behind gradient descent as {\it climbing down a hill} until a local or global loss minimum is reached. In each iteration, take a step in opposite direction of gradient, where step size is determined by value of learning rate, as well as slope of gradient (for simplicity, following figure visualizes this only for a single weight $w$).
+			
+			Using gradient descent, can now update model parameters by taking a step in opposite direction of gradient $\nabla L({\bf w},b)$ of our loss function $L({\bf w},b)$:
+			\begin{equation}
+				{\bf w}\coloneqq{\bf w} + \Delta{\bf w},\ b\coloneqq b + \Delta b.
+			\end{equation}
+			Parameter changes, $\Delta{\bf w},\Delta b$, are defined as negative gradient multiplied by learning rate $\eta$:
+			\begin{equation}
+				\Delta{\bf w} = -\eta\nabla_{\bf w}L({\bf w},b),\ \Delta b = -\eta\nabla_bL({\bf w},b).
+			\end{equation}
+			To compute gradient of loss function, need to compute partial derivative of loss function w.r.t. each weight $w_j$:
+			\begin{equation}
+				\frac{\partial L}{\partial w_j} = -\frac{2}{n}\sum_i (y^{(i)} - \sigma(z^{(i)}))x_j^{(i)}.
+			\end{equation}
+			Similarly, compute partial derivative of loss w.r.t. bias as:
+			\begin{equation}
+				\frac{\partial L}{\partial b} = -\frac{2}{n}\sum_i (y^{(i)} - \sigma(z^{(i)})).
+			\end{equation}
+			Note: 2 in numerator is merely a constant scaling factor, \& could omit it without affecting algorithm. Removing scaling factor has same effect as changing learning rate by a factor of 2. Following information box explains where this scaling factor originates.
+			
+			So can write weight update as:
+			\begin{equation}
+				\Delta w_j = -\eta\frac{\partial L}{\partial w_j},\ \Delta b = -\eta\frac{\partial L}{\partial b}.
+			\end{equation}
+			Since update all parameters simultaneously, Adaline learning rule becomes:
+			\begin{equation}
+				{\bf w}\coloneqq{\bf w} + \Delta{\bf w},\ b\coloneqq b + \Delta b. 
+			\end{equation}
+			
+			\begin{remark}[Mean squared error derivative]
+				If familiar with calculus, partial derivative of MSE loss function w.r.t. $j$th weight can be obtained as follows: [$\ldots$] Same approach can be used to find partial derivative $\frac{\partial L}{\partial b}$ except that $\frac{\partial}{\partial b}(y^{(i)} - \sum_i (w_j^{(i)}x_j^{(i)} + b)) = -1$ \& thus last step simplifies to $-\frac{2}{n}\sum_i (y^{(i)} - \sigma(z^{(i)}))$.				
+			\end{remark}
+			Although Adaline learning rule looks identical to perceptron rule, note: $\sigma(z^{(i)})$ with $z^{(i)} = {\bf w}^\top{\bf x}^{(i)} + b\in\mathbb{R}$ \& not an integer class label. Furthermore, weight update is calculated based on all examples in training dataset (instead of updating parameters incrementally after each training example), which is why this approach is also referred to as {\it batch gradient descent} (giảm dần độ dốc hàng loạt). To be more explicit \& avoid confusion when talking about related concepts later in this chap \& this book, refer to this process as {\it full batch gradient descent} (giảm dần độ dốc hàng loạt đầy đủ).
+			\item {\sf Implementing Adaline in Python.} Since perceptron rule \& Adaline are very similar, take perceptron implementation defined earlier \& change {\tt fit} method so that weight \& bias parameters are now updated by minimizing loss function via gradient descent: {\tt[code]}.
+			
+			Instead of updating weights after evaluating each individual training example, as in perceptron, calculate gradient based on whole training dataset. For bias unit, this is done via {\tt self.eta * 2.0 * errors.mean()}, where {\tt errors} is an array containing partial derivative values $\partial_b$. Similarly, update weights. However note: weight updates via partial derivatives $\frac{\partial L}{\partial w_j}$ involve feature values $x_j$, which can compute by multiplying {\tt errors} with each feature value for each weight:
+			\begin{verbatim}
+				for w_j in range(self.w_.shape[0]):
+				    self.w_[w_j] += self.eta * (2.0 * (X[:, w_j]*errors)).mean()
+			\end{verbatim}
+			To implement weight update more efficiently without using a {\tt for} loop, can use a matrix-vector multiplication between our feature matrix \& error vector instead:
+			\begin{verbatim}
+				self.w_ += self.eta * 2.0 * X.T.dot(errors) / X.shape[0]
+			\end{verbatim}
+			Note: {\tt activation} method has  no effect on code since it is simply an identity function. Here, added activation function (computed via {\tt activation} method) to illustrate general concept with regard to how information flows through a single-layer NN: features from input data, net input, activation, \& output.
+			
+			In next chap, learn about a logistic regression classifier that uses a non-identity, nonlinear activation function. See: a logistic regression model is closely related to Adaline, with only difference being its activation \& loss function.
+			
+			now, similar to previous perceptron implementation, collect loss values in a \verb|self.losses_| list to check whether algorithm converged after training.
+			\begin{remark}[Matrix multiplication]
+				Performing a matrix multiplication is similar to calculating a vector dot-product where each row in matrix is treated as a single row vector. This vectorized approach represents a more compact notation \& results in a more efficient computation using NumPy.
+			\end{remark}
+			In practice, often require some experimentation to find a good learning rate $\eta$ for optimal convergence. So choose 2 different learning rates $\eta = 0.1,\eta = 0.0001$ to start with \& plot loss functions vs. number of epochs to see how well Adaline implementation learns from training data.
+			\begin{remark}[Hyperparameters]
+				Learning rate $\eta$ {\tt eta} as well as number of epochs \verb|n_iter|, are so-called \emph{hyperparameters} (or \emph{tuning parameters}) of perceptron \& Adaline learning algorithms. In Chap. 6, take a look at different techniques to automatically find values of different hyperparameters that yield optimal performance of classification model.
+			\end{remark}
+			Plot loss against number of epochs for 2 different learning rates:
+			\begin{verbatim}
+				>>> fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 4))
+				>>> ada1 = AdalineGD(n_iter=15, eta=0.1).fit(X, y)
+				>>> ax[0].plot(range(1, len(ada1.losses_) + 1),
+				...            np.log10(ada1.losses_), marker='o')
+				>>> ax[0].set_xlabel('Epochs')
+				>>> ax[0].set_ylabel('log(Mean squared error)')
+				>>> ax[0].set_title('Adaline - Learning rate 0.1')
+				>>> ada2 = AdalineGD(n_iter=15, eta=0.0001).fit(X, y)
+				>>> ax[1].plot(range(1, len(ada2.losses_) + 1),
+				...           ada2.losses_, marker='o')
+				>>> ax[1].set_xlabel('Epochs')
+				>>> ax[1].set_ylabel('Mean squared error')
+				>>> ax[1].set_title('Adaline - Learning rate 0.0001')
+				>>> plt.show()
+			\end{verbatim}
+			As can see in resulting loss function plots, encountered 2 different types of problems. Left chart shows what could happen if choose a learning rate that is too large. Instead of minimizing loss function, MSE becomes larger in every epoch, because {\it overshoot} global minimum. On other hand, can see: loss decreases on right plot, but chosen learning rate $\eta = 0.0001$ is so small: algorithm would require a very large number of epochs to converge to global loss minimum: {\sf Fig. 2.11: Error plots for suboptimal learning rates}.
+			
+			{\sf Fig. 2.12: A comparison of a well-chosen learning rate \& a learning rate that is too large} illustrates what might happen if change value of a particular weight parameter to minimize loss function $L$. Left subfigure illustrates case of a well-chosen learning rate, where loss decreases gradually, moving in direction of global minimum.
+			
+			Subfigure on right, however, illustrates what happens if choose a learning rate that is too large -- overshoot global minimum.
+			\item {\sf Improving gradient descent through feature scaling.} Many ML algorithms that will encounter throughout this book require some sort of feature scaling for optimal performance, discussed in Chaps. 3--4.
+			
+			Gradient descent is 1 of many algorithms that benefit from feature scaling. In this sect, use a feature scaling method called {\it standardization}. This normalization produce helps gradient descent learning to converge more quickly; however, it does not make original dataset normally distributed. Standardization shifts mean of each feature so that it is centered at 0 \& each feature has a standard deviation of 1 (unit variance). E.g., to standardize $j$th feature, can simply subtract sample mean $\mu_j$ from every training example \& divide it by its standard deviation $\sigma_j$:
+			\begin{equation}
+				x_j' = \frac{x_j - \mu_j}{\sigma_j}.
+			\end{equation}
+			Here $x_j$: a vector consisting of $j$th feature values of all training examples $n$, \& this standardization technique is applied to each feature $j$ in our dataset.
+			
+			1 of reasons why standardization helps with gradient descent learning: easier to find a learning rate that works well for all weights (\& bias). If features are on vastly different scales, a learning rate that works well for updating 1 weight might be too large or too small to update other weight equally well. Overall, using standardized features can stabilize training s.t. optimizer has to go through fewer steps to find a good or optimal solution (global loss minimum). {\sf Fig. 2.13: A comparison of unscaled \& standardized features on gradient updates} illustrates possible gradient updates with unscaled features (left) \& standardized features (right), where concentric circles represent loss surface as a function of 2 model weights in a 2D classification problem.
+			
+			Standardization can easily be achieved by using built-in NumPy methods {\tt mean, std}:
+			\begin{verbatim}
+				>>> X_std = np.copy(X)
+				>>> X_std[:,0] = (X[:,0] - X[:,0].mean()) / X[:,0].std()
+				>>> X_std[:,1] = (X[:,1] - X[:,1].mean()) / X[:,1].std()
+			\end{verbatim}
+			After standardization, train Adaline again \& see: it now converges after a small number of epochs using a learning rate of $\eta = 0.5$:
+			\begin{verbatim}
+				>>> ada_gd = AdalineGD(n_iter=20, eta=0.5)
+				>>> ada_gd.fit(X_std, y)
+				>>> plot_decision_regions(X_std, y, classifier=ada_gd)
+				>>> plt.title('Adaline - Gradient descent')
+				>>> plt.xlabel('Sepal length [standardized]')
+				>>> plt.ylabel('Petal length [standardized]')
+				>>> plt.legend(loc='upper left')
+				>>> plt.tight_layout()
+				>>> plt.show()
+				>>> plt.plot(range(1, len(ada_gd.losses_) + 1),
+				...          ada_gd.losses_, marker='o')
+				>>> plt.xlabel('Epochs')
+				>>> plt.ylabel('Mean squared error')
+				>>> plt.tight_layout()
+				>>> plt.show()
+			\end{verbatim}
+			After executing this code, should see a figure of decision regions, as well as a plot of declining loss, as shown in {\sf Fig. 2.14: Plots of Adaline's decision regions \& MSE by number of epochs}.
+			
+			As can see in plots, Adaline has now converged after training on standardized features. However, note: MSE remains non-zero even though all flower examples were classified correctly.
+			\item {\sf Large-scale ML \& stochastic gradient descent.} In prev sect, learned how to minimize a loss function by taking a step in opposite direction of loss gradient that is calculated from whole traiing dataset; this is why this approach is sometimes also referred to as full batch gradient descent. Now imagine: have a very large dataset with millions of data points, which is not uncommon in many ML applications. Running full batch gradient descent can be computationally quite costly in such scenarios, since need to reevalate whole training dataset each time tak 1 step toward global minimum.
+			
+			A popular alternative to batch gradient descent algorithm is {\it stochastic gradient descent (SGD)}, which is sometimes also called {\it iterative-} or {\it online gradient descent}. Instead of updating weights based on sum of accumulated errors over all training examples $x^{(i)}$:
+			\begin{equation}
+				\Delta w_j = \frac{2\eta}{n}\sum_i (y^{(i)} - \sigma(z^{(i)}))x_j^{(i)}
+			\end{equation}
+			update parameters incrementally for each training example, e.g.:
+			\begin{equation}
+				\Delta w_j = \eta(y^{(i)} - \sigma(z^{(i)}))x_j^{(i)},\ \Delta b = \eta(y^{(i)} - \sigma(z^{(i)})).
+			\end{equation}
+			Although SGd can be considered as an approximation of gradient descent, it typically reaches convergence much faster because of more frequent weight updates. Since each gradient is calculated based on a single training example, error surface is noisier than in gradient descent, which can also have advantage: SGD can escape shallow local minima more readily if working with nonlinear loss functions, as see in Chap. 11. To obtain satisfying results via SGD, important to present training data in a random order; also, want to shuffle training dataset for every epoch to prevent cycles.
+			\begin{remark}[Adjusting learning rate during training]
+				In SGD implementations, fixed learning rate $\eta$ is often replaced by an adaptive learning rate that decreases over time, e.g.: $\frac{c_1}{[\mbox{number of iterations}] + c_2}$ where $c_1,c_2$: constants. Note: SGD does not reach global loss minimum but an area very close to it. \& using an adaptive learning rate, can achieve further annealing to loss minimum.
+				
+				-- Lưu ý: SGD không đạt đến mức tổn thất tối thiểu toàn cục mà là một khu vực rất gần với mức đó. \& sử dụng tốc độ học thích ứng, có thể đạt được quá trình tôi luyện tiếp theo đến mức tổn thất tối thiểu.
+			\end{remark}
+			Another advantage of SGD: can use it for {\it online learning}. In online learning, our model is trained on fly as new training data arrives. This is especially useful if accumulating large amounts of data, e.g., customer data in web applications. Using online learning, system can immediately adapt to changes, \& training data can be discarded after updating model if storage space is an issue.
+			\begin{remark}[Mini-batch gradient descent]
+				A compromise between full batch gradient descent \& SGD is so-called \emph{mini-batch gradient descent}. Mini-batch gradient descent can be understood as applying full batch gradient descent to smaller subsets of training data, e.g., $32$ training examples at a time. Advantage over full batch gradient descent: convergence is reached faster via mini-batches because of more frequent weight updates. Furthermore, mini-batch learning allows us to replace {\tt for} loop over training examples in SGD with vectorized operations leveraging concepts from linear algebra (e.g., implementing a weighted sum via dot product), which can further improve computational efficiency of our learning algorithm.
+			\end{remark}
+			Since already implemented Adaline learning rule using gradient descent, only need to make a few adjustments to modify learning algorithm to update weights via SGD. Inside {\tt fit} method, now update weights after each training example. Furthermore, implement an additional \verb|partial_fit| method, which does not reinitialize weights, for online learning. In order to check whether our algorithm converged after training, calculate loss as average loss of training examples in each epoch. Furthermore, add an option to shuffle training data before each epoch to avoid repetitive cycles when optimizing loss function; via \verb|random_state| parameter, allow specification of a random seed for reproducibility {\tt[code]}.
+			
+			\verb|_shuffle| method that now using in {\tt AdalineSGD} classifier works as follows: via {\tt permutation} function in {\tt np.random}, generate a random sequence of unique numbers in range 0 to 100. Those numbers can then be used as indices to shuffle our feature matrix \& class label vector.
+			
+			Can then use {\tt fit} method to train {\tt AdalineSGD} classifier \& use \verb|plot_decision_regions| to plot our training results:
+			\begin{verbatim}
+				>>> ada_sgd = AdalineSGD(n_iter=15, eta=0.01, random_state=1)
+				>>> ada_sgd.fit(X_std, y)
+				>>> plot_decision_regions(X_std, y, classifier=ada_sgd)
+				>>> plt.title('Adaline - Stochastic gradient descent')
+				>>> plt.xlabel('Sepal length [standardized]')
+				>>> plt.ylabel('Petal length [standardized]')
+				>>> plt.legend(loc='upper left')
+				>>> plt.tight_layout()
+				>>> plt.show()
+				>>> plt.plot(range(1, len(ada_sgd.losses_) + 1), ada_sgd.losses_, marker='o')
+				>>> plt.xlabel('Epochs')
+				>>> plt.ylabel('Average loss')
+				>>> plt.tight_layout()
+				>>> plt.show()
+			\end{verbatim}
+			2 plots obtained from executing preceding code example: {\sf Fig. 2.15: Decision regions \& average loss plots after training an Adaline model using SGD}.
+			
+			Average loss goes down pretty quickly, \& final decision boundary after 15 epochs looks similar to batch gradient descent Adaline. If want to update model, e.g., in an online learning scenario with streaming data, could simply call \verb|partial_fit| method on individual training examples -- e.g., \verb|ada_sgd.partial_fit(X_std[0, :], y[0])|.
+		\end{itemize}
+		\item {\sf Summary.} In this chap, gained a good understanding of basic concepts of linear classifiers for supervised learning. After implemented a perceptron, saw how can train adaptive linear neurons effectively via a vectorized implementation of gradient descent \& online learning via SGD.
+		
+		Have seen how to implement simple classifiers in Python, ready to move on to next chap, where use Python {\tt scikit-learn} ML library to get access to more advanced \& powerful ML classifiers, commonly used in academia as well as in industry.
+		
+		Object-oriented approach used to implement perceptron \& Adaline algorithms will help with understanding scikit-learn API, which is implemented based on same core concepts used in this chap: {\tt fit, predict} methods. Based on these core concepts, learn about logistic regression for modeling class probabilities \& support vector machines for working with nonlinear decision boundaries. In addition, introduce a different class of supervised learning algorithms, tree-based algorithms, commonly combined into robust ensemble classifiers.
 	\end{itemize}
-	\item {\sf Chap. 3: A Tour of ML Classifiers Using Scikit-Learn.}
+	\item {\sf Chap. 3: A Tour of ML Classifiers Using Scikit-Learn.} In this chap, take a tour of a selection of popular \& powerful ML algorithms commonly used in academia as well as in industry. While learning about differences between several supervised learning algorithms for classification, also develop an appreciation of their individual strengths \& weaknesses. Take 1st steps with scikit-learn library, which offers a user-friendly \& consistent interface for using those algorithms efficiently \& productively.
+	
+	Topics covered:
 	\begin{itemize}
-		\item {\sf Choosing a classification algorithm.}
-		\item {\sf1st steps with scikit-learn -- training a perceptron.}
+		\item An introduction to robust \& popular algorithms for classification, e.g. logistic regression, support vector machines, decision trees, \& $k$-nearest neighbors
+		\item Examples \& explanations using scikit-learn ML library, which provides a wide variety of ML algorithms via a user-friendly Python API
+		\item Discussions about strengths \& weaknesses of classifiers with linear \& nonlinear decision boundaries
+	\end{itemize}
+	
+	\begin{itemize}
+		\item {\sf Choosing a classification algorithm.} Choosing an appropriate classification algorithm for a particular problem task requires practice \& experience; each algorithm has its own quirks \& is based on certain assumptions. To paraphrase {\it no free lunch theorem} by {\sc David H. Wolpert}, no single classifier works best across all possible scenarios {\it The Lack of A Priori Distinctions Between Learning Algorithms}, Wolpert, David H, Neural Computation 8.7 (1996): 1341-1390. In practice, always recommended: compare performance of at least a handful of different learning algorithms to select best model for particular problem; these may differ in number of features or examples, amount of noise in a dataset, \& whether classes are linearly separable.
+		
+		Eventually, performance of a classifier -- computational performance as well as predictive power -- depends heavily on underlying data that is available for learning. 5 main steps involved in training a supervised ML algorithm can be summarized as follows:
+		\begin{enumerate}
+			\item Selecting features \& collecting labeled training examples
+			\item Choosing a performance metric
+			\item Choosing a learning algorithm \& training a model
+			\item Evaluating performance of model
+			\item Changing settings of algorithm \& tuning model.
+		\end{enumerate}
+		Since approach of this book is to build ML knowledge step by step, mainly focus on main concepts of different algorithms in this chap \& revisit topics e.g. feature selection \& preprocessing, performance metrics, \& hyperparameter tuning for mode detailed discussions later in book.
+		\item {\sf1st steps with scikit-learn -- training a perceptron.} In Chap. 2, learned about 2 related learning algorithms for classification, {\it perceptron} rule \& {\it Adaline}, which implemented in Python \& NumPy by ourselves. Now take a look at scikit-learn API, which combines a user-friendly \& consistent interface with a highly optimized implementation of several classification algorithms. Scikit-learn library offers not only a large variety of learning algorithms, but also many convenient functions to preprocess data \& to fine-tune \& evaluate our models. Discuss this in more detail, together with underlying concepts, in Chaps. 4--5.
+		
+		To get started with scikit-learn library, train a perceptron model similar to one implemented in Chap. 2. For simplicity, use already familiar {\it Iris dataset} throughout following sects. Conveniently, Iris dataset is already available via scikit-learn, since it is a simple yet popular dataset that is frequently used for testing \& experimenting with algorithms. Similar to prev chap, only use 2 features from Iris dataset for visualization purposes.
+		
+		Assign petal length \& petal width of 150 flower examples to feature matrix {\tt X} \& corresponding class labels of flower species to vector array {\tt y}:
+		\begin{verbatim}
+			>>> from sklearn import datasets
+			>>> import numpy as np
+			>>> iris = datasets.load_iris()
+			>>> X = iris.data[:, [2, 3]]
+			>>> y = iris.target
+			>>> print('Class labels:', np.unique(y))
+			Class labels: [0 1 2]
+		\end{verbatim}
+		p. 55
 		\item {\sf Modeling class probabilities via logistic regression.}
 		\item {\sf Maximum margin classification with support vector machines.}
 		\item {\sf Solving nonlinear problems using a kernel SVM.}

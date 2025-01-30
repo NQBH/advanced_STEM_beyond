@@ -3934,7 +3934,175 @@ PyTorch book of bestselling \& widely acclaimed {\it Python ML} series. Foreword
 		\begin{remark}[Additional perceptron settings]
 			{\tt Perceptron}, as well as other scikit-learn functions \& classes, often has additional parameters that we omit for clarity. Can read more about those parameters using {\tt help} function in Python (e.g., {\tt help(Perceptron)}) or by going through excellent scikit-learn online documentation at \url{http://scikit-learn.org/stable/}.
 		\end{remark}		
-		\item {\sf Modeling class probabilities via logistic regression.}
+		\item {\sf Modeling class probabilities via logistic regression.} Although perceptron rule offers a nice \& easy-going introduction to ML algorithms for classification, its biggest disadvantage: it never converges if classes are not perfectly linearly separable. Classification task in prev sect would be an example of such a scenario. Reason for this: weights are continuously being updated since there is always at least 1 misclassified training example present in each epoch. Of course, can change learning rate \& increase number of epochs, but be warned: perceptron will never converge on this dataset.
+		
+		To make better use of our time, take a look at another simple, yet more powerful, algorithm for linear \& binary classification problems: {\it logistic regression}. Note: despite its name, logistic regression is a model for classification, not regression.
+		\begin{itemize}
+			\item {\sf Logistic regression \& conditional probabilities.} Logistic regression is a classification model that is very easy to implement \& performs very well on linearly separable classes. It is 1 of most widely used algorithms for classification in industry. Similar to perceptron \& Adaline, logistic regression model in this chap is also a linear model for binary classification.
+			\begin{remark}[Logistic regression for multiple classes]
+				Note: logistic regression can be readily generalized to multiclass settings, which is known as \emph{multinomial logistic regression}, or \emph{softmax regression}. More detailed coverage of multinomial logistic regression is outside scope of this book, but interested reader can find more information in lecture note at \url{https://sebastianraschka.com/pdf/lecture-notes/stat453ss21/L08_logistic__slides.pdf} or \url{https://www.youtube.com/watch?v=L0FU8NFpx4E}.
+				
+				Another way to use logistic regression in multiclass settings is via OvR technique, discussed previously.
+			\end{remark}
+			To explain main mechanics behind logistic regression as a probabilistic model for binary classification, 1st introduce the {\it odds}: odds in favor of a particular event. The odds can be written as $\frac{p}{1 - p}$, where $p$ stands for probability of positive event. Term ``positive event'' does not necessarily mean ``good'', but refers to event that we want to predict, e.g., probability that a patient has a certain disease given certain symptoms; can think of positive event as class label $y = 1$ \& symptoms as features $x$. Hence, for brevity, can define probability $p$ as $p\coloneqq p(y = 1|x)$, conditional probability that a particular example belongs to a certain class 1 given its features $x$.
+			
+			Can then further define {\it logit} function, which is simply logarithm of odds (log-odds):
+			\begin{equation}
+				{\rm logit}(p) = \log\frac{p}{1 - p}.
+			\end{equation}
+			Note: log refers to natural logarithm, as it is common convention in CS. Logit function takes input values in range 0 to 1 \& transforms them into values over entire real-number range.
+			
+			Under logistic model, assume: there is a linear relationship between weighted inputs (referred to as net inputs in Chap. 2) \& log-odds:
+			\begin{equation}
+				{\rm logit}(p) = w_1x_1 + \cdots + w_mx_m + b = \sum_{i=1}^m w_ix_i + b = {\bf w}^\top{\bf x} + b.
+			\end{equation}
+			While preceding describes an assumption we make about linear relationship between log-odds \& net inputs, what actually interested in is probability $p$, class-membership probability of an example given its features. While logit function maps probability to a real-number range, can consider inverse of this function to map real-number range back to a $[0,1]$ range for probability $p$.
+			
+			This inverse of logit function is typically called {\it logistic sigmoid function}, sometimes simply abbreviated to {\it sigmoid function} due to its characteristic S-shape:
+			\begin{equation}
+				\sigma(z) = \frac{1}{1 + e^{-z}}.
+			\end{equation}
+			Here $z$: net input, linear combination of weights, \& inputs (i.e., features associated with training examples): $z = {\bf w}^\top{\bf x} + b$. Simply plot sigmoid function for some values in range $[-7,7]$ to see how it works:
+			\begin{verbatim}
+				>>> import matplotlib.pyplot as plt
+				>>> import numpy as np
+				>>> def sigmoid(z):
+				...     return 1.0 / (1.0 + np.exp(-z))
+				>>> z = np.arange(-7, 7, 0.1)
+				>>> sigma_z = sigmoid(z)
+				>>> plt.plot(z, sigma_z)
+				>>> plt.axvline(0.0, color='k')
+				>>> plt.ylim(-0.1, 1.1)
+				>>> plt.xlabel('z')
+				>>> plt.ylabel('$\sigma (z)$')
+				>>> # y axis ticks and gridline
+				>>> plt.yticks([0.0, 0.5, 1.0])
+				>>> ax = plt.gca()
+				>>> ax.yaxis.grid(True)
+				>>> plt.tight_layout()
+				>>> plt.show()
+			\end{verbatim}
+			As a result of executing previous code example, should now see S-shaped (sigmoidal) curve: {\sf Fig. 3.2: A plot of logistic sigmoid function}. Can see: $\sigma(z)$ approaches 1 if $z\to\infty$ since $e^{-z}$ becomes very small for large values of $z$. Similarly, $\sigma(z)\to0$ for $z\to-\infty$ as a result of an increasingly large denominator. Thus, can conclude: this sigmoid function takes real-number values as input \& transforms them into values in range $[0,1]$ with an intercept at $\sigma(0) = 0.5$.
+			
+			To build some understanding of logistic regression model, can relate it to Chap. 2. In Adaline, used identity function $\sigma(z) = z$ as activation function. In logistic regression, this activation function simply becomes sigmoid function defined earlier.
+			
+			Difference between Adaline \& logistic regression is illustrated in {\sf Fig. 3.3: Logistic regression compared to Adaline}, where only difference is activation function.
+			
+			Output of sigmoid function is then interpreted as probability of a particular example belonging to class 1, $\sigma(z) = p(y = 1|{\bf x};{\bf w},b)$, given its features ${\bf x}$ \& parametrized by weights ${\bf w}$ \& bias $b$. E.g., if compute $\sigma(z) = 0.8$ for a particular flower example, it means: chance this this example is an {\tt Iris-versicolor} flower is 80\%. Therefore, probability that this flower is an {\tt Iris-setosa} flower can be calculated as $p(y = 0|{\bf x};{\bf w},b) = 1 - p(y = 1|{\bf x};{\bf w},b) = 0.2 = 20\%$.
+			
+			Predicted probability can then simply be converted into a binary outcome via a threshold function:
+			\begin{equation}
+				\hat{y} = \left\{\begin{split}
+					&1&&\mbox{if }\sigma(z)\ge0.5,\\
+					&0&&\mbox{otherwise}.
+				\end{split}\right.
+			\end{equation}
+			If look at preceding plot of sigmoid function, this $\Leftrightarrow$
+			\begin{equation}
+				\hat{y} = \left\{\begin{split}
+					&1&&\mbox{if }\sigma(z)\ge0.0,\\
+					&0&&\mbox{otherwise}.
+				\end{split}\right.
+			\end{equation}
+			In fact, there are many applications where not only interested in predicted class labels, but where estimation of class-membership probability is particularly useful (output of sigmoid function prior to applying threshold function). Logistic regression is used in weather forecasting, e.g., not only to predict whether it will rain on a particular day, but also to report change of rain. Similarly, logistic regression can be used to predict chance that a patient has a particular disease given certain symptoms, which is why logistic regression enjoys great popularity in field of medicine.
+			\item {\sf Learning model weights via logistic loss function.} Have learned how we can use logistic regression model to predict probabilities \& class labels; now, briefly talk about how we fit parameters of model, e.g., weights \& bias unit ${\bf w},b$. In prev chap, defined mean squared error loss functions as follows:
+			\begin{equation}
+				L({\bf w},b|{\bf x}) = \sum_i \frac{1}{2}(\sigma(z^{(i)}) - y^{(i)})^2.
+			\end{equation}
+			Minimized this function in order to learn parameters for our Adaline classification model. To explain how we can derive loss function for logistic regression, 1st define likelihood ${\cal L}$ that we want to maximize when we build a logistic regression model, assuming: individual examples in our dataset are independent of 1 another. Formula is as follows:
+			\begin{equation}
+				{\cal L}({\bf w},b|{\bf x}) = p(y|{\bf x};{\bf w},b) = \prod_{i=1}^n p(y^{(i)}|{\bf x}^{(i)};{\bf w},b) = \prod_{i=1}^n (\sigma(z^{(i)}))^{y(i)}(1 - \sigma(z^{(i)}))^{1 - y^{(i)}}.
+			\end{equation}
+			In practice, easier to maximize (natural) log of this equation, called {\it log-likelihood} function:
+			\begin{equation}
+				l({\bf w},b|{\bf x}) = \log{\cal L}({\bf w},b|{\bf x}) = \sum_{i=1}^n \left[y^{(i)}\log(\sigma(z^{(i)})) + (1 - y^{(i)})\log(1 - \sigma(z^{(i)}))\right].
+			\end{equation}
+			1stly, applying log function reduces potential for numerical underflow, which can occur if likelihoods are very small. 2ndly, can convert product of factors into a summation of factors, which makes it easier to obtain derivative of this function via addition trick, as may remember from calculus.
+			\begin{remark}[Deriving likelihood function]
+				Can obtain expression for likelihood of model given data, ${\cal L}({\bf w},b|{\bf x})$ as follows. Given: have a binary classification problem with class labels 0 \& 1, can think of label 1 as a Bernoulli variable -- it can take on 2 values, 0 \& 1, with probability $p$ of being 1: $Y\sim{\rm Bern}(p)$. For a single data point, can write this probability as $P(Y = 1|X = x^{(i)}) = \sigma(z^{(i)})$ \& $P(Y = 0|X = x^{(i)}) = 1 - \sigma(z^{(i)})$.
+				
+				Putting these 2 expressions together, \& using shorthand $P(Y = y^{(i)}|X = x^{(i)}) = p(y^{(i)}|x^{(i)})$, get probability mass function of Bernoulli variable:
+				\begin{equation}
+					p(y^{(i)}|x^{(i)}) = (\sigma(z^{(i)}))^{y^{(i)}}(1 - \sigma(z^{(i)}))^{1 - y^{(i)}}.
+				\end{equation}
+				Can write likelihood of training labels given assumption: all training examples are independent, using multiplication rule to compute probability that all events occur, as follows:
+				\begin{equation}
+					{\cal L}({\bf w},b|{\bf x}) = \prod_{i=1}^n p(y^{(i)}|{\bf x}^{(i)};{\bf w},b).
+				\end{equation}
+				Now, substituting probability mass function of Bernoulli variable, arrive at expression of likelihood, which we attempt to maximize by changing model parameters:
+				\begin{equation}
+					{\cal L}({\bf w},b|{\bf x}) = \prod_{i=1}^n (\sigma(z^{(i)}))^{y^{(i)}}(1 - \sigma(z^{(i)}))^{1 - y^{(i)}}.
+				\end{equation}
+			\end{remark}
+			Could use an optimization algorithm e.g. gradient ascent to maximize this log-likelihood function. (Gradient ascent works exactly same way as gradient descent explained in Chap. 2, except: gradient ascent maximizes a function instead of minimizing it.) Alternatively, rewrite log-likelihood as a loss function $L$ that can be minimized using gradient descent as in Chap. 2:
+			\begin{equation}
+				L({\bf w},b) = \sum_{i=1}^n \left[-y^{(i)}\log(\sigma(z^{(i)}))- (1 - y^{(i)})\log(1 - \sigma(z^{(i)}))\right].
+			\end{equation}
+			To get a better grasp of this loss function, take a look at loss that we calculate for 1 single training example:
+			\begin{equation}
+				L(\sigma(z),y;{\bf w},b) = -y\log(\sigma(z)) - (1 - y)\log(1 - \sigma(z)).
+			\end{equation}
+			1st term becomes 0 if $y = 0$, \& 2nd term becomes 0 if $y = 1$:
+			\begin{equation}
+				L(\sigma(z),y;{\bf w},b) = \left\{\begin{split}
+					&-\log(\sigma(z))&&\mbox{if } y = 1,\\
+					&-\log(1 - \sigma(z))&&\mbox{if } y = 0.
+				\end{split}\right.
+			\end{equation}
+			Write a short code snippet to create a plot that illustrates loss of classifying a single training example for different values of $\sigma(z)$:
+			\begin{verbatim}
+				>>> def loss_1(z):
+				...     return - np.log(sigmoid(z))
+				>>> def loss_0(z):
+				...     return - np.log(1 - sigmoid(z))
+				>>> z = np.arange(-10, 10, 0.1)
+				>>> sigma_z = sigmoid(z)
+				>>> c1 = [loss_1(x) for x in z]
+				>>> plt.plot(sigma_z, c1, label='L(w, b) if y=1')
+				>>> c0 = [loss_0(x) for x in z]
+				>>> plt.plot(sigma_z, c0, linestyle='--', label='L(w, b) if y=0')
+				>>> plt.ylim(0.0, 5.1)
+				>>> plt.xlim([0, 1])
+				>>> plt.xlabel('$\sigma(z)$')
+				>>> plt.ylabel('L(w, b)')
+				>>> plt.legend(loc='best')
+				>>> plt.tight_layout()
+				>>> plt.show()
+			\end{verbatim}
+			Resulting plot shows sigmoid activation on $x$ axis in range 0 to 1 (inputs to sigmoid function were $z\in[-10,10]$) \& associated logistic loss on $y$ axis: {\sf Fig. 3.4: A plot of loss function used in logistic regression}. Can see: loss approaches 0 (continuous line) if correctly predict that an example belongs to class 1. Similarly, can see on $y$ axis: loss also approaches 0 if correctly predict $y = 0$ (dashed line). However, if prediction is wrong, loss $\to\infty$. Main point: penalize wrong predictions with an increasingly larger loss.			
+			\item {\sf Converting an Adaline implementation into an algorithm for logistic regression.} If were to implement logistic regression ourselves, could simply substitute loss function $L$ in our Adaline implementation from Chap. 2 with new loss function:
+			\begin{equation}
+				L({\bf w},b) = \frac{1}{n}\sum_{i=1}^n \left[-y^{(i)}\log(\sigma(z^{(i)}))- (1 - y^{(i)})\log(1 - \sigma(z^{(i)}))\right].
+			\end{equation}
+			Use this to compute loss of classifying all training examples per epoch. Also, need to swap linear activation function with sigmoid. If make those changes to Adaline code, will end up with a working logistic regression implementation. Following is an implementation for full-batch gradient descent (but note: same changes could be made to stochastic gradient descent version as well): {\tt[code]}.
+			
+			When fit a logistic regression model, have to keep in mind: it only works for binary classification tasks.
+			
+			So, consider only setosa \& versicolor flowers (classes 0 \& 1) \& check: our implementation of logistic regression works:
+			\begin{verbatim}
+				>>> X_train_01_subset = X_train_std[(y_train == 0) | (y_train == 1)]
+				>>> y_train_01_subset = y_train[(y_train == 0) | (y_train == 1)]
+				>>> lrgd = LogisticRegressionGD(eta=0.3, n_iter=1000, random_state=1)
+				>>> lrgd.fit(X_train_01_subset, y_train_01_subset)
+				>>> plot_decision_regions(X=X_train_01_subset, y=y_train_01_subset, classifier=lrgd)
+				>>> plt.xlabel('Petal length [standardized]')
+				>>> plt.ylabel('Petal width [standardized]')
+				>>> plt.legend(loc='upper left')
+				>>> plt.tight_layout()
+				>>> plt.show()
+			\end{verbatim}
+			Resulting decision region plot looks as {\sf Fig. 3.5: Decision region plot for logistic regression model}.
+			\begin{remark}[Gradient descent learning algorithm for logistic regression]
+				If compared {\tt LogisticRegressionGD} in prev code with {\tt AdalineGD} code from Chap. 2, may have noticed: weight \& bias update rules remained unchanged (except for scaling factor $2$). Using calculus, can show: parameter updates via gradient descent are indeed similar for logistic regression \& Adaline. However, note: following derivation of gradient descent learning rule is intended for readers who are interested in mathematical concepts behind gradient descent learning rule for logistic regression. Not essential for following rest of this chap.
+				
+				{\sf Fig. 3.6: Calculating partial derivative of log-likelihood function} summarizes how can calculate partial derivative of log-likelihood function w.r.t. $j$th weight: $\frac{\partial L}{\partial w_j} = \frac{\partial L}{\partial a}\frac{da}{dz}\frac{\partial z}{\partial w_j}$ where $a = \sigma(z) = \frac{1}{1 + e^{-z}}$ $\ldots$. Note: omitted averaging over training examples for brevity.
+				
+				Remember from Chap. 2: take steps in opposite direction of gradient. Hence, flip $\frac{\partial L}{\partial w_j} = -(y - a)x_j$ \& update $j$th weight as follows, including learning rate $\eta$: $w_j\coloneqq w_j + \eta(y - a)x_j$. While partial derivative of loss function w.r.t. bias unit is not shown, bias derivation follows same overall concept using chain rule, resulting in following update rule: $b\coloneqq b + \eta(y - a)$. Both weight \& bias unit updates are equal to the ones for Adaline in Chap. 2.
+			\end{remark}
+			
+			\item {\sf Training a logistic regression model with scikit-learn.}
+			\item {\sf Tackling overfitting via regularization.}
+		\end{itemize}
 		\item {\sf Maximum margin classification with support vector machines.}
 		\item {\sf Solving nonlinear problems using a kernel SVM.}
 		\item {\sf Decision tree learning.}

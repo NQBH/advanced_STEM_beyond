@@ -3411,11 +3411,231 @@ PyTorch book of bestselling \& widely acclaimed {\it Python ML} series. Foreword
 		
 		Have an exciting journey ahead, covering many powerful techniques in vast field of ML. However, approach ML 1 step at a time, building upon our knowledge gradually throughout chaps of this book. In following chap, start this journey by implementing 1 of earliest ML algorithms for classification, which will prepare for {\it Chap. 3: A Tour of ML Classifiers Using Scikit-Learn}, where cover more advanced ML algorithms using {\tt scikit-learn} open-source ML library.
 	\end{itemize}
-	\item {\sf Chap. 2: Training Simple ML Algorithms for Classification.}
+	\item {\sf Chap. 2: Training Simple ML Algorithms for Classification.} In this chap, make use of 2 of 1st algorithmically described ML algorithms for classification: perceptron \& adaptive linear neurons. Start by implementing a perceptron step by step in Python \& training it to classify different flower species in Iris dataset. This will help us to understand concept of ML algorithms for classification \& how they can be efficiently implemented in Python.
+	
+	Discussing basics of optimization using adaptive linear neurons will then lay groundwork for using more sophisticated classifiers via scikit-learn ML library in {\it Chap. 3: A Tour of ML Classifiers Using Scikit-Learn}.
+	
+	Topics covered in this chap:
 	\begin{itemize}
-		\item {\sf Artificial neurons -- a brief glimpse into early history of ML.}
-		\item {\sf Implementing a perceptron learning algorithm in Python.}
-		\item {\sf Adaptive linear neurons \& convergence of learning.}
+		\item Building an understanding of ML algorithms
+		\item Using pandas, NumPy, \& Matplotlib to read in, process, \& visualize data
+		\item Implementing linear classifiers for 2-class problems in Python
+	\end{itemize}
+	
+	\begin{itemize}
+		\item {\sf Artificial neurons -- a brief glimpse into early history of ML.} Before discuss perceptron \& related algorithms in more detail, take a brief tour of beginnings of ML. Trying to understand how biological brain works in order to design an AI, {\sc Warren McCulloch \& Walter Pitts} published 1st concept of a simplified brain cell, so-called {\it McCullock-Pitts (MCP)} neuron, in 1943 ({\it A Logical Calculus of Ideas Immanent in Nervous Activity} by {\sc W.S. McCulloch \& W. Piits}, Bulletin of Mathematical Biophysics, 5(4): 115-133, 1943).
+		
+		Biological neurons are interconnected nerve cells in brain that are involved in processing \& transmitting of chemical \& electrical signals, illustrated in {\sf Fig. 2.1: A neuron processing chemical \& electrical signals}.
+		
+		{\sc McCulloch \& Pitts} described such a nerve cell as a simple logic gate with binary outputs; multiple signal arrive at dendrites (các nhánh cây, a short branch at the end of a nerve cell that receives signals from other cells -- 1 nhánh ngắn ở cuối tế bào thần kinh nhận tín hiệu từ các tế bào khác), they are then integrated into cell body, \&, if accumulated signal exceeds a certain threshold, an output signal is generated that will be passed on by axon (sợi trục).
+		
+		Only a few years later, {\sc Frank Rosenblatt} published 1st concept of perceptron learning rule based on MCP neuron model ({\it The Perceptron: A Perceiving and Recognizing Automaton} by {\sc F. Rosenblatt}, Cornell Aeronautical Laboratory, 1957). With his perceptron rule, {\sc Rosenblatt} proposed an algorithm that would automatically learn optimal weight coefficients that would then be multiplied with input features in order to make decision of whether a neuron fires (transmits a signal) or not. In context of supervised learning \& classification, e.g. algorithm could then be used to predict whether a new data point belongs to 1 class or the other.
+		\begin{itemize}
+			\item {\sf Formal def of an artificial neuron.} More formally, can put idea behind {\it artificial neurons} into context of a binary classification task with 2 classes: 0 \& 1. Can then define a decision function $\sigma(z)$ that takes a linear combination of certain input values $x$ \& a corresponding weight vector $w$ where $z$: so-called {\it net input} $z = {\bf w}\cdot{\bf x} = w_1x_1 + \cdots + w_mx_m$. Now, if net input of a particular example $x^{(i)}$ is greater than a defined threshold $\theta$, predict class 1, \& class 0 otherwise. In perceptron algorithm, decision function $\sigma(\cdot)$ is a variant of a {\it unit step function}:
+			\begin{equation}
+				\sigma(z) = \left\{\begin{split}
+					&1&&\mbox{if } z\ge\theta,\\
+					&0&&\mbox{otherwise}.
+				\end{split}\right.
+			\end{equation}
+			To simplify code implementation later, can modify this setup via a couple of steps. 1st, move threshold $\theta$ to left side of equation: $z\ge\theta,z - \theta\ge0$. 2nd, define a so-called {\it bias unit} as $b = -\theta$ \& make it part of net input: $z = w_1x_1 + \cdots + w_mx_m + b = {\bf w}^\top{\bf x} + b$. 3rd, given introduction of bias unit \& redefinition of net input $z$ above, redefine decision function as follows:
+			\begin{equation}
+				\sigma(z) = \left\{\begin{split}
+					&1&&\mbox{if } z\ge0,\\
+					&0&&\mbox{otherwise}.
+				\end{split}\right.
+			\end{equation}
+			{\sf Fig. 2.2: A threshold function producing a linear decision boundary for a binary classification problem} illustrates how net input $z = {\bf w}^\top{\bf x} + b$ is squashed into a binary output (0 or 1) by decision function of perceptron \& how it can be used to discriminate between 2 classes separable by a linear decision boundary.
+			\item {\sf Perceptron learning rule.} Whole idea behind MCP neuron \& {\sc Rosenblatt}'s {\it thresholded} perceptron model: use a reductionist approach to mimic how a single neuron in brain works: it either {\it fires} or it doesn't. Thus, {\sc Rosenblatt}'s classic perceptron rule is fairly simple, \& perceptron algorithm can be summarized by following steps:
+			\begin{enumerate}
+				\item Initialize weights \& bias unit to 0 or small random numbers
+				\item For each training example, $x^{(i)}$:
+				\begin{enumerate}
+					\item Compute output value $\hat{y}^{(i)}$
+					\item Update weights \& bias unit
+				\end{enumerate}
+			\end{enumerate}
+			Here, output value is class label predicted by unit step function defined earlier, \& simultaneous update of bias unit \& each weight $w_j$ in weight vector ${\bf w}$ can be more formally written as
+			\begin{align}
+				w_i &= w_i + \Delta w_i,\\
+				b &= b + \Delta b.
+			\end{align}
+			Update values (``deltas'') are computed as follows:
+			\begin{align}
+				\Delta w_j &= \eta(y^{(i)} - \hat{y}^{(i)})x_j^{(i)},\\
+				\Delta b &= \eta(y^{(i)} - \hat{y}^{(i)}).
+			\end{align}
+			Note: unlike bias unit, each weight $w_j$ corresponds to a feature $x_j$ in dataset, which is involved in determining update value $\Delta w_j$ defined above. Furthermore, $\eta$ is {\it learning rate} (typically a constant between 0.0 \& 1.0), $y^{(i)}$: {\it true class label} of $i$th training example, \& $\hat{y}^{(i)}$: {\it predicted class label}. Important to note: bias unit \& all weights in weight vector are being updated simultaneously, i.e., don't recompute predicted labels $\hat{y}^{(i)}$ before bias unit \& all of weights are updated via respective update values $\Delta w_j$ \& $\Delta b$. Concretely, for a 2D dataset, write update as:
+			\begin{align}
+				\Delta w_1 &= \eta(y^{(i)} - {\rm output}^{(i)})x_1^{(i)},\\
+				\Delta w_2 &= \eta(y^{(i)} - {\rm output}^{(i)})x_2^{(i)},\\
+				\Delta b &= \eta(y^{(i)} - {\rm output}^{(i)}).
+			\end{align}
+			Before implement perceptron rule in Python, go through a simple thought experiment to illustrate how beautifully simple this learning rule really is. In 2 scenarios where perceptron predicts class label correctly, bias unit \& weights remain unchanged, since update values are 0:
+			\begin{equation}
+				\cdots y^{(i)} = \hat{y}^{(i)}\Leftrightarrow\cdots\Leftrightarrow\Delta w_j = \Delta b = 0.
+			\end{equation}
+			However, in case of a wrong prediction, weights are being pushed toward direction of positive or negative target class $\Delta b = \pm\eta$.
+			
+			To get a better understanding of feature value as a multiplicative factor $x_j^{(i)} $, go through another simple example where $y^{(i)} = 1,\hat{y}^{(i)} = 0,\eta = 1$. Assume $x_j^{(i)} = 1.5$ misclassified as class 0: would increase corresponding weight by 2.5 in total so that net input $z = x_j^{(i)}w_j + b$ would be more positive next time we encountered this example, \& thus be more likely to be above threshold of unit step function to classify example as class 1.
+			
+			Weight update $\Delta w_j$ is proportional to value of $x_j^{(i)}$. E.g., $x_j^{(i)} = 2$ incorrectly classified as class 0, will push decision boundary by an even larger extent to classify this example correctly next time.
+			
+			Important to note: convergence of perceptron is only guaranteed if 2 classes are linearly separable, i.e., 2 classes can be perfectly separated by a linear decision boundary. Convergence proof in his lecture notes: \url{https://sebastianraschka.com/pdf/lecture-notes/stat453ss21/L03_perceptron_slides.pdf}. {\sf Fig. 2.3: Examples of linearly \& nonlinearly separable classes. (a) Linearly separable: A linear decision boundary that separates 2 classes exist. (b) Not linearly separable: No linear decision boundary that separates 2 classes perfectly exists.} shows visual examples of linearly separable \& linear inseparable scenarios.
+			
+			If 2 classes can't be separated by a linear decision boundary, can set a maximum number of passes over training dataset ({\bf epochs} -- thời đại) \&{\tt/}or a threshold for number of tolerate misclassifications -- perceptron would never stop updating weights otherwise. Later in this chap, cover Adaline algorithm that produces linear decision boundaries \& converges even if classes are not perfectly linearly separable. In Chap. 3, learn about algorithms that can produce nonlinear decision boundaries.
+			\begin{remark}[Download example code]
+				Can download all code examples and datasets directly from \url{https://github.com/rasbt/machine-learning-book}.
+			\end{remark}
+			Before jump into implementation in next sect, what just learned can be summarized in a simple diagram that illustrates general concept of perceptron: {\sf Fig. 2.4: Weights \& bias of model are updated based on error function.} Preceding diagram illustrates how perceptron receives inputs of an example $x$ \& combines them with bias unit $b$ \& weights ${\bf w}$ to compute net input. Net input is then passed on to threshold function, which generates a binary output of 0 or 1 -- predicted class label of example. During learning phase, this output is used to calculate error of prediction \& update weights \& bias unit.			
+		\end{itemize}
+		\item {\sf Implementing a perceptron learning algorithm in Python.} In prev sec, learned how Rosenblatt's perceptron rule works, implement it in Python \& apply it to Iris dataset.
+		\begin{itemize}
+			\item {\sf An object-oriented perceptron API.} Take an object-oriented approach to defining perceptron interface as a Python class, which will allow us to initialize new {\tt Perceptron} objects that can learn from data via a {\tt fit} method \& make predictions via a separate {\tt predict} method. As a convention, append an underscore \verb|_| to attributes that are not created upon initialization of object, but do this by calling object's other methods, e.g., \verb|self.w_|.
+			\begin{remark}[Additional resources for Python's scientific computing stack]
+				If not yet familiar with Python's scientific libraries or need a refresher, see resources:
+				\begin{itemize}
+					\item NumPy: \url{https://sebastianraschka.com/blog/2020/numpy-intro.html}
+					\item pandas: \url{https://pandas.pydata.org/pandas-docs/stable/user_guide/10min.html}
+					\item Matplotlib: \url{https://matplotlib.org/stable/tutorials/introductory/usage.html}
+				\end{itemize}
+			\end{remark}
+			Implementation of a perceptron in Python: see {\tt perceptron.py}.
+			
+			Using this perceptron implementation, can now initialize new {\tt Perceptron} objects with a given learning rate {\tt eta} $\eta$ \& number of epochs \verb|n_iter| (passes over training dataset).
+			
+			Via {\tt fit} method, initialize bias \verb|self.b_| to an initial value 0 \& weights in \verb|self.w_| to a vector $\mathbb{R}^m$ where $m$: number of dimensions (features) in dataset.
+			
+			Notice: initial weight vector contains small random numbers drawn from a normal distribution with a standard deviation of 0.01 via {\tt rgen.normal(loc=0.0, scale=0.01, size=1 + X.shape[1])} where {\tt rgen} is a NumPy random number generator that we seeded with a user-specified random seed so that we can reproduce previous results if desired.
+			
+			Technically, could initialize weights to 0 (in fact, this is done in original perceptron algorithm). However, if did that, then learning rate $\eta$ {\tt eta} would have no effect on decision boundary. If all weights are initialized to 0, learning rate parameter {\tt eta} affects only scale of weight vector, not direction. If familiar with trigonometry, consider a vector ${\bf v}_1 = [1,2,3]$, where angle between ${\bf v}_1$ \& a vector ${\bf v}_2 = 0.5{\bf v}_1$, would be exactly 0, as demonstrated by code snippet:
+			\begin{verbatim}
+				>>> v1 = np.array([1, 2, 3])
+				>>> v2 = 0.5 * v1
+				>>> np.arccos(v1.dot(v2) / (np.linalg.norm(v1) *
+				...           np.linalg.norm(v2)))
+				0.0
+			\end{verbatim}
+			i.e., $({\bf v}_1,{\bf v}_2) = \arccos\frac{{\bf v}_1\cdot{\bf v}_2}{\|{\bf v}_1\|\|{\bf v}_2\|}$. Here, {\tt np.arccos}: trigonometric inverse cosin, {\tt np.linalg.norm} is a function that computes length of a vector. (Our decision to draw random numbers from a random normal distribution -- e.g., instead of from a uniform distribution -- \& to use a standard deviation of {\tt0.01} was arbitrary: remember, just interested in small random values to avoid properties of all-zero vectors.)
+			
+			As an optional exercise after reading this chap, can change \verb|self.w_ = rgen.normal(loc=0.0, scale=0.01, size=X.shape[1])| to \verb|self.w_ = np.zeros(X.shape[1])| \& run perceptron training code presented in next sect with different values for {\tt eta}. Observe: decision boundary does not change.
+			\begin{remark}[NumPy array indexing]
+				NumPy indexing for 1D arrays works similarly to Python lists using square-bracket {\tt[]} notation. For 2D arrays, 1st indexer refers to row number \& 2nd indexer to column number. E.g., would see {\tt X[2, 3]} to select 3rd row \& 4th column of a 2D array {\tt X}.
+			\end{remark}
+			After weights have been initialized, {\tt fit} method loops over all individual examples in training dataset \& updates weights according to perceptron learning rule discussed in prev sect.
+			
+			Class labels are predicted by {\tt predict} method, called in {\tt fit} method during training to get class label for weight update; but {\tt predict} can also be used to predict class labels of new data after we have fitted our model. Furthermore, also collect number of misclassifications during each epoch in \verb|self.errors_| list so that can later analyze how well our perceptron performed during training. {\tt np.dot} function that is used in \verb|net_input| method simply calculates vector dot product ${\bf w}^\top{\bf x} + b$.
+			\begin{remark}[Vectorization: Replacing for loops with vectorized code]
+				Instead of using NumPy to calculate vector dot product between 2 arrays {\tt a, b}, via {\tt a.dot(b)} or {\tt np.dot(a, b)}, could also perform calculation in pure Python via {\tt sum([i * j for i, j in zip(a, b)])}. However, advantage of using NumPy over classic Python {\tt for} loop structures: its arithmetic operations are vectorized. Vectorizations means: an elemental arithmetic operation is automatically applied to all elements in an array. By formulating our arithmetic operations as a sequence of instructions on an array, rather than performing a set of operations for each element at a time, can make better use of modern \emph{central processing unit (CPU)} architectures with \emph{single instruction, multiple data (SIMD)} support. Furthermore, NumPy uses highly optimized linear algebra libraries, e.g. \emph{Basic Linear Algebra Subprograms (BLAS)} \& \emph{Linear Algebra Package (LAPACK)}, that have been written in C or Fortran. Lastly, NumPy also allows us to write our code in a more compact \& intuitive way using basics of linear algebra, e.g. vector \& matrix dot products.
+			\end{remark}
+			\item {\sf Training a perceptron model on Iris dataset.} To test our perceptron implementation, restrict following analyses \& examples in remainder of this chap to 2 feature variables (dimensions). Although perceptron rule is not restricted to 2D, considering only 2 features, sepal length \& petal length, will allow to visualize decision regions of trained model in scatterplot for learning purposes.
+			
+			Note: also only consider 2 flower classes, setora \& versicolor, from Iris dataset for practical reasons -- remember, perceptron is a binary classifier. However, perceptron algorithm can be extended to multi-class classification -- e.g., {\it1-vs-all (OvA)} technique.
+			\begin{remark}[OvA method for multi-class classification]
+				OvA, sometimes also called \emph{1-vs-rest} (OvR), is a technique that allows us to extend \& binary classifier to multi-class problems. Using OvA, can train 1 classifier per class, where particular class is treated as positive class \& examples from all other classes are considered negative classes. If were to classify a new, unlabeled data instance, would use our $n$ classifiers, where $n$: number of class labels, \& assign class label with highest confidence to particular instance we want to classify. In case of perceptron, would use OvA to choose class label that is associated with largest absolute net input value.
+			\end{remark}
+			1st, use {\tt pandas} library to load Iris dataset directly from {\tt UCI ML Repository} into a {\tt DataFrame} object \& print last 5 lines via {\tt tail} method to check: data was loaded correctly:
+			\begin{verbatim}
+				import os
+				import pandas as pd
+				
+				try:
+				    s = 'https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data'
+				    print('From URL:', s)
+				    df = pd.read_csv(s, header=None, encoding='utf-8')
+				except HTTPError:
+				    s = 'iris.data'
+				    print('From local Iris path:', s)
+				    df = pd.read_csv(s, header=None, encoding='utf-8')
+				
+				df.tail()
+			\end{verbatim}
+			After executing prev code, should se following output, which shows last 5 lines of Iris dataset:
+			\begin{verbatim}
+				(base) nqbh@nqbh-dell:~/advanced_STEM_beyond/machine_learning/Python$ python perceptron_Iris_dataset.py 
+				From URL: https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data
+				0    1    2    3               4
+				145  6.7  3.0  5.2  2.3  Iris-virginica
+				146  6.3  2.5  5.0  1.9  Iris-virginica
+				147  6.5  3.0  5.2  2.0  Iris-virginica
+				148  6.2  3.4  5.4  2.3  Iris-virginica
+				149  5.9  3.0  5.1  1.8  Iris-virginica
+			\end{verbatim}
+			
+			\begin{remark}[Loading Iris dataset]
+				Can find a copy of Iris dataset (\& all other dataset used in this book) in code bundle of this book, which can use if working offline or if UCI server at \url{https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data} is temporarily unavailable. E.g., to load Iris dataset from a local directory, can replace this line,
+				\begin{verbatim}
+					df = pd.read_csv(
+					  'https://archive.ics.uci.edu/ml/'
+					  'machine-learning-databases/iris/iris.data',
+					header=None, encoding='utf-8')
+				\end{verbatim}
+				with
+				\begin{verbatim}
+					df = pd.read_csv(
+					  'your/local/path/to/iris.data',
+					header=None, encoding='utf-8')
+				\end{verbatim}
+			\end{remark}
+			Next, extract 1st 100 class labels that correspond to 50 Iris-setosa \& 50 Iris-versicolor flowers \& convert class labels into 2 integer class labels, {\tt1} (versicolor) \& {\tt0 (setosa)}, that we assign to a vector {\tt y} where {\tt values} method of a pandas {\tt DataFrame} yields corresponding NumPy representation.
+			
+			Similarly, extract 1st feature column (sepal length) \& 3rd feature column (petal length) of those 100 training examples \& assign them to a feature matrix {\tt X} which we can visualize via a 2D scatterplot:
+			\begin{verbatim}
+				import numpy as np
+				import matplotlib.pyplot as plt
+				y = df.iloc[0:100, 4].values
+				y = np.where(y == 'Iris-setosa', 0, 1)
+				
+				# extract sepal length and petal length
+				X = df.iloc[0:100, [0, 2]].values
+				
+				# plot data
+				plt.scatter(X[:50, 0], X[:50, 1],
+				color='red', marker='o', label='Setosa')
+				plt.scatter(X[50:100, 0], X[50:100, 1],
+				color='blue', marker='s', label='Versicolor')
+				
+				plt.xlabel('Sepal length [cm]')
+				plt.ylabel('Petal length [cm]')
+				plt.legend(loc='upper left')
+				
+				# plt.savefig('images/02_06.png', dpi=300)
+				plt.show()
+			\end{verbatim}
+			After executing preceding code example, should see following scatterplot {\sf Fig. 2.6: Scatterplot of setosa \& versicolor flowers by sepal \& petal length}: show distribution of flower examples in Iris dataset along 2 feature axes: petal length \& sepal length (measured in centimeters). In this 2D feature subspace, can see: a linear decision boundary should be sufficient to separate setosa from versicolor flowers. Thus, a linear classifier e.g. perceptron should be able to classify flowers in this dataset perfectly.
+			
+			Time to train our perception algorithm on Iris data subset just extracted. Plot misclassification error for each epoch to check whether algorithm converged \& found a decision boundary that separates 2 Iris flower classes:
+			\begin{verbatim}
+				ppn = Perceptron(eta=0.1, n_iter=10)
+				
+				ppn.fit(X, y)
+				
+				plt.plot(range(1, len(ppn.errors_) + 1), ppn.errors_, marker='o')
+				plt.xlabel('Epochs')
+				plt.ylabel('Number of updates')
+				
+				# plt.savefig('images/02_07.png', dpi=300)
+				plt.show()
+			\end{verbatim}
+			Note: number of misclassification errors \& number of updates is the same, since perceptron weights \& bias are updated each time it misclassifies an example. An executing preceding code, should see plot of misclassification errors vs. number of epochs, as shown in {\sf Fig. 2.7: A plot of misclassification errors against number of epochs.} Our perceptron converged after 6th epoch \& should now be able to classify training examples perfectly. Implement a small convenience function to visualize decision boundaries for 2 datasets. {\tt[code]}
+			
+			1st, define a number of {\tt colors, makers} \& create a colormap from list of colors via {\tt ListedColormap}. Then, determine minimum \& maximum values for 2 features \& use those feature vectors to create a pair of grid arrays {\tt xx1, xx2} via NumPy {\tt meshgrid} function. Since trained our perceptron classifier on 2 feature dimensions, need to flatten grid arrays \& create a matrix that has same number of columns as Iris training subset so that can use {\tt predict} method to predict class labels {\tt lab} of corresponding grid points.
+			
+			After reshaping predicted class labels {\tt lab} into a grid with same dimensions as {\tt xx1, xx2}, can now draw a contour plot via Matplotlib's {\tt contourf} function, which maps different decision regions to different colors for each predicted class in grid array:
+			\begin{verbatim}
+				>>> plot_decision_regions(X, y, classifier=ppn)
+				>>> plt.xlabel('Sepal length [cm]')
+				>>> plt.ylabel('Petal length [cm]')
+				>>> plt.legend(loc='upper left')
+				>>> plt.show()
+			\end{verbatim}
+			After executing preceding code example, should now see a plot of decision regions, as shown in {\sf Fig. 2.8: A plot of perceptron's decision regions}. As can see in plot, perceptron learned a decision boundary that can classify all flower examples in Iris training subset perfectly.
+			\begin{remark}[Perceptron convergence]
+				Although perceptron classified 2 Iris flower classes perfectly, convergence is 1 of biggest problems of perceptron. {\sc Rosenblatt} proved mathematically: perceptron learning rule converges if 2 classes can be separated by a linear hyperplane. However, if classes cannot be separated perfectly by such a linear decision boundary, weights will never stop updating unless we set a maximum number of epochs. Interested readers can find a summary of proof in lecture notes at \url{https://sebastianraschka.com/pdf/lecture-notes/stat453ss21/L03_perceptron_slides.pdf}.
+			\end{remark}
+		\end{itemize}
+		\item {\sf Adaptive linear neurons \& convergence of learning.} In this sect, take a look at another type of single-layer {\it neural network (NN)
+		: ADAptive LInear NEuron (Adaline)}. Adaline was published by {\sc Bernard Widrow} \& his doctoral student {\sc Tedd hoff} only a few years after Rosenblatt's perceptron algorithm, \& it can be considered an improvement on latter: {\it An Adaptive ``Adaline'' Neuron Using Chemical ``Memistors''}, Technical Report Number 1553-2 by B. Widrow \& colleagues, Stanford Electron Labs, Stanford, CA, October 1960).
 		\item {\sf Summary.}
 	\end{itemize}
 	\item {\sf Chap. 3: A Tour of ML Classifiers Using Scikit-Learn.}

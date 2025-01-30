@@ -3852,7 +3852,88 @@ PyTorch book of bestselling \& widely acclaimed {\it Python ML} series. Foreword
 			>>> print('Class labels:', np.unique(y))
 			Class labels: [0 1 2]
 		\end{verbatim}
-		p. 55
+		{\tt np.unique(y)} function returned 3 unique class labels stored in {\tt iris.target}, \& Iris flower class names {\tt Iris-setosa, Iris-versicolor, Iris-virginica}, are already stored as integers (here: {\tt0, 1, 2}). Although many scikit-learn functions \& class methods also work with class labels in string format, using integer labels is a recommended approach to avoid technical glitches (tránh trục trặc kỹ thuật) \& improve computational performance due to a smaller memory footprint; furthermore, encoding class labels as integers is a common convention among most ML libraries.
+		
+		To evaluate how well a trained model performs on unseen data, further split dataset into separate training \& test datasets. In Chap. 6, discuss best practices around model evaluation in more detail. Using \verb|train_test_split| function from scikit-learn's \verb|model_selection| module, randomly split {\tt X, y} arrays into 30\% test data (45 examples) \& 70\% training data (105 examples):
+		\begin{verbatim}
+			>>> from sklearn.model_selection import train_test_split
+			>>> X_train, X_test, y_train, y_test = train_test_split(
+			...     X, y, test_size=0.3, random_state=1, stratify=y
+			... )
+		\end{verbatim}
+		Note: \verb|train_test_split| function already shuffles training datasets internally before splitting; otherwise, all examples from class 0 \& class 1 would have ended up in training datasets, \& test dataset would consist of 45 examples from class 2. Via \verb|random_state| parameter, provided a fixed random seed \verb|random_state=1| for internal pseudo-random number generator that is used for shuffling datasets prior to splitting. Using such a fixed \verb|random_state| ensures: our results are reproducible.
+		
+		Lastly, took advantage of built-in support for stratification (sự phân tầng) via {\tt stratify=y}. In this context, stratification means: \verb|train_test_split| method returns training \& test subsets that have same proportions of class labels as input dataset. Can use NumPy's {\tt bincount} function, which counts number of occurrences of each value in an array, to verify that this is indeed the case:
+		\begin{verbatim}
+			>>> print('Labels counts in y:', np.bincount(y))
+			Labels counts in y: [50 50 50]
+			>>> print('Labels counts in y_train:', np.bincount(y_train))
+			Labels counts in y_train: [35 35 35]
+			>>> print('Labels counts in y_test:', np.bincount(y_test))
+			Labels counts in y_test: [15 15 15]
+		\end{verbatim}
+		Many ML \& optimization algorithms also require feature scaling for optimal performance, as saw in {\it gradient descent} example in Chap. 2. Here, standardize features using {\tt StandardScaler} class from scikit-learn's {\tt preprocessing} module:
+		\begin{verbatim}
+			>>> from sklearn.preprocessing import StandardScaler
+			>>> sc = StandardScaler()
+			>>> sc.fit(X_train)
+			>>> X_train_std = sc.transform(X_train)
+			>>> X_test_std = sc.transform(X_test)
+		\end{verbatim}
+		Using preceding code, loaded {\tt StandardScaler} class from {\tt preprocessing} module \& initialized a new {\tt StandardScaler} object assigned to {\tt sc} variable. Using {\tt fit} method, {\tt StandardScaler} estimated parameters, $\mu$ (sample mean) \& $\sigma$ (standard deviation), for each feature dimension from training data. By calling {\tt transform} method, then standardized training data using those estimated parameters $\mu,\sigma$. Note: used same scaling parameters to standardize test dataset so that both values in training \& test dataset are compatible with 1 another.
+		
+		Having standardized training data, can now train a perceptron model. Most algorithms in scikit-learn already support multiclass classification by default via {\it1-vs-rest (OvR)} method, which allows to feed 3 flower classes to perceptron all at once. Code:
+		\begin{verbatim}
+			>>> from sklearn.linear_model import Perceptron
+			>>> ppn = Perceptron(eta0=0.1, random_state=1)
+			>>> ppn.fit(X_train_std, y_train)
+		\end{verbatim}
+		Scikit-learn interface will remind of our perceptron implementation in Chap. 2. After loading {\tt Perceptron} class from \verb|linear_model| module, initialized a new {\tt Perceptron} object \& trained model via {\tt fit} method. Here, model parameter {\tt eta0} is equivalent to learning rate {\tt eta} that we used in our own perceptron implementation.
+		
+		As in Chap. 2, finding an appropriate learning rate requires some experimentation. If learning rate is too large, algorithm will overshoot global loss minimum. If learning rate is too small, algorithm will require more epochs until convergence, which can make learning slow -- especially for large datasets. Also, used \verb|random_state| parameter to ensure reproducibility of initial shuffling of training dataset after each epoch.
+		
+		Having trained a model in scikit-learn, can make predictions via {\tt predict} method, just like in our own perceptron implementation in Chap. 2. Code:
+		\begin{verbatim}
+			>>> y_pred = ppn.predict(X_test_std)
+			>>> print('Misclassified examples: %d' % (y_test != y_pred).sum())
+			Misclassified examples: 1
+		\end{verbatim}
+		Executing code, can see: perceptron misclassifies 1 out of 45 flower examples. Thus, misclassification error on test dataset is $\frac{1}{45}\approx0.022 = 2.2\%$.
+		\begin{remark}[Classification error vs. accuracy]
+			Instead of misclassification error, many ML practitioners report classification accuracy of a model, which is simply calculated as follows: $1 - {\rm error} = 0.978 = 97.8\%$. Whether use classification error or accuracy is merely a matter of preference.
+		\end{remark}
+		Note: scikit-learn also implements a large variety of different performance metrics that are available via {\tt metrics} module. E.g., can calculate classification accuracy of perceptron on test dataset as follows:
+		\begin{verbatim}
+			>>> from sklearn.metrics import accuracy_score
+			>>> print('Accuracy: %.3f' % accuracy_score(y_test, y_pred))
+			Accuracy: 0.978
+		\end{verbatim}
+		Here \verb|y_test|: true labels, \verb|y_pred|: class labels predicted previously. Alternatively, each classifier in scikit-learn has a {\tt score} method, which computes a classifier's prediction accuracy by combining {\tt predict} call with \verb|accuracy_score|, as shown here:
+		\begin{verbatim}
+			>>> print('Accuracy: %.3f' % ppn.score(X_test_std, y_test))
+			Accuracy: 0.978
+		\end{verbatim}
+		
+		\begin{remark}[Overfitting]
+			Note: will evaluate performance of our models based on test dataset in this chap. In Chap. 6, learn about useful techniques, including graphical analysis, e.g. learning curves, to detect \& prevent overfitting. Overfitting means: model captures patterns in training data well but fails to generalize well to unseen data.
+		\end{remark}
+		Finally, can use our \verb|plot_decision_regions| function from Chap. 2 to plot {\it decision regions} of our newly trained perceptron model \& visualize how well it separates different flower examples. However, add a small modifications to highlight data instances from test dataset via small circles: {\tt[code]}.
+		
+		With slight modification that we made to \verb|plot_decision_regions| function, can now specify indices of examples that we want to mark on resulting plots. Code:
+		\begin{verbatim}
+			>>> X_combined_std = np.vstack((X_train_std, X_test_std))
+			>>> y_combined = np.hstack((y_train, y_test))
+			>>> plot_decision_regions(X=X_combined_std, y=y_combined, classifier=ppn, test_idx=range(105, 150))
+			>>> plt.xlabel('Petal length [standardized]')
+			>>> plt.ylabel('Petal width [standardized]')
+			>>> plt.legend(loc='upper left')
+			>>> plt.tight_layout()
+			>>> plt.show()
+		\end{verbatim}
+		In resulting plot, 3 flower classes can't be perfectly separated by a linear decision boundary: {\sf Fig. 3.1: Decision boundaries of a multi-class perceptron model fitted to Iris dataset.} However, remember from discussion in Chap. 2: perceptron algorithm never converges on datasets that aren't perfectly linearly separable, which is why use of perceptron algorithm is typically not recommended in practice. In following sects, look at more powerful linear classifiers that converge to a loss minimum even if classes are not perfectly linearly separable.
+		\begin{remark}[Additional perceptron settings]
+			{\tt Perceptron}, as well as other scikit-learn functions \& classes, often has additional parameters that we omit for clarity. Can read more about those parameters using {\tt help} function in Python (e.g., {\tt help(Perceptron)}) or by going through excellent scikit-learn online documentation at \url{http://scikit-learn.org/stable/}.
+		\end{remark}		
 		\item {\sf Modeling class probabilities via logistic regression.}
 		\item {\sf Maximum margin classification with support vector machines.}
 		\item {\sf Solving nonlinear problems using a kernel SVM.}

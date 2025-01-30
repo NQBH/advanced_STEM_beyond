@@ -46,6 +46,7 @@ class Perceptron:
         """
         rgen = np.random.RandomState(self.random_state)
         self.w_ = rgen.normal(loc=0.0, scale=0.01, size=X.shape[1])
+        # self.w_ = np.zeros(X.shape[1]) # initialize weights w with all-zero
         self.b_ = np.float_(0.)
         
         self.errors_ = []
@@ -67,3 +68,7 @@ class Perceptron:
     def predict(self, X):
         """Return class label after unit step"""
         return np.where(self.net_input(X) >= 0.0, 1, 0)
+
+v1 = np.array([1, 2, 3])
+v2 = 0.5 * v1
+print(np.arccos(v1.dot(v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))) # compute angle between 2 vectors via (u,v) = arccos((u\cdot v)/(\|u\|\|v\|))

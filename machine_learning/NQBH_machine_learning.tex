@@ -4100,8 +4100,118 @@ PyTorch book of bestselling \& widely acclaimed {\it Python ML} series. Foreword
 				Remember from Chap. 2: take steps in opposite direction of gradient. Hence, flip $\frac{\partial L}{\partial w_j} = -(y - a)x_j$ \& update $j$th weight as follows, including learning rate $\eta$: $w_j\coloneqq w_j + \eta(y - a)x_j$. While partial derivative of loss function w.r.t. bias unit is not shown, bias derivation follows same overall concept using chain rule, resulting in following update rule: $b\coloneqq b + \eta(y - a)$. Both weight \& bias unit updates are equal to the ones for Adaline in Chap. 2.
 			\end{remark}
 			
-			\item {\sf Training a logistic regression model with scikit-learn.}
-			\item {\sf Tackling overfitting via regularization.}
+			\item {\sf Training a logistic regression model with scikit-learn.} Just went through useful coding \& math exercises in prev subsct, which helped to illustrate conceptual differences between Adaline \& logistic regression. Learn how to use scikit-learn's more optimized implementation of logistic regression, which also supports multiclass settings off shelf. Note: in recent versions of scikit-learn, technique used for multiclass classification, multinomial, or OvR, is chosen automatically. In following code example, use \verb|sklearn.linear_model.LogisticRegression| class as well as familiar {\tt fit} method to train model on all 3 classes in standardized flower training dataset. Also, set \verb|multi_class='ovr'| for illustration purposes. May want to compare results with \verb|multi_class='multinomial'|. Note: {\tt multinomial} setting is now default choice in scikit-learn's {\tt LogisticRegression} class \& recommended in practice for mutually exclusive classes, e.g. those found in Iris dataset. Here, ``mutually exclusive'' means: each training example can only belong to a single class (in contrast to multilabel classification, where a training example can be a member of multiple classes).
+			
+			Code example:
+			\begin{verbatim}
+				>>> from sklearn.linear_model import LogisticRegression
+				>>> lr = LogisticRegression(C=100.0, solver='lbfgs', multi_class='ovr')
+				>>> lr.fit(X_train_std, y_train)
+				>>> plot_decision_regions(X_combined_std, y_combined, classifier=lr, test_idx=range(105, 150))
+				>>> plt.xlabel('Petal length [standardized]')
+				>>> plt.ylabel('Petal width [standardized]')
+				>>> plt.legend(loc='upper left')
+				>>> plt.tight_layout()
+				>>> plt.show()
+			\end{verbatim}
+			After fitting model on training data, plotted decision regions, training examples, \& test examples, as shown in {\sf Fig. 3.7: Decision regions for scikit-learn's multiclass logistic regression model}.
+			\begin{remark}[Algorithms for convex optimization]
+				Note: there exist many different algorithms for solving optimization problems. For minimizing convex loss functions, e.g. logistic regression loss, recommended to use more advanced approaches than regular \emph{stochastic gradient descent (SGD)}. In fact, scikit-learn implements a whole range of such optimization algorithms, which can be specified via {\tt solver} parameter, namely, {\tt'newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga'}.
+				
+				While logistic regression loss is convex, most optimization algorithms should converge to global loss minimum with ease. However, there are certain advantages of using 1 algorithm over other. E.g., in prev versions (e.g., v 0.21), scikit-learn used {\tt'liblinear'} as a default, which cannot handle multinomial loss \& is limited to OvR scheme for multiclass classification. However, in scikit-learn v 0.22, default solver was changed to {\tt'lbfgs'}, which stands for limited-memory \emph{Broyden--Fletcher--Goldfarb--Shanno (BFGS)} algorithm \url{https://en.wikipedia.org/wiki/Limited-memory_BFGS} \& is more flexible in this regard.
+			\end{remark}
+			Looking at preceding code used to train {\tt LogisticRegression} model, might now be wondering, ``What is this mysterious parameter C?'' Will discuss this parameter in next subsect, where introduce concepts of overfitting \& regularization. However, before move on to those topics, finish discussion of class membership probabilities.
+			
+			Probability that training examples belong to a certain class can be computed using \verb|predict_proba| method. E.g., can predict probabilities of 1st 3 examples in test dataset as follows:
+			\begin{verbatim}
+				>>> lr.predict_proba(X_test_std[:3, :])
+			\end{verbatim}
+			This code snippet returns following array:
+			\begin{verbatim}
+				array([[3.81527885e-09, 1.44792866e-01, 8.55207131e-01],
+				       [8.34020679e-01, 1.65979321e-01, 3.25737138e-13],
+				       [8.48831425e-01, 1.51168575e-01, 2.62277619e-14]])
+			\end{verbatim}
+			1st row corresponds to class membership probabilities of 1st flower, 2nd row corresponds to class membership probabilities of 2nd flower, \& so forth. Notice: column-wise sum in each row is 1, as expected. (Can confirm this by executing \verb|lr.predict_proba(X_test_std[:3, :]).sum(axis=1)|.)
+			
+			Highest value in 1st row is $\approx0.85$, i.e., 1st example belongs to class 3 {\tt Iris-virginica} with a predicted probability of 85\%. So, can get predicted class labels by identifying largest column in each row, e.g., using NumPy's {\tt argmax} function:
+			\begin{verbatim}
+				>>> lr.predict_proba(X_test_std[:3, :]).argmax(axis=1)
+			\end{verbatim}
+			Returned class indices are shown here (they correspond to {\tt Iris-virginica, Iris-setosa, Iris-setosa}) (?):
+			\begin{verbatim}
+				array([2, 0, 0])
+			\end{verbatim}
+			In preceding code example, computed conditional probabilities \& converted these into class labels manually by using NumPy's {\tt argmax} function. In practice, more convenient way of obtaining class labels when using scikit-learn: call {\tt predict} method directly:
+			\begin{verbatim}
+				>>> lr.predict(X_test_std[:3, :])
+				array([2, 0, 0])
+			\end{verbatim}
+			Lastly, a word of caution if want to predict class label of a single flower example: scikit-learn expects a 2D array as data input; thus, have to convert a single row slice into such a format 1st. 1 way to convert a single row entry into a 2D data array: use NumPy's {\tt reshape} method to add a new dimension:
+			\begin{verbatim}
+				>>> lr.predict(X_test_std[0, :].reshape(1, -1))
+				array([2])
+			\end{verbatim}			
+			\item {\sf Tackling overfitting via regularization.} Overfitting is a common problem in ML, where a model performs well on training data but does not generalize well to unseen data (test data). If a model suffers from overfitting, also say: model has a high variance, which can be caused by having too many parameters, leading to a model that is too complex given underlying data. Similarly, our model can also suffer from {\it underfitting} (high bias), i.e., our model is not complex enough to capture pattern in training data well \& therefore also suffers from low performance on unseen data.
+			
+			Although have only encountered linear models for classification so far, problems of overfitting \& underfitting can be best illustrated by comparing a linear decision boundary to more complex, nonlinear decision boundaries, as shown in {\sf Fig. 3.8: Examples of underfitted, well-fitted, \& overfitted models}.
+			\begin{remark}[Bias-variance tradeoff]
+				Often, researchers use terms ``bias'' \& ``variance'' or ``bias-variance tradeoff'' to describe performance of a model -- i.e., may stumble upon (vấp phải) talks, books, or articles where people say: a model has a ``high variance'' or ``high bias.'' So, what does that mean? In general, might say: ``high variance'' is proportional to overfitting \& ``high bias'' is proportional to underfitting.
+				
+				In context of ML models, variance measures consistency (or variability) of model prediction for classifying a particular example if train model multiple times, e.g., on different subsets of training dataset. Can say: model is sensitive to randomness in training data. In contrast, bias measures how far off predictions are from correct values in general if rebuild model multiple times on different training datasets; bias is measure of systematic error that is not due to randomness.
+				
+				If interested in technical specification \& derivation of ``bias'' \& ``variance'' terms, see lecture notes \url{https://sebastianraschka.com/pdf/lecture-notes/stat451fs20/08-model-eval-1-intro__notes.pdf}.
+			\end{remark}
+			1 way of finding a good bias-variance tradeoff: tune complexity of model via regularization. Regularization is a very useful method for handling collinearity (high correlation among features), filtering out noise from data, \& eventually preventing overfitting.
+			
+			Concept behind regularization: introduce additional information to penalize extreme parameter (weight) values. Most common form of regulariozation is so-called {\it L2 regularization} (sometimes also called L2 shrinkage or weight decay), which can be written as follows:
+			\begin{equation}
+				\frac{\lambda}{2n}\|{\bf w}\|^2 = \frac{\lambda}{2n}\sum_{i=1}^m w_i^2.
+			\end{equation}
+			Here $\lambda$: so-called {\it regularization parameter}. Note: 2 in denominator is merely a scaling factor, s.t. it cancels when computing loss gradient. Sample size $n$ is added to scale regularization term similar to loss.
+			\begin{remark}[Regularization \& feature normalization]
+				Regularization is another reason why feature scaling e.g. standardization is important. For regularization to work properly, need to ensure: all our features are on comparable scales.
+			\end{remark}
+			Loss function for logistic regression can be regularized by adding a simple regularization term, which will shrink weights during model training:
+			\begin{equation}
+				L({\bf w},b) = \frac{1}{n}\sum_{i=1}^n \left[-y^{(i)}\log(\sigma(z^{(i)})) - (1 - y^{(i)})\log(1  - \sigma(z^{(i)}))\right] + \frac{\lambda}{2n}\|{\bf w}\|^2.
+			\end{equation}
+			Partial derivative of unregularized loss is defined as:
+			\begin{equation}
+				\frac{\partial L({\bf w},b)}{\partial w_j} = \frac{1}{n}\sum_{i=1}^n \left(\sigma({\bf w}^\top{\bf x}^{(i)}) - y^{(i)}\right)x_j^{(i)}.
+			\end{equation}
+			Adding regularization term to loss changes partial derivative to following form:
+			\begin{equation}
+				\frac{\partial L({\bf w},b)}{\partial w_j} = \left(\frac{1}{n}\sum_{i=1}^n \left(\sigma({\bf w}^\top{\bf x}^{(i)}) - y^{(i)}\right)x_j^{(i)}\right) + \frac{\lambda}{n}w_j.
+			\end{equation}
+			Via regularization parameter $\lambda$, can then control how closely we fit training data, while keeping weights small. By increasing value of $\lambda$, increase regularization strength. Note: bias unit, which is essentially an intercept term or negative threshold, as learned in Chap. 2, is usually not regularized.
+			
+			Parameter {\tt C}, implemented for {\tt LogisticRegression} class in scikit-learn comes from a convention in support vector machines. Term {\tt C} is inversely proportional to regularization parameter $\lambda$. Consequently, decreasing value of inverse regularization parameter {\tt C} means: increasing regularization strength, which can visualize by plotting L2 regularization path for 2 weight coefficients:
+			\begin{verbatim}
+				>>> weights, params = [], []
+				>>> for c in np.arange(-5, 5):
+				...     lr = LogisticRegression(C=10.**c,
+				multi_class='ovr')
+				...     lr.fit(X_train_std, y_train)
+				...     weights.append(lr.coef_[1])
+				...     params.append(10.**c)
+				>>> weights = np.array(weights)
+				>>> plt.plot(params, weights[:, 0], label='Petal length')
+				>>> plt.plot(params, weights[:, 1], linestyle='--', label='Petal width')
+				>>> plt.ylabel('Weight coefficient')
+				>>> plt.xlabel('C')
+				>>> plt.legend(loc='upper left')
+				>>> plt.xscale('log')
+				>>> plt.show()
+			\end{verbatim}
+			By executing preceding code, fitted 10 logistic regression models with different values for inverse-regularization parameter {\tt C}. For illustration purposes, only collected weight coefficients of class 1 (here, 2nd class in datast: {\tt Iris-versicolor}) vs. all classifiers -- remember: we are using OvR technique for multiclass classification.
+			
+			As can see in resulting plot, weight coefficients shrink if decrease parameter {\tt C}, i.e., if increase regularization strength: {\sf Fig. 3.9: Impact of inverse regularization strength parameter C on L2 regularized model results.}
+			
+			Increasing regularization strength can reduce overfitting, so might ask why don't strongly regularize all models by default. Reason: have to be careful when adjusting regularization strength. E.g., if regularization strength is too high \& weights coefficients approach 0, model can perform very poorly due to underfitting, as illustrated in {\sf Fig. 3.8}.
+			\begin{remark}[An additional resource on logistic regression]
+				Since in-depth coverage of individual classification algorithms exceeds scope of this book, Logistic Regression: From Introductory to Advanced Concepts \& Applications, Dr. {\sc Scott Menard}, Sage Publications, 2009, is recommended to readers who want to learn more about logistic regression.
+			\end{remark}
 		\end{itemize}
 		\item {\sf Maximum margin classification with support vector machines.}
 		\item {\sf Solving nonlinear problems using a kernel SVM.}

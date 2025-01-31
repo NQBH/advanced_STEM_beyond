@@ -4213,7 +4213,53 @@ PyTorch book of bestselling \& widely acclaimed {\it Python ML} series. Foreword
 				Since in-depth coverage of individual classification algorithms exceeds scope of this book, Logistic Regression: From Introductory to Advanced Concepts \& Applications, Dr. {\sc Scott Menard}, Sage Publications, 2009, is recommended to readers who want to learn more about logistic regression.
 			\end{remark}
 		\end{itemize}
-		\item {\sf Maximum margin classification with support vector machines.}
+		\item {\sf Maximum margin classification with support vector machines.} Another powerful \& widely used learning algorithm is {\it support vector machine (SVM)}, which can be considered \fbox{an extension of perceptron}. Using perceptron algorithm, minimized misclassification errors. However, in SVMs, our optimization objective: maximize margin. Margin is defined as distance between separating hyperplane (decision boundary) \& training examples that are closest to this hyperplane, which are so-called {\it support vectors}. Illustrated in {\sf Fig. 3.10: SVM maximizes margin between decision boundary \& training data points}.
+		\begin{itemize}
+			\item {\sf Maximum margin intuition.} Rationale behind having decision boundaries with large margins: they tend to have a lower generalization error, whereas models with small margins are more prone to overfitting.
+			
+			Unfortunately, while main intuition behind SVMs is relatively simple, mathematics behind them is quite advanced \& would require sound knowledge of constrained optimization.
+			
+			Hence, details behind maximum margin optimization SVMs are beyond scope of this book. However, recommend following resources if interested in learning more:
+			\begin{itemize}
+				\item {\sc Chris J.C. Burges}'s excellent explanation in {\it A Tutorial on Support Vector Machines for Pattern Recognition} (Data Mining \& Knowledge Discovery, 2(2): 121-167, 1998)
+				\item {\sf Vladimir Vapnik}'s book {\it The Nature of Statistical Learning Theory},Springer Science+Business Media, Vladimir Vapnik, 2000
+				\item {\sc Andrew Ng}'s very detailed lecture notes at \url{https://see.stanford.edu/materials/aimlcs229/cs229-notes3.pdf}.
+			\end{itemize}			
+			\item {\sf Dealing with a nonlinearly separable case using slack variables.} (biến lỏng lẻo) Although don't want to dive much deeper into more involved mathematical concepts behind maximum-margin classification, briefly mention so-called {\it slack variable}, which was introduced by {\sc Vladimir Vapnik} in 1995 \& led to so-called {\it soft-margin classification}. Motivation for introducing slack variable was: linear constraints in SVM optimization objective need to be relaxed for nonlinearly separable data to allow convergence of optimization in presence of misclassifications, under appropriate loss penalization.
+			
+			Use of slack variable, in turn, introduces variable, which is commonly referred to as $C$ in SVM contexts. Can consider $C$ as a hyperparameter for controlling penalty for misclassification. Large values of $C$ corresponds to large error penalties, whereas less strict about misclassification errors if choose smaller values for $C$. Can then use $C$ parameter to control width of margin \& therefore tune bias-variance tradeoff, as illustrated in {\sf Fig. 3.11: Impact of large \& small values of inverse regularization strength $C$ on classification}.
+			
+			This concept is related to regularization, discussed in prev sect in context of regularized regression, where decreasing value of $C$ increases bias (underfitting) \& lowers variance (overfitting) of model.
+			
+			Have learned basic concepts behind a linear SVM, train an SVM mode to classify different flowers in Iris dataset:
+			\begin{verbatim}>>> from sklearn.svm import SVC
+				>>> svm = SVC(kernel='linear', C=1.0, random_state=1)
+				>>> svm.fit(X_train_std, y_train)
+				>>> plot_decision_regions(X_combined_std, y_combined, classifier=svm, test_idx=range(105, 150))
+				>>> plt.xlabel('Petal length [standardized]')
+				>>> plt.ylabel('Petal width [standardized]')
+				>>> plt.legend(loc='upper left')
+				>>> plt.tight_layout()
+				>>> plt.show()
+			\end{verbatim}
+			3 decision regions of SVM, visualized after training classifier on Iris dataset by executing preceding code example, are shown in {\sf Fig. 3.12: SVM's decision regions}.
+			\begin{remark}[Logistic regression vs. SVMs]
+				In practical classification tasks, linear logistic regression \& linear SVMs often yield very similar results. Logistic regression tries to maximize conditional likelihoods of training data, which makes it more prone to outliers than SVMs, which mostly care about points that are closest to decision boundary (support vectors). On other hand, logistic regression has advantage of being a simpler model \& can be implemented more easily, \& is mathematically easier to explain. Furthermore, logistic regression models can be easily updated, which is attractive when working with streaming data.
+			\end{remark}
+			\item {\sf Alternative implementations in scikit-learn.} scikit-learn library's {\tt LogisticRegression} class can make use of LIBLINEAR library by setting {\tt solver='liblinear'}. LIBLINEAR is a highly optimized C{\tt/}C++ library developed at National Taiwan University \url{http://www.csie.ntu.edu.tw/~cjlin/liblinear/}.
+			
+			Similar, {\sc SVC} class used to train an SVM makes use of LIBSVM, which is an equivalent C{\tt/}C++ library specialized for SVMs \url{http://www.csie.ntu.edu.tw/~cjlin/libsvm/}.
+			
+			Advantage of using LIBLINEAR \& LIBSVM over, e.g., native Python implementations: they allow extremely quick training of large amounts of linear classifiers. However, sometimes our datasets are too large to fit into computer memory. Thus, scikit-learn also offers alternative implementations via {\tt SGDClassifier} class, which also supports online learning via \verb|partial_fit| method. Concept behind {\tt SGDClassifier} class is similar to stochastic gradient algorithm implemented in Chap. 2 for Adaline.
+			
+			Could initialize SGD version of perceptron ({\tt loss='perceptron'}), logistic regression ({\tt loss='log'}), \& an SVM with default parameters ({\tt loss='hinge'}) (bản lề), as follows:
+			\begin{verbatim}
+				>>> from sklearn.linear_model import SGDClassifier
+				>>> ppn = SGDClassifier(loss='perceptron')
+				>>> lr = SGDClassifier(loss='log')
+				>>> svm = SGDClassifier(loss='hinge')
+			\end{verbatim}
+		\end{itemize}
 		\item {\sf Solving nonlinear problems using a kernel SVM.}
 		\item {\sf Decision tree learning.}
 		\item {\sf K-nearest neighbors -- a lazy learning algorithm.}

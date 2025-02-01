@@ -4260,7 +4260,11 @@ PyTorch book of bestselling \& widely acclaimed {\it Python ML} series. Foreword
 				>>> svm = SGDClassifier(loss='hinge')
 			\end{verbatim}
 		\end{itemize}
-		\item {\sf Solving nonlinear problems using a kernel SVM.}
+		\item {\sf Solving nonlinear problems using a kernel SVM.} Another reason why SVMs enjoy high popularity among ML practitioners: they can be easily {\it kernelized} to solve nonlinear classification problems. Before discuss main concept behind so-called {\it kernel SVM}, most common variant of SVMs, 1st create a synthetic dataset to see what such a nonlinear classification problem may look like.
+		\begin{itemize}
+			\item {\sf Kernel methods for linearly inseparable data.}
+			\item {\sf Using kernel trick to find separating hyperplanes in a high-dimensional space.}
+		\end{itemize}
 		\item {\sf Decision tree learning.}
 		\item {\sf K-nearest neighbors -- a lazy learning algorithm.}
 		\item {\sf Summary.}
@@ -4328,10 +4332,135 @@ PyTorch book of bestselling \& widely acclaimed {\it Python ML} series. Foreword
 		\item {\sf Locating regions of high density via DBSCAN.}
 		\item {\sf Summary.}
 	\end{itemize}
-	\item {\sf Chap. 11: Implementing a Multilayer Artificial Network Network from Scratch.}
+	\item {\sf Chap. 11: Implementing a Multilayer Artificial Network Network from Scratch.} DL is getting a lot of attention from press \& is, without doubt, hottest topic in ML field. DL can be understood as a subfield of ML that is concerned with training artificial neural networks (NNs) with many layers efficiently. In this chap, learn basic concepts of artificial NNs so that you are well equipped for following chaps, which will introduce advanced Python-based DL libraries \& {\it deep neural network} (DNN) architectures that are particularly well suited for image \& text analyses. Topics covered:
 	\begin{itemize}
-		\item {\sf Modeling complex functions with artificial neural networks.}
-		\item {\sf Classifying handwritten digits.}
+		\item Gaining a conceptual understanding of multilayer NNs
+		\item Implementing fundamental backpropagation algorithm for NN training from scratch
+		\item Training a basic multilayer NN for image classification
+	\end{itemize}
+	
+	\begin{itemize}
+		\item {\sf Modeling complex functions with artificial neural networks.} At beginning of this book, started journey through ML algorithms with artificial neurons in Chap. 2. Artificial neurons represent building blocks of multilayer artificial NNs. Basic concept behind artificial NNs was built upon hypotheses \& models of how human brain works to solve complex problem tasks. Although artificial NNs have gained a lot of popularity in recent years, early studies of NNs go back to 1940s, when {\sc Warren McCulloch \& Walter Pitts} 1st described how neurons could work. {\it A logical calculus of the ideas immanent in nervous activity} W. S. McCulloch and W. Pitts, The Bulletin of Mathematical Biophysics, 5(4):115--133, 1943.
+		
+		However, in decades that followed 1st implementation of {\it McCulloch-Pitts neuron} model -- Rosenblatt's perceptron in 1950s -- many researchers \& ML practitioners slowly began to lose interest in NNs since no one had a good solution for training an NN with multiple layers. Eventually, interest in NNs was rekindled in 1986 when {\sc D.E. Rumelhart, G.E. Hinton, R.J. Williams} were involved in (re)discovery \& popularization of backpropagation algorithm to train NNs more efficiently: {\it Learning representations by backpropagating errors}, by {\sc D.E. Rumelhart, G.E. Hinton, \& R.J. Williams}, Nature, 323 (6088): 533--536, 1986. Readers who are interested in history of AI, ML, \& NNs are also encouraged to read Wikipedia article on so-called {\it AI winters}, which are periods of time where a large portion of research community lost interest in study of NNs \url{https://en.wikipedia.org/wiki/AI_winter}.
+		
+		However, NNs are more popular today than ever thanks to many breakthroughs that have been made in prev decade, which resulted in what now call DL algorithms \& architectures -- NNs that are composed of many layers. NNs are a hot topic not only in academic research but also in big technology companies, e.g. Facebook, Microsoft, Amazon, Uber, Google, \& many more that invest heavily in artificial NNs \& DL research.
+		
+		As of today, complex NNs powered by DL algorithms are considered state-of-art solutions for complex problem solving e.g. image \& voice recognition. Some of recent applications include:
+		\begin{itemize}
+			\item Predicting COVID-19 resource needs from a series of X-rays \url{https://arxiv.org/abs/2101.04909}
+			\item Modeling virus mutations \url{https://science.sciencemag.org/content/371/6526/284}
+			\item Leveraging data from social media platforms to manage extreme weather events \url{https://onlinelibrary.wiley.com/doi/abs/10.1111/1468-5973.12311}
+			\item Improving photo descriptions for people who are blind or visually impaired \url{https://tech.fb.com/how-facebook-is-using-ai-to-improve-photo-descriptions-for-people-who-are-blind-or-visually-impaired/}
+		\end{itemize}
+		
+		\begin{itemize}
+			\item {\sf Single-layer neural network recap.} This chap is all about multilayer NNs, how they work, \& how to train them to solve complex problems. However, before dig deeper into a particular multilayer NN architecture, briefly reiterate some of concepts of single-layer NNs introduced in Chap. 2, namely, {\it ADAptive LInear NEuron (Adaline)} algorithm, shown in {\sf Fig. 11.1: Adaline algorithm}.
+			
+			In Chap. 2, implemented Adaline algorithm to perform binary classification, \& used gradient descent optimization algorithm to learn weight coefficients of model. In every epoch (pass over training dataset), updated weight vector ${\bf w}$ \& bias unit $b$ using following update rule: ${\bf w}\coloneqq{\bf w} + \Delta{\bf w},b\coloneqq b + \Delta b$ where $\Delta w_i = -\eta\frac{\partial L}{\partial w_i},\Delta b = -\eta\frac{\partial L}{\partial b}$ for bias unit \& each weight $w_i$ in weight vector ${\bf w}$.
+			
+			I.e., computed gradient based on whole training dataset \& updated weights of model by taking a step in opposite direction of loss gradient $\nabla L({\bf w})$. (For simplicity, focus on weights \& omit bias unit in following paragraphs; however, as remember from Chap. 2, same concepts apply.) In order to find optimal weights of model, optimized objective function defined as {\it mean of square errors (MSE)} loss function $L({\bf w})$. Furthermore, multiplied gradient by a factor, {\it learning rate} $\eta$, which had to choose carefully to balance speed of learning against risk of overshooting global minimum of loss function.
+			
+			In gradient descent optimization, updated all weights simultaneously after each epoch, \& defined partial derivative for each weight $w_i$ in weight vector ${\bf w}$ as follows:
+			\begin{equation}
+				\frac{\partial L}{\partial w_j}\frac{1}{n}\sum_i (y^{(i)} - a^{(i)})^2 = -\frac{2}{n}\sum_i (y^{(i)} - a^{(i)})x_j^{(i)}.
+			\end{equation}
+			Here $y^{(i)}$: target class label of a particular sample $x^{(i)}$, \& $a^{(i)}$: activation of neuron, which is a linear function in special case of Adaline.
+			
+			Furthermore, defined activation function $\sigma(\cdot)$ as follows $\sigma(\cdot) = z = a$. Here, net input $z$ is a linear combination of weights that are connecting input layer to output layer: $z = \sum_i w_ix_i + b = {\bf w}^\top{\bf x} + b$. While used activation $\sigma(\cdot)$ to compute gradient update, implemented a threshold function to squash continuous-valued output into binary class labels for prediction:
+			\begin{equation}
+				\hat{y} = \left\{\begin{split}
+					&1&&\mbox{if } z\ge0,\\
+					&0&&\mbox{otherwise}.
+				\end{split}\right.
+			\end{equation}
+			
+			\begin{remark}[Single-layer naming convention]
+				Although Adaline consists of 2 layer, 1 input layer \& 1 output layer, it is called a single-layer network because of its single link between input \& output layers.
+			\end{remark}
+			Also, learned about a certain {\it trick} to accelerate model learning, so-called {\it stochastic gradient-descent (SGD)} optimization. SGD approximates loss from a single training sample (online learning) or a small subset of training examples (mini-batch learning). Make use of this concept later in this chap when implement \& train a {\it multilayer perceptron (MLP)}. Apart from faster learning -- due to more frequent weight updates compared to gradient descent -- its noisy nature is also regarded as beneficial when training multilayer NNs with nonlinear activation functions, which do not have a convex loss function. Here, added noise can help to escape local loss minima.			
+			\item {\sf Introducing multilayer neural network architecture.} In this  sect, learn how to connect multiple single neurons to a multilayer feedforward NN, this special type of {\it fully connected} network is also called {\it MLP}.
+			
+			{\sf Fig. 11.2: A 2-layer MLP} illustrates concept of an MLP consisting of 2 layers. Next to data input, MLP depicted in Fig. 11.2 has 1 hidden layer \& 1 output layer. Units in hidden layer are fully connected to input features, \& output layer is fully connected to hidden layer. If such a network has $> 1$ hidden layer, also call it a {\it deep NN}. (Note: in some contexts, inputs are also regarded as a layer. However, in this case, it would make Adaline model, which is a single-layer neural network, a 2-layer neural network, which may be counterintuitive.)
+			\begin{remark}[Adding additional hidden layers]
+				Can add any number of hidden layers to MLP to create deeper network architectures. Practically, can think of number of layers \& units in an NN as additional hyperparameters that we want to optimize for a given problem task using cross-validation technique, discussed in Chap. 6.
+				
+				However, loss gradients for updating network's parameters, which will calculate later via backpropagation, will become increasingly small as more layers are added to a network. This vanishing gradient problem makes model learning more challenging. Therefore, special algorithms have been developed to help train such DNN structures; known as {\it deep learning}.
+			\end{remark}
+			As shown in Fig. 11.2, denote $i$th activation unit in $l$th layer as $a_i^{(l)}$. To make math \& code implementations a bit more intuitive, will not use numerical indices to refer to layers, but will use $in$ superscript for input features, $h$ superscript for hidden layer, \& $out$ superscript for output layer. E.g., $x_i^{(in)}$ refers to $i$th input feature value, $a_i^{(h)}$ refers to $i$th unit in hidden layer, \& $a_i^{(out)}$ refers to $i$th unit in output layer. Note: ${\bf b}$'s in Fig. 11.2 denote bias units. In fact, ${\bf b}^{(h)},{\bf b}^{(out)}$ are vectors with number of elements $=$ number of nodes in layer they correspond to. E.g., ${\bf b}^{(h)}$ stores $d$ bias units, where $d$: number of nodes in hidden layer. If this sounds confusing, don't worry. Looking at code implementation later, where initialize weight matrices \& bias unit vectors, will help clarify these concepts.
+			
+			Each node in layer $l$ is connected to all nodes in layer $l + 1$ via a weight coefficient. E.g., connection between $k$th unit in layer $l$ to $j$th unit in layer $l + 1$ will be written as $w_{i,k}^{(l+1)}$. Referring back to Fig. 11.2, denote weight matrix that connects input to hidden layer as ${\bf W}^{(h)}$, \& write matrix that connects hidden layer to output layer as ${\bf W}^{(out)}$.
+			
+			While 1 unit in output layer would suffice for a binary classification task, saw a more general form of an NN in preceding figure, which allows us to perform multiclass classification via a generalization of {\it1-vs-all (OvA)} technique. To better understand how this works, remember {\it1-hot} representation of categorical variables introduced in Chap. 4.
+			
+			E.g., can encode 3 class labels in familiar Iris dataset (0=Setosa, 1 = Versicolor, 2=Virginica) as follows:
+			\begin{equation}
+				0 = \begin{bmatrix}
+					1\\0\\0
+				\end{bmatrix},\ 1 = \begin{bmatrix}
+					0\\1\\0
+				\end{bmatrix},\ 2 = \begin{bmatrix}
+					0\\0\\1
+				\end{bmatrix}.
+			\end{equation}
+			This 1-hot vector representation allows us to tackle classification tasks with an arbitrary number of unique class labels present in training dataset.
+			
+			If new to NN representations, indexing notation (subscripts \& superscripts) may look a little bit confusing at 1st. What may seem overly complicated at 1st will make much more sense in later sects when vectorize NN representation. Summarize weights that connect input \& hidden layers by a $d\times m$ dimensional matrix ${\bf W}^{(h)}$, where $d$: number of hidden units \& $m$: number of input units.
+			\item {\sf Activating a neural network via forward propagation.} Describe process of {\it forward propagation} to calculate output of an MLP model. To understand how it fits into context of learning an MLP model, summarize MLP learning procedure in 3 simple steps:
+			\begin{enumerate}
+				\item Starting at input layer, forward propagate patterns of training data through network to generate an output.
+				\item Based on network's output, calculate loss that want to minimize using a loss function described later.
+				\item Backpropagate loss, find its derivative w.r.t. each weight \& bias unit in network, \& update model.
+			\end{enumerate}
+			After repeat these 3 steps for multiple epochs \& learn weight \& bias parameters of MLP, use forward propagation to calculate network output \& apply a threshold function to obtain predicted class labels in 1-hot representation, described in prev sect.
+			
+			Walk through individual steps of forward propagation to generate an output from patterns in training data. Since each unit in hidden layer is connected to all units in input layers, 1st calculate activation unit of hidden layer $a_1^{(h)}$ as follows:
+			\begin{align*}
+				z_1^{(h)} &= x_1^{(in)}w_{1,1}^{(h)} + x_2^{(in)}w_{1,2}^{(h)} + \cdots + x_m^{(in)}w_{1,m}^{(h)},\\
+				a_1^{(h)} &= \sigma(z_1^{(h)}).
+			\end{align*}
+			Here $z_1^{(h)}$: net input \& $\sigma(\cdot)$: activation function, which \fbox{has to be differentiable} to learn weights that connect neurons using a gradient-based approach. To be able to solve complex problems e.g. image classification, need nonlinear activation functions in our MLP model, e.g., sigmoid (logistic) activation function that remember from sect about logistic regression in Chap. 3:
+			\begin{equation}
+				\sigma(z) = \frac{1}{1 + e^{-z}}.
+			\end{equation}
+			Sigmoid function is an $S$-shaped curve that maps net input $z$ onto a logistic distribution in range 0 to 1, which cuts $y$ axis at $z = 0$, as shown in {\sf Fig. 11.3: Sigmoid activation function}.
+			
+			MLP is a typical example of a feedforward artificial NN. Term {\it feedforward} refers to fact: each layer serves as input to next layer without loops, in contrast to recurrent NNs -- an architecture discussed in this chap \& discussed in more detail in Chap. 15. Term {\it multilayer perceptron} may sound a little bit confusing since artificial neurons in this network architecture are typically sigmoid units, not perceptrons. Can think of neurons in MLP as logistic regression units that return values in continuous range between 0 \& 1.
+			
+			For purposes of code efficiency \& readability, now write activation in a more compact form using concepts of basic linear algebra, which will allow us to vectorize our code implementation via NumPy rather than writing multiple nested \& computationally expensive Python {\tt for} loops:
+			\begin{align}
+				{\bf z}^{(h)} &= {\bf x}^{(in)}{\bf W}^{(h)\top} + {\bf b}^{(h)},\\
+				a^{(h)} &= \sigma({\bf z}^{(h)}).
+			\end{align}
+			Here ${\bf x}^{(in)}$: our $1\times m$ dimensional feature vector. ${\bf W}^{(h)}$: a $d\times m$ dimensional weight matrix where $d$: number of units in hidden layer; consequently, transposed matrix ${\bf W}^{(h)\top}$: $m\times d$ dimensional. Bias vector ${\bf b}^{(h)}$ consists of $d$ bias units (1 bias unit per hidden node).
+			
+			After matrix-vector multiplication, obtain $1\times d$ dimensional net input vector ${\bf z}^{(h)}$ to calculate activation ${\bf a}^{(h)}\in\mathbb{R}^{1\times d}$.
+			
+			Furthermore, can generalize this computation to all $n$ examples in training dataset:
+			\begin{equation}
+				Z^{(h)} = {\bf X}^{(in)}{\bf W}^{(h)\top} + {\bf b}^{(h)}.
+			\end{equation}
+			Here ${\bf X}^{(in)}$ is now an $n\times m$ matrix, \& matrix multiplication will result in an $n\times d$ dimensional net input matrix $Z^{(h)}$. Finally, apply activation function $\sigma(\cdot)$ to each value in net input matrix to get $n\times d$ activation matrix in next layer (here, output layer):
+			\begin{equation}
+				A^{(h)} = \sigma(Z^{(h)}).
+			\end{equation}
+			Similarly, can write activation of output layer in vectorized form for multiple examples:
+			\begin{equation}
+				Z^{(out)} = A^{(h)}W^{(out)\top} + b^{(out)}.
+			\end{equation}
+			Here, multiply transpose of $t\times d$ matrix $W^{(out)}$ ($t$: number of output units) by $n\times d$ dimensional matrix $A^{(h)}$ \& add $t$ dimensional bias vector ${\bf b}^{(out)}$ to obtain $n\times t$ dimensional matrix $Z^{(out)}$. (Rows in this matrix represent outputs for each example.)
+			
+			Lastly, apply sigmoid activation function to obtain continuous-valued output of network:
+			\begin{equation}
+				A^{(out)} = \sigma(Z^{(out)}).
+			\end{equation}
+			Similar to $Z^{(out)},A^{(out)}$ is an $n\times t$ dimensional matrix.
+		\end{itemize}
+		\item {\sf Classifying handwritten digits.} In prev sect, covered a lot of theory around NNs, which can be a little bit overwhelming if new to this topic. Before continue with discussion of algorithm for learning weights of MLP model, backpropagation, take a short break from theory \& see an NN in action.
+		
+		\begin{itemize}
+			\item {\sf Obtaining \& preparing MNIST dataset.}
+		\end{itemize}
 		\item {\sf Training an artificial neural network.}
 		\item {\sf About convergence in neural networks.}
 		\item {\sf A few last words about neural network implementation.}

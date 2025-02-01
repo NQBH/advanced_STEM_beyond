@@ -161,3 +161,27 @@ joint_dataset = TensorDataset(t_x, t_y)
 for example in joint_dataset:
     print('  x: ', example[0], 
           '  y: ', example[1])
+
+# ### Shuffle, batch, and repeat
+
+torch.manual_seed(1)
+data_loader = DataLoader(dataset=joint_dataset, batch_size=2, shuffle=True)
+
+for i, batch in enumerate(data_loader, 1):
+        print(f'batch {i}:', 'x:', batch[0], 
+              '\n         y:', batch[1])
+        
+for epoch in range(2):
+    print(f'epoch {epoch+1}')
+    for i, batch in enumerate(data_loader, 1):
+        print(f'batch {i}:', 'x:', batch[0], 
+              '\n         y:', batch[1])
+
+# ### Creating a dataset from files on your local storage disk
+
+import pathlib
+imgdir_path = pathlib.Path('cat_dog_images')
+
+file_list = sorted([str(path) for path in imgdir_path.glob('*.jpg')])
+
+print(file_list)

@@ -83,6 +83,56 @@
 \end{enumerate}
 
 \subsection{Matrix -- Ma trận}
+See, e.g., \cite[Chap. 3, \S9: Cấu trúc nghiệm của hệ phương trình tuyến tính, pp. 163--165]{Hung_linear_algebra}.
+
+Xét các hệ phương trình tuyến tính thuần nhất \& không thuần nhất liên kết với nhau $A{\bf x} = {\bf0}$ \& $A{\bf x} = {\bf b}$, với $A = (a_{ij})_{m\times n}\in M(m\times n,\mathbb{F}),{\bf b}\in\mathbb{F}^m$ (cả 2 hệ phương trình đều gồm $m$ phương trình \& $n$ ẩn).
+
+\begin{dinhly}[\cite{Hung_linear_algebra}, Định lý 9.1, p. 163]
+	Tập hợp $L$ tất cả các nghiệm của hệ phương trình tuyến tính thuần nhất $Ax = 0$ là 1 không gian vector con của $\mathbb{F}^n$, có số chiều thỏa mãn hệ thức $\dim L = n - \operatorname{rank}A$.
+\end{dinhly}
+
+\begin{dinhly}[\cite{Hung_linear_algebra}, Định lý 9.2, p. 164]
+	Giả sử $L$ là không gian vector con gồm các nghiệm của hệ phương trình tuyến tính thuần nhất $A{\bf x} = {\bf0}$, \& ${\bf x}^0$ là 1 nghiệm của hệ $A{\bf x} = {\bf b}$. Khi đó tập hợp các nghiệm của hệ $A{\bf x} = {\bf b}$ là ${\bf x}^0 + L = \{{\bf x}^0 + {\bf a}|{\bf a}\in L\}$.
+\end{dinhly}
+$L\coloneqq\operatorname{Ker}\tilde{A}$ với $\tilde{A}:\mathbb{F}^n\to\mathbb{F}^m$, ${\bf x}\mapsto A{\bf x}$, i.e., $L$ là hạt nhân{\tt/}hạch của ánh xạ tuyến tính $\tilde{A}$.
+
+\begin{dinhnghia}[Nghiệm riêng \& nghiệm tổng quát của hệ phương trình tuyến tính không thuần nhất]
+	Với các giả thiết của định lý trên, ${\bf x}^0$ được gọi là 1 \emph{nghiệm riêng} của hệ phương trình tuyến tính không thuần nhất $A{\bf x} = {\bf b}$. Còn ${\bf x}^0 + {\bf a}$ với ${\bf a}\in L$, được gọi là \emph{nghiệm tổng quát} của hệ phương trình đó.
+\end{dinhnghia}
+
+\begin{dinhly}[\cite{Hung_linear_algebra}, Định lý 9.4: Tiêu chuẩn Kronecker--Capelli, p. 164]
+	Hệ phương trình tuyến tính $A{\bf x} = {\bf b}$ có nghiệm $\Leftrightarrow\operatorname{rank}A = \operatorname{rank}\overline{A}$ với $\overline{A} = (A|{\bf b})$ là ma trận các hệ số mở rộng của hệ.
+\end{dinhly}
+
+\begin{baitoan}[VMC2024A1B1]
+	Cho $a\in\mathbb{R}$, $A$ là 1 ma trận phụ thuộc vào $a$:
+	\begin{equation}
+		A = \begin{pmatrix}
+			1 & a + 1 & a + 2 & 0\\a + 3 & 1 & 0 & a + 2\\a + 2 & 0 & 1 & a + 1\\0 & a + 2 & a + 3 & 1
+		\end{pmatrix}
+	\end{equation}
+	(a) Tìm $\operatorname{rank}A$ khi $a = -1$. (b) Tìm tất cả $a\in\mathbb{R}$ để $\det A > 0$. (c) Biện luận số chiều của không gian nghiệm của hệ phương trình tuyến tính $AX = 0 $ theo $a$ với $X = [x,y,z,t]^\top$.
+\end{baitoan}
+
+\begin{proof}
+	(a) Khi $a = -1$:
+	\begin{equation}
+		A = \begin{pmatrix}
+			1 & 0 & 1 & 0\\2 & 1 & 0 & 1\\1 & 0 & 1 & 0\\0 &1 & 2 & 1
+		\end{pmatrix}
+	\end{equation}
+	Use the following code snippet
+	\begin{verbatim}
+		import numpy as np
+		A = np.matrix([[1,0,1,0], [2,1,0,1], [1,0,1,0], [0,1,2,1]])
+		print(np.linalg.matrix_rank(A))
+	\end{verbatim}
+	to obtain $\operatorname{rank}A = 3$. (b) Dùng công thức tính định thức ma trận để thu được $\det A = -4a^2 - 16a - 12 = -4(a + 1)(a + 3)$, nên $\det A > 0\Leftrightarrow-4(a + 1)(a + 3) > 0\Leftrightarrow a\in(-3,-1)$. (c) Nếu $a = -1$, $\operatorname{rank}A = 3\Rightarrow\dim L = 4 - \operatorname{rank}A = 4 - 3 = 1$. Nếu $a = -3$, tính được $\operatorname{rank}A = 3$, nên $\dim L = 4 - \operatorname{rank}A = 4 - 3 = 1$. Nếu $a\notin\{-1,-3\}$ thì $\det A = -4(a + 1)(a + 3)\ne0\Rightarrow\operatorname{rank}A = 4\Rightarrow\dim L = 4 - \operatorname{rank}A = 4 - 4 = 0$.	
+\end{proof}
+
+\begin{baitoan}[Symbolic computation software, libraries]
+	Tương tự như phần mềm MATLAB \url{https://www.mathworks.com/products/matlab.html}, tìm các phần mềm, ngôn ngữ, hoặc thư viện của các ngôn ngữ quen thuộc như Python (thư viện SymPy \url{https://www.sympy.org/en/index.html}), C{\tt/}C++ để thực hành symbolic computation.
+\end{baitoan}
 
 \subsection{Vector space -- Không gian vector}
 Giả sử $V,W$: 2 không gian vector trên trường $\mathbb{F}$ (see, e.g., \cite[Chap. 2, \S2: Ánh xạ tuyến tính, pp. 100--110]{Hung_linear_algebra}).
@@ -294,6 +344,12 @@ Hạt nhân \& ảnh của 1 đồng cấu là 2 không gian vector đặc biệ
 %------------------------------------------------------------------------------%
 
 \section{Miscellaneous}
+
+\subsection{Contributors}
+
+\begin{enumerate}
+	\item {\sc Phan Vĩnh Tiến}: \url{https://github.com/vinhtienlovemath/PublicDocuments/tree/main/MathematicalOlympiad}.
+\end{enumerate}
 
 %------------------------------------------------------------------------------%
 

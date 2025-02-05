@@ -41,7 +41,7 @@
 \setlist[itemize]{leftmargin=*}
 \setlist[enumerate]{leftmargin=*}
 
-\title{Lecture: Mathematics for Machine Learning}
+\title{Lecture Note: Mathematics for Machine Learning}
 \author{Nguyễn Quản Bá Hồng\footnote{A Scientist {\it\&} Creative Artist Wannabe. E-mail: {\tt nguyenquanbahong@gmail.com}. Bến Tre City, Việt Nam.}}
 \date{\today}
 
@@ -54,16 +54,26 @@
 	
 	Latest version:
 	\begin{itemize}
-		\item {\it }.
+		\item {\it Lecture Note: Mathematics for Machine Learning}.
 		
-		PDF: {\sc url}: \url{.pdf}.
+		PDF: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/machine_learning/lecture/NQBH_mathematics_for_machine_learning_lecture.pdf}.
 		
-		\TeX: {\sc url}: \url{.tex}.
-		\item {\it }.
+		\TeX: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/machine_learning/lecture/NQBH_mathematics_for_machine_learning_lecture.tex}.
+		\item {\it Slide: Mathematics for Machine Learning -- Toán Học cho Học Máy}.
 		
-		PDF: {\sc url}: \url{.pdf}.
+		PDF: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/machine_learning/slide/NQBH_mathematics_for_machine_learning_slide.pdf}.
 		
-		\TeX: {\sc url}: \url{.tex}.
+		\TeX: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/machine_learning/slide/NQBH_mathematics_for_machine_learning_slide.tex}.
+		\item {\it Personal Expository Notes on Machine Learning}.
+		
+		PDF: {\sc url}: \url{https://github.com/NQBH/draft/blob/master/machine_learning/NQBH_machine_learning.pdf}.
+		
+		\TeX: {\sc url}: \url{https://github.com/NQBH/draft/blob/master/machine_learning/NQBH_machine_learning.tex}.
+		\item Codes:
+		\begin{itemize}
+			\item Python for Machine Learning: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/machine_learning/Python}.
+			\item C{\tt/}C++ for Machine Learning:
+		\end{itemize}
 	\end{itemize}
 \end{abstract}
 \tableofcontents
@@ -79,13 +89,39 @@
 	\item \cite{Tiep_ML_co_ban}. {\sc Vũ Hữu Tiệp}. {\it Machine Learning Cơ Bản}. Chap. 7: Hồi Quy Tuyến Tính.
 	\item Wikipedia: \href{https://en.wikipedia.org/wiki/Linear_function}{Wikipedia{\tt/}linear function}. \href{https://en.wikipedia.org/wiki/Linear_regression}{Wikipedia{\tt/}linear regression}.
 \end{enumerate}
+{\sf A general idea -- 1 ý tưởng tổng quát.} Ý tưởng này có vẻ được mượn từ Lý Thuyết Thống Kê Có Tham Số (Parametric Statistics Theory), see, e.g., \href{https://en.wikipedia.org/wiki/Parametric_statistics}{Wikipedia{\tt/}parametric statistics}.
 
-\subsection{Introduction to linear regression}
+For $d\in\mathbb{N}^\star$ pairs $({\bf x}_i,y_i)_{i=1}^d$ of input-output, we represent some (mathematically reasonable) hypotheses $h$ about the data using the parameters $\boldsymbol{\theta} = (\theta_1,\theta_2,\ldots,\theta_{\rm p})$ where ${\rm p} = \operatorname{size}\boldsymbol{\theta}$ is the size{\tt/}dimension (kích thước{\tt/}số chiều) of the vector of parameters, i.e., the total number of parameters in the chosen hypotheses $h$. If the data is correctly predicted according to hypothesis $h_{\boldsymbol{\theta}}$, then $y\approx h_{\boldsymbol{\theta}}({\bf x})$.
+
+\begin{example}[Some examples of hypothesis function $h_{\boldsymbol{\theta}}$ -- Vài ví dụ về hàm giả thiết $h_{\boldsymbol{\theta}}$]
+	\item(i) {\rm(Simplest: Linear function{\tt/}affine mapping)} We assume $h_{\boldsymbol{\theta}}$ be a linear function, i.e., $h_{\boldsymbol{\theta}}(x) = \theta_0 + \theta_1x$ for $d = 1$ \& $h_{\boldsymbol{\theta}}({\bf x}) = \theta_0 + [\theta_1,\theta_2,\ldots,\theta_d]\cdot{\bf x}$ for $d\ge2$.
+	\item(ii) {\rm(Polynomial)}: When $d = 1$, we can assume $h_{\boldsymbol{\theta}}\in\mathbb{R}[{\bf x}]$ or even $h_{\boldsymbol{\theta}}\in\mathbb{C}[{\bf x}]$, i.e., a polynomial with real{\tt/}complex coefficients in the variable $x$:
+	\begin{equation*}
+		h_{\boldsymbol{\theta}}(x) = \sum_{i=0}^{\rm p} \theta_ix^i = \theta_0 + \theta_1x + \theta_2x^2 + \cdots + \theta_{\rm p}x^{\rm p}.
+	\end{equation*}
+	\item(iii) {\rm(Hàm phân thức)} When $d = 1$, we can assume
+	\begin{equation*}
+		h_{\boldsymbol{\theta}}(x) = \frac{\sum_{i=0}^m \theta_ix^i}{\sum_{m+1}^{\rm p} \theta_ix^{i-m-1}} = \frac{\theta_0 + \theta_1x + \theta_2x^2 + \cdots + \theta_mx^m}{\theta_{m+1} + \theta_{m+2}x + \cdots + \theta_{\rm p}x^{p - m - 1}}.
+	\end{equation*}
+	\item(iv) {\rm(Hàm căn thức)} We can assume
+	\begin{align*}
+		h_{\boldsymbol{\theta}}(x) &= \sqrt[n]{\sum_{i=0}^{\rm p} \theta_ix^i} = \sqrt[n]{\theta_0 + \theta_1x + \theta_2x^2 + \cdots + \theta_{\rm p}x^{\rm p}},\\
+		h_{\boldsymbol{\theta}}(x) &= \sqrt[n]{\frac{\sum_{i=0}^m \theta_ix^i}{\sum_{m+1}^{\rm p} \theta_ix^{i-m-1}}} = \sqrt[n]{\frac{\theta_0 + \theta_1x + \theta_2x^2 + \cdots + \theta_mx^m}{\theta_{m+1} + \theta_{m+2}x + \cdots + \theta_{\rm p}x^{{\rm p} - m - 1}}},
+	\end{align*}
+	for a given (fixed) $n\in\mathbb{R}$ or an adjustable $n$, i.e., $n$ itself is also a component of $\boldsymbol{\theta}$.
+	\item(v) {\rm(Elementary function -- Hàm sơ cấp)} We can assume $h_{\boldsymbol{\theta}}({\bf x})$ to be an elementary function of the variable ${\bf x}$. For elementary functions, see, e.g., \href{https://en.wikipedia.org/wiki/Elementary_function}{Wikipedia{\tt/}elementary function}.
+\end{example}
+A typical learning algorithm finds the best hypothesis $h_{\boldsymbol{\theta}}$ for the training set $({\bf x}_i,y_i)_{i=1}^N$. We can then estimate the values of $y$ for the test set $({\bf x}_i,y_i)_{i=N+1}^d$ using the ``optimal'' hypothesis $h_{\boldsymbol{\theta}}({\bf x})$ obtained from our learning algorithm. In particular, if $h_{\boldsymbol{\theta}}$ is a linear function of $x\in\mathbb{R}$, this procedure is called {\it linear regression}.
+
+\subsection{Introduction to linear regression -- Giới thiệu về hồi quy tuyến tính}
 {\it1st impression.} Hồi quy tuyến tính (linear regression) là:
 \begin{itemize}
 	\item 1 thuật toán hồi quy mà đầu ra là 1 hàm số tuyến tính (linear function, i.e., $y = ax + b$, $a,b\in\mathbb{R}$, $a\ne0$) của đầu vào. A brief notation:
 	\begin{equation*}
-		{\rm output} = {\tt linear\_function}({\rm input}) = a{\rm input} + b.
+		{\rm output} = \left\{\begin{split}
+			&{\tt linear\_function}({\rm input}) = a\,{\rm input} + b&&\mbox{if } d = 1,\\
+			&{\tt linear\_function}({\bf inputs}) = {\bf w}\cdot{\bf inputs} + b&&\mbox{if } d\ge2,\\
+		\end{split}\right.
 	\end{equation*}
 	\item Thuật toán đơn giản nhất trong nhóm các thuật toán học có giám sát (supervised learning algorithms).
 \end{itemize}
@@ -97,9 +133,9 @@
 \begin{baitoan}[Ước lượng giá nhà, \cite{Tiep_ML_co_ban}, Sect. 7.1, p. 100]
 	Xét bài toán ước lượng giá của 1 căn phòng rộng $x_1\ {\rm m}^2$, có $x_2$ phòng ngủ, \& cách trung tâm thành phố $x_3$ km. Giả sử có 1 tập dữ diệu của $N = 10000$ căn nhà trong thành phố đó. Liệu có thể dự đoán được giá $y$ của 1 căn nhà mới (i.e., khác $N$ căn nhà đã có dữ liệu) thông qua 3 thông số về diện tích $x_1\in(0,\infty)$, số phòng ngủ $x_2\in\mathbb{N}$, \& khoảng cách tới trung tâm thành phố $x_3\in[0,\infty)$?
 \end{baitoan}
-{\sf Mathematical notations -- Ký hiệu toán học.} Đặt ${\bf x} = [x_1,x_2,x_3]\in(0,\infty)\times\mathbb{N}\times[0,\infty)$ là 1 vector cột chứa dữ liệu đầu vào (inputs) gồm 3 thông số diện tích $x_1$, số phòng ngủ $x_2$, \& khoảng cách đến trung tâm thành phố $x_3$; ${\bf x}$ được gọi là {\it vector đặc trưng}. Đặt giá nhà (đầu ra{\tt/}output) $y\in(0,\infty)$.
+{\sf Mathematical notations -- Ký hiệu toán học.} Đặt ${\bf x} = [x_1,x_2,x_3]^\top\in(0,\infty)\times\mathbb{N}\times[0,\infty)$ là 1 vector cột chứa dữ liệu đầu vào (inputs) gồm 3 thông số diện tích $x_1$, số phòng ngủ $x_2$, \& khoảng cách đến trung tâm thành phố $x_3$; ${\bf x}$ được gọi là {\it vector đặc trưng}. Đặt giá nhà (đầu ra{\tt/}output) $y\in(0,\infty)$.
 
-{\sf Reasoning -- Biện luận.} Nếu diện tích nhà càng lớn thì giá nhà càng cao: $x_1\uparrow\Rightarrow y\uparrow$, nếu nhà có càng nhiều phòng ngủ thì giá nhà càng cao: $x_2\uparrow\Rightarrow y\uparrow$, \& nếu nhà càng ở gần trung tâm thành phố thì giá nhà càng cao: $x_3\downarrow0\Rightarrow y\uparrow$. Có thể sử dụng mô hình đầu ra là 1 hàm tuyến tính đơn giản của đầu vào:
+{\sf Reasoning -- Biện luận.} Nếu diện tích nhà càng lớn thì giá nhà càng cao: $x_1\uparrow\Rightarrow y\uparrow$, nếu nhà có càng nhiều phòng ngủ thì giá nhà càng cao: $x_2\uparrow\Rightarrow y\uparrow$, \& nếu nhà càng ở gần trung tâm thành phố thì giá nhà càng cao: $x_3\downarrow0\Rightarrow y\uparrow$ (why? economics!). Có thể sử dụng mô hình đầu ra là 1 hàm tuyến tính đơn giản của đầu vào:
 \begin{equation}
 	\label{linear relation}
 	\tag{lnr}
@@ -107,7 +143,31 @@
 \end{equation}
 với ${\bf w} = [w_1,w_2,w_2]^\top$ là {\it vector trọng số} (weight vector) với $w_1,w_2\in(0,\infty),w_3\in(-\infty,0)$ (why?) cần tìm. Mối quan hệ cho bởi \eqref{linear relation} là 1 mối quan hệ tuyến tính.
 
+\begin{question}[Regression factor]
+	Why is it called \emph{regression}?
+\end{question}
 Về hàm tuyến tính, see, e.g., \href{https://en.wikipedia.org/wiki/Linear_function}{Wikipedia{\tt/}linear function}.
+
+{\sf Some reasons to study linear least-squares regression.} From \cite[Sect. 3.1, pp. 45--46]{Bach2024}.
+\begin{itemize}
+	\item Linear least-squares regression already captures many of the concepts in learning theory, e.g. bias-variance trade-off, as well as dependence of generalization performance on the underlying dimension of the problem with no regularization, or on dimensionless quantities when regularization is added.
+	
+	-- Hồi quy tuyến tính bình phương nhỏ nhất đã nắm bắt được nhiều khái niệm trong lý thuyết học tập, ví dụ như sự đánh đổi giữa độ lệch và phương sai, cũng như sự phụ thuộc của hiệu suất tổng quát vào chiều cơ bản của vấn đề không có chính quy hóa hoặc vào các đại lượng không có thứ nguyên khi chính quy hóa được thêm vào.
+	\item Because of its simplicity, many results can be easily derived without the need for complicated mathematics, both in terms of algorithms \& statistical analysis (simple linear algebra for the simplest results in the fixed design setting).
+	
+	-- Do tính đơn giản của nó, nhiều kết quả có thể dễ dàng thu được mà không cần đến các phép toán phức tạp, cả về mặt thuật toán \& phân tích thống kê (đại số tuyến tính đơn giản cho kết quả đơn giản nhất trong bối cảnh thiết kế cố định).
+	\item Using nonlinear features, it can lead to arbitrary nonlinear predictions.
+	
+	-- Sử dụng các tính năng phi tuyến tính, nó có thể dẫn đến những dự đoán phi tuyến tính tùy ý.
+\end{itemize}
+
+\begin{question}[Optimal choice of parameters $\boldsymbol{\theta}$]
+	How to choose parameters $\boldsymbol{\theta}$ ``optimally''? ``Optimal'' in which sense?
+	
+	-- Làm thế nào để chọn tham số $\boldsymbol{\theta}$ ``tối ưu''? ``Tối ưu'' theo nghĩa nào?
+\end{question}
+
+\subsection{A general mathematical setting}
 
 %------------------------------------------------------------------------------%
 
@@ -144,6 +204,8 @@ Về hàm tuyến tính, see, e.g., \href{https://en.wikipedia.org/wiki/Linear_f
 %------------------------------------------------------------------------------%
 
 \section{Miscellaneous}
+
+\subsection{Contributors}
 
 %------------------------------------------------------------------------------%
 

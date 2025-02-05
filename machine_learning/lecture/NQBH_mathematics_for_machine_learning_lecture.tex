@@ -80,6 +80,12 @@
 
 %------------------------------------------------------------------------------%
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=12cm]{4_ML_pillars}
+	\caption{Foundations \& 4 pillars of ML. Source: \cite[Fig. 1.1, p. 14]{Deisenroth_Faisal_Ong2023}.}
+\end{figure}
+
 \section{Linear Regression -- Hồi Quy Tuyến Tính}
 \textbf{\textsf{References -- Tài nguyên.}}
 \begin{enumerate}
@@ -130,7 +136,7 @@ A typical learning algorithm finds the best hypothesis $h_{\boldsymbol{\theta}}$
 	Let $m\in\mathbb{N}^\star$. Suppose we have a 2-column table whose the 1st column consists of sizes of $m$ houses: ${\bf x} = (x_1,x_2,\ldots,x_m)$ \& the 2nd one consists of their corresponding housing prices ${\bf y} = (y_1,y_2,\ldots,y_m)$. Here $m$ is the number of training examples, ${\bf x}$ is the vector of input variable or features (size), \& ${\bf y}$ is the vector of output variables or target variables (price).
 \end{problem}
 
-\begin{baitoan}[Ước lượng giá nhà, \cite{Tiep_ML_co_ban}, Sect. 7.1, p. 100]
+\begin{baitoan}[Housing price estimation -- Ước lượng giá nhà, \cite{Tiep_ML_co_ban}, Sect. 7.1, p. 100]
 	Xét bài toán ước lượng giá của 1 căn phòng rộng $x_1\ {\rm m}^2$, có $x_2$ phòng ngủ, \& cách trung tâm thành phố $x_3$ km. Giả sử có 1 tập dữ diệu của $N = 10000$ căn nhà trong thành phố đó. Liệu có thể dự đoán được giá $y$ của 1 căn nhà mới (i.e., khác $N$ căn nhà đã có dữ liệu) thông qua 3 thông số về diện tích $x_1\in(0,\infty)$, số phòng ngủ $x_2\in\mathbb{N}$, \& khoảng cách tới trung tâm thành phố $x_3\in[0,\infty)$?
 \end{baitoan}
 {\sf Mathematical notations -- Ký hiệu toán học.} Đặt ${\bf x} = [x_1,x_2,x_3]^\top\in(0,\infty)\times\mathbb{N}\times[0,\infty)$ là 1 vector cột chứa dữ liệu đầu vào (inputs) gồm 3 thông số diện tích $x_1$, số phòng ngủ $x_2$, \& khoảng cách đến trung tâm thành phố $x_3$; ${\bf x}$ được gọi là {\it vector đặc trưng}. Đặt giá nhà (đầu ra{\tt/}output) $y\in(0,\infty)$.
@@ -139,14 +145,14 @@ A typical learning algorithm finds the best hypothesis $h_{\boldsymbol{\theta}}$
 \begin{equation}
 	\label{linear relation}
 	\tag{lnr}
-	y\approx\hat{y}\coloneqq f({\bf x}) = w_1x_1 + w_2x_2 + w_3x_3 = \sum_{i=1}^3 w_ix_i = {\bf x}^\top{\bf w} = {\bf x}\cdot{\bf w} = \langle{\bf x},{\bf w}\rangle,
+	y\approx\hat{y}\coloneqq f({\bf x}) = w_1x_1 + w_2x_2 + w_3x_3 = \sum_{i=1}^3 w_ix_i = {\bf x}^\top{\bf w} = {\bf w}^\top{\bf x} = {\bf x}\cdot{\bf w} = \langle{\bf x},{\bf w}\rangle,
 \end{equation}
 với ${\bf w} = [w_1,w_2,w_2]^\top$ là {\it vector trọng số} (weight vector) với $w_1,w_2\in(0,\infty),w_3\in(-\infty,0)$ (why?) cần tìm. Mối quan hệ cho bởi \eqref{linear relation} là 1 mối quan hệ tuyến tính.
 
 \begin{question}[Regression factor]
 	Why is it called \emph{regression}?
 \end{question}
-Về hàm tuyến tính, see, e.g., \href{https://en.wikipedia.org/wiki/Linear_function}{Wikipedia{\tt/}linear function}.
+{\it Bản chất.} 2 bài toán dự đoán giá nhà trên là 2 bài toán dự đoán giá trị đầu ra dưa trên vector đặc trưng đầu vào. Ngoài ra, giá trị của đầu ra $y$ có thể nhận rất nhiều giá trị thực dương khác nhau. Nên ta cần tính đi tính lại, tính kết quả đầu ra mới dựa trên các kết quả đầu ra cũ, để nhận được 1 kết quả được xem là tối ưu theo nghĩa nào đó. Vì vậy, đây cũng là 1 bài toán hồi quy. Kết hợp bản chất hồi quy với mối quan hê tuyến tính $\hat{y} = {\bf x}^\top{\bf w}$ cho ra tên gọi {\it hồi quy tuyến tính}. Về hàm tuyến tính, see, e.g., \href{https://en.wikipedia.org/wiki/Linear_function}{Wikipedia{\tt/}linear function}.
 
 {\sf Some reasons to study linear least-squares regression.} From \cite[Sect. 3.1, pp. 45--46]{Bach2024}.
 \begin{itemize}
@@ -168,6 +174,38 @@ Về hàm tuyến tính, see, e.g., \href{https://en.wikipedia.org/wiki/Linear_f
 \end{question}
 
 \subsection{A general mathematical setting}
+Tổng quát, nếu mỗi điểm dữ liệu được mô tả bởi 1 vector đặc trưng $d$ chiều $x\in\mathbb{R}^d$, hàm dự đoán đầu ra được viết dưới dạng
+\begin{equation*}
+	y = {\bf x}^\top{\bf w} = {\bf x}\cdot{\bf w} = \sum_{i=1}^d w_ix_i = w_1x_1 + \cdots + w_dx_d.
+\end{equation*}
+Nếu tính thêm bias (e.g., tiện đặt cọc, chi phí phát sinh, giảm giá, voucher discount, etc.) $b\in\mathbb{R}$ thì thêm vào thành:
+\begin{equation*}
+	y = {\bf x}^\top{\bf w} + b = {\bf x}\cdot{\bf w} + b = \sum_{i=1}^d w_ix_i + b = w_1x_1 + \cdots + w_dx_d + b.
+\end{equation*}
+
+Với bài toán hồi quy nói chung, ta cần cực tiểu sự sai khác $e$ (error) giữa đầu ra thực sự $y$ \& đầu ra dự đoán $\hat{y}$ với $e$ thường được chọn khoảng cách giữa 2 điểm $y$ \& $\hat{y}$, e.g.:
+\begin{equation*}
+	\frac{1}{2}e^2 = \frac{1}{2}(y - \hat{y})^2 = \frac{1}{2}(y - {\bf x}^\top{\bf w} - b)^2.
+\end{equation*}
+(Hệ số $\frac{1}{2}$ đóng vai trò là scaling factor, giúp khi tính đạo hàm thì sẽ đơn giản được hệ số, thật vậy: vì $\left(\frac{1}{2}x^2\right)' = x$ nên hệ số $\frac{1}{2}$ sẽ bị triệ tiêu khi lấy đạo hàm của $e$ theo tham số mô hình ${\bf w}$.) Các cách chọn sai số $e$ khác:
+\begin{enumerate}
+	\item $e = y - \hat{y}$: Khuyết điểm: $y - \hat{y}$ có thể âm, do đó việc cực tiểu hóa $e$ không có ý nghĩa.
+	\item $e = |y - \hat{y}|$: Khuyết điểm: Hàm trị tuyệt đối (absolute value function) $f:\mathbb{R}\to[0,\infty)$, $f(x) = |x|$ tuy liên tục nhưng không khả vi tại gốc tọa độ (why?), không thuận tiện cho việc tối ưu.
+	\item $e = \frac{1}{p}|y - \hat{y}|^p$ với $p\in(1,\infty)$. Hàm số $f(x) = \frac{1}{p}x^p$ có đạo hàm $f'(x) =|x|^{p-1}$. Khuyết điểm: Cần nhiều tính toán hơn số với hàm bình phương, i.e., khi $p = 2$.
+\end{enumerate}
+
+Hàm mất mát đóng vai trò là tiêu chí cho việc tối ưu mô hình: việc tìm mô hình tốt nhất{\tt/}tối ưu nhất (best{\tt/}optimal) tương đương với việc tìm ${\bf w}$ để cực tiểu hàm số:
+\begin{equation*}
+	L({\bf w}) = \frac{1}{2N}\sum_{i=1}^N (y_i - {\bf x}_i^\top{\bf w})^2.
+\end{equation*}
+Optimization problem -- Bài toán tối ưu:
+\begin{equation*}
+	\min_{\bf w} L({\bf w}).
+\end{equation*}
+Nếu bài toán có nghiệm duy nhất, ký hiệu:
+\begin{equation*}
+	{\bf w}^* = {\arg\min}_{\bf w} L({\bf w}).
+\end{equation*}
 
 %------------------------------------------------------------------------------%
 
@@ -184,6 +222,18 @@ Về hàm tuyến tính, see, e.g., \href{https://en.wikipedia.org/wiki/Linear_f
 %------------------------------------------------------------------------------%
 
 \section{Artificial Neural Networks (ANNs) -- Mạng Neuron Nhân Tạo}
+
+Distinguish: Artificial Neural Network (ANN) vs. Biological Neural Network (BNN), see, e.g., \href{https://en.wikipedia.org/wiki/Neural_network_(machine_learning)}{Wikipedia{\tt/}neural network (machine learning)} vs. \href{https://en.wikipedia.org/wiki/Neural_network_(biology)}{Wikipedia{\tt/}neural network (biology)}, \href{https://psychology.fandom.com/wiki/Biological_neural_networks}{Psychology Wiki{\tt/}biological neural network}.
+
+\begin{definition}[Activation function $\sigma(\cdot)$]
+	
+\end{definition}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[height=6cm]{neuron_activation_anime}\includegraphics[height=6cm]{neuron_activation}
+	\caption{A typical monkey's (maybe man also?) biological neural networks (BNN) gets activated by 2D{\tt/}anime girl's strong abs.}
+\end{figure}
 
 %------------------------------------------------------------------------------%
 

@@ -1,0 +1,152 @@
+\documentclass{article}
+\usepackage[backend=biber,natbib=true,style=alphabetic,maxbibnames=50]{biblatex}
+\addbibresource{/home/nqbh/reference/bib.bib}
+\usepackage[utf8]{vietnam}
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
+\usepackage{amsmath,amssymb,amsthm,enumitem,float,graphicx,mathtools,tikz}
+\usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
+\allowdisplaybreaks
+\newtheorem{assumption}{Assumption}
+\newtheorem{baitoan}{Bài toán}
+\newtheorem{cauhoi}{Câu hỏi}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{corollary}{Corollary}
+\newtheorem{dangtoan}{Dạng toán}
+\newtheorem{definition}{Definition}
+\newtheorem{dinhly}{Định lý}
+\newtheorem{dinhnghia}{Định nghĩa}
+\newtheorem{example}{Example}
+\newtheorem{ghichu}{Ghi chú}
+\newtheorem{hequa}{Hệ quả}
+\newtheorem{hypothesis}{Hypothesis}
+\newtheorem{lemma}{Lemma}
+\newtheorem{luuy}{Lưu ý}
+\newtheorem{nhanxet}{Nhận xét}
+\newtheorem{notation}{Notation}
+\newtheorem{note}{Note}
+\newtheorem{principle}{Principle}
+\newtheorem{problem}{Problem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{question}{Question}
+\newtheorem{remark}{Remark}
+\newtheorem{theorem}{Theorem}
+\newtheorem{vidu}{Ví dụ}
+\usepackage[left=1cm,right=1cm,top=5mm,bottom=5mm,footskip=4mm]{geometry}
+\def\labelitemii{$\circ$}
+\DeclareRobustCommand{\divby}{%
+	\mathrel{\vbox{\baselineskip.65ex\lineskiplimit0pt\hbox{.}\hbox{.}\hbox{.}}}%
+}
+\setlist[itemize]{leftmargin=*}
+\setlist[enumerate]{leftmargin=*}
+
+\title{Lecture: Mathematics for Machine Learning}
+\author{Nguyễn Quản Bá Hồng\footnote{A Scientist {\it\&} Creative Artist Wannabe. E-mail: {\tt nguyenquanbahong@gmail.com}. Bến Tre City, Việt Nam.}}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+	This text is a part of the series {\it Some Topics in Advanced STEM \& Beyond}:
+	
+	{\sc url}: \url{https://nqbh.github.io/advanced_STEM/}.
+	
+	Latest version:
+	\begin{itemize}
+		\item {\it }.
+		
+		PDF: {\sc url}: \url{.pdf}.
+		
+		\TeX: {\sc url}: \url{.tex}.
+		\item {\it }.
+		
+		PDF: {\sc url}: \url{.pdf}.
+		
+		\TeX: {\sc url}: \url{.tex}.
+	\end{itemize}
+\end{abstract}
+\tableofcontents
+
+%------------------------------------------------------------------------------%
+
+\section{Linear Regression -- Hồi Quy Tuyến Tính}
+\textbf{\textsf{References -- Tài nguyên.}}
+\begin{enumerate}
+	\item \cite{Bach2024}. {\sc Francis Bach}. {\it Learning Theory from First Principles}. Chap. 3: Linear Least-Squares Regression.
+	\item \cite{Deisenroth_Faisal_Ong2023}. {\sc Marc Peter Deisenroth, A. Aldo Faisal, Cheng Soon Ong}. {\it Mathematics for Machine Learning}. Chap. 9: Linear Regression.
+	\item {\sc Andrew Ng}'s Machine Learning Specialization slides: \url{}.
+	\item \cite{Tiep_ML_co_ban}. {\sc Vũ Hữu Tiệp}. {\it Machine Learning Cơ Bản}. Chap. 7: Hồi Quy Tuyến Tính.
+	\item Wikipedia: \href{https://en.wikipedia.org/wiki/Linear_function}{Wikipedia{\tt/}linear function}. \href{https://en.wikipedia.org/wiki/Linear_regression}{Wikipedia{\tt/}linear regression}.
+\end{enumerate}
+
+\subsection{Introduction to linear regression}
+{\it1st impression.} Hồi quy tuyến tính (linear regression) là:
+\begin{itemize}
+	\item 1 thuật toán hồi quy mà đầu ra là 1 hàm số tuyến tính (linear function, i.e., $y = ax + b$, $a,b\in\mathbb{R}$, $a\ne0$) của đầu vào. A brief notation:
+	\begin{equation*}
+		{\rm output} = {\tt linear\_function}({\rm input}) = a{\rm input} + b.
+	\end{equation*}
+	\item Thuật toán đơn giản nhất trong nhóm các thuật toán học có giám sát (supervised learning algorithms).
+\end{itemize}
+
+\begin{problem}[Housing prices -- giá cả nhà đất{\tt/}bất động sản]
+	Let $m\in\mathbb{N}^\star$. Suppose we have a 2-column table whose the 1st column consists of sizes of $m$ houses: ${\bf x} = (x_1,x_2,\ldots,x_m)$ \& the 2nd one consists of their corresponding housing prices ${\bf y} = (y_1,y_2,\ldots,y_m)$. Here $m$ is the number of training examples, ${\bf x}$ is the vector of input variable or features (size), \& ${\bf y}$ is the vector of output variables or target variables (price).
+\end{problem}
+
+\begin{baitoan}[Ước lượng giá nhà, \cite{Tiep_ML_co_ban}, Sect. 7.1, p. 100]
+	Xét bài toán ước lượng giá của 1 căn phòng rộng $x_1\ {\rm m}^2$, có $x_2$ phòng ngủ, \& cách trung tâm thành phố $x_3$ km. Giả sử có 1 tập dữ diệu của $N = 10000$ căn nhà trong thành phố đó. Liệu có thể dự đoán được giá $y$ của 1 căn nhà mới (i.e., khác $N$ căn nhà đã có dữ liệu) thông qua 3 thông số về diện tích $x_1\in(0,\infty)$, số phòng ngủ $x_2\in\mathbb{N}$, \& khoảng cách tới trung tâm thành phố $x_3\in[0,\infty)$?
+\end{baitoan}
+{\sf Mathematical notations -- Ký hiệu toán học.} Đặt ${\bf x} = [x_1,x_2,x_3]\in(0,\infty)\times\mathbb{N}\times[0,\infty)$ là 1 vector cột chứa dữ liệu đầu vào (inputs) gồm 3 thông số diện tích $x_1$, số phòng ngủ $x_2$, \& khoảng cách đến trung tâm thành phố $x_3$; ${\bf x}$ được gọi là {\it vector đặc trưng}. Đặt giá nhà (đầu ra{\tt/}output) $y\in(0,\infty)$.
+
+{\sf Reasoning -- Biện luận.} Nếu diện tích nhà càng lớn thì giá nhà càng cao: $x_1\uparrow\Rightarrow y\uparrow$, nếu nhà có càng nhiều phòng ngủ thì giá nhà càng cao: $x_2\uparrow\Rightarrow y\uparrow$, \& nếu nhà càng ở gần trung tâm thành phố thì giá nhà càng cao: $x_3\downarrow0\Rightarrow y\uparrow$. Có thể sử dụng mô hình đầu ra là 1 hàm tuyến tính đơn giản của đầu vào:
+\begin{equation}
+	\label{linear relation}
+	\tag{lnr}
+	y\approx\hat{y}\coloneqq f({\bf x}) = w_1x_1 + w_2x_2 + w_3x_3 = \sum_{i=1}^3 w_ix_i = {\bf x}^\top{\bf w} = {\bf x}\cdot{\bf w} = \langle{\bf x},{\bf w}\rangle,
+\end{equation}
+với ${\bf w} = [w_1,w_2,w_2]^\top$ là {\it vector trọng số} (weight vector) với $w_1,w_2\in(0,\infty),w_3\in(-\infty,0)$ (why?) cần tìm. Mối quan hệ cho bởi \eqref{linear relation} là 1 mối quan hệ tuyến tính.
+
+Về hàm tuyến tính, see, e.g., \href{https://en.wikipedia.org/wiki/Linear_function}{Wikipedia{\tt/}linear function}.
+
+%------------------------------------------------------------------------------%
+
+\section{Overfitting -- Quá Khớp}
+
+%------------------------------------------------------------------------------%
+
+\section{$K$ Neighbors -- $K$ Lân Cận}
+
+%------------------------------------------------------------------------------%
+
+\section{Phân Cụm $K$-Means}
+
+%------------------------------------------------------------------------------%
+
+\section{Artificial Neural Networks (ANNs) -- Mạng Neuron Nhân Tạo}
+
+%------------------------------------------------------------------------------%
+
+\section{Perception Learning Algorithm -- Thuật Toán Học Perceptron}
+
+%------------------------------------------------------------------------------%
+
+\section{Logistic Regression -- Hồi Quy Logistic}
+
+%------------------------------------------------------------------------------%
+
+\section{Softmax Regression -- Hồi Quy Softmax}
+
+%------------------------------------------------------------------------------%
+
+\section{Deep Neural Networks \& Backpropagation -- Mạng Neuron Đa Tầng \& Lan Truyền Ngược}
+
+%------------------------------------------------------------------------------%
+
+\section{Miscellaneous}
+
+%------------------------------------------------------------------------------%
+
+\printbibliography[heading=bibintoc]
+	
+\end{document}

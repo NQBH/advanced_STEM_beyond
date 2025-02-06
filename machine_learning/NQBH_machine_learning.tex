@@ -929,6 +929,150 @@ Research has exploded in field of machine learning resulting in complex mathemat
 
 %------------------------------------------------------------------------------%
 
+\subsection{\cite{Bach_Heckerman_Horvitz2006}. {\sc Francis R. Bach, David Heckerman, Eric Horvitz}. Considering Cost Asymmetry in Learning Classifiers}
+{\sf[188 citations]}
+\begin{itemize}
+	\item {\sf Abstract}. Receiver Operating Characteristics (ROC) curves are a standard way to display performance of a set of binary classifiers $\forall$ feasible ratios of costs associated with false positives \& false negatives. For linear classifiers, set of classifiers is typically obtained by training once, holding constant estimated slope \& then varying intercept to obtain a parameterized set of classifiers whose performances can be plotted in ROC plane. Consider alternative of varying asymmetry of cost function used for training. Show: ROC curve obtained by varying both intercept \& asymmetry, \& hence slope, always outperforms ROC curve obtained by varying only intercept. In addition, present a path-following algorithm for support vector machine (SVM) that can compute efficiently entire ROC curve, \& that has the same computational complexity as training a single classifier. Finally, provide a theoretical analysis of relationship between asymmetric cost model assumed when training a classifier \& cost model assumed in applying classifier. In particular, show: mismatch between step function used for testing \& its convex upper bounds, usually used for training, leads to a provable \& quantifiable difference around extreme asymmetries.
+	
+	{\sf Keywords.} SVM, receiver operating characteristic (ROC) analysis, linear classification
+	\item {\sf1. Introduction.} Receiver Operating Characteristic (ROC) analysis has seen increasing attention in recent statistics \& ML literature (Pepe, 2000; Provost and Fawcett, 2001; Flach, 2003). ROC is a representation of choice for displaying performance of a classifier when costs assigned by end users to false positives \& false negatives are not known at time of training. E.g., when training a classifier for identifying cases of undesirable unsolicited email, end users may have different preferences about likelihood of a false negative \& false positive. ROC curve for such a classifier reveals ratio of false negatives \& positives at different probability thresholds for classifying an email message as unsolicited or normal email.
+	
+	In this paper, consider \fbox{linear binary classification of points in an Euclidean space} -- noting: it can be extended in a straightforward manner to \fbox{nonlinear classification problems} by using Mercer kernels (Schölkopf \& Smola, 2002). I.e., given data ${\bf x}\in\mathbb{R}^d$, $d\ge1$, consider classifiers of form $f({\bf x}) = {\rm sign}({\bf w}^\top{\bf x} + b)$, where ${\bf w}\in\mathbb{R}^d,b\in\mathbb{R}$ are referred to as {\it slope} \& {\it intercept}. To date, ROC curves have been usually constructed by training once, holding constant estimated slope \& varying intercept to obtain curve. In this paper, show: while that procedure appears to be most practical thing to do, it may lead to classifiers with poor performance in some parts of ROC curve.
+	
+	Crux of our approach: allow asymmetry of cost function to vary, i.e., vary ratio of cost of a false positive \& cost of a false negative. For each value of ratio, obtain a different slope \& intercept, each optimized for this ratio. In a naive implementation, varying asymmetry would require a retraining of classifier for each point of ROC curve, which would be computational expensive. In Sect. 3.1, present an algorithm that can compute solution of a support vector machine (SVM) (see, e.g., Sch ölkopf \& Smola, 2002; Shawe-Taylor \& Cristianini, 2004) for all possible costs of false positives \& false negatives, with same computational complexity as obtaining solution for only 1 cost function. Algorithm extends to asymmetric costs algorithm of Hastie et al. (2005) \& is based on path-following techniques that take advantage of piecewise linearity of path of optimal solutions. In Sect. 3.2, show how path-following algorithm can be used to obtain ROC curves. In particular, by allowing both asymmetry \& intercept to vary, can obtain better ROC curves than by methods that simply vary intercept.
+	
+	In Sect. 4, provide a theoretical analysis of relationship between asymmetry of costs assumed in training a classifier \& asymmetry desired in its application. In particular, show: even in population (i.e., infinite sample) case, use of a training loss function which is a convex upper bound on true or testing loss function (a step function) creates classifiers with sub-optimal accuracy. Quantify this problem around extreme asymmetries for several classical convex-upper-bound loss functions, including square loss \& {\it erf loss}, an approximation of logistic loss based on normal cummulative distribution functions (also referred to as ``error function'', \& usually abbreviated as erf). Analysis is carried through for Gaussian \& mixture of Gaussian class-conditional distributions (see Sect. 4 for more details). Main result of this analysis: given an extreme user-defined testing asymmetry, training asymmetry should almost always be chosen to be less extreme.
+	
+	Consequences of potential mismatch between cost functions assumed in testing vs. training underscore value of using algorithm that we introduce in Sect. 4.3. Even when costs are known (i.e., when only 1 point on ROC curve is needed), classifier resulting from our approach, which builds entire ROC curve, is never less accurate \& can be more accurate than one trained with known costs using a convex-upper-bound loss function. Indeed, show in Sect. 4.3: computing entire ROC curve using our algorithm can lead to substantial gains over simply training once.
+	
+	Paper is organized as follows:
+	\begin{itemize}
+		\item Sect. 2: give an introduction of linear classification problem \& review ROC framework.
+		\item Sect. 3: contains algorithm part of paper, while
+		\item Sect. 4 provide a theoretical analysis of discrepancy between testing \& training asymmetries, together with empirical results.
+	\end{itemize}
+	This paper is an extended version of previously published work (Bach et al., 2005a).
+	\item {\sf2. Problem Overview.} Given data ${\bf x}\in\mathbb{R}^d$ \& labels $y\in\{\pm1\}$, consider linear classifiers of form $f({\bf x}) = {\rm sign}({\bf w}^\top{\bf x} + b)$, where ${\bf w}$: {\it slope} of classifier \& $b$: {\it intercept}. A classifier is determined by parameters $({\bf w},b)\in\mathbb{R}^{d+1}$. In Sect. 2.1, introduce notation \& defs; in Sect. 2.2: lay out necessary concepts of ROC analysis, while in Sect. 2.3, describe how these classifiers \& ROC curves are typically obtained from data.
+	\begin{itemize}
+		\item {\sf2.1. Asymmetric Cost \& Loss Functions.} Positive (resp. negative) examples are those for which $y = 1$ (resp. $y = -1$). 2 types of misclassification, false positives \& false negatives, are assigned 2 different costs. Let $C_+$ denote cost of a false negative \& $C_-$ cost of a false positive. Total {\it expected} cost is equal to
+		\begin{equation*}
+			R(C_+,C_-,{\bf w},b) = C_+P\{{\bf w}^\top{\bf x} + b < 0,y = 1\} + C_-P\{{\bf w}^\top{\bf x} + b\ge0,y = -1\}.
+		\end{equation*}
+		In context of large margin classifiers (see, e.g., Bartlett et al., 2004), expected cost is usually expressed in terms of {\it0--1 loss function}; indeed, if let $\phi_{0-1}(u) = 1_{u < 0}$ be 0--1 loss, can write expected cost as
+		\begin{equation*}
+			R(C_+,C_-,{\bf w},b) = C_+E\{1_{y=1}\phi_{0-1}({\bf w}^\top{\bf x} + b)\} + C_-E\{1_{y=-1}\phi_{0-1}(-{\bf w}^\top{\bf x} - b)\},
+		\end{equation*}
+		where $E$ denotes expectation w.r.t. joint distribution of $({\bf x},y)$.
+		
+		Expected cost defined using 0--1 loss is cost that end users are usually intersected in during use of classifier, while other cost functions that define below are used solely for training purposes. Convexity of these cost functions makes learning algorithms convergent without local minima, \& leads to attractive asymptotic properties (Bartlett et al., 2004).
+		
+		A traditional set-up for learning linear classifiers from labeled data: consider a convex upper bound $\phi$ on 0--1 loss $\phi_{0-1}$, \& to use expected $\phi$-cost:
+		\begin{equation*}
+			R_\phi(C_+,C_-,{\bf w},b) = C_+E\{1_{y=1}\phi({\bf w}^\top{\bf x} + b)\} + C_-E\{1_{y=-1}\phi(-{\bf w}^\top{\bf x} - b)\}.
+		\end{equation*}
+		Refer to ratio $\frac{C_+}{C_- + C_+}$ as {\it asymmetry}. Shall use {\it training asymmetry} to refer to asymmetry used for training a classifier using a $\phi$-cost, \& {\it testing asymmetry} to refer to asymmetric cost characterizing testing situation (reflecting end user preferences) with actual cost based on 0--1 loss. In Sect. 4, show: these may be different in general case.
+		
+		Shall consider several common loss functions. Some of loss functions (square loss, hinge loss) leads to attractive computational properties, while others (square loss, erf loss) are more amenable to theoretical manipulations (see {\sf Fig. 1: Loss functions. Left: 0--1 loss, hinge loss, erf loss, square loss. Right: 0--1 loss, probit loss, logistic loss.} for plot of loss functions, as they are commonly used \& defined below. Note: by rescaling, each of these loss functions can be made to be an upper bound on 0--1 loss which is tight at 0.):
+		\begin{itemize}
+			\item {\bf square loss}: $\phi_{\rm sq}(u) = \frac{1}{2}(u - 1)^2$; classifier is equivalent to linear regression on $y$,
+			\item {\bf hinge loss}: $\phi_{\rm hi}(u) = \max\{1 - u,0\}$; classifier is support vector machine (Shawe-Taylor \& Cristianini, 2004),
+			\item {\bf erf loss}: $\phi_{\rm erf}(u) = [u\Psi(u) - u + \Psi'(u)]$, where $\Pi$: cumulative distribution of standard normal distribution, i.e.: $\Psi(v) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^v e^{-\frac{t^2}{2}}\,{\rm dt}t$ \& $\Psi'(v) = \frac{1}{\sqrt{2\pi}}e^{-\frac{v^2}{2}}$. Erf loss can be used to provide a good approximation of {\it logistic loss} $\phi_{\rm log}(u) = \log(1 + e^{-u})$ as well as its derivative, \& is amenable to closed-form computations for Gaussians \& mixture of Gaussians (see Sect. 4 for more details). Note: erf loss is different from {\it probit loss} -- $\log\Psi(u)$, which leads to probit regression (Hastie et al., 2001).
+		\end{itemize}
+		\item {\sf2.2. ROC Analysis.} Aim of ROC analysis: display in a single graph performance of classifiers $\forall$ possible costs of misclassification. Consider sets of classifiers $f_\gamma(x)$, parameterized by a variable $\gamma\in\mathbb{R}$ ($\gamma$ can either be intercept or training asymmetry).
+		
+		For a classifier $f(x)$, can define a point $(u,v)$ in ``ROC plane'', where $u$: proportion of false positives $u = P(f(x) = 1|y = -1)$, \& $v$: proportion of true  positives $v = P(f(x) = 1|y = 1)$. When $\gamma$ is varied, obtain a curve in ROC plane, ROC curve (see, e.g., {\sf Fig. 2: Left: ROC curve: regular ROC curve; convex envelope. Points $a,c$ are ROC-consistent \& point $b$ is ROC-inconsistent. Right: ROC curve \& dashed equi-cost lines: All lines have direction $(p_+C_+,p_-C_-)$, plain line is optimal \& point $a$ is optimal classifier.}). Whether $\gamma$ is intercept or training asymmetry, ROC curve always passes through point $(0,0),(1,1)$, which corresponds to classifying all points as negative (resp. positive).
+		
+		{\it Upper convex envelope} of curve is set of optimal ROC points that can be achieved by set of classifiers; indeed, if a point in envelope is not 1 of original points, it must lie in a segment between 2 points $(u(\gamma_0),v(\gamma_0)),(u(\gamma_1),v(\gamma_1))$, \& all points in a segment between 2 classifiers can always be attained by choosing randomly between 2 classifiers. Note: this classifier itself is not a linear classifier; its performance, defined by given true positive \& false positive rates, can only be achieved by a mixture of 2 linear classifiers. However, if user is only interested in testing cost, which is a weighted linear combination of true positive \& false positive rates, lowest testing cost is always achieved by both of these 2 classifiers (Sect. 4.3).
+		
+		Denoting $p_+ = P(y = 1),p_- = P(y = -1)$, expected $(C_+,C_-)$-cost for a classifier $(u,v)$ in ROC space, is simply $p_+C_+(1 - v) + p_-C_-u$, \& thus optimal classifiers for $(C_+,C_-)$-cost can be found by looking at lines of slope that are normal to direction $(p_-C_-,-p_+C_+)$, which intersects ROC curve \& are as close as point $(0,1)$ as possible (see Fig. 2).
+		
+		A point $(u(\gamma),v(\gamma))$ is said to be {\it ROC-consistent} if it lies on upper convex envelope; in this case, tangent direction $\left(\frac{du}{d\gamma},\frac{dv}{d\gamma}\right)$ defines a cost $(C_+(\gamma),C_-(\gamma))$ for which classifier is optimal (for testing cost, which is defined using 0--1 loss). Condition introduced earlier, namely that $\left(\frac{du}{d\gamma},\frac{dv}{d\gamma}\right)$ is normal to direction $(p_-C_-,-p_+C_+)$, leads to:
+		\begin{equation*}
+			p_-C_-\frac{du}{d\gamma}(\gamma) - p_+C_+\frac{dv}{d\gamma}(\gamma) = 0.
+		\end{equation*}
+		{\it Optimal testing asymmetry} $\beta(\gamma)$ defined as ratio $\frac{C_+(\gamma)}{C_+(\gamma) + C_-(\gamma)}$, is thus $=$
+		\begin{equation*}
+			\beta(\gamma)\coloneqq\frac{C_+(\gamma)}{C_+(\gamma) + C_-(\gamma)} = \frac{1}{1 + \frac{p_+\frac{dv}{d\gamma}(\gamma)}{p_-\frac{du}{d\gamma}(\gamma)}}.
+		\end{equation*}
+		If a point $(u(\gamma),v(\gamma))$ is ROC-inconsistent, then quantity $\beta(\gamma)$ has no meaning, \& such a classifier is generally useless, because, $\forall$ settings of misclassification cost, that classifier can be outperformed by other classifiers or a combination of classifiers. See Fig. 2 for examples ROC-consistent \& ROC-inconsistent points.
+		
+		In Sect. 4, relate optimal asymmetry of cost in testing or eventual use of a classifier in real world, to asymmetry of cost used to train that classifier; in particular, show: they differ \& quantify this difference for extreme asymmetries (i.e., close to corner points $(0,0),(1,1)$). This analysis highlights value of generating entire ROC curve, even when only 1 point is needed (Sect. 4.3).
+		
+		{\bf Handling ROC surfaces.} Also consider varying both asymmetry of cost function \& intercept, leading to a set of points in ROC plane parameterized by 2 real values. Although concept of ROC-consistency could easily be extended to ROC surfaces, for simplicity do not consider it here. In all experiments, those ROC surfaces are reduced to curves by computing their convex upper envelopes.
+		\item {\sf2.3. Learning From Data.} Given $n$ labeled data points $(x_i,y_i),i = 1,\ldots,n$, {\it empirical cost} $=$
+		\begin{equation*}
+			\hat{R}(C_+,C_-,{\bf w},b) = \frac{C_+}{n}\#\{y_i({\bf w}^\top{\bf x}_i + b) < 0,y_i = 1\} + \frac{C_-}{n}\#\{y_i({\bf w}^\top{\bf x}_i + b) < 0,y_i = -1\}.
+		\end{equation*}
+		{\it Empirical $\phi$-cost} $=$
+		\begin{equation*}
+			\hat{R}_\phi(C_+,C_-,{\bf w},b) = \frac{C_+}{n}\sum_{i\in I_+} \phi(y_i({\bf w}^\top{\bf x}_i + b)) + \frac{C_-}{n}\sum_{i\in I_-} \phi(y_i({\bf w}^\top{\bf x}_i + b)),
+		\end{equation*}
+		where $I_+ = \{i,y_i = 1\},I_- = \{i,y_i = -1\}$. When learning a classifier from data, a classical setup: minimize sum of {\it empirical $\phi$-cost} \& a regularization term $\frac{1}{2n}\|{\bf w}\|^2$, i.e., to minimize $\hat{J}_\phi(C_+,C_-,{\bf w},b) = \hat{R}_\phi(C_+,C_-,{\bf w},b) + \frac{1}{2n}\|{\bf w}\|^2$.
+		
+		Note: objective function is no longer homogeneous in $(C_+,C_-)$; sum $C_+ + C_-$ is referred to as {\it total amount of regularization}. Thus, 2 end-user-defined parameters are needed to train a linear classifier: {\it total amount of regularization} $C_+ + C_-\in\mathbb{R}^+$, \& {\it asymmetry} $\frac{C_+}{C_+ + C_-}\in[0,1]$. In Sect. 3.1, show how minimum of $\hat{J}_\phi(C_+,C_-,{\bf w},b)$, w.r.t. ${\bf w}$ \& $b$, can be computed efficiently for hinge loss, for many values of $(C_+,C_-)$, with a computational cost that is within a constant factor of computational cost of obtaining a solution for 1 value of $(C_+,C_-)$.
+		
+		{\bf Building an ROC curve from data.} If a sufficiently large validation set is available, can train on training set \& use empirical distribution of validation data to plot ROC curve. If sufficient validation data is not available, then can use several (typically 10 or 25) random splits of data \& average scores over those splits to obtain ROC scores. Can also use this approach to obtain confidence intervals (Flach, 2003).
+	\end{itemize}
+	\item {\sf3. Building ROC Curves for SVM.} Present an algorithm to compute ROC curves for SVM that explores 2D space of cost parameters $(C_+,C_-)$ efficiently. 1st show how to obtain optimal solutions of SVM without solving optimization problems many times for each value of $(C_+,C_-)$. This method generalizes results of Hastie et al. (2005) to case of asymmetric cost functions. Then describe how space $(C_+,C_-)$ can be appropriately explored \& how ROC curves can be constructed.
+	\begin{itemize}
+		\item {\sf3.1. Building Paths of Classifiers.} Given $n$ data points $x_i$, $i = 1,\ldots,n$ which belongs to $\mathbb{R}^d$, \& $n$ labels $y_i\in\{\pm1\}$, minimizing regularized empirical hinge loss $\Leftrightarrow$ solving following convex optimization problem (Schölkopf \& Smola, 2002):
+		\begin{equation*}
+			\min_{{\bf w},b,\xi} \sum_i C_i\xi_i + \frac{1}{2}\|{\bf w}\|^2\mbox{ s.t. }\forall i,\ \xi_i\ge0,\ \xi_i\ge1 - y_i({\bf w}^\top{\bf x}_i + b),
+		\end{equation*}
+		where
+		\begin{equation*}
+			C_i = \left\{\begin{split}
+				&C_+&&\mbox{if } y_i = 1,\\
+				&C_-&&\mbox{if } y_i = -1.
+			\end{split}\right.
+		\end{equation*}
+		{\bf Optimality conditions \& dual problems.} Know derive usual Karush--Kuhn--Tucker (KKT) optimality conditions (Boyd \& Vandenberghe, 2003). Lagrangian of problem is (with dual variables $\alpha,\beta\in\mathbb{R}_+^n$):
+		\begin{equation*}
+			L({\bf w},b,\xi,\alpha,\beta) = \sum_i C_i\xi_i + \frac{1}{2}\|{\bf w}\|^2 + \sum_i \alpha_i(1 - y_i({\bf w}^\top{\bf x}_i + b)) - \xi_i - \sum_i \beta_i\xi_i.
+		\end{equation*}
+		Derivatives w.r.t. primal variables are
+		\begin{equation*}
+			\frac{\partial L}{\partial w} = w - \sum_i \alpha_iy_ix_i,\ \frac{\partial L}{\partial b} = -\sum_i \alpha_iy_i,\ \frac{\partial L}{\partial\xi_i} = C_i - \alpha_i - \beta_i.
+		\end{equation*}
+		1st set of KKT conditions corresponds to nullity of Lagrangian derivatives w.r.t. primal variables, i.e.: (2)
+		\begin{equation*}
+			w = \sum_i \alpha_iy_ix_i,\ \sum_i \alpha_iy_i = \alpha^\top{\bf y} = 0,\ \forall i,\ C_i = \alpha_i + \beta_i.
+		\end{equation*}
+		Slackness conditions (Điều kiện lỏng lẻo) are:
+		\begin{equation*}
+			\forall i,\ \alpha_i(1 - \xi_i + y_i({\bf w}^\top{\bf x}_i + b)) = 0,\ \beta_i\xi_i = 0.
+		\end{equation*}
+		Finally dual problem can be obtained by computing minimum of Lagrangian w.r.t. primal variables. If denote $K$ $n\times n$ Gram matrix of inner products, i.e., defined by $K_{ij} = {\bf x}_i\top{\bf x}_j$ \& $\widetilde{K} = {\rm Diag}({\bf y})K{\rm Diag}({\bf y})$, dual problem is:
+		\begin{equation*}
+			\max_{\alpha\in\mathbb{R}^n} -\frac{1}{2}\alpha^\top\widetilde{K}\alpha + 1^\top\alpha\mbox{ s.t. }\alpha^\top{\bf y} = 0,\ \forall i,\ 0\le\alpha_i\le C_i.
+		\end{equation*}
+		In following, only consider primal variables $({\bf w},b,\xi)$ \& dual variables $(\alpha,\beta)$ that verify 1st set of KKT condition (2), which implies: ${\bf w},\beta$ are directly determined by $\alpha$.
+		
+		{\bf Piecewise affine solutions.} Following Hastie et al. (2005), for an optimal set of primal-dual variables $({\bf w},b,\alpha)$, can separate data points in 3 disjoint sets, depending on values of $y_i({\bf w}^\top{\bf x}_i + b) = (\widetilde{K}\alpha)_i + by_i$.
+		\begin{itemize}
+			\item Margin: ${\cal M} = \{i,\ y_i({\bf w}^\top{\bf x}_i + b) = 1\}$,
+			\item Left of margin: ${\cal M} = \{i,\ y_i({\bf w}^\top{\bf x}_i + b) < 1\}$,
+			\item Right of margin: ${\cal M} = \{i,\ y_i({\bf w}^\top{\bf x}_i + b) > 1\}$.
+		\end{itemize}
+		\item {\sf3.2. Constructing ROC Curve.}
+	\end{itemize}
+	\item {\sf4. Training vs. Testing Asymmetry.}
+	\begin{itemize}
+		\item {\sf4.1. Optimal Solutions for Extreme Cost Asymmetries.}
+		\item {\sf4.2. Expansion of Testing Asymmetries.}
+		\item {\sf4.3. Building Entire ROC Curve for a Single Point.}
+	\end{itemize}
+	\item {\sf5. Conclusion.} Have presented an efficient algorithm to build ROC curves by varying training cost asymmetries for SVMs. Algorithm is based on piecewise linearity of path of solutions when cost of false positives \& false negatives vary. Have also provided a theoretical analysis of relationship between potentially different cost asymmetries assumed in training \& testing classifiers, showing: they differ under certain circumstances. In particular, in case of extreme asymmetries, our theoretical analysis suggests: training asymmetries should be chosen less extreme than testing asymmetry.
+	
+	Have characterized key relationships, \& have worked to highlight potential practical value of building entire ROC curve even when a single point may be needed. All learning algorithms considered in this paper involve using a convex surrogate (lồi thay thế) to correct non differentiable non convex loss function. Our theoretical analysis implies: because use a convex surrogate, using testing asymmetry for training leads to non-optimal classifiers. Thus propose to generate all possible classifiers corresponding to all training asymmetries, \& select the one that optimizes a good approximation to true loss function on unseen data (i.e., using held out data or cross validation). As shown in Sect. 3, it turns out: this can be done efficiently for SVM. Such an approach can lead to a significant improvement of performance with little added computational cost.
+	
+	Note: although have focused in this paper on single kernel learning problem, our approach can be readily extended to multiple kernel learning setting (Bach et al., 2005b) with appropriate numerical path following techniques.
+	\item {\sf Appendix A. Proof of Expansion of Optimal Solutions.}
+	\item {\sf Appendix B. Proof of Expansion of Testing Asymmetries.}
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
 \subsection{{\sc Wenbo Cao, Weiwei Zhang}. {\it ML of PDEs from Noise Data}. Theoretical \& Applied Mechanics Letters}
 {\sf[12 citations]}
 {\sf Keywords.} PDE, ML, Sparse regression, Noise data.
@@ -2993,7 +3137,7 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 
 %------------------------------------------------------------------------------%
 
-\subsection{{\sf Gabriel Peyr\'e}. The Mathematics of Artificial Intelligence. 2025}
+\subsection{{\sc Gabriel Peyr\'e}. The Mathematics of Artificial Intelligence. 2025}
 
 \begin{itemize}
 	\item {\sf Abstract.} This overview article highlights critical role of mathematics in AI, emphasizing: mathematics provides tools to better understand \& enhance AI systems. Conversely, AI raises new problems \& drives development of new mathematics at intersection of various fields. This article focuses on application of analytical \& probabilistic tools to model neural network architectures \& better understand their optimization. Statistical questions (particularly generalization capacity of these networks) are intentionally set aside, though they are of crucial importance. Also shed light on evolution of ideas that have enabled significant advances in AI through architectures tailored to specific tasks, each echoing distinct mathematical techniques. Goal: encourage more mathematicians to take an interest in \& contribute to this exciting field.
@@ -5300,7 +5444,7 @@ A full understanding of ML requires some mathematical background \& so book incl
 	
 	A clear understanding of ML can be achieved only through use of some level of mathematics. Specifically, 3 areas of mathematics lie at heart of ML: probability theory, linear algebra, \& multivariate calculus. Book provides a self-contained introduction to required concepts in probability theory \& includes an appendix that summarizes some useful results in linear algebra. Assumed: reader already has some familiarity with basic concepts of multivariate calculus although there are appendices that provide introductions to calculus of variations \& to Lagrange multipliers. Focus of book, however, is on conveying a clear understanding of ideas, \& emphasis is on techniques that have real-world practical value rather than on abstract theory. Where possible try to present more complex concepts from multiple complementary perspectives including textual description, diagrams, \& mathematical formulae. In addition, many of key algorithms discussed in text are summarized in separate boxes. These do not address issues of computational efficiency, but are provided as a complement to mathematical explanations given in text. Therefore hope: material in this book will be accessible to readers from a variety of backgrounds.
 	
-	Conceptually, this book is perhaps most naturally viewed as a successor (người kế nhiệm{\tt/}, người nối nghiệp) to {\it Neural Networks for Pattern Recognition} (Bishop, 1995b), which provided 1st comprehensive treatment of neural networks from a statistical perspective. It can also be considered as a companion volume to {\it Pattern Recgonition \& ML} (Bishop, 2006), which covered a broader range of topics in ML although it predated DL revolution. However, to ensure that this new book is self-contained, to appropriate material has been carried over from Bishop (2006) \& refactored to focus on those foundational ideas that are needed for DL. I.e., there are many interesting topics in ML discussed in Bishop (2006) that remain of interest today but which have been omitted from this new book. E.g., Bishop (2006) discussed Bayesian methods in some depth, whereas this book is \fbox{almost entirely non-Bayesian}.
+	Conceptually, this book is perhaps most naturally viewed as a successor (người kế nhiệm{\tt/}người nối nghiệp) to {\it Neural Networks for Pattern Recognition} (Bishop, 1995b), which provided 1st comprehensive treatment of neural networks from a statistical perspective. It can also be considered as a companion volume to {\it Pattern Recognition \& ML} (Bishop, 2006), which covered a broader range of topics in ML although it predated DL revolution. However, to ensure that this new book is self-contained, to appropriate material has been carried over from Bishop (2006) \& refactored to focus on those foundational ideas that are needed for DL. I.e., there are many interesting topics in ML discussed in Bishop (2006) that remain of interest today but which have been omitted from this new book. E.g., Bishop (2006) discussed Bayesian methods in some depth, whereas this book is \fbox{almost entirely non-Bayesian}.
 	
 	Book is accompanied by a web site that provides supporting material, including a free-to-use digital version of book as well as solutions to exercises \& downloadable versions of figures in PDF \& JPEG formats: \url{https://www.bishopbook.com}.
 	\item {\sf References.} In spirit of focusing on core ideas, make no attempt to provide a comprehensive literature review, which in any case would be impossible given scale \& pace of change of field. Do, however, provide refs to some of key research papers as well as review articles \& other refs to some of key research papers as well as review articles \& other sources of further reading. In many cases, there also provide important implementation details that we gloss over in text in order to distract reader from central concepts being discussed.
@@ -8516,6 +8660,53 @@ Applications of recurrent neural networks include:
 
 %------------------------------------------------------------------------------%
 
+\subsection{Wikipedia{\tt/}supervised learning}
+``{\sf In supervised learning, training data is labeled with expected answers, while in \href{https://en.wikipedia.org/wiki/Unsupervised_learning}{unsupervised learning}, model identifies patterns or structures in unlabeled data.} In ML, {\it supervised learning (SL)} is a paradigm where a \href{https://en.wikipedia.org/wiki/Statistical_model}{statistical model} is trained using input objects (e.g., a vector of predictor variables) \& desired output values (also known as a {\it supervisory signal}), which are often human-made labels. Training process builds a function that maps new data to expected output values. An optimal scenario will allow for algorithm to accurately determine output values for unseen instances. This requires learning algorithm to \href{https://en.wikipedia.org/wiki/Generalization_(learning)}{generalize} from training data to unseen situations in a ``reasonable'' way (see \href{https://en.wikipedia.org/wiki/Inductive_bias}{inductive bias}). This statistical quality of an algorithm is measured via a \href{https://en.wikipedia.org/wiki/Generalization_error}{generalization error}.
+
+\subsubsection{Steps to follow}
+To solve a given problem of supervised learning, following steps must be performed:
+\begin{enumerate}
+	\item Determine type of training samples. Before doing anything else, user should decide what kind of data is to be used as a \href{https://en.wikipedia.org/wiki/Training,_validation,_and_test_data_sets}{training set}. In case of \href{https://en.wikipedia.org/wiki/Handwriting_analysis}{handwriting analysis}, e.g., this might be a single handwritten character, an entire handwritten word, an entire sentence of handwriting, or a full paragraph of handwriting.
+	\item Gather a training set. Training set needs to be representative of real-world use of function. Thus, a set of input objects is gathered together with corresponding outputs, either from \href{https://en.wikipedia.org/wiki/Subject-matter_expert}{human experts} or from measurements.
+	\item Determine input \href{https://en.wikipedia.org/wiki/Feature_(machine_learning)}{feature} representation of learned function. Accuracy of learned function depends strongly on how input object is represented. Typically, input object is transformed into a \href{https://en.wikipedia.org/wiki/Feature_vector}{feature vector}, which contains a number of features that are descriptive of object. Number of features should not be too large, because of \href{https://en.wikipedia.org/wiki/Curse_of_dimensionality}{curse of dimensionality}; but should contain enough information to accurately predict output.
+	\item Determine structure of learned function \& corresponding learning algorithm. E.g., one may choose to use \href{https://en.wikipedia.org/wiki/Support-vector_machine}{support-vector machines} or \href{https://en.wikipedia.org/wiki/Decision_tree_learning}{decision trees}.
+	\item Complete design. Run learning algorithm on gathered training set. Some supervised learning algorithms require use to determine certain \href{https://en.wikipedia.org/wiki/Hyperparameter_(machine_learning)}{control parameters}. These parameters may be adjusted by optimizing performance on a subset (called a \href{https://en.wikipedia.org/wiki/Validation_set}{validation set}) of training set, or via \href{https://en.wikipedia.org/wiki/Cross-validation_(statistics)}{cross-validation}.
+	\item Evaluate accuracy of learned function. After parameter adjustment \& learning, performance of resulting function should be measured on a \href{https://en.wikipedia.org/wiki/Test_set}{test case} that is separate from training set.
+\end{enumerate}
+
+\subsubsection{Algorithm choice}
+A wide range of supervised learning algorithms are available, each with its strengths \& weaknesses. There is no single learning algorithm that works best on all supervised learning problems (see \href{https://en.wikipedia.org/wiki/No_free_lunch_in_search_and_optimization}{no free lunch theorem}).
+
+There are 4 major issues to consider in supervised learning:
+\begin{itemize}
+	\item {\sf Bias-variance tradeoff.}
+	\item {\sf Function complexity \& amount of training data.}
+	\item {\sf Dimensionality of input space.}
+	\item {\sf Noise in output values.}
+	\item {\sf Other factors to consider.}
+	\item {\sf Algorithms.}
+\end{itemize}
+
+\subsubsection{How supervised learning algorithms work}
+
+\begin{itemize}
+	\item {\sf Empirical risk minimization.}
+	\item {\sf Structural risk minimization.}
+\end{itemize}
+
+\subsubsection{Generative training}
+
+\subsubsection{Generalizations}
+
+\subsubsection{Approaches \& algorithms}
+
+\subsubsection{Applications}
+
+\subsubsection{General issues}
+
+'' -- \href{https://en.wikipedia.org/wiki/Supervised_learning}{Wikipedia{\tt/}supervised learning}
+
+%------------------------------------------------------------------------------%
 
 \subsection{Wikipedia{\tt/}torch (ML)}
 ``{\tt Torch} is an open-source ML library, a \href{https://en.wikipedia.org/wiki/Scientific_computing}{scientific computing} framework, \& a \href{https://en.wikipedia.org/wiki/Scripting_language}{scripting language} based on \href{https://en.wikipedia.org/wiki/Lua_(programming_language)}{Lua}. It provides \href{https://en.wikipedia.org/wiki/LuaJIT}{LuaJIT} interfaces to DL algorithms implemented in C. It was created by \href{https://en.wikipedia.org/wiki/IDIAP}{Idiap Research Institute} at \href{https://en.wikipedia.org/wiki/EPFL}{EPFL}. Torch development moved in 2017 to \href{https://en.wikipedia.org/wiki/PyTorch}{PyTorch}, a port of library to Python.

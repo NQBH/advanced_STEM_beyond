@@ -88,7 +88,124 @@ Tôi được giải Nhì Đại số Olympic Toán Sinh viên 2014 (VMC2014) kh
 	{\bf Trace -- Vết.} {\it Vết} (trace) của 1 ma trận vuông $A$ được ký hiệu là $\operatorname{trace}A$ là tổng tất cả các phần tử trên đường chéo chính của nó. Hàm vết xác định trên tập các ma trận vuông được sử dụng nhiều trong tối ưu vì nó có các tính chất đẹp.
 	
 	{\bf Kiểm tra gradient.} Việc tính gradient của hàm nhiều biến thông thường khá phức tạp \& rất dễ mắc lỗi. Trong thực nghiệm, có 1 cách để kiểm tra liệu gradient tính được có chính xác không. Cách này dựa trên định nghĩa của đạo hàm cho hàm 1 biến.
-	\item \cite{Trefethen_Bau1997,Trefethen_Bau2022}. {\sc Lloyd N. Trefethen, David Bau III}. {\it Numerical Linear Algebra}.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsection{\cite{Trefethen_Bau1997,Trefethen_Bau2022}. {\sc Lloyd N. Trefethen, David Bau III}. Numerical Linear Algebra}
+[NQBH]: There is a new version 2e 2022 but I cannot download it from Libgen or anywhere.
+\begin{itemize}
+	\item {\sf Preface.} Since early 1980s, 1st author has taught a graduate course in numerical linear algebra at MIT \& Cornell. Alumni of this course, now numbering in hundreds, have been graduate students in all fields of engineering \& physical sciences. This book is an attempt to put this course on paper.
+	
+	In field of numerical linear algebra, there is already an encyclopedic treatment on market: {\it Matrix Computations}, by {\sc Golub \& Van Loan}, now in its 3e. This book is in no way an attempt to duplicate that one. It is small, scaled to size of 1 university semester. Its aim: present fundamental ideas in as elegant a fashion as possible. Hope: every reader of this book will have access also to {\sc Golub \& Van Loan} for pursuit of further details \& additional topics, \& for its extensive references to research literature. 2 other important recent books are those of {\sc Higham \& Demmel}.
+		
+	Field of numerical linear algebra is more beautiful, \& more fundamental, than its rather dull name may suggest. More beautiful, because it is full of powerful ideas that are quite unlike those normally emphasized in a linear algebra course in a mathematics department. (At end of semester, students invariably comment: there is more to this subject than they ever imagined.) More fundamental, because, thanks to a trick of history, ``numerical'' linear algebra is really {\it applied} linear algebra. Here one finds essential ideas that every mathematical scientist needs to work effectively with vectors \& matrices. In fact, our subject is more than just vectors \& matrices, for virtually everything we do carries over to functions \& operators. Numerical linear algebra is really functional analysis, but with emphasis always on practical algorithmic ideas rather than mathematical technicalities.
+	
+	Book is divided into 40 lectures. Have tried to build each lecture around 1 or 2 central ideas, emphasizing unity between topics \& never getting lost in details. In many places our treatment is nonstandard. This is not place to list all of these points (see Notes), but will mention 1 unusual aspect of this book. Have departed from customary practice by not starting with Gaussian elimination. That algorithm is atypical (khác biệt) of numerical linear algebra, exceptionally difficult to analyze, yet at same time tediously familiar to every student entering a course like this. Instead, begin with QR factorization, which is more important, less complicated, \& a fresher idea to most students. QR factorization is thread that connects most of algorithms of numerical linear algebra, including methods for least squares, eigenvalue, \& singular value problems, as well as iterative methods $\forall$ of these \& also for systems of equations. Since 1970s, iterative methods have moved to center stage in scientific computing, \& to them, devote last part of book.
+	
+	Hope reader will come to share our view: if any other mathematical topic is as fundamental to mathematical sciences as calculus \& differential equations, it is numerical linear algebra.
+	\item {\sf I. Fundamentals.}
+	\begin{itemize}
+		\item {\sf1. Matrix-Vector Multiplication.}
+		\item {\sf2. Orthogonal Vectors \& Matrices.}
+		\item {\sf3. Norms.}
+		\item {\sf4. Singular Value Decomposition SVD.}
+		\item {\sf5. More on SVD.}
+	\end{itemize}
+	\item {\sf II. QR Factorization \& Least Squares.}
+	\begin{itemize}
+		\item {\sf6. Projectors.}
+		\item {\sf7. QR Factorization.}
+		\item {\sf8. Gram--Schmidt Orthogonalization.}
+		\item {\sf9. MATLAB.}
+		\item {\sf10. Householder Triangularization.}
+		\item {\sf11. Least Squares Problems.} Least squares data-fitting has been an indispensable tool since its invention by {\sc Gauss \& Legendre} around 1800, with ramifications (hậu quả) extending throughout mathematical science. In language of linear algebra, problem here is solution of an overdetermined system of equaitons $A{\bf x} = {\bf b}$ -- rectangular with more rows than columns. Least squares idea: ``solve'' such a system by minimizing 2-norm of residual ${\bf b} - A{\bf x}$.
+		\begin{itemize}
+			\item {\sf Problem.} Consider a linear system of equations having $n$ unknowns but $m > n$ equations. Symbolically, wish to find a vector ${\bf x}\in\mathbb{C}^n$ that satisfies $A{\bf x} = {\bf b}$, where $A\in\mathbb{C}^{m\times n},b\in\mathbb{C}^m$. In general, such a problem has no solution. A suitable vector ${\bf x}$ exists only if ${\bf b}$ lies in ${\rm range}(A)$, \& since ${\bf b}$ is an $m$-vector, whereas ${\rm range}(A)$ is of dimension $\le n$, this is true only for exceptional choices of ${\bf b}$. Say: a rectangular system of equations with $m > n$ is {\it overdetermined}. Vector known as {\it residual}: ${\bf r} = {\bf b} - A{\bf x}\in\mathbb{C}^m$, can perhaps be made quite small by a suitable choice of ${\bf x}$, but in general it cannot be made $= 0$.
+			
+			What can it mean to solve a problem that has no solution? In case of an overdetermined system of equations, there is a natural answer to this question. Since residual $r$ cannot be made to be 0, instead made it as small as possible. Measuring smallness of $r$ entails choosing a norm. If choose 2-norm, problem takes following form: (11.2)
+			\begin{quote}
+				Given $A\in\mathbb{C}^{m\times n},m\ge n,b\in\mathbb{C}^m$, find ${\bf x}\in\mathbb{C}^n$ s.t. $\|{\bf b} - A{\bf x}\|_2$ is minimized.
+			\end{quote}
+			This is our formulation of general (linear) {\it least squares problem}. Choice of 2-norm can be defended by various geometric \& statistical arguments, \& it certainly leads to a simple algorithms -- ultimately because derivative of a quadratic function, which must be set to 0 for minimization, is linear.
+			
+			2-norm corresponds to Euclidean distance, so there is a simple geometric interpretation of (11.2). Seek a vector ${\bf x}\in\mathbb{C}^n$ s.t. vector $A{\bf x}\in\mathbb{C}^m$ is closest point in ${\rm range}(A)$ to ${\bf b}$
+			\item {\sf Example: Polynomial Data-Fitting.} Compare polynomial interpolation, which leads to a square system of equations, \& least squares polynomial data-fitting, where system is rectangular.
+			
+			\begin{example}[Polynomial Interpolation]
+				Suppose given $m$ distinct points $x_1,\ldots,x_m\in\mathbb{C}$ \& data $y_1,\ldots,y_m\in\mathbb{C}$ at these points. Then there exists a unique \emph{polynomial interpolant} to these data in these points, i.e., a polynomial of degree at most $m - 1$, $p(x) = \sum_{i=0}^{m-1} c_ix^i$, with property: at each $x_i$, $p(x_i) = y_i$. Relationship of data $\{x_i\},\{y_i\}$ to coefficients $\{c_i\}$ can be expressed by square Vandermonde system. To determine coefficients $\{c_i\}$ for a given set of data, can solve this system of equations, which is guaranteed to be nonsingular as long as points $\{x_i\}$ are distinct because $D_n = \prod_{1\le j < i\le n} (x_i - x_j)$.
+				
+				{\sf Fig. 11.1: Degree 10 polynomial interpolant to 11 data points. Axis scales are not given, as these have no effect on picture.} presents an example of this process of polynomial interpolation. Have 11 data points in form of a discrete square wave, represented by crosses, \& curve $p(x)$ passes through them, as it must. However, fit is not at all pleasing. near ends of interval, $p(x)$ exhibits large oscillations that are clearly an artifact (hiện vật) of interpolation process, not a reasonable reflection of data.
+				
+				This unsatisfactory behavior is typical of polynomial interpolation. Fits it produces are often bad, \& they tend to get worse rather than better if more data are utilized. Even if fit is good, interpolation process may be ill-conditioned, i.e., sensitive to perturbations of data. To avoid these problems, one can utilize a nonuniform set of interpolation points e.g. Chebyshev points in interval $[-1,1]$. In applications, however, it will not always be possible to choose interpolation points at will.
+			\end{example}
+			
+			\begin{example}[Polynomial Least Squares Fitting]
+				Without changing data points, can do better by reducing degree of polynomial. Given $x_1,\ldots,x_m,y_1,\ldots,y_m$ again, consider now a degree $n - 1$ polynomial $p(x) = \sum_{i=0}^{n-1} c_ix^i$ for some $n < m$. Such a polynomial is a least squares fit to data if it minimizes sum of squares of deviation from data,
+				\begin{equation*}
+					\sum_{i=1}^m |p(x_i) - y_i|^2.
+				\end{equation*}
+				This sum of squares $=$ square of norm of residual $\|{\bf r}\|_2^2$ for rectangular Vandermonde system (11.7). {\sf Fig. 11.2: Degree 7 polynomial least squares fit to same 11 data points.} illustrates what we get if fit same 11 data points from last example with a polynomial of degree 7. New polynomial does not interpolate data, but it \fbox{captures their overall behavior much better} than polynomial of Example 11.1. Though on cannot see this in figure, it is also less sensitive to perturbations.
+			\end{example}
+			\item {\sf Orthogonal Projection \& Normal Equations.} How was Fig. 11.2 computed? How are least squares problems solved in general? Key to deriving algorithms is orthogonal projection.
+			
+			Idea is illustrated in {\sf Fig. 11.3: Formulation of least squares problem (11.2) in terms of orthogonal projection.} Goal: find closest point $A{\bf x}$ in ${\rm range}(A)$ to ${\bf b}$, so that norm of residual ${\bf r} = {\bf b} - A{\bf x}$ is minimized. Clear geometrically: this will occur provided $A{\bf x} = P{\bf b}$ where $P\in\mathbb{C}^{m\times m}$: orthogonal projector that maps $\mathbb{C}^m$ onto ${\rm range}(A)$. I.e., residual ${\bf r} = {\bf b} - A{\bf x}$ must be orthogonal to ${\rm range}(A)$. Formulate this condition as following theorem.
+			\begin{theorem}
+				Let $A\in\mathbb{C}^{m\times n}$, $m\ge n$, \& ${\bf b}\in\mathbb{C}^m$ be given. A vector ${\bf x}\in\mathbb{C}^n$ minimizes residual norm $\|{\bf r}\|_2 = \|{\bf b} - A{\bf x}\|_2$, thereby solving least squares problem (11.2), iff ${\bf-- r}\bot{\rm range}(A)$, i.e., (11.8)--(11.9)
+				\begin{equation*}
+					A^*{\bf r} = {\bf0}\Leftrightarrow A^*A{\bf x} = A^*{\bf b}\Leftrightarrow Pb = A{\bf x},
+				\end{equation*}
+				where $P\in\mathbb{C}^{m\times m}$: orthogonal projector onto ${\rm range}(A)$. $n\times n$ system of equations (11.9), known as {\rm normal equations}, is nonsingular iff $A$ has full rank. Consequently solution ${\bf x}$ is unique iff $A$ has full rank.
+			\end{theorem}
+			\item {\sf Pseudoinverse.}
+			\item {\sf Normal Equations.}
+			\item {\sf QR Factorization.}
+			\item {\sf SVD.}
+			\item {\sf Comparison of Algorithms.}
+		\end{itemize}
+	\end{itemize}
+	\item {\sf III. Conditioning \& Stability.}
+	\begin{itemize}
+		\item {\sf12. Conditioning \& Condition Numbers.}
+		\item {\sf13. Floating Point Arithmetic.}
+		\item {\sf14. Stability.}
+		\item {\sf15. More on Stability.}
+		\item {\sf16. Stability of Householder Triangularization.}
+		\item {\sf17. Stability of Back Substitution.}
+		\item {\sf18. Conditioning of Least Squares Problems.}
+		\item {\sf19. Stability of Least Squares Algorithms.}
+	\end{itemize}
+	\item {\sf IV. Systems of Equations.}
+	\begin{itemize}
+		\item {\sf20. Gaussian Elimination.}
+		\item {\sf21. Pivoting.}
+		\item {\sf22. Stability of Gaussian Elimination.}
+		\item {\sf23. Cholesky Factorization.}
+	\end{itemize}
+	\item {\sf V. Eigenvalues.}
+	\begin{itemize}
+		\item {\sf24. Eigenvalue Problems.}
+		\item {\sf25. Overview of Eigenvalue Algorithms.}
+		\item {\sf26. Reduction to Hessenberg or Tridiagonal Form.}
+		\item {\sf27. Rayleigh Quotient, Inverse Iteration.}
+		\item {\sf28. QR Algorithm without Shifts.}
+		\item {\sf29. QR Algorithm with Shifts.}
+		\item {\sf30. Other Eigenvalue Algorithms.}
+		\item {\sf31. Computing SVD.}
+	\end{itemize}
+	\item {\sf VI. Iterative Methods.}
+	\begin{itemize}
+		\item {\sf32. Overview of Iterative Methods.}
+		\item {\sf33. Arnoldi Iteration.}
+		\item {\sf34. How Arnoldi Locates Eigenvalues.}
+		\item {\sf35. GMRES.}
+		\item {\sf36. Lanczos Iteration.}
+		\item {\sf37. From Lanczos to Gauss Quadrature.}
+		\item {\sf38. Conjugate Gradients.}
+		\item {\sf39. Biorthogonalization Methods.}
+		\item {\sf40. Preconditioning.}
+	\end{itemize}
+	\item {\sf Appendix. Def of Numerical Analysis.}
 \end{itemize}
 
 %------------------------------------------------------------------------------%

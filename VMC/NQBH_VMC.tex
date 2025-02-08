@@ -80,14 +80,16 @@
 	\item {\sc Bùi Xuân Hải, Trần Ngọc Hội, Trịnh Thanh Đèo, Lê Văn Luyện}. {\it Đại Số Tuyến Tính \& Ứng Dụng. Tập 1}. HCMUS.
 	\item \cite{Hoa_linear_algebra}. {\sc Lê Tuấn Hoa}. {\it Đại Số Tuyến Tính Qua Các Ví Dụ \& Bài Tập}.
 	\item \cite{Hung_linear_algebra}. {\sc Nguyễn Hữu Việt Hưng}. {\it Đại Số Tuyến Tính}. HNUS.
+	\item \cite{Trefethen_Bau1997,Trefethen_Bau2022}. {\sc Lloyd N. Trefethen, David Bau III}. {\it Numerical Linear Algebra}.
 	\item \cite{Trung_linear_algebra}. {\sc Ngô Việt Trung}. {\it Giáo Trình Đại Số Tuyến Tính}.
+	\item \cite{Tsukada_Kobayashi_Kaneko_Takahasi_Shirayanagi_Noguchi2023}. {\sc Makoto Tsukada, Yuji Kobayashi, Hiroshi Kaneko, Sin-Ei Takahasi, Kiyoshi Shirayanagi, Masato Noguchi}. {\it Linear Algebra with Python: Theory \& Applications}.
 \end{enumerate}
 
+\begin{baitoan}[Symbolic computation software{\tt/}languages{\tt/}libraries for Linear Algebra]
+	Tương tự như phần mềm {\sf MATLAB} \url{https://www.mathworks.com/products/matlab.html}, tìm các phần mềm, ngôn ngữ, hoặc thư viện của các ngôn ngữ quen thuộc như {\sf Python} (thư viện {\sf SymPy} \url{https://www.sympy.org/en/index.html}), {\sf C{\tt/}C++} để thực hành symbolic computation.
+\end{baitoan}
+
 \subsection{Matrix -- Ma trận}
-\textbf{\textsf{Resources -- Tài nguyên.}}
-\begin{enumerate}
-	\item \cite{Hoa_linear_algebra}. {\sc Lê Tuấn Hoa}. {\it Đại Số Tuyến Tính Qua Các Ví Dụ \& Bài Tập}. Chap. 2: Ma trận.
-\end{enumerate}
 
 \subsubsection{Determinant of a matrix -- Định thức của ma trận}
 \begin{dinhnghia}
@@ -210,10 +212,96 @@ Hạng của 1 ma trận là hạng của hệ vector cột (hoặc hệ vector 
 	(i) Giả sử $A$ là 1 ma trận $m$ hàng $n$ cột, với các yếu tố trong trường $\mathbb{F}$. Khi đó, hạng của ma trận $A$ bằng cỡ lớn nhất của các định thức con khác $0$ của $A$. Nói rõ hơn, $\operatorname{rank}A = r$ nếu có 1 định thức con cỡ $r$ của $A$ khác $0$, \& mọi định thức con cỡ $> r$ (nếu có) của $A$ đều bằng $0$. (ii) Hạng của 1 ma trận bằng hạng của hệ các vector hàng của nó.
 \end{dinhly}
 
-\subsubsection{System of linear equations -- Hệ phương trình tuyến tính}
+\subsubsection{System of linear equations \& Cramer rule -- Hệ phương trình tuyến tính \& quy tắc Cramer}
+
+\begin{dinhnghia}
+	1 hệ thống có dạng
+	\begin{equation}
+		\label{linear system: explicit form}
+		\left\{\begin{split}
+			a_{11}x_1 + a_{12}x_2 + \cdots + a_{1n}x_n &= b_1,\\
+			a_{21}x_1 + a_{22}x_2 + \cdots + a_{2n}x_n &= b_2,\\
+			&\cdots\\
+			a_{m1}x_1 + a_{m2}x_2 + \cdots + a_{mn}x_n &= b_m,\\
+		\end{split}\right.
+	\end{equation}
+	trong đó $a_{ij}b_i\in\mathbb{F}$ là các phần tử cho trước, được gọi là 1 {\rm hệ phương trình tuyến tính} gồm $m\in\mathbb{N}^\star$ phương trình với $n\in\mathbb{N}^\star$ ẩn $x_1,\ldots,x_n$. Ký hiệu
+	\begin{equation*}
+		A = (a_{ij})_{m\times n},\ {\bf x} = \begin{pmatrix}
+			x_1\\\vdots\\x_n
+		\end{pmatrix},\ {\bf b} = \begin{pmatrix}
+			b_1\\\vdots\\b_m.
+		\end{pmatrix}
+	\end{equation*}
+	Khi đó, hệ phương trình \eqref{linear system: explicit form} có thể được viết dưới dạng phương trình vector:
+	\begin{equation}
+		\label{linear system: vector form}
+		A{\bf x} = {\bf b}.
+	\end{equation}
+	1 {\rm nghiệm} của hệ này là 1 vector ${\bf x}^0\in\mathbb{F}^n$ để $A{\bf x}^0 = {\bf b}$. 1 hệ phương trình có ít nhất 1 nghiệm được gọi là 1 {\rm hệ phương trình tương thích}. Hệ phương trình $A{\bf x} = {\bf0}$ được gọi là {\rm hệ phương trình tuyến tính thuần nhất} liên kết với hệ $A{\bf x} = {\bf b}$.
+\end{dinhnghia}
+Cảm nhận: Hệ phương trình tuyến tính \eqref{linear system: vector form} có nghiệm duy nhất nếu số phương trình của hệ bằng số ẩn, \& không có phương trình nào của hệ là ``hệ quả'' của các phương trình khác (i.e., tổ hợp tuyến tính của các phương trình khác).
+
+\begin{dinhnghia}[Hệ không suy biến{\tt/}Cramer, \cite{Hung_linear_algebra}, Định nghĩa 7.1, p. 156]
+	Hệ phương trình tuyến tính \eqref{linear system: vector form} được gọi là 1 {\rm hệ không suy biến} (hay 1 {\rm hệ Cramer}) nếu nó có số phương trình bằng số ẩn (i.e., nếu $A$ là 1 ma trận vuông) \& nếu $\det A\ne 0$.
+\end{dinhnghia}
+
+\begin{dinhly}[Tính giải được duy nhất của hệ Cramer, \cite{Hung_linear_algebra}, Định lý 7.2, p. 156]
+	Hệ phương trình tuyến tính không suy biến \eqref{linear system: vector form} có 1 nghiệm duy nhất, được tính bằng công thức
+	\begin{equation*}
+		x_j = \frac{\det A_j}{\det A},\ j = 1,\ldots,n,
+	\end{equation*}
+	với $A_j$ là ma trận nhận được từ ma trận $A$ bằng cách thay cột thứ $j$ bởi cột hệ số tự do ${\bf b}$.
+\end{dinhly}
+
+\subsubsection{System of linear equations \& Gauss elimination method -- Hệ phương trình tuyến tính \& phương pháp khử Gauss}
+Phương pháp Cramer chỉ áp dụng cho được (range of applicability) cho các hệ phương trình tuyến tính không suy biến (nói riêng, các hệ này có số phương trình bằng số ẩn) (why? vì nếu hệ suy biến, tức hoặc ma trận $A$ không vuông, khi đó $\det A$ không có nghĩa, hoặc $\det A = 0$, khi đó công thức nghiệm cho bởi quy tắc Cramer không xác định vì mẫu số bằng 0). Nhưng rất nhiề hệ phương trình tuyến tính ta gặp, đặc biệt là trong thực tế, lại suy biến. Phương pháp khử Gauss (Gauss elimination method) có ưu điểm là có thể áp dụng cho hệ phương trình tuyến tính tùy ý. Nhược điểm của phương pháp khử Gauss là không đưa ra đuọc thông tin nào về nghiệm của hệ phương trình trước khi giải xong hệ đó.
+
+Về mặt trực giác, phương pháp Cramer mang tính chất toán học để xác định được cấu trúc nghiệm của hệ phương trình tuyến tính không suy biến hơn, còn phương pháp khử Gauss mang tính chất của 1 thuật toán, 1 quy trình hơn là 1 phương pháp toán dùng để xác định cấu trúc nghiệm của hệ phương trình tuyến tính.
+
+\begin{dinhnghia}
+	2 hệ phương trình được gọi là {\rm tương đương} nếu nghiệm của hệ này cũng là nghiệm của hệ kia \& ngược lại, i.e., 2 hệ phương trình có cùng tập nghiệm.
+\end{dinhnghia}
+
+\begin{dinhly}[3 phép biến đổi sơ cấp]
+	Nếu ta áp dụng các phép biến đổi sau:
+	\item(i) Đổi chỗ 2 phương trình của hệ.
+	\item(ii) Nhân 1 phương trình của hệ với 1 vô hướng khác $0$ thuộc trường $\mathbb{F}$.
+	\item(iii) Cộng vào 1 phương trình 1 tổ hợp tuyến tính của các phương trình khác trong hệ.
+	
+	((i)--(iii) được gọi là các {\rm phép biến đổi sơ cấp}), trên 1 hệ phương trình tuyến tính, thì ta nhận được 1 hệ phương trình tuyến tính tương đương với hệ ban đầu.
+\end{dinhly}
+Xét 1 hệ phương trình tuyến tính tổng quát \eqref{linear system: explicit form}. Gọi $A = (a_{ij})_{m\times n}$ là {\it ma trận các hệ số} \&
+\begin{equation*}
+	\overline{A} = \begin{pmatrix}
+		a_{11} & a_{12} & \cdots & a_{1n} & b_1\\
+		a_{21} & a_{22} & \cdots & a_{2n} & b_2\\
+		\vdots & \vdots & \ddots & \vdots & \cdot\\
+		a_{m1} & a_{m2} & \cdots & a_{mn} & b_m
+	\end{pmatrix}
+\end{equation*}
+là {\it ma trận các hệ số mở rộng} của hệ phương trình \eqref{linear system: explicit form}. Giả sử có 1 hê số nào đó $a_{ij}\ne0$. W.l.o.g. (nếu cần, đổi chỗ các phương trình \& đánh số lại các ẩn) có thể coi $a_{11}\ne0$. Khi đó, nhân phương trình thứ nhất với $-\frac{a_{i1}}{a_{11}}$ rồi cộng vào phương trình thứ $i$ ($i = 2,\ldots,m$), nhận được hệ phương trình tương đương. Lặp lại lập luận trên đối với hệ còn gồm $n - 1$ phương trình cuối với các ẩn $x_2,\ldots,x_n$. Sau 1 số bước hữu hạn, nhận được 1 hệ tương đương với ma trận mở rộng có dạng $(\overline{A}|\overline{b})$ với $\overline{A}$ là 1 ma trận dạng bậc thang.
+
+Tương ứng với các phép biến đổi sơ cấp trên hệ phương trình tuyến tính là các phép {\it biến đổi sơ cấp} trên ma trận:
+\begin{enumerate}
+	\item Đổi chỗ 2 hàng (hoặc 2 cột) của ma trận.
+	\item Nhân 1 hàng (hoặc 1 cột) của ma trận với 1 vô hướng khác $0$.
+	\item Cộng vào 1 hàng (hoặc 1 cột) 1 tổ hợp tuyến tính của các hàng (resp., các cột) khác.
+\end{enumerate}
+Vì các phép biến đổi sơ cấp không làm thay đổi hạng của ma trận (why?) nên dẫn tới 1 cách tính hạng của ma trận giàu tính thực hành: Mỗi ma trận $A = (a_{ij})_{m\times n}$ sau 1 số hữu hạn phép biến đổi sơ cấp đều có thể đưa về 1 ma trận dạng tam giác trên, số dòng có chứa phần tử $\ne0$ bằng $\operatorname{rank}A$.
+
+\begin{remark}[Ứng dụng của phương pháp khử Gauss để tìm ma trận nghịch đảo]
+	Để tìm nghịch đảo (nếu có) của ma trận $A = (a_{ij})_{n\times n}$, lập ma trận $n\times2n$: $(A,I_n)$. Dùng 2 loại phép biến đổi hàng:
+	\item(r1) Nhân 1 hàng với 1 vô hướng khác $0$,
+	\item(r2) Cộng vào 1 hàng 1 tổ hợp tuyến tính của các hàng khác,
+	
+	\noindent để đưa ma trận $(A,I_n)$ về dạng $(I_n,B)$. Khi đó, $B = A^{-1}$. Ma trận $A$ không có nghịch đảo $\Leftrightarrow$ ma trận $(A,I_n)$ không thể đưa về ma trận dạng $(I_n,B)$ bằng 2 loại phép biến đổi hàng (r1) \& (r2).
+\end{remark}
+
+\subsubsection{Cấu trúc nghiệm của hệ phương trình tuyến tính}
 See, e.g., \cite[Chap. 3, \S9: Cấu trúc nghiệm của hệ phương trình tuyến tính, pp. 163--165]{Hung_linear_algebra}.
 
-Xét các hệ phương trình tuyến tính thuần nhất \& không thuần nhất liên kết với nhau $A{\bf x} = {\bf0}$ \& $A{\bf x} = {\bf b}$, với $A = (a_{ij})_{m\times n}\in M(m\times n,\mathbb{F}),{\bf b}\in\mathbb{F}^m$ (cả 2 hệ phương trình đều gồm $m$ phương trình \& $n$ ẩn).
+Xét các hệ phương trình tuyến tính thuần nhất \& không thuần nhất liên kết với nhau $A{\bf x} = {\bf0}$ \& $A{\bf x} = {\bf b}$ \eqref{linear system: vector form}, với $A = (a_{ij})_{m\times n}\in M(m\times n,\mathbb{F}),{\bf b}\in\mathbb{F}^m$ (cả 2 hệ phương trình đều gồm $m$ phương trình \& $n$ ẩn).
 
 \begin{dinhly}[\cite{Hung_linear_algebra}, Định lý 9.1, p. 163]
 	Tập hợp $L$ tất cả các nghiệm của hệ phương trình tuyến tính thuần nhất $Ax = 0$ là 1 không gian vector con của $\mathbb{F}^n$, có số chiều thỏa mãn hệ thức $\dim L = n - \operatorname{rank}A$.
@@ -245,10 +333,47 @@ $L\coloneqq\operatorname{Ker}\tilde{A}$ với $\tilde{A}:\mathbb{F}^n\to\mathbb{
 
 \begin{proof}[Giải]
 	(a) Đặt $a\coloneqq2022$. Cộng hàng 2 \& hàng 3 vào hàng 1 được:
+	\begin{align*}
+		&\begin{vmatrix}
+			x & a & a + 1\\a & a + 1 & x\\a + 1 & x & a
+		\end{vmatrix} = (x + 2a + 1)\begin{vmatrix}
+			1 & 1 & 1\\a & a + 1 & x\\a + 1 & x & a
+		\end{vmatrix} = (x + 2a + 1)\begin{vmatrix}
+			1 & 0 & 0\\a & 1 & x - a\\a + 1 & x - a - 1 & -1
+		\end{vmatrix} = (x + 2a + 1)\begin{vmatrix}
+			1 & x - a\\x - a - 1 & -1
+		\end{vmatrix}\\
+		&= (x + 2a + 1)[-1 - (x - a)(x - a - 1)] = -(x + 2a + 1)(x^2 - (2a + 1)x + a^2 + a + 1) = -(x + 4045)(x^2 - 4045x + 4090507).
+	\end{align*}
+	(b) $\operatorname{rank}A < 3\Leftrightarrow\det A = 0\Leftrightarrow(x + 4045)(x^2 - 4045x + 4090507)\Leftrightarrow x = -4045$ vì $\Delta = (2a + 1)^2 - 4(a^2 + a + 1) = -3 < 0$ nên vô nghiệm thực. Khi $x = -4045$, $\operatorname{rank}A$ bằng hạng của ma trận
 	\begin{equation*}
-		\det A = 
+		\begin{pmatrix}
+			0 & 0 & 0\\2022 & 2023 & -4045\\2023 & -4045 & 2022
+		\end{pmatrix}
 	\end{equation*}
+	Vậy $\operatorname{rank}A = 2$ khi $x = -4045$.
 \end{proof}
+
+\begin{nhanxet}
+	(i) Việc đặt $a\coloneqq2022$ giúp thấy được cấu trúc chung của ma trận, không bị ảnh hưởng bởi các tính toán số cụ thể, đặc biêt giúp đơn giản hóa việc tính biệt thức $\Delta$ để chứng minh nhân tử phương trình bậc 2 trong $\det A$ vô nghiệm thực. (ii) Có thể tính $\det A$ bằng thư viện {\tt SymPy} của Python bằng cách chạy:
+	\begin{verbatim}
+		from sympy.matrices import Matrix, eye, zeros, ones, diag, GramSchmidt
+		from sympy import factor
+		
+		# VMC2023B1
+		from sympy.abc import x, a
+		A = Matrix([[x, a, a + 1], [a, a + 1, x], [a + 1, x, a]])
+		detA = A.det()
+		print(detA)
+		print(factor(detA))
+	\end{verbatim}
+	để thu được:
+	\begin{verbatim}
+		-2*a**3 + 3*a**2*x - 3*a**2 + 3*a*x - 3*a - x**3 - 1
+		-(2*a + x + 1)*(a**2 - 2*a*x + a + x**2 - x + 1)
+	\end{verbatim}
+	i.e., $\det A = -(x + 2a + 1)(x^2 - (2a + 1)x + a^2 + a + 1)$ như đã tính.
+\end{nhanxet}
 
 \begin{baitoan}[VMC2023B2]
 	Giả sử $f:\mathbb{R}^4\to\mathbb{R}^3$ là ánh xạ tuyến tính cho bởi:
@@ -275,18 +400,27 @@ $L\coloneqq\operatorname{Ker}\tilde{A}$ với $\tilde{A}:\mathbb{F}^n\to\mathbb{
 			1 & 0 & 1 & 0\\2 & 1 & 0 & 1\\1 & 0 & 1 & 0\\0 &1 & 2 & 1
 		\end{pmatrix}
 	\end{equation}
-	Use the following code snippet
-	\begin{verbatim}
-		import numpy as np
-		A = np.matrix([[1,0,1,0], [2,1,0,1], [1,0,1,0], [0,1,2,1]])
-		print(np.linalg.matrix_rank(A))
-	\end{verbatim}
-	to obtain $\operatorname{rank}A = 3$. (b) Dùng công thức tính định thức ma trận để thu được $\det A = -4a^2 - 16a - 12 = -4(a + 1)(a + 3)$, nên $\det A > 0\Leftrightarrow-4(a + 1)(a + 3) > 0\Leftrightarrow a\in(-3,-1)$. (c) Nếu $a = -1$, $\operatorname{rank}A = 3\Rightarrow\dim L = 4 - \operatorname{rank}A = 4 - 3 = 1$. Nếu $a = -3$, tính được $\operatorname{rank}A = 3$, nên $\dim L = 4 - \operatorname{rank}A = 4 - 3 = 1$. Nếu $a\notin\{-1,-3\}$ thì $\det A = -4(a + 1)(a + 3)\ne0\Rightarrow\operatorname{rank}A = 4\Rightarrow\dim L = 4 - \operatorname{rank}A = 4 - 4 = 0$.	
+	Biến đổi sơ cấp trên dòng, đươc $\operatorname{rank}A = 3$. (b) Dùng công thức tính định thức ma trận để thu được $\det A = -4a^2 - 16a - 12 = -4(a + 1)(a + 3)$, nên $\det A > 0\Leftrightarrow-4(a + 1)(a + 3) > 0\Leftrightarrow a\in(-3,-1)$. (c) Nếu $a = -1$, $\operatorname{rank}A = 3\Rightarrow\dim L = 4 - \operatorname{rank}A = 4 - 3 = 1$. Nếu $a = -3$, tính được $\operatorname{rank}A = 3$, nên $\dim L = 4 - \operatorname{rank}A = 4 - 3 = 1$. Nếu $a\notin\{-1,-3\}$ thì $\det A = -4(a + 1)(a + 3)\ne0\Rightarrow\operatorname{rank}A = 4\Rightarrow\dim L = 4 - \operatorname{rank}A = 4 - 4 = 0$.	
 \end{proof}
 
-\begin{baitoan}[Symbolic computation software, libraries]
-	Tương tự như phần mềm MATLAB \url{https://www.mathworks.com/products/matlab.html}, tìm các phần mềm, ngôn ngữ, hoặc thư viện của các ngôn ngữ quen thuộc như Python (thư viện SymPy \url{https://www.sympy.org/en/index.html}), C{\tt/}C++ để thực hành symbolic computation.
-\end{baitoan}
+\begin{nhanxet}
+	Run
+	\begin{verbatim}
+		# VMC2024A1B1
+		Aa = np.matrix([[1,0,1,0], [2,1,0,1], [1,0,1,0], [0,1,2,1]])
+		print(np.linalg.matrix_rank(Aa))
+		A = Matrix([[1,a + 1,a + 2,0],[a + 3,1,0,a + 2],[a + 2,0,1,a + 1],[0,a + 2,a + 3,1]])
+		detA = A.det()
+		print(detA)
+		print(factor(detA))
+	\end{verbatim}
+	to obtain
+	\begin{verbatim}
+		3
+		-4*a**2 - 16*a - 12
+		-4*(a + 1)*(a + 3)
+	\end{verbatim}
+\end{nhanxet}
 
 \begin{baitoan}[VMC2023B4]
 	Với mỗi ma trận vuông $A$ có phần tử là các số phức, định nghĩa:

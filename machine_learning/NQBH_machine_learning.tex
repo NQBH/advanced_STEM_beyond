@@ -8624,6 +8624,210 @@ Objective: to offer an accessible self-contained research monograph which can al
 
 %------------------------------------------------------------------------------%
 
+\section{Geeksforgeeks}
+
+\subsection{Introduction to Recurrent Neural Networks}
+``{\it Recurrent Neural Networks (RNNs)} were introduced in 1980s by researchers {\sc David Rumelhart, Geoffrey Hinton, \& Ronald J. Williams}. RNNs have laid foundation for advancements in processing sequential data, e.g. natural language \& time-series analysis, \& continue to influence AI research \& applications today.
+
+In this article, explore core principles of RNNs, understand how they function, \& discuss why they are essential for tasks where previous inputs in a sequence influence further predictions.
+
+\subsubsection{What is RNNs?}
+In traditional \href{https://www.geeksforgeeks.org/neural-networks-a-beginners-guide/}{neural networks}, inputs \& outputs are treated independently. However, tasks like predicting next word in a sentence require information from previous words to make accurate predictions. To address this limitation, RNNs were developed.
+
+RNNs introduce a mechanism where {\it output from 1 step is fed back as input to next, allowing them to retain information (giữ lại thông tin) from previous inputs}. This design makes RNNs well-suited for tasks where context from earlier steps is essential, e.g. predicting next word in a sentence.
+
+Defining feature of RNNs is their {\it hidden state} -- also called {\it memory state} -- which preserved essential information from previous inputs in sequence. By using same parameters across all steps, RNNs perform consistently across inputs, reducing parameter complexity compared to traditional neural networks. This capability makes RNNs highly effective for sequential tasks.
+
+In simple terms, RNNs apply same network to each element in a sequence, RNNs preserve \& pass on relevant information, enabling them to learn temporal dependencies that conventional neural networks cannot.
+
+\paragraph{How RNN differs from Feedforward Neural Networks.} \href{https://www.geeksforgeeks.org/feedforward-neural-network/}{Feedforward Neural Networks (FNNs)} process data in 1 direction, from input to output, without retaining information from previous inputs. This makes them suitable for tasks with independent inputs, like image classification. However, FNNs struggle with sequential data since they lack memory.
+
+RNNs solve this by incorporating loops that allow information from previous steps to be fed back into network. This feedback enables RNNs to remember prior inputs, making them ideal for tasks where context is important.
+
+\subsubsection{Key Components of RNNs}
+
+\begin{enumerate}
+	\item {\sf1. Recurrent Neurons.} Fundamental processing unit in a RNN is a Recurrent Unit, which is not explicitly called a ``Recurrent Neuron''. Recurrent units hold a hidden state that maintains information about previous inputs in a sequence. Recurrent units can ``remember'' information from prior steps by feeding back their hidden state, allowing them to capture dependencies across time.
+	\item {\sf2. RNN Unfolding.} {\it RNN unfolding} or {\it``unrolling''} is process of expanding recurrent structure over time steps. During unfolding, each step of sequence is represented as a separate layer in a series, illustrating how information flows across each time step. This unrolling enables {\it backpropagation through time (BPTT)}, a learning process where errors are propagated across time steps to adjust network's weights, enhancing RNN's ability to learn dependencies within sequential data.	
+\end{enumerate}
+
+\subsubsection{Types of RNNs}
+There are \href{https://www.geeksforgeeks.org/types-of-recurrent-neural-networks-rnn-in-tensorflow/?ref=asr1}{4 types of RNNs} based on number of inputs \& outputs in network:
+\begin{enumerate}
+	\item {\sf1. 1-to-1 RNN.} {\it1-to-1 RNN} behaves as {\it Vanilla Neural Network}, is simplest type of neural network architecture. In this setup, there is a single input \& a single output. Commonly used for straightforward classification tasks where input data points do not depend on previous elements.
+	\item {\sf2. 1-to-many RNN.} In a {\it1-to-many RNN}, network processes a single input to produce multiple outputs over time. This setup is beneficial when a single input element should generate a sequence of predictions.
+	
+	E.g., for image captioning task, a single image as input, model predicts a sequence of words as a caption.
+	\item {\sf3. Many-to-1 RNN.} {\it Many-to-1 RNN} receives a sequence of inputs \& generates a single output. This type is useful when overall context of input sequence is needed to make 1 prediction.
+	
+	In sentiment analysis (phân tích tình cảm), model receives a sequence of words (like a sentence) \& produces a single output, which is sentiment of sentence (positive, negative, or neutral).
+	\item {\sf4. Many-to-Many RNN.} {\it Many-to-Many RNN} type processes a sequence of inputs \& generates a sequence of outputs. This configuration is ideal for tasks where input \& output sequences need to align over time, often in a 1-to-1 or many-to-many mapping.
+	
+	In language translation task, a sequence of words in 1 language is given as input, \& a corresponding sequence is another language is generated as output.
+\end{enumerate}
+
+\subsubsection{Variants of RNNs}
+There are several variations of RNNs, each designed to address specific challenges or optimize for certain tasks:
+\begin{enumerate}
+	\item {\sf1. Vanilla RNN.} This simplest form of RNN consists of a single hidden layer, where weights are shared across time steps. Vanilla RNNs are suitable for learning short-term dependencies but are limited by vanishing gradient problem, which hampers long-sequence learning.
+	\item {\sf2. Bidirectional RNNs.} \href{https://www.geeksforgeeks.org/bidirectional-recurrent-neural-network/}{Bidirectional RNNs} process inputs in both forward \& backward directions, capturing both past \& future context for each time step. This architecture is ideal for tasks where entire sequence is available, e.g. named entity recognition \& question answering.
+	\item {\sf3. Long Short-Term Memory Networks (LSTMs).} \href{https://www.geeksforgeeks.org/deep-learning-introduction-to-long-short-term-memory/}{Long Short-Term Memory Networks (LSTMs)} introduced a memory mechanism to overcome vanishing gradient problem. Each LSTM cell has 3 gates:
+	\begin{itemize}
+		\item {\it Input Gate}: Controls how much new information should be added to cell state.
+		\item {\it Forget Gate}: Decides what past information should be discarded.
+		\item {\it Output Gate}: Regulates what information should be output at current step. This selective memory enables LSTMs to handle long-term dependencies, making them ideal for tasks where earlier context is critical.
+	\end{itemize}
+	\item {\sf4. Gated Recurrent Units (GRUs).} \href{https://www.geeksforgeeks.org/gated-recurrent-unit-networks/}{Gated Recurrent Units (GRUs)} simplify LSTMs by combining input \& forget gates into a single update gate \& streamlining output mechanism. This design is computationally efficient, often performing similarly to LSTMs, \& is useful in tasks where simplicity \& faster training are beneficial.
+\end{enumerate}
+
+\subsubsection{RNN Architecture} RNNs share similarities in input \& output structures with other DL architectures but differ significantly in how information flows from input to output. Unlike traditional deep neural networks, where each dense layer has distinct weight matrices, RNNs use shared weights across time steps, allowing them to remember information over sequences.
+
+In RNNs, hidden state $H_i$ is calculated for every input $X_i$ to retain sequential dependencies. Computations follow these core formulas:
+\begin{itemize}
+	\item {\it Hidden State Calculation}: $h = \sigma(U\cdot X + W\cdot h_{t-1} + B)$ where $h$ represents current hidden state, $U,W$: weight matrices, $B$: bias.
+	\item {\it Output Calculation}: $Y = O(V\cdot h + C)$. Output $Y$ is calculated by applying $O$, an activation function, to weighted hidden state, where $V,C$ represent weights \& bias.
+	\item {\it Overall Function}: $Y = f(X,h,W,U,V,B,C)$. This function defines entire RNN operation, where state matrix $S$ holds each element $s_i$ representing network's state at each time step $i$.
+	\item {\it Key Parameters in RNNs}:
+	\begin{itemize}
+		\item Weight Matrices: $W,U,V$
+		\item Bias Terms: $B,C$.
+	\end{itemize}
+	These parameters remain consistent across all time steps, enabling network to model sequential dependencies more efficiently, which is essential for tasks like language processing, time-series forecasting, \& more.
+\end{itemize}
+
+\subsubsection{How does RNN work?}
+In a RNN, each time step consists of units with a fixed activation function. Each unit contains an internal hidden state, which acts as memory by retaining information from previous time steps, thus allowing network to store past knowledge. Hidden state $h_t$ is updated at each time step to reflect new input, adapting network's understanding of previous inputs.
+
+\paragraph{Updating Hidden State in RNNs.} Current hidden state $h_t$ depends on previous state $h_{t-1}$ \& current input $x_t$, \& is calculated using following relations:
+\begin{enumerate}
+	\item {\sf1. State Update.} $h_t = f(h_{t-1},x_t)$ where $h_t$: current state, $h_{t-1}$: previous state, $x_t$: input at current time step.
+	\item {\sf2. Activation Function Application.} $h_t = \tanh(W_{hh}\cdot h_{t-1} + W_{xh}\cdot x_t)$ where $W_{hh}$: weight matrix for recurrent neuron, $W_{xh}$: weight matrix for input neuron.
+	\item {\sf3. Output Calculation.} $y_t = W_{hy}\cdot h_t$ where $y_t$: output \& $W_{hy}$: weight at output layer.
+\end{enumerate}
+These parameters are updated using backpropagation. However, since RNN works on sequential data here use an updated backpropagation which is known as {\it backpropagation through time}.
+
+\paragraph{\href{https://www.geeksforgeeks.org/ml-back-propagation-through-time/}{Backpropagation through time (BPTT) in RNNs}.} In a Recurrent Neural Network (RNN), data flows sequentially, where each time step's output depends on previous time step. This ordered data structure necessitates applying backpropagation across all hidden states, or time steps, in sequence. This unique approach is called {\it Backpropagation Through Time (BPTT)}, essential for updating network parameters that rely on temporal dependencies.
+
+{\bf BPTT Process in RNNs.} SKIPPED MATH.
+
+\paragraph{Training Process in RNNs.} Training RNNs involves feeding input data through multiple time steps, capturing dependencies across these steps, \& updating model through backpropagation.
+
+Steps in RNN training include:
+\begin{enumerate}
+	\item {\it Input at Each Time Step}: A single time step of input sequence is provided to network.
+	\item {\it Calculate Hidden State}: Using current input \& prev hidden state, network calculates current hidden state $h_t$.
+	\item {\it State Transition}: Current hidden state $h_t$ then becomes $h_{t-1}$ for next time step.
+	\item {\it Sequential Processing}: This process continues across all time steps to accumulate information from prev states.
+	\item {\it Output Generation \& Error Calculation}: Final hidden state is used to compute network's output, which is then compared to actual target output to generate an error.
+	\item {\it Backpropagation Through Time (BPTT)}: This error is backpropagated through each time step to update weights \& train RNN.
+\end{enumerate}
+
+\subsubsection{Implementing a Text Generator Using RNNs}
+Create a character-based text generator using RNN in TensorFlow \& Keras. Implement an RNN that learns patterns from a text sequence to generate new text character-by-character.
+\begin{itemize}
+	\item {\sf Step 1: Import Necessary Libraries.} Start by importing essential libraries for data handling \& building neural network.
+	\begin{verbatim}
+		import numpy as np
+		import tensorflow as tf
+		from tensorflow.keras.models import Sequential
+		from tensorflow.keras.layers import SimpleRNN, Dense
+	\end{verbatim}
+	\item {\it Step 2: Define Input Text \& Prepare Character Set.} Define input text \& identify unique characters in text, which encode for model.
+	\begin{verbatim}
+		text = "This is GeeksforGeeks a software training institute"
+		chars = sorted(list(set(text)))
+		char_to_index = {char: i for i, char in enumerate(chars)}
+		index_to_char = {i: char for i, char in enumerate(chars)}
+	\end{verbatim}
+	\item {\it Step 3: Create Sequences \& Labels.} To train RNN, need sequences of fixed length \verb|seq_length| \& character following each sequence as label.
+	\begin{verbatim}
+		seq_length = 3
+		sequences = []
+		labels = []
+		
+		for i in range(len(text) - seq_length):
+		    seq = text[i:i + seq_length]
+		    label = text[i + seq_length]
+		    sequences.append([char_to_index[char] for char in seq])
+		    labels.append(char_to_index[label])
+		
+		X = np.array(sequences)
+		y = np.array(labels)
+	\end{verbatim}
+	\item {\it Step 4: Convert Sequences \& Labels to 1-Hot Encoding.} For training, convert {\tt X, y} into 1-hot encoded tensors.
+	\begin{verbatim}
+		X_one_hot = tf.one_hot(X, len(chars))
+		y_one_hot = tf.one_hot(y, len(chars))
+	\end{verbatim}
+	\item {\it Step 5: Build RNN Model.} Create a simple RNN model with a hidden layer of 50 units \& a Dense output layer with \href{https://www.geeksforgeeks.org/the-role-of-softmax-in-neural-networks-detailed-explanation-and-applications/}{softmax activation}.
+	\begin{verbatim}
+		model = Sequential()
+		model.add(SimpleRNN(50, input_shape=(seq_length, len(chars)), activation='relu'))
+		model.add(Dense(len(chars), activation='softmax'))
+	\end{verbatim}
+	\item {\it Step 6: Compile \& Train Model.} Compile model using \href{https://www.geeksforgeeks.org/why-do-binary-crossentropy-and-categorical-crossentropy-give-different-performances-for-the-same-problem/}{categorical crossentropy} loss \& train it for 100 epochs.
+	\begin{verbatim}
+		model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+		model.fit(X_one_hot, y_one_hot, epochs=100)
+	\end{verbatim}
+	\item {\it Step 7: Generate New Text Using Trained Model.} After training, use a starting sequence to generate new text character-by-character.
+	\begin{verbatim}
+		start_seq = "This is G"
+		generated_text = start_seq
+		
+		for i in range(50):
+		x = np.array([[char_to_index[char] for char in generated_text[-seq_length:]]])
+		x_one_hot = tf.one_hot(x, len(chars))
+		prediction = model.predict(x_one_hot)
+		next_index = np.argmax(prediction)
+		next_char = index_to_char[next_index]
+		generated_text += next_char
+		
+		print("Generated Text:")
+		print(generated_text)
+	\end{verbatim}
+	Output:
+	\begin{verbatim}
+		Generated Text: This is Geeks a software training instituteais is is is is 
+	\end{verbatim}
+	NQBH's output: ***WHY?***
+	\begin{verbatim}
+		Generated Text:
+		This is GeeksforGeeksforGeeksforGeeksforGeeksforGeeksforGee
+	\end{verbatim}
+\end{itemize}
+
+\paragraph{Advantages of RNNs.}
+\begin{itemize}
+	\item {\it Sequential Memory}: RNNs retain information from previous inputs, making them ideal for time-series predictions where past data is crucial. This capability is often called {\it Long Short-Term Memory} (LSTM).
+	\item {\it Enhanced Pixel Neighborhoods}: RNNs can be combined with convolutional layers to capture extended pixel neighborhoods, improving performance in image \& video data processing.
+\end{itemize}
+
+\paragraph{Limitations of RNNs.} While RNNs excel at handling sequential data, they face 2 main training challenges, i.e., vanishing gradient \& exploding gradient problem:
+\begin{enumerate}
+	\item {\it Vanishing Gradient}: During backpropagation, gradients diminish as they pass through each time step, leading to minimal weight updates. This limits RNN's ability to learn long-term dependencies, which is crucial for tasks like language translation.
+	\item {\it Exploding Gradient}: Sometimes, gradients grow uncontrollably, causing excessively large weight updates that destabilize training. Gradient clipping is a common technique to manage this issue.
+\end{enumerate}
+These challenges can hinder performance (cản trở hiệu suất) of standard RNNs on complex, long-sequence tasks.
+
+\paragraph{Applications of RNNs.} RNNs are used in various applications where data is sequential or time-based:
+\begin{itemize}
+	\item \href{https://www.geeksforgeeks.org/time-series-forecasting-using-recurrent-neural-networks-rnn-in-tensorflow/?ref=asr3}{Time-Series Prediction}: RNNs excel in forecasting tasks, e.g. stock market predictions \& weather forecasting.
+	\item \href{https://www.geeksforgeeks.org/rnn-for-text-classifications-in-nlp/}{Natural Language Processing (NLP)}: RNNs are fundamental in NLP tasks like language modeling, sentiment analysis, \& machine translation.
+	\item {\it Speech Recognition}: RNNs capture temporal patterns in speech data, aiding in speech-to-text \& other audio-related applications.
+	\item {\it Image \& Video Processing}: When combined with convolutional layers, RNNs help analyze video sequences, facial expressions, \& gesture recognition.
+\end{itemize}
+
+\paragraph{FAQs on RNNs.}
+\begin{itemize}
+	\item Which type of problem can be solved by RNN? Modeling time-dependent \& sequential data problems, like text generation, machine translation, \& stock market prediction, is possible with RNNs. Nevertheless, will discover: gradient problem makes RNN difficult to train. Vanishing gradients issue affects RNNs.
+	\item What are types of RNN? 1 to 1, 1 to many, many to 1, many to many.
+	\item What are differences between RNN \& CNN? Key distinctions between CNNs \& RNNs: CNNs are frequently employed in solution of problems involving spatial data, like images. Text \& video data that is temporally \& sequentially organized is better analyzed by RNNs. RNNs \& CNNs are not designed alike.
+\end{itemize}
+'' -- \href{https://www.geeksforgeeks.org/introduction-to-recurrent-neural-network/}{Geeksforgeeks{\tt/}introduction to recurrent neural networks}
+
+%------------------------------------------------------------------------------%
+
 \section{Miscellaneous}
 
 \subsection{Scholarpedia{\tt/}recurrent neural networks}

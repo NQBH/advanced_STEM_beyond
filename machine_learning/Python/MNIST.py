@@ -1,7 +1,7 @@
 # load MNIST dataset in Keras
 from tensorflow.keras.datasets import mnist
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
-print(train_images.shape)
+print(train_images.ndim, train_images.shape, train_images.dtype)
 print(len(train_labels))
 print(train_labels)
 print(test_images.shape)
@@ -36,3 +36,12 @@ print(test_labels[0])
 # evaluate model on new data
 test_loss, test_acc = model.evaluate(test_images, test_labels)
 print(f"test_acc: {test_acc}")
+
+# display 4th digit
+import matplotlib.pyplot as plt
+digit = train_images[4]
+digit = digit.reshape((28, 28))
+print(digit.shape)
+plt.imshow(digit, cmap=plt.cm.binary)
+plt.show()
+print(train_labels[4])

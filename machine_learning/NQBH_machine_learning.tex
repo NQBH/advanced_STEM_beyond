@@ -1468,6 +1468,358 @@ In {\it DL with Python 2e} will learn:
 		\end{itemize}
 	\end{itemize}
 	\item {\sf2. Mathematical building blocks of neural networks.} Cover: A 1st example of a neural network. Tensors \& tensor operations. How neural networks learn via backpropagation \& gradient descent.
+	
+	Understanding DL requires familiarity with many simple mathematical concepts: {\it tensors, tensor operations, differentiation, gradient descent}, \& so on. Goal of this chap: build up your intuition about these notions without getting overly technical. In particular, steer away from mathematical notation, which can introduce unnecessary barriers for those without any mathematics background \& isn't necessary to explain things well. Most precise, unambiguous description of a mathematical operation is its executable code.
+	
+	To provide sufficient context for introducing tensors \& gradient descent, begin chap with a practical example of a neural network. Then go over every new concept that's been introduced, point by point. Keep in mind: these concepts will be essential for you to understand practical examples in following chaps.
+	
+	After reading this chap, have an intuitive understanding of mathematical theory behind DL, \& ready to start diving into Keras \& TensorFlow in Chap. 3.
+	\begin{itemize}
+		\item {\sf2.1. A 1st look at a neural network.} Look at a concrete example of a neural network that uses Python library Keras to learn to classify handwritten digits. Unless already have experience with Keras or similar libraries, won't understand everything about this 1st example right away. That's fine. In next chap, review each element in example \& explain them in detail. So don't worry if some steps seem arbitrary or look like magic to you! Got to start somewhere.
+		
+		Problem trying to solve: classify grayscale images of handwritten digits $28\times28$ pixels into their 10 categories (0 through 9). Use MNIST dataset, a classic in ML community, which has been around almost as long as field itself \& has been intensively studied. It's a set of 60000 training images, plus 10000 test images, assembled by National Institute of Standards \& Technology (NIST in MNIST) in 1980s. Can think of ``solving'' MNIST as ``Hello World'' of DL -- it's what you do to verify that your algorithms are working as expected. As become a ML practitioner, see MNIST come up over \& over again in scientific papers, blog posts, \& so on. Can see some MNIST samples in {\sf Fig. 2.1: MNIST sample digits.}
+		\begin{note}
+			In ML, a {\rm category} in a classification problem is called a {\rm class}. Data points are called {\rm samples}. Class associated with a specific sample is called a {\rm label}.
+		\end{note}
+		Don't need to try to reproduce this example on your machine just now. If wish to, 1st need to set up a DL workspace, covered in Chap. 3.
+		
+		MNIST dataset comes preloaded in Keras, in from of a set of 4 NumPy arrays. {\sf Listing 2.1: Loading MNIST dataset in Keras.}
+		\begin{verbatim}
+			from tensorflow.keras.datasets import mnist
+			(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+		\end{verbatim}
+		\verb|train_images, train_labels| form training set, data that model will learn from. Model will then be tested on test set, \verb|test_images, test_labels|. Images are encoded as NumPy arrays, \& labels are an array of digits, ranging from 0 to 9. Images \& labels have a 1-1 correspondence. Look at training data:
+		\begin{verbatim}
+			>>> train_images.shape
+			(60000, 28, 28)
+			>>> len(train_labels)
+			60000
+			>>> train_labels
+			array([5, 0, 4, ..., 5, 6, 8], dtype=uint8)
+		\end{verbatim}
+		Test data:
+		\begin{verbatim}
+			>>> test_images.shape
+			(10000, 28, 28)
+			>>> len(test_labels)
+			10000
+			>>> test_labels
+			array([7, 2, 1, ..., 4, 5, 6], dtype=uint8)
+		\end{verbatim}
+		Workflow will be as follows: 1st, feed neural network training data, \verb|train_images, train_labels|. Network will then learn to associate images \& labels. Finally, ask network to produce predictions for \verb|test_images|, \& verify whether these predictions match labels from \verb|test_labels|.
+		
+		Build network -- again, remember: aren't expected to understand everything about this example yet. {\sf Listing 2.2: Network architecture}:
+		\begin{verbatim}
+			from tensorflow import keras
+			from tensorflow.keras import layers
+			model = keras.Sequential([
+			    layers.Dense(512, activation="relu"),
+			    layers.Dense(10, activation="softmax")
+			])
+		\end{verbatim}
+		Core building block of neural networks is {\it layer}. Can think of a layer as a filter for data: some data goes in, \& it comes out in a more useful form. Specifically, layers extract {\it representations} out of data fed into them -- hopefully, representations that are more meaningful for problem at hand. Most of DL consists of chaining together simple layers that will implement a form of progressive {\it data distillation}. A DL model is like a sieve for data processing, made of a succession of increasingly refined data filters -- layers.
+		
+		Here, model consists of a sequence of 2 {\tt Dense} layers, which are densely connected (also called {\it fully connected}) neural layers. 2nd (\& last) layer is a 10-way {\it softmax classification} layer, i.e. will return an array of 10 probability scores (summing to 1). Each score will be probability: current digit image belongs to 1 of our 10 digit classes.
+		
+		To make model ready for training, need to pick 3 more things as part of {\it compilation} step:
+		\begin{itemize}
+			\item {\it An optimizer}: Mechanism through which model will update itself based on training data it sees, so as to improve its performance.
+			\item {\it A loss function}: How model will be able to measure its performance on training data, \& thus how it will be able to steer itself in right direction.
+			\item {\it Metrics to monitor during training \& testing}: Here only care about accuracy (fraction of images that were correctly classified).
+		\end{itemize}
+		Exact purpose of loss function \& optimizer will be made clear throughout next 2 chaps. {\sf Listing 2.3: Compilation step.}
+		\begin{verbatim}
+			model.compile(optimizer="rmsprop",
+			              loss="sparse_categorical_crossentropy",
+			              metrics=["accuracy"])
+		\end{verbatim}
+		Before training, preprocess data by reshaping it into shape model expects \& scaling it so that all values are in $[0,1]$ interval. Previously, training images were stored in an array of shape $(60000,28,28)$ of type {\tt uint8} with values in $[0,255]$ interval. Transform it into a {\tt float32} array of shape {\tt(60000, 28*28)} with values between 0 \& 1. {\sf Listing 2.4: Preparing image data.}
+		\begin{verbatim}
+			train_images = train_images.reshape((60000, 28 * 28))
+			train_images = train_images.astype("float32") / 255
+			test_images = test_images.reshape((10000, 28 * 28))
+			test_images = test_images.astype("float32") / 255
+		\end{verbatim}
+		Now ready to train model, which in Keras is done via a call to model's {\tt fit()} method -- {\it fit} model to its training data. {\sf Listing 2.5: ``Fitting'' model.}
+		\begin{verbatim}
+			>>> model.fit(train_images, train_labels, epochs=5, batch_size=128)
+			Epoch 1/5
+			60000/60000 [===========================] - 5s - loss: 0.2524 - acc: 0.9273
+			Epoch 2/5
+			51328/60000 [=====================>.....] - ETA: 1s - loss: 0.1035 - acc: 0.9692
+		\end{verbatim}
+		2 quantities are displayed during training: loss of model over training data, \& accuracy of model over training data. Quickly reach an accuracy of $0.989 = 98.9\%$ on training data.
+		
+		Now: have a trained model, can use it to predict class probabilities for {\it new} digits -- images that weren't part of training data, like those from test set. {\sf Listing 2.6: Using model to make predictions.}
+		\begin{verbatim}
+			>>> test_digits = test_images[0:10]
+			>>> predictions = model.predict(test_digits)
+			>>> predictions[0]
+			array([1.0726176e-10, 1.6918376e-10, 6.1314843e-08, 8.4106023e-06,
+			       2.9967067e-11, 3.0331331e-09, 8.3651971e-14, 9.9999106e-01,
+			       2.6657624e-08, 3.8127661e-07], dtype=float32)
+		\end{verbatim}
+		Each number of index {\tt i} in that array corresponds to probability that digit image \verb|test_digits[0]| belongs to class {\tt i}.
+		
+		This 1st test digit has highest probability score (0.99999106, almost 1) at index 7, so according to our model, it must be a 7:
+		\begin{verbatim}
+			>>> predictions[0].argmax()
+			7
+			>>> predictions[0][7]
+			0.99999106
+		\end{verbatim}
+		Can check: test label agrees:
+		\begin{verbatim}
+			>>> test_labels[0]
+			7
+		\end{verbatim}
+		On average, how good is our model at classifying such never-before-seen digits? Check by computing average accuracy over entire test set. {\sf Listing 2.7: Evaluating model on new data.}
+		\begin{verbatim}
+			>>> test_loss, test_acc = model.evaluate(test_images, test_labels)
+			>>> print(f"test_acc: {test_acc}")
+			test_acc: 0.9785
+		\end{verbatim}
+		Test-set accuracy turns out to be 97.8\% -- that's quite a bit lower than training set accuracy 98.9\%. This gap between training accuracy \& test accuracy is an example of {\it overfitting}: fact that ML models tend to perform worse on new data than on their training data. Overfitting is a central topic in Chap. 3.
+		
+		This concludes 1st example -- just saw how can build \& train a neural network to classify handwritten digits in $< 15$ lines of Python code. In this chap \& next, go into detail about every moving piece just previewed \& clarify what's going on behind scenes. Learn about tensors, data-storing objects going into model; tensor operations, which layers are made of; \& gradient descent, which allows your model to learn from its training examples.
+		\item {\sf2.2. Data representations for neural networks.} In prev example, started from data stored in multidimensional NumPy arrays, also called {\it tensors}. In general, all current ML systems use tensors as their basic data structure. Tensors are fundamental to field -- so fundamental that TensorFlow was named after them. So what's a tensor?
+		
+		At its score, a tensor is a container for data -- usually numerical data. So, it's a container for numbers. May be already familiar with matrices, which are rank-2 tensors: tensors are a generalization of matrices to an arbitrary number of {\it dimensions} (note: in context of tensors, a dimension is often called an {\it axis}).
+		\begin{itemize}
+			\item {\sf2.2.1. Scalars (rank-0 tensors).} A tensor that contains only 1 number is called a {\it scalar} (or scalar tensor, or rank-0 tensor, or 0D tensor). In NumPy, a {\tt float32} or {\tt float64} number is a scalar tensor (or scalar array). Can display number of axes of a NumPy tensor via {\tt ndim} attribute; a scalar tensor has 0 axes {\tt ndim == 0}. Number of axes of a tensor is also called its {\it rank}. A NumPy scalar:
+			\begin{verbatim}
+				>>> import numpy as np
+				>>> x = np.array(12)
+				>>> x
+				array(12)
+				>>> x.ndim
+				0
+			\end{verbatim}
+			\item {\sf2.2.2. Vectors (rank-1 tensors).} An array of numbers is called a {\it vector}, or rank-1 tensor, or 1D tensor. A rank-1 tensor is said to have exactly 1 axis. A NumPy vector:
+			\begin{verbatim}
+				>>> x = np.array([12, 3, 6, 14, 7])
+				>>> x
+				array([12, 3, 6, 14, 7])
+				>>> x.ndim
+				1
+			\end{verbatim}
+			This vector has 5 entries \& so is called a {\it5-dimensional vector}. Don't confuse a 5D vector with a 5D tensor! A 5D vector has only 1 axis \& has 5 dimensions along its axis, whereas a 5D tensor has 5 axes (\& may have any number of dimensions along each axis). {\it Dimensionality} can denote either number of entries along a specific axis (as in case of our 5D vector) or number of axes in a tensor (e.g. a 5D tensor), which can be confusing at times. In latter case, technically more correct to talk about a {\it tensor of rank $5$} (rank of a tensor being number of axes), but ambiguous notation {\it5D tensor} in common regardless.
+			\item {\sf2.2.3. Matrices (rank-2 tensors).} An array of vectors is a {\it matrix}, or rank-2 tensor, or 2D tensor. A matrix has 2 axes (often referred to as {\it rows, columns}). Can visually interpret a matrix as a rectangular grid of numbers. A NumPy matrix:
+			\begin{verbatim}
+				>>> x = np.array([[5, 78, 2, 34, 0], [6, 79, 3, 35, 1], [7, 80, 4, 36, 2]])
+				>>> x.ndim
+				2
+			\end{verbatim}
+			Entries from 1st axis are called {\it rows}, \& entries from 2nd axis are called {\it columns}. In prev example, {\tt[5, 78, 2, 34, 0]} is 1st row of {\tt x}, \& {\tt[5, 6, 7]} is 1st column.
+			\item {\sf2.2.4. Rank-3 \& higher-rank tensors.} If pack such matrices in a new array, obtain a rank-3 tensor (or 3D tensor), which can visually interpret as a cube of numbers. Following is a NumPy rank-3 tensor:
+			\begin{verbatim}
+				>>> x = np.array([[[5, 78, 2, 34, 0], [6, 79, 3, 35, 1], [7, 80, 4, 36, 2]], [[5, 78, 2, 34, 0], [6, 79, 3, 35, 1], [7, 80, 4, 36, 2]], [[5, 78, 2, 34, 0], [6, 79, 3, 35, 1], [7, 80, 4, 36, 2]]])
+				>>> x.ndim
+				3
+			\end{verbatim}
+			By packing rank-3 tensors in an array, can create a rank-4 tensor, \& so on. In DL, generally manipulate tensors with ranks 0--4, although may go up to 5 if process video data.
+			\item {\sf2.2.5. Key attributes.} A tensor is defined by 3 key attributes:
+			\begin{itemize}
+				\item {\it Number of axes (rank).} E.g., a rank-3 tensor has 3 axes, \& a matrix has 2 axes. This is also called tensor's {\tt ndim} in Python libraries e.g. NumPy or TensorFlow.
+				\item {\it Shape}: This is a tuple of integers that describes how many dimensions tensor has along each axis. E.g., prev matrix example has shape {\tt(3, 5)}, \& rank-3 tensor example has shape {\tt(3, 3, 5)}. A vector has a shape with a single element, e.g. {\tt(5,)}, whereas a scalar has an empty shape ().
+				\item {\it Data type (usually called {\tt dtype} in Python libraries).} This is type of data contained in tensor; e.g., a tensor's type could be {\tt float16, float32, float64, uint8}, \& so on. In TensorFlow, also likely to come across {\tt string} tensors.
+			\end{itemize}
+			To make this more concrete, look back at data processed in MNIST example. 1st, load MNIST dataset:
+			\begin{verbatim}
+				from tensorflow.keras.datasets import mnist
+				(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+			\end{verbatim}
+			Display number of axes of tensor \verb|train_images|, {\tt ndim} attribute:
+			\begin{verbatim}
+				>>> train_images.ndim
+				3
+			\end{verbatim}
+			Its shape:
+			\begin{verbatim}
+				>>> train_images.shape
+				(60000, 28, 28)
+			\end{verbatim}
+			\& this is its data type, {\tt dtype} attribute:
+			\begin{verbatim}
+				>>> train_images.dtype
+				uint8
+			\end{verbatim}
+			So what have here is a rank-3 tensor of 8-bit integers. More precisely, it's an array of 60000 matrices of $28\times28$ integers. Each such matrix is a grayscale image, with coefficients between 0 \& 255.
+			
+			Display 4th digit in this rank-3 tensor, using Matplotlib library (a well-known Python data visualization library, which comes preinstalled in Colab); {\sf Fig. 2.2: 4th sample in our dataset.} {\sf Listing 2.8: Displaying 4th digit.}
+			\begin{verbatim}
+				import matplotlib.pyplot as plt
+				digit = train_images[4]
+				plt.imshow(digit, cmap=plt.cm.binary)
+				plt.show()
+			\end{verbatim}
+			Naturally, corresponding label is integer 9:
+			\begin{verbatim}
+				>>> train_labels[4]
+				9
+			\end{verbatim}
+			\item {\sf2.2.6. Manipulating tensors in NumPy.} In prev example, selected a specific digit alongside 1st axis using syntax \verb|train_images[i]|. Selecting specific elements in a tensor is called {\it tensor slicing}. Look at tensor-slicing operations can do on NumPy arrays.
+			
+			Following example selects digits \#10 to \#100 (\#100 isn't included) \& puts them in an array of shape {\tt(90. 28, 28)}:
+			\begin{verbatim}
+				>>> my_slice = train_images[10:100]
+				>>> my_slice.shape
+				(90, 28, 28)
+			\end{verbatim}
+			$\Leftrightarrow$ this more detailed notation, which specifies a start index \& stop index for slice along each tensor axis. Note: {\tt:} $\Leftrightarrow$ selecting entire axis:
+			\begin{verbatim}
+				>>> my_slice = train_images[10:100, :, :]
+				>>> my_slice.shape
+				(90, 28, 28)
+				>>> my_slice = train_images[10:100, 0:28, 0:28]
+				>>> my_slice.shape
+				(90, 28, 28)
+			\end{verbatim}
+			In general, may select slices between any 2 indices along each tensor axis. E.g., in order to select $14\times14$ pixels in bottom-right corner of all images, would do this:
+			\begin{verbatim}
+				my_slice = train_images[:, 14:, 14:]
+			\end{verbatim}
+			Also possible to use negative indices. Much like negative indices in Python lists, they indicate a position relative to end of current axis. In order to crop images to patches of $14\times14$ pixels centered in middle, do this:
+			\begin{verbatim}
+				my_slice = train_images[:, 7:-7, 7:-7]
+			\end{verbatim}
+			\item {\sf2.2.7. Notion of data batches.} In general, 1st axis (axis 0, because indexing starts at 0) in all data tensors come across in DL will be {\it samples axis} (sometimes called {\it samples dimension}). In MNIST example, ``samples'' are images of digits.
+			
+			In addition, DL models don't process an entire dataset at once; rather, they break data into small batches. Concretely, 1 batch of MNIST digits, with a batch size of 128:
+			\begin{verbatim}
+				batch = train_images[:128]
+			\end{verbatim}
+			Next batch:
+			\begin{verbatim}
+				batch = train_images[128:256]
+			\end{verbatim}
+			$n$th batch:
+			\begin{verbatim}
+				n = 3
+				batch = train_images[128 * n:128 * (n + 1)]
+			\end{verbatim}
+			When considering such a batch tensor, 1st axis (axis 0) is called {\it batch axis} or {\it batch dimension}. This is a term frequently encounter when using Keras \& other DL libraries.
+			\item {\sf2.2.8. Real-world examples of data tensors.} Make data tensors more concrete with a few examples similar to what encounter later. Data you'll manipulate will almost always fall into 1 of following categories:
+			\begin{itemize}
+				\item {\it Vector data}: Rank-2 tensors of shape {\tt(samples, features)}, where each sample is a vector of numerical attributes (``features'')
+				\item {\it Timeseries data or sequence data}: Rank-3 tensors of shape {\tt(samples, timesteps, features)}, where each sample is a sequence (of length {\tt timesteps}) of feature vectors
+				\item {\it Images}: Rank-4 tensors of shape {\tt(samples, height, width, channels)}, where each sample is a 2D grid of pixels, \& each pixel is represented by a vector of values (``channels'')
+				\item {\it Video}: Rank-5 tensors of shape {\tt(samples, frames, height, width, channels)}, where each sample is a sequence (of length {\tt frames}) of images
+			\end{itemize}
+			\item {\sf2.2.9. Vector data.} This is 1 of most common cases. In such a dataset, each single data point can be encoded as a vector, \& thus a batch of data will be encoded as a rank-2 tensor (i.e., an array of vectors), where 1st axis is {\it samples axis} \& 2nd axis is {\it features axis}.
+			
+			2 examples:
+			\begin{itemize}
+				\item An actuarial dataset of people, where consider each person's age, gender, \& income. Each person can be characterized as a vector of 3 values, \& thus an entire dataset of 100000 people can be stored in a rank-2 tensor of shape {\tt(100000, 3)}.
+				\item A dataset of text documents, where represent each document by counts of how many times each word appears in it (out of a dictionary of 20000 common words). Each document can be encoded as a vector of 20000 values (1 count per word in dictionary), \& thus an entire dataset of 500 documents can be stored in a tensor of shape {\tt(500, 20000)}.
+			\end{itemize}
+			\item {\sf2.2.10. Timeseries data or sequence data.} Whenever time matters in your data (or notion of sequence order), it makes sense to store it in a rank-3 tensor with an explicit time axis. Each sample can be encoded as a sequence of vectors (a rank-2 tensor), \& thus a batch of data will be encoded as a rank-3 tensor ({\sf Fig. 2.3: A rank-3 timeseries data tensor.}).
+			
+			Time axis is always 2nd axis (axis of index 1) by convention. Examples:
+			\begin{itemize}
+				\item A dataset of stock prices. Every minute, store current price of stock, highest price in past minute, \& lowest price in past minute. Thus, every minute is encoded as a 3D vector, an entire day of trading is encoded as a matrix of shape {\tt(390, 3)} (there are 390 minutes in a trading day), \& 250 days' worth of data can be stored in a rank-3 tensor of shape {\tt(250, 390, 3)}. Here, each sample would be 1 day's worth of data.
+				\item A dataset of tweets, where encode each tweet as a sequence of 280 characters out of an alphabet of 128 unique characters. In this setting, each character can be encoded as a binary vector of size 128 (an all-0s vector except for a 1 entry at index corresponding to character). Then each tweet can be encoded as a rank-2 tensor of shape {\tt(280, 128)}, \& a dataset of 1 million tweets can be stored in a tensor of shape {\tt(1000000, 280, 128)}.
+			\end{itemize}			
+			\item {\sf2.2.11. Image data.} Images typically have 3 dimensions: height, width, \& color depth. Although grayscale images (like MNIST digits) have only a single color channel \& could thus be stored in rank-2 tensors, by convention image tensors are always rank-3, with a 1D color channel for grayscale images. A batch of 128 grayscale images of size $256\times256$ could thus be stored in a tensor of shape {\tt(128, 256, 256, 1)}, \& a batch of 128 color images could be stored in a tensor of shape {\tt(128, 256, 256, 3)} ({\sf Fig. 2.4: A rank-4 image data tensor.}).
+			
+			There are 2 conventions for shapes of image tensors: {\it channels-last} convention (which is standard in TensorFlow) \& {\it channels-1st} convention (which is increasingly falling out of favor).
+			
+			Channels-last convention places color-depth axis at end: \verb|(samples, height, width, color_depth)|. Meanwhile, channels-1st convention places color depth axis right after batch axis: \verb|(samples, color_depth, height, width)|. With channels-1st convention, prev examples would become {\tt(128, 1, 256, 256), (128, 3, 256, 256)}. Keras API provides support for both formats.
+			\item {\sf2.2.12. Video data.} Video data is 1 of few types of real-world data for which need a rank-5 tensors. A video can be understood as a sequence of frames, each frame being a color image. Because each frame can be stored in a rank-3 tensor \verb|(height, width, color_depth)|, a sequence of frames can be stored in a rank-4 tensor \verb|(frames, height, width, color_depth)|, \& thus a batch of different videos can be stored in a rank-5 tensor of shape \verb|(samples, frames, height, width, color_depth)|.
+			
+			E.g., a 60-sec, $144\times256$ YouTube video clip sampled at 4 frames per sec would have 240 frames. A batch of 4 such video clips would be stored in a tensor of shape {\tt(4, 240, 144, 256, 3)}: a total of 106,168,320 values! If {\tt dtype} of tensor was {\tt float32}, each value would be stored in 32 bits, so tensor would represent 405 MB. Heavy! Videos encounter in real life are much lighter, because they aren't stored in {\tt float32}, \& they're typically compressed by a large factor (e.g. in MPEG format).
+		\end{itemize}
+		\item {\sf2.3. Gears (Bánh răng) of neural networks: Tensor operations.} Much as any computer program can be ultimately reduced to a small set of binary operations on binary inputs (AND, OR, NOR, \& so on), all transformations learned by deep neural networks can be reduced to a handful of {\it tensor operations} (or {\it tensor functions}) applied to tensors of numeric data. E.g., possible to add tensors, multiply tensors, \& so on.
+		
+		In initial example, build model by stacking {\tt Dense} layers on top of each other. A Keras layer instance looks like this:
+		\begin{verbatim}
+			keras.layers.Dense(512, activation="relu")
+		\end{verbatim}
+		This layer can be interpreted as a function, which takes as input a matrix \& returns another matrix -- a new representation for input tensor. Specifically, function is as follows (where {\tt W}: a matrix \& {\tt b}: a vector, both attributes of layer):
+		\begin{verbatim}
+			output = relu(dot(input, W) + b)
+		\end{verbatim}
+		Unpack this: Have 3 tensor operations here:
+		\begin{itemize}
+			\item A dot product {\tt dot} between input tensor \& a tensor named {\tt W}
+			\item An addition + between resulting matrix \& a vector {\tt b}
+			\item A {\tt relu} operation: {\tt relu(x)} is {\tt max(x, 0)}; ``relu'' stands for ``rectified linear unit''
+		\end{itemize}
+		
+		\begin{note}
+			Although this sect deals entirely with linear algebra expressions, won't find any mathematical notation here. Found: mathematical concepts can be more readily mastered by programmers with no mathematical background if they're expressed as short Python snippets instead of mathematical equations. So use NumPy \& TensorFlow code throughout.
+		\end{note}
+		\begin{itemize}
+			\item {\sf2.3.1. Element-wise operations.} {\tt relu} operation \& addition are element-wise operations: operations that are applied independently to each entry in tensors being considered. I.e. these operations are highly amenable to massively parallel implementations ({\it vectorized} implementations, a term that comes from {\it vector processor} supercomputer architecture from 1970--90 period). If want to write a native Python implementation of an element-wise operation, use a {\tt for} loop, as in this naive implementation of an element-wise {\tt relu} operation:
+			\begin{verbatim}
+				def naive_relu(x):
+				    assert len(x.shape) == 2
+				    x = x.copy()
+				    for i in range(x.shape[0]):
+				        for j in range(x.shape[1]):
+				            x[i, j] = max(x[i, j], 0)
+				    return x
+			\end{verbatim}
+			Could do same for addition:
+			\begin{verbatim}
+				def naive_add(x, y):
+				    assert len(x.shape) == 2
+				    assert x.shape == y.shape
+				    x = x.copy()
+				    for i in range(x.shape[0]):
+				        for j in range(x.shape[1]):
+				            x[i, j] += y[i, j]
+				    return x
+			\end{verbatim}
+			On same principle, can do element-wise multiplication, subtraction, \& so on.
+			
+			In practice, when dealing with NumPy arrays, these operations are available as well-optimized built-in NumPy functions, which themselves delegate (đại biểu) heavy lifting to a Basic Linear Algebra Subprograms (BLAS) implementation. BLAS are low-level, highly parallel, efficient tensor-manipulation routines that are typically implemented in Fortran or C.
+			
+			So, in NumPy, can do following element-wise operation, \& it will be blazing fast:
+			\begin{verbatim}
+				import numpy as np
+				z = x + y # element-wise addition
+				z = np.maximum(z, 0.) # element-wise relu
+			\end{verbatim}
+			Actually time difference:
+			\begin{verbatim}
+				import time
+				x = np.random.random((20, 100))
+				y = np.random.random((20, 100))
+				t0 = time.time()
+				for _ in range(1000):
+				    z = x + y
+				    z = np.maximum(z, 0.)
+				print("Took: {0:.2f} s".format(time.time() - t0))
+			\end{verbatim}
+			This takes 0.02s. Meanwhile, naive version takes a stunning 2.45 s:
+			\begin{verbatim}
+				t0 = time.time()
+				for _ in range(1000):
+				    z = naive_add(x, y)
+				    z = naive_relu(z)
+				print("Took: {0:.2f} s".format(time.time() - t0))
+			\end{verbatim}
+			Likewise, when running TensorFlow code on a GPU, element-wise operations are executed via fully vectorized CUDA implementations that can best utilize highly parallel GPU chip architecture.
+			\item {\sf2.3.2. Broadcasting.} Earlier naive implementation of \verb|naive_add| only supports addition of rank-2 tensors with identical shapes. But in {\tt Dense} layer introduced earlier, added a rank-2 tensor with a vector. What happens with addition when shapes of 2 tensors being added differ?
+			
+			When possible, \& if there's no ambiguity, smaller tensor will be {\it broadcast} to match shape of larger tensor. Broadccasting consists of 2 steps:
+			\begin{enumerate}
+				\item Axes (called {\it broadcast axes}) are added to smaller tensor to match {\tt ndim} of larger tensor.
+				\item Smaller tensor is repeated alongside these new axes to match full shape of larger tensor.
+			\end{enumerate}
+			
+			\item {\sf2.3.3. Tensor product.} {\it Tensor product}, or {\it dot product} (not to be confused with an element-wise product, * operator), is 1 of most common, most useful tensor operations.
+			
+			In NumPy, a tensor product is done using {\tt np.dot} function (because mathematical notation for tensor product is usually a dot):
+			\begin{verbatim}
+				x = np.random.random((32,))
+				y = np.random.random((32,))
+				z = np.dot(x, y)
+			\end{verbatim}
+		\end{itemize}
+		\item {\sf2.4. Engine of neural networks: Gradient-based optimization.}
+	\end{itemize}
 	\item {\sf3. Introduction to Keras \& TensorFlow.}
 	\item {\sf4. Getting started with neural networks: Classification \& regression.}
 	\item {\sf5. Fundamentals of ML.}

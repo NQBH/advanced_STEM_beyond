@@ -1808,7 +1808,43 @@ In {\it DL with Python 2e} will learn:
 				\item Axes (called {\it broadcast axes}) are added to smaller tensor to match {\tt ndim} of larger tensor.
 				\item Smaller tensor is repeated alongside these new axes to match full shape of larger tensor.
 			\end{enumerate}
+			A concrete example. Consider {\tt X} with shape {\tt(32, 10)} \& {\tt y} with shape {\tt(10,)}:
+			\begin{verbatim}
+				import numpy as np
+				X = np.random.random((32, 10))
+				y = np.random.random((10,))
+			\end{verbatim}
+			1st, add an empty 1st axis to {\tt y}, whose shape becomes {\tt(1, 10)}:
+			\begin{verbatim}
+				y = np.expand_dims(y, axis=0)
+			\end{verbatim}
+			Then, repeat {\tt y} 32 times along this new axis, so that end up with a tensor {\tt Y} with shape {\tt(32, 10)}, where {\tt Y[i, :] == y} for {\tt i} in {\tt range(0, 32)}:
+			\begin{verbatim}
+				Y = np.concatenate([y] * 32, axis=0)
+			\end{verbatim}
+			At this point, can proceed to add {\tt X, Y}, because they have same shape.
 			
+			In terms of implementation, no new rank-2 tensor is created, because that would be terribly inefficient. Repetition operation is entirely virtual: it happens at algorithmic level rather than at memory level. But thinking of vector being repeated 10 times alongside a new axis is a helpful mental model. Here's what a naive implementation would look like:
+			\begin{verbatim}
+				def naive_add_matrix_and_vector(x, y):
+				    assert len(x.shape) == 2
+				    assert len(y.shape) == 1
+				    assert x.shape[1] == y.shape[0]
+				    x = x.copy()
+				    for i in range(x.shape[0]):
+				        for j in range(x.shape[1]):
+				            x[i, j] += y[j]
+				    return x
+			\end{verbatim}
+			With broadcasting, can generally perform element-wise operations that take 2 inputs tensors if 1 tensor has shape {\tt(a, b, ... n, n + 1, ... m)} \& other has shape {\tt(n, n + 1, ... m)}. Broadcasting will then automatically happen for axes {\tt a} through {\tt n - 1}.
+			
+			Following example applies element-wise {\tt maximum} operation to 2 tensors of different shapes via broadcasting:
+			\begin{verbatim}
+				import numpy as np
+				x = np.random.random((64, 3, 32, 10))
+				y = np.random.random((32, 10))
+				z = np.maximum(x, y)
+			\end{verbatim}
 			\item {\sf2.3.3. Tensor product.} {\it Tensor product}, or {\it dot product} (not to be confused with an element-wise product, * operator), is 1 of most common, most useful tensor operations.
 			
 			In NumPy, a tensor product is done using {\tt np.dot} function (because mathematical notation for tensor product is usually a dot):
@@ -1817,10 +1853,374 @@ In {\it DL with Python 2e} will learn:
 				y = np.random.random((32,))
 				z = np.dot(x, y)
 			\end{verbatim}
+			In mathematical notation: $z = x\cdot y$. Mathematically, what does dot operation do? Start with dot product of 2 vectors {\tt x, y}: computed as follows:
+			\begin{verbatim}
+				def naive_vector_dot(x, y):
+				    assert len(x.shape) == 1
+				    assert len(y.shape) == 1
+				    assert x.shape[0] == y.shape[0]
+				    z = 0.
+				    for i in range(x.shape[0]):
+				        z += x[i] * y[i]
+				    return z
+			\end{verbatim}
+			Notice: dot product between 2 vectors is a scalar \& that only vectors with same number of elements are compatible for a dot product.
+			
+			Can also take dot product between a matrix {\tt x} \& a vector {\tt y}, which returns a vector where coefficients are dot products between {\tt y} \& rows of {\tt x}. Implement it as follows:
+			\begin{verbatim}
+				def naive_matrix_vector_dot(x, y):
+				    assert len(x.shape) == 2
+				    assert len(y.shape) == 1
+				    assert x.shape[1] == y.shape[0]
+				    z = np.zeros(x.shape[0])
+				    for i in range(x.shape[0]):
+				        for j in range(x.shape[1]):
+			            	z[i] += x[i, j] * y[j]
+				    return z
+			\end{verbatim}
+			Could also reuse code wrote previously, which highlights relationship between a matrix-vector product \& a vector product:
+			\begin{verbatim}
+				def naive_matrix_vector_dot(x, y):
+				    z = np.zeros(x.shape[0])
+				    for i in range(x.shape[0]):
+				        z[i] = naive_vector_dot(x[i, :], y)
+				    return z
+			\end{verbatim}
+			Note: as soon as 1 of 2 tensors has an {\tt ndim} $> 1$, {\tt dot} is no longer {\it symmetric}, i.e. {\tt dot(x, y)} isn't same as {\tt dot(y, x)}.
+			
+			Of course, a dot product generalizes to tensors with an arbitrary number of axes. Most common applications may be dot product between 2 matrices. Can take dot product of 2 matrices {\tt x, y} ({\tt dot(x, y)}) iff {\tt x.shape[1] == y.shape[0]}. Result is a matrix with shape {\tt(x.shape[0], y.shape[1])}, where coefficients are vector products between rows of {\tt x} \& columns of {\tt y}. Naive implementation:
+			\begin{verbatim}
+				def naive_matrix_dot(x, y):
+				    assert len(x.shape) == 2 # x & y are NumPy matrices.
+				    assert len(y.shape) == 2
+				    assert x.shape[1] == y.shape[0]
+				    z = np.zeros((x.shape[0], y.shape[1]))
+				    for i in range(x.shape[0]):
+				        for j in range(y.shape[1]):
+				            row_x = x[i, :]
+				            column_y = y[:, j]
+				            z[i, j] = naive_vector_dot(row_x, column_y)
+				    return z
+			\end{verbatim}
+			To understand dot-product shape compatibility, help to visualize input \& output tensors by aligning them as shown in {\sf Fig. 2.5: Matrix dot-product box diagram.}
+			
+			In figure, {\tt x, y, z} are pictured as rectangles (literal boxes of coefficients). Because rows of {\tt x} \& columns of {\tt y} must have same size, it follows: width of {\tt x} must match height of {\tt y}. If go on to develop new ML algorithms, likely be drawing such diagrams often.
+			
+			More generally, can take dot product between higher-dimensional tensors, following same rules for shape compatibility as outlined earlier for 2D case: $(a,b,c,d)\cdot(d,)\to(a,b,c)$, $(a,b,c,d)\cdot(d,e)\to(a,b,c,e)$, \& so on.
+			\item {\sf2.3.4. Tensor reshaping.} A 3rd type of tensor operation that's essential to understand is {\it tensor reshaping}. Although it wasn't used in {\tt Dense} layers in 1st neural network example, used it when preprocessed digits data before feeding it into our model:
+			\begin{verbatim}
+				train_images = train_images.reshape((60000, 28 * 28))
+			\end{verbatim}
+			Reshaping a tensor means rearranging its rows \& columns to match a target shape. Naturally, reshaped tensor has same total number of coefficients as initial tensor. Reshaping is best understood via simple examples:
+			\begin{verbatim}
+				>>> x = np.array([[0., 1.], [2., 3.], [4., 5.]])
+				>>> x.shape
+				(3, 2)
+				>>> x = x.reshape((6, 1))
+				>>> x
+				array([[ 0.], [ 1.], [ 2.], [ 3.], [ 4.], [ 5.]])
+				>>> x = x.reshape((2, 3))
+				>>> x
+				array([[ 0., 1., 2.],
+				       [ 3., 4., 5.]])
+			\end{verbatim}
+			A special case of reshaping that's commonly encountered is {\it transposition}. {\it Transposing} a matrix means exchanging its rows \& its columns, so that {\tt x[i, :]} becomes {\tt x[:, i]}:
+			\begin{verbatim}
+				>>> x = np.zeros((300, 20))
+				>>> x = np.transpose(x)
+				>>> x.shape
+				(20, 300)
+			\end{verbatim}
+			\item {\sf2.3.5. Geometric interpretation of tensor operations.} Because contents of tensors manipulated by tensor operations can be interpreted as coordinates of points in some geometric space, all tensor operations have a geometric interpretation. E.g., consider addition. Start with vector: {\tt A = [0.5, 1]} -- {\sf Fig. 2.6: A point in 2D space}. Common to picture a vector as an arrow linking origin to point {\sf Fig. 2.7: A point in a 2D space pictured as an arrow}. Consider a new point {\tt B = [1, 0.25]}, which add to prev one. This is done geometrically by changing together vector arrows, with resulting location being vector representing sum of prev 2 vectors ({\sf Fig. 2.8: Geometric interpretation of sum of 2 vectors}). As can see, adding a vector $B$ to a vector $A$ represents action of copying point $A$ in a new location, whose distance \& direction from original point $A$ is determined by vector $B$. If apply same vector addition to a group of points in plane (an ``object''), would be creating a copy of entire object in a new location ({\sf Fig. 2.9: 2D translation as a vector addition}). Tensor addition thus represents action of {\it translating an object} (moving object without distorting it) by a certain amount in a certain direction.
+			
+			In general, elementary geometric operations e.g. translation, rotation, scaling, skewing, \& so on can be expressed as tensor operations. A few examples:
+			\begin{itemize}
+				\item {\it Translation}: As just saw, adding a vector to a point will move point by a fixed amount in a fixed direction. Applied to a set of points (e.g. a 2D object), called a ``translation''.
+				\item {\it Rotation}: A counterclockwise rotation of a 2D vector by an angle theta ({\sf Fig. 2.10: 2D rotation (counterclockwise) as a dot product}) can be achieved via a dot product with a $2\times2$ matrix {\tt R = [[cos(theta), -sin(theta)], [sin(theta), cos(theta)]]}.
+				\begin{equation*}
+					\begin{bmatrix}
+						\cos\theta & -\sin\theta\\\sin\theta & \cos\theta
+					\end{bmatrix}\cdot\begin{bmatrix}
+						x\\ y
+					\end{bmatrix}
+				\end{equation*}
+				\item {\it Scaling}: A vertical \& horizontal scaling of image ({\sf Fig. 2.11: 2D scaling as a dot product}) can be achieved via a dot product with a $2\times2$ matrix \verb|S = [[horizontal_factor, 0], [0, vertical_factor]]| (note: such a matrix is called a ``diagonal matrix'', because it only has nonzero coefficients in its ``diagonal'', going from top left to bottom right).
+				\item {\it Linear transform}: A dot product with an arbitrary matrix implements a linear transform. Note: {\it scaling \& rotation} are by definition linear transforms.
+				\item {\it Affine transform}: An affine transform ({\sf Fig. 2.12: Affine transform in plane.}) is combination of a linear transform (achieved via a dot product with some matrix) \& a translation (achieved via a vector addition). As have probably recognized, that's exactly {\tt y = W • x + b} computation implemented by {\tt Dense} layer! A {\tt Dense} layer without an activation function is an affine layer.
+				\item {\it{\tt Dense} layer with {\tt relu} activation}: An important observation about affine transforms: if apply many of them repeatedly, still end up with an affine transform (so could just have applied that 1 affine transform in 1st place). Try it with 2: {\tt affine2(affine1(x)) = W2 • (W1 • x + b1) + b2 = (W2 • W1) • x + (W2 • b1 + b2)}. That's an affine transform where linear part is matrix {\tt W2 • W1} \& translation part is vector {\tt W2 • b1 + b2}. As a consequence, a multilayer neural network made entirely of {\tt Dense} layers without activations would be $\Leftrightarrow$ a single {\tt Dense} layer. This ``deep'' neural network would just be a linear model in disguise! This is why need activations, like {\tt relu} (seen in action in {\sf Fig. 2.13: Affine transform followed by {\tt relu} activation}). Thanks to activation functions, a chain of {\tt Dense} layers can be made to implement very complex, nonlinear geometric transformations, resulting in very rich hypothesis spaces for deep neural networks.  Cover this idea in more detail in next chap.
+			\end{itemize}
+			\item {\sf2.3.6. A geometric interpretation of DL.} Just learned: neural networks consist entirely of chains of tensor operations, \& that these tensor operations are just simple geometric transformations of input data. It follows: you can interpret a neural network as a very complex geometric transformation in a high-dimensional space, implemented via a series of simple steps.
+			
+			In 3D, following mental image may prove useful. Imagine 2 sheets of colored paper: 1 red \& 1 blue. Put 1 on top of the other. Now crumple (nhàu nát) them together into a small ball. That crumpled paper ball is input data, \& each sheet of paper is a class of data in a classification problem. What a neural network is meant to do is figure out a transformation of paper ball that would uncrumple it, so as to make 2 classes cleanly separable again ({\sf Fig. 2.14: Uncrumbling a complicated manifold of data}). With DL, this would be implemented as a series of simple transformations of 3D space, e.g. those you could apply on paper ball with fingers, 1 movement at a time.
+			
+			Uncrumpling paper balls is what ML is about: finding neat representations for complex, highly folded data {\it manifolds} in high-dimensional spaces (a manifold is a continuous surface, like crumpled sheet of paper). At this point, should have a pretty good intuition as to why DL excels as  this: it takes approach of incrementally decomposing a complicated geometric transformation into a long chain of elementary ones, which is pretty much strategy a human would follow to uncrumple a paper ball. Each layer in a deep network applies a transformation that disentangles data a little, \& a deep stack of layers makes tractable an extremely complicated disentanglement process.
+			
+			-- Gỡ rối những quả bóng giấy là mục đích của ML: tìm ra các biểu diễn gọn gàng cho dữ liệu phức tạp, có nhiều nếp gấp {\it manifolds} trong các không gian có nhiều chiều (một đa tạp là một bề mặt liên tục, giống như tờ giấy nhàu nát). Tại thời điểm này, bạn nên có trực giác khá tốt về lý do tại sao DL lại vượt trội như thế này: nó sử dụng phương pháp phân tích gia tăng một phép biến đổi hình học phức tạp thành một chuỗi dài các phép biến đổi cơ bản, đây gần như là chiến lược mà con người sẽ áp dụng để gỡ rối một quả bóng giấy. Mỗi lớp trong một mạng sâu áp dụng một phép biến đổi giúp gỡ rối dữ liệu một chút, \& một chồng lớp sâu giúp quá trình gỡ rối cực kỳ phức tạp trở nên dễ xử lý.
 		\end{itemize}
-		\item {\sf2.4. Engine of neural networks: Gradient-based optimization.}
+		\item {\sf2.4. Engine of neural networks: Gradient-based optimization.} Each neural layer from 1st model example transforms its input data as follows:
+		\begin{verbatim}
+			output = relu(dot(input, W) + b)
+		\end{verbatim}
+		In this expression, {\tt W, b}: tensors that are attributes of layer, called {\it weights} or {\it trainable parameters} of layer ({\it kernel, bias} attributes, resp.). These weights contain information learned by model from exposure to training data.
+		
+		Initially, these weight matrices are filled with small random values (a step called {\it random initialization}). Of course, there's no reason to expect: {\tt relu(dot(input, W) + b)}, when {\tt W, b} are random, will yield any useful representations. Resulting representations are meaningless -- but they're a starting point. What comes next is to gradually adjust these weights, based on a feedback signal. This gradual adjustment, also called {\it training}, is learning that ML is all about.
+		
+		This happens within what's called a {\it training loop}, which works as follows. Repeat these steps in a loop, until loss seems sufficiently low:
+		\begin{enumerate}
+			\item Draw a batch of training samples {\tt x} \& corresponding targets \verb|y_true|.
+			\item Run model on {\tt x} (a step called {\it forward pass}) to obtain predictions \verb|y_pred|.
+			\item Compute loss of model on batch, a measure of mismatch between \verb|y_pred, y_true|.
+			\item Update all weights of model in a way that slightly reduces loss on this batch.
+		\end{enumerate}
+		Eventually end up with a model that has a very low loss on its training data: a low mismatch between predictions \verb|y_pred|, \& expected targets \verb|y_true|. Model has ``learned'' to map its inputs to correct targets. From afar, it may look like magic, but when reduce it to elementary steps, it turns out to be simple.
+		
+		Step 1 sounds easy enough -- just I{\tt/}O code. Steps 2 \& 3 are merely application of a handful of tensor operations, so could implement these steps purely from what learned in prev sect. Difficult part is step 4: updating, model's weights. Given an individual weight coefficient in model, how can compute whether coefficient should be increased or decreased, \& by how much?
+		
+		1 naive solution would be to freeze all weights in model except 1 scalar coefficient being considered, \& try different values for this coefficient. Say initial value of coefficient is 0.3. After forward pass on a batch of data, loss of model on batch is 0.5. If change coefficient's value to 0.35 \& return forward pass, loss increases to 0.6. But if lower coefficient to 0.25, loss falls to 0.4. In this case, it seems: updating coefficient by $-0.05$ would contribute to minimizing loss. This would have to be repeated for all coefficients in model.
+		
+		But such an approach would be horribly inefficient, because need to compute 2 forward passes (which are expensive) for every individual coefficient (of which there are many, usually thousands \& sometimes up to millions). Thankfully, there's a much better approach: {\it gradient descent}.
+		
+		Gradient descent is optimization technique that powers modern neural networks. Here's gist ý chính) of it. All of functions used in our models (e.g. {\tt dot} or +) transform their input in a smooth \& continuous way: if look at {\tt z = x + y}, e.g., a small change in {\tt y} only results in a small change in {\tt z}, \& if you know direction of change in {\tt y}, can infer direction of change in {\tt z}. Mathematically, say these functions are {\it differentiable}. If chain together such functions, bigger function obtain is still differentiable. In particular, this applies to function that maps model's coefficients to loss of model on a batch of data: a small change in model's coefficients results in a small, predictable change in loss value. This enables to use a mathematical operator called {\it gradient} to describe how loss varies as you move model's coefficients in different directions. If compute this gradient, can use it to move coefficients (all at once in a single update, rather than one at a time) in a direction that decreases loss.
+		
+		If already know what {\it differentiable} means \& what a {\it gradient} is, can skip to Sect. 2.4.3. Otherwise, following 2 sects help understand concepts.
+		\begin{itemize}
+			\item {\sf2.4.1. What's a derivative?} Consider a continuous, smooth function $f(x) = y$, mapping a number $x$ to a new number $y$. Can use function in {\sf Fig. 2.15: A continuous smooth function} as an example.
+			
+			Because function is {\it continuous}, a small change in $x$ can only result in a small change in $y$ -- that's intuition behind {\it continuity}. Say: increase $x$ by a small factor, \verb|epsilon_x|: this results in a small \verb|epsilon_y| changes to $y$, as shown in {\sf Fig. 2.16: With a continuous function, a small change in $x$ results in a small change in $y$.}
+			
+			In addition, because function is {\it smooth} (its curve doesn't have any abrupt angles), when \verb|epsilon_x| is small enough, around a certain point $p$, possible to approximate $f$ as a linear function of slope $a$, so that \verb|epsilon_y| becomes \verb|a * epsilon_x|:
+			\begin{verbatim}
+				f(x + epsilon_x) = y + a * epsilon_x
+			\end{verbatim}
+			Obviously, this linear approximation is valid only when $x$ is close enough to $p$.
+			
+			Slope $a$ is called {\it derivative} of $f$ in $p$. If $a$ is negative, it means a small increase in $x$ around $p$ will result in a decrease of $f(x)$ (as shown in {\sf Fig. 2.17: Derivative of $f$ in $p$}), \& if $a > 0$, a small increase in $x$ will result in an increase of $f(x)$. Further, absolute value of $a$ ({\it magnitude} of derivative) tells how quickly this increase or decrease will happen.
+			
+			For every differentiable function $f(x)$ ({\it differentiable} means ``can be derived'': e.g., smooth, continuous functions can be derived), there exists a derivative function $f'(x)$, that maps values of $x$ to slope of local linear approximation of $f$ in those points. E.g., derivative of $\cos x$ is $-\sin x$, derivative of $f(x) = ax$ is $f'(x) = a$, $\ldots$
+			
+			Being able to derive functions is a very powerful tool when it comes to {\it optimization}, task of finding values of $x$ that minimize value of $f(x)$. If trying to update $x$ by a factor \verb|epsilon_x| in order to minimize $f(x)$, \& know derivative of $f$, then your job is done: derivative completely describes how $f(x)$ evolves as you change $x$. If want to reduce value of $f(x)$, just need to move $x$ a little in opposite direction from derivative.			
+			\item {\sf2.4.2. Derivative of a tensor operation: gradient.} Function we were just looking at turned a scalar value $x$ into another scalar value $y$: could plot it as a curve in a 2D plane. Now imagine a function that turns a tuple of scalars $(x,y)$ into a scalar value $z$: that would be a vector operation. Could plot it as a 2D {\it surface} in a 3D space (indexed by coordinates {\tt x, y, z}). Likewise, can imagine functions that take matrices as inputs, functions that take rank-3 tensors as inputs, etc.
+			
+			Concept of derivation can be applied to any such function, as long as surfaces they describe are continuous \& smooth. Derivative of a tensor operation (or tensor function) is called a {\it gradient}. Gradients are just generalization of concept of derivatives to functions that take tensors as inputs. Remember how, for a scalar function, derivative represents {\it local slope} of curve of function? In same way, gradient of a tensor function represents {\it curvature} of multidimensional surface described by function. It characterizes how output of function varies when its input parameters vary.
+			
+			An example grounded in ML. Consider:
+			\begin{itemize}
+				\item An input vector {\tt x} (a sample in a dataset)
+				\item A matrix {\tt W} (weights of a model)
+				\item A target \verb|y_true| (what model should learn to associate to {\tt x})
+				\item A loss function {\tt loss} (meant to measure gap between model's current predictions \& \verb|y_true|)
+			\end{itemize}
+			Can use {\tt W} to compute a target candidate \verb|y_pred|, \& then compute loss, or mismatch, between target candidate \verb|y_pred| \& target \verb|y_true|:
+			\begin{verbatim}
+				y_pred = dot(W, x)
+				loss_value = loss(y_pred, y_true)
+			\end{verbatim}
+			Like to use gradients to figure out how to update {\tt W} so as to make \verb|loss_value| smaller. How do we do that?
+			
+			Given fixed inputs \verb|x, y_true|, preceding operations can be interpreted as a function mapping values of {\tt W} (model's weights) to loss values:
+			\begin{verbatim}
+				loss_value = f(W)
+			\end{verbatim}
+			Say current value of {\tt W} is {\tt W0}. Then derivative of {\tt f} at point {\tt W0} is a tensor \verb|grad(loss_value, W0)|, with same shape as {\tt W}, where each coefficient \verb|grad(loss_value, W0)[i, j]| indicates direction \& magnitude of change in \verb|loss_value| you observe when modifying {\tt W0[i, j]}. That tensor \verb|grad(loss_value, W0)| is gradient of function \verb|f(W) = loss_value| in {\tt W0}, also called ``gradient of \verb|loss_value| w.r.t. {\tt W} around {\tt W0}.''
+			\begin{remark}[Partial derivatives]
+				Tensor operation {\tt grad(f(W), W)} (which takes as input a matrix {\tt W}) can be expressed as a combination of scalar functions, \verb|grad_ij(f(W), w_ij)|, each of which would return derivative of \verb|loss_value = f(W)| w.r.t. coefficient {\tt W[i, j]} of {\tt W}, assuming all other coefficients are constant. \verb|grad_ij| is called {\rm partial derivative} of {\tt f} w.r.t. {\tt W[i, j]}.
+			\end{remark}
+			Concretely, what does \verb|grad(loss_value, W0)| represent? Saw earlier: derivative of a function $f(x)$ of a single coefficient can be interpreted as slope of curve of $f$. Likewise, \verb|grad(loss_value, W0)| can be interpreted as tensor describing {\it direction of steepest ascent} of \verb|loss_value = f(W)| around {\tt W0}, as well as slope of this ascent. Each partial derivative describes slope of $f$ in a specific direction.
+			
+			For this reason, in much same way: for a function $f(x)$, can reduce value of $f(x)$ by moving $x$ a little in opposite direction from derivative, with a function {\tt f(W)} of a tensor, can reduce \verb|loss_value = f(W)| by moving {\tt W} in opposite direction from gradient: e.g., {\tt W1 = W0 - step * grad(f(W0), W0)} (where {\tt step} is a small scaling factor). I.e., going against direction of steepest ascent of $f$, which intuitively should put you lower on curve. Note: scaling factor {\tt step} is needed because \verb|grad(loss_value, W0)| only approximates curvature when close to {\tt W0}, so don't want to get too far from {\tt W0}.
+			\item {\sf2.4.3. Stochastic gradient descent.} Given a differentiable function, it's theoretically possible to find its minimum analytically: known: a function's minimum is a point where derivative is 0, so all you have to do is find all points where derivative goes to 0 \& check for which of these points function has lowest value.
+			
+			Applied to a neural network, i.e. finding analytically combination of weight values that yields smallest possible loss function. This can be done by solving equation {\tt grad(f(W), W) = 0} for {\tt W}. This is a polynomial equation of $N$ variables, where $N$: number of coefficients in model. Although it would be possible to solve such an equation for $N = 2$ or $N = 3$, doing so is intractable for real neural networks, where number of parameters is never $<$ a few thousand \& can often be several 10s of millions.
+			
+			Instead, can use 4-step algorithm outlined at beginning of this sect: modify parameters little by little based on current loss value for a random batch of data. Because dealing with a differentiable function, can compute its gradient, which gives you an efficient way to implement Step 4. If update weights in opposite direction from gradient, loss will be a little less every time:
+			\begin{enumerate}
+				\item Draw a batch of training samples $x$ \& corresponding targets \verb|y_true|.
+				\item Run model on $x$ to obtain predictions \verb|y_pred| (this is called {\it forwards pass}).
+				\item Compute loss of model on batch, a measure of mismatch between \verb|y_pred, y_true|.
+				\item Compute gradient of loss w.r.t. model's parameters (called {\it backward pass}).
+				\item Move parameters a little in opposite direction from gradient -- e.g., \verb|W -= learning_rate * gradient| -- thus reducing loss on batch a bit. {\it Learning rate} (\verb|learning_rate| here) would be a scalar factor modulating ``speed'' of gradient descent process.
+			\end{enumerate}
+			Easy enough! What just described is called {\it mini-batch stochastic gradient descent} (mini-batch SGD). Term {\it stochastic} refers to fact: each batch of data is drawn at random ({\it stochastic} is a scientific synonym of {\it random}). {\sf Fig. 2.18: SGD down a 1D loss curve (1 learnable parameter)} illustrates what happens in 1D, when model has only 1 parameter \& have only 1 training sample.
+			
+			Intuitively important to pick a reasonable value for \verb|learning_rate| factor. If it's too small, descent down curve will take many iterations, \& it could get stuck in a local minimum. If \verb|learning_rate| is too large, your updates may end up taking you to completely random locations on curve.
+			
+			Note: a variant of mini-batch SGD algorithm would be to draw a single sample \& target at each iteration, rather than drawing a batch of data. This would be {\it true}SGD (as opposed to {\it mini-batch}SGD). Alternatively, going to opposite extreme, could run every step on {\it all} data available, called {\it batch gradient descent}. Each update would then be more accurate, but far more expensive. Efficient compromise between these 2 extremes: us mini-batches of reasonable size.
+			
+			Although Fig. 2.18 illustrates gradient descent in a 1D parameter space, in practice use gradient descent in highly dimensional spaces: every weight coefficient in a neural network is a free dimension in space, \& there may be 10s of thousands or even millions of them. To help build intuition about loss surfaces, can also visualize gradient descent along a 2D loss surface, as shown in {\sf Fig. 2.19: Gradient descent down a 2D loss surface (2 learnable parameters).}. But can't possibly visualize what actual process of training a neural network looks like -- can't represent a 1000000-dimensional space in a way that makes sense to humans. As such, good to keep in mind: intuitions develop through these low-dimensional representations may not always be accurate in practice. This has historically been a source of issues in world of DL research.
+			
+			Additionally, there exist multiple variants of SGD that differ by taking into account prev weight updates when computing next weight update, rather than just looking at current value of gradients. There is, e.g., SGD with momentum, as well as Adagrad, RMSprop, \& several others. Such variants are known as {\it optimization methods} or {\it optimizers}. In particular, concept of {\it momentum}, which is used in many of these variants, deserves your attention. Momentum addresses 2 issues with SGD: convergence speedh \& local minima. Configure {\sf Fig. 2.20: A local minimum \& a global minimum}, which shows curve of a loss as a function of a model parameter.
+			
+			Around a certain parameter value, there is a {\it local minimum}: around that point, moving left would result in loss increasing, but so would moving right. If parameter under consideration were being optimized via SGD with a small learning rate, optimization process could get stuck at local minimum instead of making its way to global minimum.
+			
+			Can avoid such issues by using momentum, which draws inspiration from physics. A useful mental image here: think of optimization process as a small ball rolling down loss curve. If it has enough momentum, ball won't get stuck in a ravine \& will end up at global minimum. Momentum is implemented by moving ball at each step based not only on current slope value (current acceleration) but also on current velocity (resulting from past acceleration). In practice, i.e., updating parameter {\tt w} based not only on current gradient value but also prev parameter update, e.g. in this naive implementation:
+			\begin{verbatim}
+				past_velocity = 0.
+				momentum = 0.1
+				while loss > 0.01:
+				    w, loss, gradient = get_current_parameters()
+				    velocity = past_velocity * momentum - learning_rate * gradient
+				    w = w + momentum * velocity - learning_rate * gradient
+				    past_velocity = velocity
+				    update_parameter(w)
+			\end{verbatim}
+			\item {\sf2.4.4. Chaining derivatives: Backpropagation algorithm.} In preceding algorithm, casually assumed: because a function is differentiable, can easily compute its gradient. But is that true? How can compute gradient of complex expressions in practice? In 2-layer model started chap with, how can get gradient of loss w.r.t. weights? That's where {\it Backpropagation algorithm} comes in.
+			\begin{itemize}
+				\item {\sf Chain rule.} Backpropagation is a way to use derivatives of simple operations (e.g. addition, relu, or tensor product) to easily compute gradient of arbitrarily complex combinations of these atomic operations. Crucially, a neural network consists of many tensor operations chained together, each of which has a simple, known derivative. E.g., model defined in listing 2.2 can be expressed as a function parameterized by variables {\tt W1, b1, W2, b2} (belonging to 1st \& 2nd {\tt Dense} layers resp.), involving atomic operations {\tt dot, relu, softmax, \& +}, as well as our loss function {\tt loss}, which are all easily differentiable:
+				\begin{verbatim}
+					loss_value = loss(y_true, softmax(dot(relu(dot(inputs, W1) + b1), W2) + b2))
+				\end{verbatim}
+				Calculus tells: such a chain of functions can be derived using {\it chain rule}.
+				
+				Consider 2 functions $f,g$, as well as composed function $fg$ s.t. {\tt fg(x) == f(g(x))}:
+				\begin{verbatim}
+					def fg(x):
+					    x1 = g(x)
+					    y = f(x1)
+					    return y
+				\end{verbatim}
+				Then chain rule states: {\tt grad(y, x) == grad(y, x1) * grad(x1, x)}. This enables to compute derivative of {\tt fg} as long as know derivatives of $f,g$. Chain rule is named as it is because when add more intermediate functions, it starts looking like a chain:
+				\begin{verbatim}
+					def fghj(x):
+					    x1 = j(x)
+					    x2 = h(x1)
+					    x3 = g(x2)
+					    y = f(x3)
+					    return y
+					
+					grad(y, x) == (grad(y, x3) * grad(x3, x2) * grad(x2, x1) * grad(x1, x))
+				\end{verbatim}
+				Applying chain rule to computation of gradient values of a neural network gives rise to an algorithm called {\it backpropagation}. See how that works, concretely.
+				\item {\sf Automatic differentiation with computation graphs.} A useful way to think about backpropagation is in terms of {\it computation graphs}. A computation graph is data structure at heart of TensorFlow \& DL revolution in general. It's a directed acyclic graph of operations -- in our case, tensor operations. E.g., {\sf Fig. 2.21: Computation graph representation of 2-layer model} shows graph representation of 1st model.
+				
+				Computation graphs have been an extremely successful abstraction in CS because they enable us to {\it treat computation as data}: a computable expression is encoded as a machine-readable data structure that can be used as input or output of another program. E.g., could imagine a program that receives a computation graph \& returns a new computation graph that implements a large-scale distributed version of same computation -- i.e. could distribute any computation without having to write distribution logic yourself. Or imagine a program that receives a computation graph \& can automatically generate derivative of expression it represents. Much easier to do these things if your computation is expressed as an explicit graph data structure rather than, say, lines of ASCII characters in a {\tt.py} file.
+				
+				To explain backpropagation clearly, look at a really basic example of a computation graph ({\sf Fig. 2.22: A basic example of a computation graph.}). Consider a simplified version of Fig. 2.21, where only have 1 linear layer \& where all variables are scalar. Take 2 scalar variables {\tt w, b}, a scalar input {\tt x}, \& apply some operations to them to combine them into an output {\tt y}. Finally, apply an absolute value error-loss function: \verb|loss_val = abs(y_true - y)|. Since want to update {\tt w, b} in a way that will minimize \verb|loss_val|, interested in computing \verb|grad(loss_val, b), grad(loss_val, w)|.
+				
+				Set concrete values for ``input nodes'' in graph, i.e., input {\tt x}, target \verb|y_true, w, b|. Propagate these values to all nodes in graph, from top to bottom, until reach \verb|loss_val|. This is {\it forward pass} ({\sf Fig. 2.23: Running a forward pass}).
+				
+				``Reverse'' graph: for each edge in graph going from {\tt A} to {\tt B}, will create an opposite edge from {\tt B} to {\tt A}, \& ask, how much does {\tt B} vary when {\tt A} varies? I.e., what is {\tt grad(B, A)}? Annotate each inverted edge with this value. This backward graph represents {\it backward pass} ({\sf Fig. 2.24: Running a backward pass}). Have:
+				\begin{enumerate}
+					\item \verb|grad(loss_val, x2) = 1|, because as {\tt x2} varies by an amount epsilon, \verb|loss_val = abs(4 - x2)| varies by same amount.
+					\item {\tt grad(x2, x1) = 1}, because as {\tt x1} varies by an amount epsilon, {\tt x2 = x1 + b = x1 + 1} varies by same amount.
+					\item {\tt grad(x2, b) = 1}, because as {\tt b} varies by an amount epsilon, {\tt x2 = x1 + b = 6 + b} varies by same amount.
+					\item {\tt grad(x1, w) = 2}, because as {\tt w} varies by an amount epsilon {\tt x1 = x * w = 2 * w} varies by {\tt2 * epsilon}.
+				\end{enumerate}
+				What chain rule says about this backward graph: can obtain derivative of a node w.r.t. another node by {\it multiplying derivatives for each edge along path linking 2 nodes}.
+				
+				E.g., \verb|grad(loss_val, w) = grad(loss_val, x2) * grad(x2, x1) * grad(x1, w)| ({\sf Fig. 2.25: Path from \verb|loss_val| to {\tt w} in backward graph}). By applying chain rule to graph, obtain what were looking for:
+				\begin{verbatim}
+					grad(loss_val, w) = 1 * 1 * 2 = 2
+					grad(loss_val, b) = 1 * 1 = 1
+				\end{verbatim}
+				
+				\begin{note}
+					If there are multiple paths linking 2 models of interest, {\tt a, b}, in backward graph, would obtain {\tt graph(b, a)} by summing contributions of all paths.
+				\end{note}
+				\& with that, just saw backpropagation in action! Backpropagation is simply application of chain rule to a computation graph. There's nothing more to it. Backpropagation starts with final loss value \& works backward from top layers to bottom layers, computing contribution that each parameter had in loss value. That's where name ``backpropagation'' comes from: ``back propagate'' loss contributions of different nodes in a computation graph.
+				
+				Nowadays people implement neural networks in modern frameworks that are capable to {\it automatic differentiation}, e.g. TensorFlow. Automatic differentiation is implemented with kind of computation graph just seen. Automatic differentiation makes it possible to retrieve gradients of arbitrary compositions of differentiable tensor operations without doing any extra work besides writing down forward pass. When {\sc Chollet} wrote his 1st neural networks in C in 2000s, had to write gradients by hand. Now, thanks to modern automatic differentiation tools, never have to implement backpropagation yourself. Consider yourself lucky!
+				\item {\sf Gradient tape in TensorFlow.} API through which you can leverage (đòn bẩy) TensorFlow's powerful automatic differentiation capabilities is {\tt GradientTape}. It's a Python scope that will ``record'' tensor operations that run inside it, in form of a computation graph (sometimes called a ``tape''). This graph can then be used to retrieve gradient of any output w.r.t. any variable or set of variables (instances of {\tt tf.Variable} class). A {\tt tf.Variable} is a specific kind of tensor meant to hold mutable state -- e.g., weights of a neural network are always {\tt tf.Variable} instances.
+				\begin{verbatim}
+					import tensorflow as tf
+					x = tf.Variable(0.)
+					with tf.GradientTape() as tape:
+					    y = 2 * x + 3
+					grad_of_y_wrt_x = tape.gradient(y, x)
+				\end{verbatim}
+				{\tt GradientTape} works with tensor operations:
+				\begin{verbatim}
+					x = tf.Variable(tf.random.uniform((2, 2)))
+					with tf.GradientTape() as tape:
+					    y = 2 * x + 3
+					grad_of_y_wrt_x = tape.gradient(y, x)
+				\end{verbatim}
+				It works works with list of variables:
+				\begin{verbatim}
+					W = tf.Variable(tf.random.uniform((2, 2)))
+					b = tf.Variable(tf.zeros((2,)))
+					x = tf.random.uniform((2, 2))
+					with tf.GradientTape() as tape:
+					    y = tf.matmul(x, W) + b
+					grad_of_y_wrt_W_and_b = tape.gradient(y, [W, b])
+				\end{verbatim}
+			\end{itemize}			
+		\end{itemize}
+		\item {\sf2.5. Looking back at 1st example.} Should now have a general understanding of what's going on behind scenes in a neural network. What was a magical black box at start of chap has turned into a clearer picture, as illustrated in {\sf Fig. 2.26: Relationship between network, layers, loss function, \& optimizer.}: model, composed of layers that are chained together, maps input data to predictions. Loss function then compares these predictions to targets, producing a loss value: a measure of how well model's predictions match what was expected. Optimizer uses this loss value to update model's weights.
+		
+		Go back to 1st example in this chap \& review each piece of it in light of what learned since. This was input data:
+		\begin{verbatim}
+			(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+			train_images = train_images.reshape((60000, 28 * 28))
+			train_images = train_images.astype("float32") / 255
+			test_images = test_images.reshape((10000, 28 * 28))
+			test_images = test_images.astype("float32") / 255
+		\end{verbatim}
+		Now understand: input images are stored in NumPy tensors, which are here formatted as {\tt float32} tensors of shape {\tt(60000, 784)} (training data) \& {\tt(10000, 784)} (test data) resp. This was our model:
+		\begin{verbatim}
+			model = keras.Sequential([
+			    layers.Dense(512, activation="relu"),
+			    layers.Dense(10, activation="softmax")
+			])
+		\end{verbatim}
+		Now understand: this model consists of a chain of 2 {\tt Dense} layers, that each layer applies a few simple tensor operations to input data, \& these operations involve weight tensors. Weight tensors, which are attributes of layers, are where {\it knowledge} of model persists. This was model-compilation step:
+		\begin{verbatim}
+			model.compile(optimizer="rmsprop",
+			              loss="sparse_categorical_crossentropy",
+			              metrics=["accuracy"])
+		\end{verbatim}
+		Now understand: \verb|sparse_categorical_crossentropy| is loss function used as a feedback signal for learning weight tensors, \& which training phase will attempt to minimize. Also know that this reduction of loss happens via mini-batch stochastic gradient descent. Exact rules governing a specific use of gradient descent are defined by {\tt rmsprop} optimizer passed as 1st argument. This was training loop:
+		\begin{verbatim}
+			model.fit(train_images, train_labels, epochs=5, batch_size=128)
+		\end{verbatim}
+		Now understand what happens when call {\tt fit}: model will start to iterate on training data in mini-batches of 128 samples, 5 times over (each iteration over all training data is called an {\it epoch}). For each batch, model will compute gradient of loss w.r.t. weights (using Backpropagation algorithm, which derives from chain rule in calculus) \& move weights in direction that will reduce value of loss for this batch.
+		
+		After these 5 epochs, model will have performed 2345 gradient updates (469 per epoch), \& loss of model will be sufficiently low: model will be capable of classifying handwritten digits with high accuracy.
+		
+		At this point, already know most of what there is to know about neural networks. Prove it by reimplementing a simplified version of that 1st example ``from scratch'' in TensorFlow, step by step.
+		
+		\item {\sf Summary.}
+		\begin{itemize}
+			\item {\it Tensors} form foundation of modern ML systems. They come in various flavors of {\tt dtype, rank, shape}.
+			\item You can manipulate numerical tensors via {\it tensor operations} (e.g. addition, tensor product, or element-wise multiplication), which can be interpreted as encoding geometric transformations. In general, everything in DL is amenable to a geometric interpretation.
+			\item DL models consist of chains of simple tensor operations, parametrized by {\it weights}, which are themselves tensor. Weights of a model are where its ``knowledge'' is stored.
+			\item {\it Learning} means finding a set of values for model's weights that minimizes a {\it loss function} for a given set of training data samples \& their corresponding targets.
+			\item Learning happens by drawing random batches of data samples \& their targets, \& computing gradient of model parameters w.r.t. loss on batch. Model parameters are then moved a bit (magnitude of move is defined by learning rate) in opposite direction from gradient. This is called {\it mini-batch stochastic gradient descent}.
+			\item Entire learning process is made possible by fact: all tensor operations in neural networks are differentiable, \& thus possible to apply chain rule of derivation to find gradient function mapping current parameters \& current batch of data to a gradient value. This is called {\it backpropagation}.
+			\item 2 key concepts see frequently in future chaps are {\it loss} \& {\it optimizers}. These are 2 things need to define before begin feeding data into a model.
+			\begin{itemize}
+				\item {\it Loss} is quantity you'll attempt to minimize during training, so it should represent a measure of success for task you're trying to solve.
+				\item {\it Optimizer} specifies exact way in which gradient of loss will be used to update parameters: e.g., it could be RMSProp optimizer, SGD with momentum, \& so on.
+			\end{itemize}
+		\end{itemize}
 	\end{itemize}
-	\item {\sf3. Introduction to Keras \& TensorFlow.}
+	\item {\sf3. Introduction to Keras \& TensorFlow.} Cover: A closer look at TensorFlow, Keras, \& their relationship. Setting up a DL workspace. An overview of how core DL concepts translate to Keras \& TensorFlow.
+	
+	This chap is meant to give everything need to start doing DL in practice. Give a quick presentation of Keras \url{https://keras.io} \& TensorFlow \url{https://tensorflow.org}, Python-based DL tools used throughout book. Find out how to set up a DL workspace, with TensorFlow, Keras, \& GPU support. Finally, building on top of 1st contact had with Keras \& TensorFlow in Chap. 2, review core components of neural networks \& how they translate to Keras \& TensorFlow APIs.
+	
+	By end of this chap, ready to move on to practical, real-world applications, which will start with Chap. 4.
+	\begin{itemize}
+		\item {\sf3.1. What's TensorFlow?} TensorFlow is a Python-based, free, open source ML platform, developed primarily by Google. Much like NumPy, primary purpose of TensorFlow: enable engineers \& researchers to manipulate mathematical expressions over numerical tensors. But TensorFlow goes far beyond scope of NumPy in following ways:
+		\begin{itemize}
+			\item It can automatically compute gradient of any differentiable expression, making it highly suitable for ML.
+			\item It can run not only on CPUs, but also on GPUs \& TPUs, highly parallel hardware accelerators.
+			\item Computation defined in TensorFlow can be easily distributed across many machines.
+			\item TensorFlow programs can be exported to other runtimes, e.g. C++, JavaScript (for browser-based applications), or TensorFlow Lite (for applications running on mobile devices or embedded devices), etc. This makes TensorFlow applications easy to deploy in practical settings.
+		\end{itemize}
+		Important to keep in mind: TensorFlow is much more than a single library. It's really a platform, home to a vast ecosystem of components, some developed by Google \& some developed by 3rd parties. E.g., there's TF-Agents for reinforcement-learning research, TFX for industry-strength ML workflow management, TensorFlow Serving for production deployment, \& there's TensorFlow Hub repository of pretrained models. Together, these components cover a very wide range of use cases, from cutting-edge research to large-scale production applications.
+		
+		TensorFlow scales fairly well: e.g., scientists from Oak Ridge National Lab have used it to train a 1.1. exaFLOPS extreme weather forecasting model on 27000 GPUs of IBM Summit supercomputer. Likewise, Google has used TensorFlow to develop very compute-intensive DL applications, e.g. chess-playing \& Go-playing agent AlphaZero. For own models, if have budget, can realistically hope to scale to around 10 petaFLOPS on a small TPU pod or a large cluster of GPUs rented on Google Cloud or AWS. That would still be around 1\% of peak compute power of top supercomputer in 2019!
+		\item {\sf3.2. What's Keras?} Keras is a DL API for Python, built on top of TensorFlow, that provides a convenient way to define \& train any kind of DL model. Keras was initially developed for research, with aim of enabling fast DL experimentation.
+		
+		Through TensorFlow, Keras can run on top of different types of hardware ({\sf Fig. 3.1: Keras \& TensorFlow: TensorFlow is a low-level tensor computing platform, \& Keras is a high-level DL API}) -- GPU, TPU, or plain CPU -- \& can be seamlessly scaled to thousands of machines.
+		
+		Keras is known for prioritizing developer experience. It's an API for human beings, not machines. It follows best practices for reducing cognitive load: it offers consistent \& simple workflows, it minimizes number of actions required for common use cases, \& it provides clear \& actionable feedback upon user error. This makes Keras easy to learn for a beginner, \& highly productive to use for an expert.
+		
+		Keras has well over a million users as of late 2021, ranging from academic researchers, engineers, \& data scientists at both startups \& large companies to graduate students \& hobbyists. Keras is used at Google, Netflix, Uber, CERN, NASA, Yelp, Instacart, Square, \& hundreds of startups working on a wide range of problems across every industry. YouTube recommendations originate from Keras models. Waymo self-driving cars are developed with Keras models. Keras is also a popular framework on Kaggle, ML competition website, where most DL competitions have been won using Keras.
+		
+		Because Keras has a large \& diverse user base, it doesn't force you to follow a single ``true'' way of building \& training models. Rather, it enables a wide range of different workflows, from very high level to very low level, corresponding to different user profiles. E.g., have an array to ways to build models \& an array of ways to train them, each representing a certain trade-off between usability \& flexibility. In Chap. 5, review in detail a good fraction of this spectrum of workflows. Could be using Keras like would use Scikit-learn -- just calling {\tt fit()} \& letting framework do its thing -- or could be using it like NumPy -- taking full control of every little detail.
+		\item {\sf3.3. Keras \& TensorFlow: A brief history.}
+		\item {\sf3.4. Setting up a DL workspace.}
+	\end{itemize}
 	\item {\sf4. Getting started with neural networks: Classification \& regression.}
 	\item {\sf5. Fundamentals of ML.}
 	\item {\sf6. Universal workflow of ML.}

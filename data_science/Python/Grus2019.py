@@ -51,3 +51,44 @@ x_train, x_test, y_train, y_test = train_test_split(xs, ys, 0.33)
 model.train(x_train, y_train)
 performance = model.test(x_test, y_test)
 '''
+# tp: true positive, fp: false positive, fn: false negative, tn: true negative
+def accuracy(tp: int, fp: int, fn: int, tn: int) -> float:
+	correct = tp + tn
+	total = tp + fp + fn + tn
+	return correct / total
+	assert accuracy(70, 4930, 13930, 981070) == 0.98114
+
+def precision(tp: int, fp: int, fn: int, tn: int) -> float:
+	return tp / (tp + fp)
+assert precision(70, 4930, 13930, 981070) == 0.014
+
+def recall(tp: int, fp: int, fn: int, tn: int) -> float:
+	return tp / (tp + fn)
+assert recall(70, 4930, 13930, 981070) == 0.005
+
+# Chap. 18: Neural Networks
+from scratch.linear_algebra import Vector, dot # scratch lib???
+
+def step_function(x: float) -> float:
+	return 1.0 if x >= 0 else 0.0
+
+def perceptron_output(weights: Vector, bias: float, x: Vector) -> float:
+	"""Returns 1 if the perceptron 'fires', 0 if not"""
+	calculation = dot(weights, x) + bias
+	return step_function(calculation)
+
+# AND gate
+and_weights = [2., 2]
+and_bias = -3.
+assert perceptron_output(and_weights, and_bias, [1, 1]) == 1
+assert perceptron_output(and_weights, and_bias, [0, 1]) == 0
+assert perceptron_output(and_weights, and_bias, [1, 0]) == 0
+assert perceptron_output(and_weights, and_bias, [0, 0]) == 0
+
+# OR gate
+or_weights = [2., 2]
+or_bias = -1.
+assert perceptron_output(or_weights, or_bias, [1, 1]) == 1
+assert perceptron_output(or_weights, or_bias, [0, 1]) == 1
+assert perceptron_output(or_weights, or_bias, [1, 0]) == 1
+assert perceptron_output(or_weights, or_bias, [0, 0]) == 0

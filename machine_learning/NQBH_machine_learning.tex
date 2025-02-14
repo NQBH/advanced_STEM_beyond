@@ -7043,6 +7043,76 @@ A full understanding of ML requires some mathematical background \& so book incl
 
 %------------------------------------------------------------------------------%
 
+\subsubsection{\cite{Han_Jentzen_Weinan2018}. {\sc Jiequn Hana , Arnulf Jentzen, Weinan E}. Solving High-Dimensional PDEs Using Deep Learning}
+{\sf[2102 citations]}
+\begin{itemize}
+	\item {\sf Abstract.} Developing algorithms for solving high-dimensional PDEs has been an exceedingly difficult task for a long time, due to notoriously difficult problem known as ``curse of dimensionality''. This paper introduces a DL-based approach that can handle general high-dimensional parabolic PDEs. To this end, PDEs are reformulated using backward stochastic differential equations \& gradient of unknown solution is approximated by neural networks, very much in spirit of deep reinforcement learning with gradient acting as policy function. Numerical results on examples including nonlinear Black-Scholes equation, Hamilton--Jacobi--Bellman equation, \& Allen--Cahn equation suggest: proposed algorithm is quite effective in high dimensions, in terms of both accuracy \& cost. This opens up possibilities in economics, finance, operational research, \& physics, by considering all participating agents, assets, resources, or particles together at same time, instead of making ad hoc assumptions on their interrelationships.
+	\item {\sf Keywords.} PDEs, backward stochastic differential equations, high dimension, DL, Feynman--Kac
+	\item {\sf Intro.} PDEs are among most ubiquitous tools used in modeling problems in nature. Some of most important ones are naturally formulated as PDEs in high dimensions. Well-known examples include following:
+	\begin{enumerate}
+		\item Schr\"odinger equation in quantum many-body problem. In this case dimensionality of PDE is roughly 3 times number of electrons or quantum particles in system.
+		\item Nonlinear Black--Scholes equation for pricing financial derivatives, in which dimensionality of PDE is number of underlying financial assets under consideration.
+		\item Hamilton--Jacobi--Bellman equation in dynamic programming. In a game theory setting with multiple agents, dimensionality goes up linearly with number of agents. Similarly, in a resource allocation problem, dimensionality goes up linearly with number of devices \& resources.
+	\end{enumerate}
+	As elegant as these PDE models are, their practical use has proved to be very limited due to curse of dimensionality (1): Computational cost for solving them goes up exponentially with dimensionality.
+	
+	Another area where curse of dimensionality has been an essential obstacle is ML \& data analysis, where complexity of nonlinear regression models, e.g., goes up exponentially with dimensionality. In both cases essential problem we face is how to represent or approximate a nonlinear function in high dimensions. Traditional approach, by building functions using polynomials, piecewise polynomials, wavelets, or other basis functions, is bound to run into curse of dimensionality problem.
+	
+	In recent years a new class of techniques, deep neural network model, has shown remarkable success in AI, e.g., [2--6]. Neural network is an old idea but recent experience has shown: deep networks with many layers seem to do a surprisingly good job in modeling complicated datasets. In terms of representing functions, neural network model is compositional (thành phần): It uses compositions of simple functions to approximate complicated ones. It contrast, approach of classical approximation theory is usually additive. Mathematically, there are universally approximation theorems stating: a single hidden-layer network can approximate a wide class of functions on compact subsets (see, e.g., survey in [7] \& refs therein), even though still lack a theoretical framework for explaining seemingly unreasonable effectiveness of multilayer neural networks, which are widely used nowadays. Despite this, practical success of deep neural networks in AI has been very astonishing \& encourages applications to other problems where curse of dimensionality has been a tormenting issue (vấn đề đau khổ).
+	
+	In this paper, extend power of deep neural networks to another dimension by developing a strategy for solving a large class of high-dimensional nonlinear PDEs using DL. Class of PDEs dealed with is (nonlinear) parabolic PDEs. Special cases include Black--Scholes equation \& Hamilton--Jacobi--Bellman equation. To do so, make use of reformulation of these PDEs as backward stochastic differential equations (BSDEs) (e.g., [8, 9]) \& approximate gradient of solution using deep neural networks. Methodology bears some resemblance to deep reinforcement learning with BSDE playing role of model-based reinforcement learning (or control theory models) \& gradient of solution playing role of policy function. Numerical examples manifest: proposed algorithm is quite satisfactory in both accuracy \& computational cost.
+	\begin{remark}[Significance]
+		PDEs are among most ubiquitous tools used in modeling problems in nature. However, solving high-dimensional PDEs has been notoriously difficult due to ``curse of dimensionality''. This paper introduces a practical algorithm for solving nonlinear PDEs in very high (hundreds \& potentially thousands of) dimensions. Numerical results suggest: proposed algorithm is quite effective for a wide variety of problems, in terms of both accuracy \& speed. Believe: this opens up a host of possibilities in economics, finance, operational research, \& physics, by considering all participating agents, assets, resources, or particles together at same time, instead of making ad hoc assumptions on their interrelationships.
+	\end{remark}
+	Due to curse of dimensionality, there are only a very limited number of cases where practical high-dimensional algorithms have been developed in literature. For linear parabolic PDEs, one can use Feynman--Kac formula \& Monte Carlo methods to develop efficient algorithms to evaluate solutions at any given space-time locations. For a class of inviscid Hamilton--Jacobi equations, Darbon \& Osher [10] recently developed an effective algorithm in high-dimensional case, based on Hopf formula for Hamilton--Jacobi equations. A general algorithm for nonlinear parabolic PDEs based on multilevel decomposition of Picard iteration is developed in [11] \& has been shown to be quite efficient  on a number of examples in finance \& physics. Branching diffusion method is proposed in [12, 13], which exploits fact: solutions of semilinear PDEs with polynomial nonlinearity can be represented as an expectation of a functional of branching diffusion processes. This method does not suffer from curse of dimensionality, but still has limited applicability due to blow-up of approximated solutions in finite time.
+	
+	Starting point of present paper is DL. Stressed: even though DL has been a very successful tool for a number of applications, adapting it to current setting with practical success is still a highly nontrivial task. Here by using reformulation of BSDEs, able to cast problem of solving PDEs as a learning problem \& design a DL framework that fits naturally to that setting. This has proved to be quite successful in practice.
+	\item {\sf Methodology.} Consider a general class of PDEs known as semilinear parabolic PDEs. These PDEs can be represented as (1)
+	\begin{equation*}
+		\partial_tu(t,x) + \frac{1}{2}{\rm Tr}(\sigma\sigma^\top(t,x)({\rm Hess}_xu)(t,x)) + \nabla u(t,x)\cdot\mu(t,x) + f(t,x,u(t,x),\sigma^\top(t,x)\nabla u(t,x)) = 0
+	\end{equation*}
+	with some specified terminal condition $u(T,x) = g(x)$. Here $t,x$ represent time \& $d$-dimensional space variable, resp., $\mu$: a known vector-valued function, $\sigma$: a known $d\times d$ matrix-valued function, $\sigma^\top$ denotes transpose associated to $\sigma$, $\nabla u$ \& ${\rm Hess}_xu$ denote gradient \& Hessian of function $u$ w.r.t. $x$, ${\rm Tr}$ denotes trace of a matrix, \& $f$: a known nonlinear function. To fix ideas, interested in solution at $t = 0,x = \xi$ for some vector $\xi\in\mathbb{R}^d$.
+	
+	Let $\{W_t\}_{t\in[0,T]}$: a $d$-dimensional Brownian motion \& $\{X_t\}_{t\in[0,T]}$: a $d$-dimensional stochastic process which satisfies (2)
+	\begin{equation*}
+		X_t = \xi + \int_0^t \mu(s,X_s)\,{\rm d}s + \int_0^t \sigma(s,X_s)\,{\rm d}W_s.
+	\end{equation*}
+	Then solution of (1) satisfies following BSDE (cf., e.g., [8, 9]): (3)
+	\begin{equation*}
+		u(t,X_t) - u(0,X_0) = -\int_0^t f(s,X_s,u(s,X_s),\sigma^\top(s,X_s)\nabla u(s,X_s))\,{\rm d}s + \int_0^t [\nabla u(s,X_s)]^\top\sigma(s,X_s)\,{\rm d}W_s.
+	\end{equation*}
+	To derive a numerical algorithm to compute $u(0,X_0)\approx\theta_{u_0},\nabla u(0,X_0)\approx\theta_{\nabla u_0}$ as parameters in model \& view (3) as a way of computing values of $u$ at terminal time $T$, knowing $u(0,X_0)$ \& $\nabla u(t,X_t)$. Apply a temporal discretization to (2)--(3). Given a partition of time interval $[0,T]$: $0 = t_0 < t_1 < \cdots < t_N = T$, consider simple Euler scheme for $n = 1,\ldots,N - 1$: (4)--(5)
+	\begin{align*}
+		X_{t_{n+1}} - X_{t_n}&\approx\mu(t_n,X_n)\Delta t_n + \sigma(t_n,X_{t_n})\Delta W_n,\\
+		u(t_{n+1},X_{t_{n+1}}) - u(t_n,X_{t_n})&\approx-f(t_n,X_{t_n},u(t_n,X_{t_n}),\sigma^\top(t_n,X_{t_n})\nabla u(t_n,X_{t_n}))\Delta t_n + [\nabla u(t_n,X_{t_n})]^\top\sigma(t_n,X_{t_n})\Delta W_n,
+	\end{align*}
+	where $\Delta t_n = t_{n+1} - t_n$, $\Delta W_n = W_{t_{n+1}} - W_{t_n}$. Given this temporal discretization, path $\{X_{t_n}\}_{0\le n\le N}$ can be easily sampled using (4). Key step next: approximate function $x\mapsto\sigma^\top(t,x)\nabla u(t,x)$ at each time step $t = t_n$ by a multilayer feedfoward neural network (7)
+	\begin{equation*}
+		\sigma^\top(t_n,X_{t_n})\nabla u(t_n,X_{t_n}) = (\sigma^\top\nabla u)(t_n,X_{t_n})\approx(\sigma^\top\nabla u)(t_n,X_{t_n}|\theta_n),\ n = 1,\ldots,N - 1,
+	\end{equation*}
+	where $\theta_n$ denotes parameters of neural network approximating $x\mapsto\sigma^\top(t,x)\nabla u(t,x)$ at $t = t_n$.
+	
+	Therefore, stack all of subnetworks in (7) together to form a deep neural network as a whole, based on summation of (5) over $n = 1,\ldots,N - 1$. Specifically, this network takes paths $\{X_{t_n}\}_{0\le n\le N},\{W_{t_n}\}_{0\le n\le N}$ as input data \& gives final output, denoted by $\hat{u}(\{X_{t_n}\}_{0\le n\le N},\{W_{t_n}\}_{0\le n\le N})$, as an approximation of $u(t_N,X_{t_N})$. Refer to {\it Materials \& Methods} for more details on architecture of neural network. Difference in matching of a given terminal condition can be used to define expected loss function (8)
+	\begin{equation*}
+		l(\theta) = \mathbb{E}\left[|g(X_{t_N}) - \hat{u}(\{X_{t_n}\}_{0\le n\le N},\{W_{t_n}\}_{0\le n\le N})|^2\right].
+	\end{equation*}
+	Total set of parameters is $\theta = \{\theta_{u_0},\theta_{\nabla u_0},\theta_1,\ldots,\theta_{N-1}\}$.
+	
+	Can now use a stochastic gradient descent-type (SGD) algorithm to optimize parameter $\theta$, just as in standard training of deep neural networks. In numerical examples, use Adam optimizer [14]. See {\it Materials \& Methods} for more details on training of deep neural networks. Since BSDE is used as an essential tool, call methodology introduced above deep BSDE method.
+	\item {\sf Examples.}
+	\begin{itemize}
+		\item {\sf Nonlinear Black--Scholes Equation with Default Risk.}
+		\item {\sf Hamilton--Jacobi--Bellman Equation.}
+		\item {\sf Allen--Cahn Equation.}
+	\end{itemize}
+	\item {\sf Conclusions.} Algorithm proposed in this paper opens up a host of possibilities in several different areas. E.g., in economics one can consider many different interacting agents at same time, instead of using ``representative agent'' model. Similarly in finance, one can consider all of participating instruments at same time, instead of relying on ad hoc assumptions about their relationships. In operational research, one can handle cases with hundreds \& thousands of participating entities directly, without need to make ad hoc approximations.
+	
+	Note: although methodology presented here is fairly general, so far not able to deal with quantum many-body problem due to difficulty in dealing with Pauli exclusion principle.
+	\item {\sf Materials \& Methods.}
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
 \subsection{{\sc Arnulf Jentzen, Benno Kuckuck, Philippe von Wurstemberger}. Mathematical Introduction to Deep Learning: Methods, Implementations, \& Theory}
 {\bf Keywords.} DL, ANN, SGD, optimization.
 

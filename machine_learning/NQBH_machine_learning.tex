@@ -667,7 +667,7 @@ Research has exploded in field of machine learning resulting in complex mathemat
 	\begin{itemize}
 		\item {\sf9.1. Introduction.} In supervised learning, main focus has been put on methods to learn from $n$ observations $(x_i,y_i),i = 1,\ldots,n$, with $x_i\in{\cal X}$ (input space) \& $y_i\in{\cal Y}$ (output{\tt/}label space). As presented in Chap. 4, a large class of methods relies on minimizing a regularized empirical risk w.r.t. a function $f:{\cal X}\to\mathbb{R}$, where following cost function is minimized:
 		\begin{equation}
-			\frac{1}{n}\sum_{i=1}^n l(y_i,f(x_)) + \Omega(f),
+			\frac{1}{n}\sum_{i=1}^n l(y_i,f(x_i)) + \Omega(f),
 		\end{equation}
 		where $l:{\cal Y}\times\mathbb{R}\to\mathbb{R}$: a loss function, $\Omega(f)$: a regularization term. Typical examples were:
 		\begin{itemize}
@@ -2218,8 +2218,42 @@ In {\it DL with Python 2e} will learn:
 		Keras has well over a million users as of late 2021, ranging from academic researchers, engineers, \& data scientists at both startups \& large companies to graduate students \& hobbyists. Keras is used at Google, Netflix, Uber, CERN, NASA, Yelp, Instacart, Square, \& hundreds of startups working on a wide range of problems across every industry. YouTube recommendations originate from Keras models. Waymo self-driving cars are developed with Keras models. Keras is also a popular framework on Kaggle, ML competition website, where most DL competitions have been won using Keras.
 		
 		Because Keras has a large \& diverse user base, it doesn't force you to follow a single ``true'' way of building \& training models. Rather, it enables a wide range of different workflows, from very high level to very low level, corresponding to different user profiles. E.g., have an array to ways to build models \& an array of ways to train them, each representing a certain trade-off between usability \& flexibility. In Chap. 5, review in detail a good fraction of this spectrum of workflows. Could be using Keras like would use Scikit-learn -- just calling {\tt fit()} \& letting framework do its thing -- or could be using it like NumPy -- taking full control of every little detail.
-		\item {\sf3.3. Keras \& TensorFlow: A brief history.}
-		\item {\sf3.4. Setting up a DL workspace.}
+		
+		I.e., everything learning now as getting started will still be relevant once become an expert. Can get started easily \& then gradually dive into workflows where writing more \& more logic from scratch. Won't have to switch to an entirely different framework as go from student to researcher, or from data scientist to DL engineer.
+		
+		This philosophy is not unlike that of Python itself! Some languages only offer 1 way to write programs -- e.g., OOP or functional programming. Meanwhile, Python is a multiparadigm language: it offers an array of possible usage patterns that all work nicely together. This makes Python suitable to a wide range of very different use cases: system administration, DS, ML engineering, web development $\ldots$ or just learning how to program. Likewise, can think of Keras as Python of DL: a user-friendly DL language that offers a variety of workflows to different user profiles.
+		\item {\sf3.3. Keras \& TensorFlow: A brief history.} Keras predates TensorFlow by 8 months. It was released in Mar 2015, \& Tensorflow was released in Nov 2015. May ask if Keras is built on top of TensorFlow, how it could exist before TensorFlow was released? Keras was originally built on top of Theano, another tensor-manipulation library that provided automatic differentiation \& GPU support -- earliest of its kind. Theano, developed at Montréal Institute for Learning Algorithms (MILA) at the Université de Montréal, was in many ways a precursor (tiền thân) of TensorFlow. It pioneered idea of using static computation graphs for automatic differentiation \& for compiling code to both CPU \& GPU.
+		
+		In late 2015, after release of TensorFlow, Keras was refactored to a multibackend architecture: it became possible to use Keras with either Theano or TensorFlow, \& switching between 2 was as easy as changing an environment variable. By Sep 2016, TensorFlow had reached a level of technical maturity where it became possible to make it default backend option for Keras. In 2017, 2 new additional backend options were added to Keras: CNTK (developed by Microsoft) \& MXNet (developed by Amazon). Nowadays, both Theano \& CNTK are out of development, \& MXNet is not widely used outside of Amazon. Keras is back to being a single-backend API -- on top of TensorFlow.
+		
+		Keras \& TensorFlow have had a symbiotic relationship for many years. Throughout 2016 \& 2017, Keras became well known as user-friendly way to develop TensorFlow applications, funneling new users into TensorFlow ecosystem. By late 2017, a majority of TensorFlow users were using it through Keras or in combination with Keras. In 2018, TensorFlow leadership picked Keras \& TensorFlow's official high-level API. As a result, Keras API is front \& center in TensorFlow 2.0, released in Sep 2019 -- an extensive redesign of TensorFlow \& Keras that takes into account $> 4$ years of user feedback \& technical progress.
+		
+		By this point, must be eager to start running Keras \& TensorFlow code in practice.
+		\item {\sf3.4. Setting up a DL workspace.} Before can get started developing DL applications, need to set up your development environment. It's highly recommended, although not strictly necessary, that run DL code on a modern NVIDIA GPU rather than computer's CPU. Some applications -- in particular, image processing with convolutional networks -- will be excruciatingly slow (chậm kinh khủng) on CPU, even a fast multicore CPU. \& even for applications that can realistically be run on CPU, generally see speed increase by a factor of 5 or 10 by using a recent GPU.
+		
+		To do DL on a GPU, have 3 options:
+		\begin{itemize}
+			\item Buy \& install a physical NVIDIA GPU on your workstation.
+			\item use GPU instances on Google Cloud or AWS EC2.
+			\item Use free GPU runtime on Colaboratory, a hosted notebook service offered by Google.
+		\end{itemize}
+		Colaboratory is easiest way to get started, as it requires no hardware purchase \& no software installation -- just open a tab in browser \& start coding. It's the opinion recommend for running code examples in this book. However, free version of Colaboratory is only suitable for small workloads. If want to scale up, have to use 1st or 2nd option.
+		
+		If don't already have a GPU that can use for DL (a recent, high-end NVIDIA GPU), then running DL experiments in cloud is a simple, low-cost way to move to larger workloads without having to buy any additional hardware. If develop using Jupyter notebooks, experience of running in cloud is no different from running locally.
+		
+		But if a heavy user of DL, this setup isn't sustainable in long term (bền vững trong dài hạn) -- or even for more than a few months. Cloud instances aren't cheap: pay \$2.48 per hour for a V100 GPU on Google Cloud in mid-2021. Meanwhile, a solid consumer-class GPU will cost you somewhere between \$1500--\$2500 -- a price that has been fairly stable over time, even as specs of these GPUs keep improving. If a heavy user of DL, consider setting up a local workstation with 1 or more GPUs.
+		
+		Additionally, whether running locally or in cloud, better to be using a Unix workstation. Although it's technically possible to run Keras on Windows directly, don't recommend it. If a Windows user wants to do DL on own workstation, simplest solution to get everything running is to set up an Ubuntu dual boot on your machine, or to leverage Windows Subsystem for Linux (WSL), a compatibility layer that enables to run Linux applications from Windows. It may seem like hassle, but it will save you a lot of time \& trouble in long run.
+		\begin{itemize}
+			\item {\sf3.4.1. Jupyter notebooks: preferred way to run DL experiments.} Jupyter notebooks are a great way to run DL experiments -- in particular, many code examples in this book. They're widely used in DS \& ML communities. A {\it notebook} is a file generated by Jupyter Notebook app \url{https://jupyter.org} that can edit in browser. It mixes ability to execute Python code with rich text-editing capabilities for annotating what doing. A notebook also allows to break up long experiments into smaller pieces that can be executed independently, which makes development interactive \& means don't have to rerun all of your prev code if sth goes wrong late in an experiment.
+			
+			Recommend using Jupyter notebooks to get started with Keras, although that isn't a requirement: can also run standalone Python scripts or run code from within an IDE e.g. PyCharm. All code examples in this book are available as open source notebooks; can download: \url{github.com/fchollet/deep-learning-with-python-notebooks}.
+			\item {\sf3.4.2. Using Colaboratory.} Colaboratory (or Colab for short) is a free Jupyter notebook service that requires no installation \& runs entirely in cloud. Effectively, it's a web page that lets you write \& execute Keras scripts right away. It gives access to a a free (but limited) GPU runtime \& even a TPU runtime, so don't have to buy your own GPU. Colaboratory is what recommend for running code examples in this book.
+			\begin{itemize}
+				\item {\sf1st steps with Colaboratory.} To get started with Colab, go to \url{https://colab.research.google.com} \& click {\tt New Notebook} button. See standard Notebook interface shown in {\sf Fig. 3.2: A Colab notebook}. Notice 2 buttons in toolbar: {\tt+ Code, + Text}. They're for creating executable Python code cells \& annotation text cells, resp. After entering code in a code cell, Pressing Shift-Enter will execute it ({\sf Fig. 3.3: Creating a code cell})
+			\end{itemize}
+		\end{itemize}
+		\item {\sf3.5. 1st steps with TensorFlow.}
 	\end{itemize}
 	\item {\sf4. Getting started with neural networks: Classification \& regression.}
 	\item {\sf5. Fundamentals of ML.}
@@ -4778,7 +4812,7 @@ This book brings mathematical foundations of basic ML concepts to fore \& collec
 
 %------------------------------------------------------------------------------%
 
-\subsection{{\sc Sebastian Raschka, Yuxi (Hayden) Liu, Vahid Mirjalili}. Machine Learning with PyTorch \& Scikit-Learn: Develop ML \& DL Models with Python. 2023}
+\subsection{\cite{Raschka_Liu_Mirjalili2023}. {\sc Sebastian Raschka, Yuxi (Hayden) Liu, Vahid Mirjalili}. Machine Learning with PyTorch \& Scikit-Learn: Develop ML \& DL Models with Python. 2023}
 PyTorch book of bestselling \& widely acclaimed {\it Python ML} series. Foreword by {\sc Dmytro Dzhulgakov} -- PyTorch Core Maintainer
 \begin{itemize}
 	\item {\sf Foreword.} ``Over recent years, ML methods, with their ability to make sense of vast amounts of data \& automate decisions, have found widespread applications in healthcare, robotics, biology, physics, consumer products, internet services, \& various other industries.
@@ -7391,9 +7425,7 @@ In (3) above, have set up an optimization problem for learning problem by using 
 
 %------------------------------------------------------------------------------%
 
-\subsection{{\sc Phillip Petersen, Jakob Zech}. Mathematical Theory of Deep Learning}
-Oct 14, 2023.
-
+\subsection{{\sc Phillip Petersen, Jakob Zech}. Mathematical Theory of Deep Learning. Oct 14, 2023}
 {\sf Preface.} This book serves as an introduction to key ideas in mathematical analysis of DL. Designed to help students \& researchers to quickly familiarize themselves with area \& to provide a foundation for development of university courses on mathematics of DL. Main goal in composition of this book was to present various rigorous, but easy to grasp, results that help to build an understanding of fundamental mathematical concepts in DL. To achieve this, prioritize simplicity over generality.
 
 As a mathematical introduction to DL, this book does not aim to give an exhaustive survey of entire (\& rapidly growing) field, \& some important research directions are missing. In particular, have favored mathematical results over empirical research, even though an accurate account of theory of DL requires both.
@@ -8352,6 +8384,182 @@ Journal of Computational Physics. {\sf[12432 citations]}
 	In a broader context, \& along way of seeking answers to those questions, believe: this work advocates a fruitful synergy between ML \& classical computational physics that has potential to enrich both fields \& lead to high-impact developments.
 	\item {\sf Appendix A. Data-driven solutions of PDEs.}
 	\item {\sf Appendix B. Data-driven discovery of PDEs.}
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsection{{\sc Son N. T. Tu, Thu Nguyen}. FinNet: Finite Difference Neural Network for Solving Differential Equations. 2022. arXiv}
+{\sf[2 citations]}
+\begin{itemize}
+	\item {\sf Abstract.} DL approaches for PDEs have received much attention in recent years due to their \fbox{mess-freeness} \& computational efficiency. However, most of works so far have concentrated on time-dependent nonlinear differential equations. In this work, analyze potential issues with well-known Physics Informed Neural Network for differential equations with little constraints on boundary (i.e., constraints are only on a few points). This analysis motivates us to introduce a novel technique called FinNet, for solving differential equations by incorporating FD into DL. Even though use a mesh during training, prediction phase is mesh-free. Illustrate effectiveness of our method through experiments on solving various equations, which shows: FinNet can solve PDEs with low error rates \& may work even when PINNs cannot.
+	\item {\sf1. Introduction.} Differential equations play a crucial role in many aspects of modern world, from technology to supply chain, economics, operational research, \& finance [1]. Solving these equations numerically has been an extensive area of research since 1st conception of modern computer. Yet, there are some potential drawbacks of classical methods, e.g. FD \& FE. 1stly, {\it curse of dimensionality}, i.e., computational cost, increases exponentially with dimension of equation [2]. 2ndly, classical methods usually need a mesh [3, 4]. With advacement of DL, there have been many works on using neural networks to solve differential equations that potentially can shed light on resolving above difficulties [5, 6].
+	
+	1 of foundational works in DL for solving PDEs is PINNs [7]. Here, a neural network is trained to solve supervised learning tasks w.r.t. given laws of physics described by nonlinear PDEs. Various variants or extension of this method exist. E.g., XPINNs [8] is a generalized space-time domain decomposition framework for PINNs to solve nonlinear PDEs in arbitrary complex-geometry domains. Another example is PhyGeoNet [9], a CNN-based variant of PINNs for \fbox{solving PDEs in an irregular domain}.
+	
+	In another work [1], authors try to address curse of dimensionality in high-dimensional semilinear parabolic PDEs by reformulating PDEs using backward stochastic differential equations \& approximating gradient of unknown solution by deep reinforcement learning with gradient acting as policy function. Further notable work on high-dimensional PDEs is Deep Galerkin Method [10], in which solution is approximated by a neural network trained to satisfy differential operator, initial condition, \& boundary conditions using batches of randomly sampled time \& space points. In addition, authors in [11] consider using deep neural network for high-dimensional elliptic PDEs with boundary conditions.
+	
+	Furthermore, SPINN [12] is a recently developed method that uses an interpretable sparse network architecture for solving PDEs \& authors in [13] propose a deep ReLU neural network approximation of parametric \& stochastic elliptic PDEs with lognormal inputs.
+	
+	However, most of works in field of DL for differential equations are for time-dependent PDEs [7, 8, 10, 1]. Therefore, it would be interesting to explore how DL techniques can be used in other scenarios. In this work, illustrate via examples that applying PINNs to certain PDEs may not give desirable results. Investigate potential reasons for such problems \& propose a novel method, namely Finite Difference Network (FinNet), that uses neural networks \& FD to solve such equations.
+	
+	Main contributions of this work:
+	\begin{enumerate}
+		\item Show examples PINNs fails to work for PDEs with very few constraints on boundary \& analyze potential reason
+		\item Propose FinNet, a method based on FD \& neural network to solve PDE with little constraints on boundary
+		\item Illustrate via various examples that FinNet can solve PDEs efficiently, even when PINNs cannot
+		\item Discuss open problems for future research.
+	\end{enumerate}
+	Rest of paper is organized as follows:
+	\begin{itemize}
+		\item Sect. 2 gives some preliminaries on PINNs for solving time-dependent nonlinear PDEs.
+		\item Sect. 3 explore potential issues with applying PINNs for some differential equations that are not time-dependent nonlinear, analyze examples, \& give motivations to FinNet approach.
+		\item Sect. 4 details FinNet method
+		\item Sect. 5 gives various examples on applying FinNet to solve differential equations.
+		\item Sect. 6: end with a conclusion of this work \& open questions.
+	\end{itemize}
+	\item {\sf2. Preliminaries: Physics Informed Neural Networks.} PINNs [7] considers parameterized \& nonlinear PDEs of form $u_t + {\cal N}[u;\lambda] = 0$, where $u(t,x)$: latent solution (giải pháp tiềm ẩn), \& ${\cal N}[\cdot;\lambda]$ is a nonlinear operator parameterized by $\lambda$. It defines $f\coloneqq u_t + {\cal N}[u]$, \& approximates $u(t,x)$ by a neural network. then, parameters of neural network \& $f(t,x)$ can be learned by minimizing mean squared error (MSE) loss
+	\begin{equation*}
+		L = \frac{1}{N_u}\sum_{i=1}^{N_u} |u(t_u^i,x_u^i) - u^i|^2 + \frac{1}{N_f}\sum_{i=1}^{N_f} |f(t_f^i,x_f^i)|^2,
+	\end{equation*}
+	where $\{t_u^i,x_u^i,u^i\}_{i=1}^N$: initial \& boundary training data on $u(t,x)$ \& $\{t_f^i,x_f^i\}_{i=1}^{N_f}$: collocations points for $f(t,x)$.
+	
+	E.g., consider solving Burgers equation with Dirichlet boundary conditions
+	\begin{equation*}
+		\left\{\begin{split}
+			u_t + uu_x - \frac{0.01}{\pi}u_{xx} &= 0,\ x\in[-1,1],\ t\in[0,1],\\
+			u(0,x) &= \sin\pi x,\\
+			u(t,-1) = u(t,1) &= 0.
+		\end{split}\right.
+	\end{equation*}
+	Then PINNs defines
+	\begin{equation*}
+		f = u_t + uu_x - \frac{0.01}{\pi}u_{xx},
+	\end{equation*}
+	\& approximate $u(t,x)$ by a neural network. Next, parameters of neural network $u(t,x)$ can be learned by minimizing MSE:
+	\begin{equation*}
+		L = \frac{1}{N_u}\sum_{i=1}^{N_u} |u(t_u^i,x_u^i) - u^i|^2 + \frac{1}{N_f}\sum_{i=1}^{N_f} |f(t_f^i,x_f^i)|^2,
+	\end{equation*}
+	where $\{t_u^i,x_u^i,u^i\}_{i=1}^N$: initial \& boundary training data on $u(t,x)$ \& $\{t_f^i,x_f^i\}_{i=1}^{N_f}$: collocations points for $f(t,x)$.	
+	\item {\sf3. Motivation.} In this sect, 1st illustrate via examples: in some cases, applying PINNs to solve differential equations may not lead to convergence towards desired solution. Attempt to explain potential reasons why such an issue can arise \& by this, provides motivation for our approach.
+	\begin{itemize}
+		\item {\sf Example 1.} Consider equation (5)
+		\begin{equation*}
+			\left\{\begin{split}
+				u'(x) + u(x) &= x,\ x\in(0,1),\\
+				u(0) &= 1.
+			\end{split}\right.
+		\end{equation*}
+		Exact solution: $u^*(x) = x - 1 + 2e^{-x}$. To solve this equation by PINNs, approximate $u$ by a neural network with 4 layers, each layer has 32 neurons, \& $\tanh$ as activation function. Train network with 5000 epochs \& following loss function
+		\begin{equation*}
+			L = \frac{1}{99}\sum_{i=1}^{99} \left(\frac{d\hat{u}}{dx_i} + \hat{u} - x_i\right)^2 + |\hat{u}(0) - 1|^2.
+		\end{equation*}
+		Here, $x_1 = 0.01,x_2 = 0.02,\ldots,x_{99} = 0.99$: training data.
+		
+		After 5000 epochs, loss becomes as low as $5.15\cdot10^{-5}$. Yet {\sf Fig. 1: Left: Approximation by PINNs compared to true solution for (5). Right: true solution vs. neural network solution for (8).} shows: approximation from neural network is not close to true solution. Examining gradients shows: $u'(x)\approx0.0125$ at all interior points (mean of $u'(x_i)$, $i = 1,\ldots,n$ is $0.0125$ \& variance is $0.0001$).
+		\item {\sf3.2. Example 2: 2nd order static equation.} Attempted to solve following initial boundary equation
+		\begin{equation*}
+			\left\{\begin{split}
+				u''(x) + u(x) &= e^{-x},\ x\in(0,1)\\
+				u(0) = 1,\ u(1) &= \frac{1}{2}\cos1 + \frac{1}{2}\sin1 + \frac{1}{2e}.
+			\end{split}\right.
+		\end{equation*}
+		Exact solution (viscosity solution) is
+		\begin{equation*}
+			u^*(x) = \frac{\sin x + \cos x + e^{-x}}{2}.
+		\end{equation*}
+		In an attempt to solve this equation by PINNs, approximate $u$ using a neural network with 4 layers, where each layer has 32 neurons \& a $\tanh$ activation function. Train network with 5000 epochs \& following loss function
+		\begin{equation*}
+			L = \frac{1}{99}\sum_{i=1}^{99} \left(\frac{d^2\hat{u}}{dx_i^2} + \hat{u}(x_i) - e^{-x_i}\right)^2 + \frac{1}{2}\left(|\hat{u}(0) - 1|^2 + \left|\hat{u}(1) - \frac{1}{2}\cos1 + \frac{1}{2}\sin1 + \frac{1}{2e}\right|^2\right).
+		\end{equation*}
+		Here $x_1 = 0.01,x_2 = 0.02,\ldots,x_{99} = 0.99$: training data. Approximated solution produced by PINNs is provided in {\sf Fig. 1 right}.
+		
+		After 50 epochs, loss reduces to 2.88 \& then stays approximately same throughout epoch 51 to epoch 5000. From {\sf Fig. 1}, can see: approximation from neural network is almost constant rather than being close to true solution. Examining gradients shows: $u''(x)\approx0$ at all interior points (mean of $u'(x_i)$, $i = 1,\ldots,n$ is $-7.86\cdot10^{-5}$ \& variance is $9.53\cdot10^{-9}$). Hence, can say: neural network get stuck at a local minima in this case.
+		\item {\sf3.3. Analysis \& Motivation for FinNet.} By {\it Universal approximation theorem} for neural network [14,15], PINNs' approximation is always possible given enough parameters. However, from examples above, see: applying PINNs to certain kinds of differential equations may not give a desirable result, \& network may get stuck at a local minimum. However, note: training in this manner does not involve any label, \& PINNs seem to work well for nonlinear time-dependent PDEs as studied in [7]. Furthere, without boundary constraints, a PDE fails to have a unique solution. In addition, when training a neural network to solve a differential equation, need to inform network about constraint on boundary. Next, recall: in (4) on $L$ formula, constraints on boundary is informed to network via term $\frac{1}{N_f}\sum_{i=1}^{N_f} |f(t_f^i,x_f^i)|^2$, which is based on $N_f$ points. For a time-dependent equation, $N_f$ can be reasonably large \& feed into network enough information for convergence to a desirable result. However, for PDEs in (5) \& (8) boundary consists of only 2 points.
+		
+		This motivates to provide more instructions for neural network learning process by incorporating FD mechanism into network, which informs network: data points should satisfy conditions stated by FD. In addition, $u(x,y)$ is known at boundary. E.g., in (18), boundary is known to be
+		\begin{equation*}
+			u(0) = 1,\ u(1) = \frac{1}{2}\cos1 + \frac{1}{2}\sin1 + \frac{1}{2e}.
+		\end{equation*}
+		Therefore, instead of minimizing MSE as in (1), use this information along with FD to estimate derivative terms. This helps estimate derivatives at boundary more accurately \& provides learning process with better instructions on what network should satisfy.
+	\end{itemize}
+	\item {\sf4. Finite Difference Network (FinNet).} This sect details FD network (FinNet) approach. Assume: have a function $f:\mathbb{R}\to\mathbb{R}$, \& a (uniform) mesh $\ldots,x_{i-2},x_{i-1},x_i,x_{i+1},x_{i+2},\ldots$ with $h = x_{i+1} - x_i$. Then, recall: by using FD, 1st order derivative $f'(x_i)$ can be computed approximately by 1 of following 3 formulas
+	\begin{equation*}
+		f'(x_i)\approx\frac{f(x_{i+1}) - f(x_i)}{h},\ f'(x_i)\approx\frac{f(x_i) - f(x_{i-1})}{h},\ f'(x_i)\approx\frac{f(x_{i+1}) - f(x_{i-1})}{2h}, 
+	\end{equation*}
+	\& 2nd order derivative can be approximated by
+	\begin{equation*}
+		\frac{f(x_{i+1}) - 2f(x_i) + f(x_{i-1})}{h^2},
+	\end{equation*}
+	\& for general case where $f:\mathbb{R}^n\to\mathbb{R}$ then derivative terms are estimated by using above univariate FD scheme to partial derivatives of $f$.
+	
+	Next, define some defs \& notations in {\sf Table 1: Table of Notations}
+	\begin{enumerate}
+		\item $\Omega$: an open subset of $\mathbb{R}^n$
+		\item $\partial\Omega$: boundary of $\Omega$
+		\item $G$: a set of meshgrid points
+		\item $B$: a set of boundary points, $B\subset G$
+		\item $u^*$: true solution
+		\item $v$: a neural network that approximates $u^*$
+		\item $L$: loss function
+		\item $N$: mesh grid size
+		\item ${\rm MSE}({\bf a},{\bf b})$: mean squared error between vectors ${\bf a},{\bf b}$.
+	\end{enumerate}
+	For a continuous operator $F$, to solve problem:
+	\begin{equation*}
+		\left\{\begin{split}
+			F(x,u,Du,D^2u) &= 0&&\mbox{in }\Omega,\\
+			u &= g&&\mbox{on }\partial\Omega.
+		\end{split}\right.
+	\end{equation*}
+	Discretize $[a,b] = \{x_1,\ldots,x_N\}$ \& for simplicity use uniform mesh $\Delta =  \frac{b - a}{N + 1}$ as distance between 2 consecutive points.
+	\begin{question}[FDMs on nonuniform meshes]
+		Possible to generalize this framework to non-uniform mesh? Read \cite{LeVeque2007}.
+	\end{question}
+	Finnet strategy for solving differential equations is as given in {\sf Algorithm 1: FinNet}. Given a neural network model $v$, train network as following: For each epoch, 1st compute $\hat{u}\leftarrow v(G),\hat{u}_B\leftarrow v(B)$. Note: $B\subset G$ so computation of $\hat{u}_B\leftarrow v(B)$ is already done in $\hat{u}\leftarrow v(G)$ operation. Though, write it down to clarity of $\hat{u}_B$ notation. Then, initialize loss $L$ with MSE loss at boundary: $L\leftarrow{\rm MSE}(\hat{u}_B,g(B))$. This is to ensure: constraint $u = g$ on $\partial\Omega$ is satisfied. Next, update boundary values of $\hat{u}$ with already known exact values based on $u = g$ on $\partial\Omega$ as in (13). This is done by assigning $\hat{u}_B\leftarrow g(B)$. Based on this newly updated $\hat{u}$, estimate derivatives in $F$ by finite difference. This later allows us to estimate $F$ based on approximated terms. Then, update loss: $L\leftarrow L + {\rm MSE}(F(x,u,\hat{D}u,\hat{D}^2u),0)$. This is to ensure: condition $F(x,u,Du,D^2u) = 0$ in $\Omega$ is satisfied. After getting loss, update weights of neural network $v$.
+	
+	Note: Step ``update boundary values of $\hat{u}$ with already known exact values based on $u = g$ on $\partial\Omega$ as in (13). This is done by assigning $\hat{u}_B\leftarrow g(B)$.'' is crucial. Estimating derivative terms by FD using this is more accurate than using predicted values of network on boundary. Another noteworthy point: since use FD during training phase, a mesh is needed at this stage. However, similar to PINNs, prediction phase is mesh-free.
+	\item {\sf5. Examples.} Provide various examples on how FinNet can be used to solve differential equations. Source code for examples will be made available upon acceptance of paper.
+	\begin{itemize}
+		\item {\sf5.1. Example 1: Linear 1st-order equation.} Consider (5) in Sect. 3. True solution: $u^*(x) = x - 1 + 2e^{-x}$. For this equation, let $F = u'(x) + u(x) - x$. Used a neural network of 2 hidden layers with 16 neurons{\tt/}layer \& hyperbolic tangent activation functions to approximate true solution. To learn parameters, use Adam optimizer with learning rate 0.01. In this case, $G = \{0,0.01,0.02,\ldots,0.99,1\}$, $B = \{0,1\}$.
+		
+		***SKIPPED DETAILS***
+		After getting loss, update weights of neural network $v$.
+		
+		After 5000 epochs, loss goes down to $3.34\cdot10^{-5}$, \& mean square error between true solution \& predicted values is $1.15\cdot10^{-7}$. Plot of true solution vs. neural network's approximated solution is shown in {\sf Fig. 2: Left: True solution vs. neural network's approximated solution for (15). Right: True solution vs. neural network's approximated solution for (18).}
+		\item {\sf5.2. Example 2: 2nd-order linear equation.} Consider following initial boundary equation, which have tried to solve by PINNs in Sect. 3. Exact solution (viscosity solution) is $u^*(x) = \frac{\sin x + \cos x + e^{-x}}{2}$. In this case, $F(x) = u''(x) + u(x) - e^{-x}$. Used a neural network consisting of 2 hidden layers with 16 neurons per layer \& hyperbolic tangent activation functions to approximate true solution. To learn parameters, use \fbox{Adam optimizer} with learning rate $0.01$. In this case,
+		\begin{equation*}
+			G = \{0,0.01,0.02,\ldots,0.99,1\},\ B = \{0,1\}.
+		\end{equation*}
+		\item {\sf Example 3: Laplace equation in 2D.} Let $\Omega = (-1,1)^2$, problem:
+		\begin{equation*}
+			\left\{\begin{split}
+				u_{xx} + u_{yy} &= 0&&\mbox{in }(-1,1)^2,\\
+				u(x,y) &= xy&&\mbox{on }\partial\Omega.
+			\end{split}\right.
+		\end{equation*}
+		Exact solution: $u^*(x,y) = xy$. Used a neural network $v$ of 2 hidden layers with 8 neurons per layer \& hyperbolic tangent activation functions to approximate true solution. To learn parameters, use Adam optimizer with learning rate $0.01$.
+		
+		***SKIPPED SIMULATION DETAILS***
+		
+		After 8000 epochs, loss goes down to $0.088$, MSE is between true solution \& predicted values is $2.74\cdot10^{-4}$. Note: MSE between true solution \& predicted values is much smaller than loss of neural network. This is reasonable sine using FD to estimate derivatives using a relatively coarse mesh grid with $N = 32$. Plot of true solution vs. neural network's approximated solution is shown in {\sf Fig. 3. True solution vs. neural network's approximated solution for Laplace equation.}
+		\item {\sf Example 4: Eikonal equation in 2D.} An Eikonal equation is a nonlinear PDE of 1st-order, which is commonly encountered in problems of wave propagation. Let $\Omega = (-1,1)^2$, consider equation
+		\begin{equation*}
+			\left\{\begin{split}
+				|Du(x,y)| &= 1 + \epsilon\Delta(x,y)&&\mbox{in }(-1,1)^2,\\
+				u(x,y) &= 1 - \sqrt{x^2 + y^2}&&\mbox{on }\partial\Omega.
+			\end{split}\right.
+		\end{equation*}
+		Here use $\epsilon = 0.0001$. Exact solution: $u^*(x,y) = 1 - \sqrt{x^2 + y^2}$.
+		
+		Used a neural network of 4 hidden layers with 64 neurons per layer \& hyperbolic tangent activation functions to approximate true solution. To learn parameters, use Adam optimizer with learning rate $0.001$. Mesh size used is $N = 32$.
+		
+		***SKIPPED SIMULATION DETAILS***
+		
+		After 5000 epochs, loss goes down to $0.01$, MSE is between true solution \& predicted value is $7.4\cdot10^{-5}$. Plot of true solution vs. neural network's approximated solution is as shown in {\sf Fig. 4: True solution vs. neural network's approximated solution for Eikonal equation.}
+	\end{itemize}	
+	\item {\sf6. Discussion \& Conclusions.} In this work, analyzed potential issues when applying PINNs for differential equations \& introduced a novel technique, namely FinNet, for solving differential equations by incorporating FD into DL. Even though training phase in mesh-dependent, prediction phase is mesh-free. Illustrated effectiveness of our methods through experiments on solving various equations, which shows: approximation provided by FinNet is very close to true solution in terms of MSE \& may work even when PINNs do not.
+	
+	For further work, various questions remain that are interesting to be addressed. Those can be questions on hyperparameters for FinNet, e.g. how to choose number of layers, activation function \& mesh grid size. Furthermore, it would be interesting to compare FinNet with other approaches for nonlinear time-dependent PDEs or high-dimensional PDEs e.g. high-dimensional Hamilton--Jacobi--Bellman equation, or Burgers' equation.
 \end{itemize}
 
 %------------------------------------------------------------------------------%

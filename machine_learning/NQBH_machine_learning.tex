@@ -8692,6 +8692,53 @@ Journal of Computational Physics. {\sf[12432 citations]}
 	{\tt TROUBLE IN COMPLICATED NOTATIONS!}
 \end{itemize}
 
+\subsection{{\sc Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Łukasz Kaiser}. Attention Is All You Need. 2017}
+{\sf[152738 citations]}
+\begin{itemize}
+	\item {\sf Abstract.} Dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder \& a decoder. Best performing models also connect encoder \& decoder through an attention mechanism. Propose a new simple network architecture, Transformer, based solely on attention mechanisms, dispensing with recurrence \& convolutions entirely. Experiments on 2 machine translation tasks show these models to be superior in quality while being more parallelizable \& requiring significantly less time to train. Our model achieves 28.4 BLEU on WMT 2014 English-to-German translation task, improving over existing best results, including ensembles, by over 2 BLEU. On WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-art BLEU score of 41.0 after training for 3.5 days on 8 GPUs, a small fraction of training costs of best models from literature.
+	\item Equal contribution. Listing order is random. {\sc Jakob} proposed replacing RNNs with self-attention \& started effort to evaluate this idea. {\sc Ashish, Illia}, designed \& implemented 1st Transformer models \& has been crucially involved in every aspect of this work. {\sc Noam} proposed scaled dot-product attention, multi-head attention \& parameter-free position representation \& became other person involved in nearly every detail. {\sc Niki} designed, implemented, tuned, \& evaluated countless model variants in our original codebase \& tensor2tensor. {\sc Llion} also experimented with novel model variants, was responsible for our initial codebase, \& efficient inference \& visualizations. {\ss Lukasz \& Aidan} spent countless long days designing various parts of \& implementing tensor2tensor, replacing our earlier codebase, greatly improving results \& massively accelerating our research.
+	\item {\sf1. Introduction.} RNNs, long short-term memory [12], \& gated recurrent [7] neural networks in particular, have been firmly established as state of art approaches in sequence modeling \& transduction problems e.g. language modeling \& machine translation [29,2,5]. Numerous efforts have since continued to push boundaries of recurrent language models \& encoder-decoder architectures [31,21,13].
+	
+	Recurrent models typically factor computation along symbol positions of input \& output sequences. Aligning positions to steps in computation time, they generate a sequence of hidden states $h_t$, as a function of previous hidden state $h_{t-1}$ \& input for position $t$. This inherently sequential nature precludes (ngăn cản) parallelization within training examples, which becomes critical at longer sequence lengths, as memory constraints limit batching across examples. Recent work has achieved significant improvements in computational efficiency through factorization tricks [18] \& conditional computation [26], while also improving model performance in case of the latter. Fundamental constraint of sequential computation, however, remains.
+	
+	-- Các mô hình truy hồi thường phân tích tính toán theo vị trí ký hiệu của chuỗi đầu vào \& đầu ra. Căn chỉnh vị trí theo các bước trong thời gian tính toán, chúng tạo ra một chuỗi các trạng thái ẩn $h_t$, như một hàm của trạng thái ẩn trước đó $h_{t-1}$ \& đầu vào cho vị trí $t$. Bản chất tuần tự vốn có này ngăn cản (ngăn cản) việc song song hóa trong các ví dụ đào tạo, điều này trở nên quan trọng ở các chuỗi dài hơn, vì các ràng buộc về bộ nhớ giới hạn việc xử lý hàng loạt trên các ví dụ. Các công trình gần đây đã đạt được những cải tiến đáng kể về hiệu quả tính toán thông qua các thủ thuật phân tích [18] \& tính toán có điều kiện [26], đồng thời cũng cải thiện hiệu suất mô hình trong trường hợp sau. Tuy nhiên, vẫn còn tồn tại ràng buộc cơ bản của tính toán tuần tự.
+	
+	Attention mechanisms have become an integral part of compelling sequence modeling \& transduction models in various tasks, allowing modeling of dependencies without regard to their distance in input or output sequences [2,16]. In all but a few cases [22], however, such attention mechanisms are used in conjunction with a recurrent network.
+	
+	-- Các cơ chế chú ý đã trở thành một phần không thể thiếu của mô hình hóa trình tự hấp dẫn \& các mô hình chuyển đổi trong nhiều tác vụ khác nhau, cho phép mô hình hóa các mối phụ thuộc mà không cần quan tâm đến khoảng cách của chúng trong các trình tự đầu vào hoặc đầu ra [2,16]. Tuy nhiên, trong hầu hết các trường hợp ngoại trừ một số ít trường hợp [22], các cơ chế chú ý như vậy được sử dụng kết hợp với một mạng lưới tuần hoàn.
+	
+	In this work propose Transformer, a model architecture eschewing recurrence \& instead relying entirely on an attention mechanism to draw global dependencies between input \& output. Transformer allows for significantly more parallelization \& can reach a new state of art in translation quality after being trained for as little as 12 hours on 8 P100 GPUs.
+	
+	-- Trong tác phẩm này, đề xuất Transformer, một kiến trúc mô hình tránh lặp lại \& thay vào đó hoàn toàn dựa vào cơ chế chú ý để rút ra các mối phụ thuộc toàn cục giữa đầu vào \& đầu ra. Transformer cho phép song song hóa nhiều hơn đáng kể \& có thể đạt đến trạng thái nghệ thuật mới về chất lượng dịch sau khi được đào tạo trong thời gian ít nhất là 12 giờ trên 8 GPU P100.
+	\item {\sf2. Background.} Goal of reducing sequential computation also forms foundation of Extended Neural GPU [20], ByteNet [15] \&7 ConvS2S [8], all of which use CNNs as basic building block, computing hidden representations in parallel for all input \& output positions. In these models, number of operations required to relate signals from 2 arbitrary input or output positions grows in distance between positions, linearly for ConvS2S \& logarithmically for ByteNet. This makes it more difficult to learn dependencies between distant positions [11]. In Transformer this is reduced to a constant number of operations, albeit at cost of reduced effective resolution due to averaging attention-weighted positions, an effect we counteract with Multi-Head Attention as described in Sect. 3.2.
+	
+	Self-attention, sometimes called intra-attention is an attention mechanism relating different positions of a single sequence in order to compute a representation of sequence. Self-attention has been used successfully in a variety of tasks including reading comprehension, abstractive summarization, textual entailment \& learning task-independent sentence representations [4, 22, 23, 19].
+	
+	End-to-end memory networks are based on a recurrent attention mechanism instead of sequence-aligned recurrence \& have been shown to perform well on simple-language question answering \& language modeling tasks [28].
+	
+	To best of our knowledge, however, Transformer is 1st transduction model relying entirely on self-attention to compute representations of its input \& output without using sequence-aligned RNNs or convolution. In following sects, describe Transformer, motivate self-attention \& discuss its advantages over models e.g. [14,15,8].
+	\item {\sf3. Model Architecture.} Most competitive neural sequence transduction models have an encoder-decoder structure [5, 2, 29]. Here, encoder maps an input sequence of symbol representations $(x_1,\ldots,x_n)$ to a sequence of continuous representations ${\bf z} = (z_1,\ldots,z_n)$. Given ${\bf z}$, decoder then generates an output sequence $(y_1,\ldots,y_m)$ of symbols 1 element at a time. At each step model is auto-regressive [9], consuming previously generated symbols as additional input when generating text.
+	
+	Transformer follows this overall architecture using stacked self-attention \& point-wise, fully connected layers for both encoder \& decoder, shown in {\sf Fig. 1: Transformer - model architecture.}
+	\begin{itemize}
+		\item {\sf3.1. Encoder \& Decoder Stacks.} Encoder is composed of a stack of $N = 6$ identical layers. Each layer hs 2 sub-layers. 1st is a multi-head self-attention mechanism, \& 2nd is a simple, position-wise fully connected feed-forward network. Employ a residual connection [10] around each of 2 sub-layers, followed by layer normalization [1]. I.e., output of each sub-layer is ${\rm LayerNorm}(x + {\rm Sublayer}(x))$, where ${\rm Sublayer}(x)$: function implemented by sub-layer itself. To facilitate these residual connections, all sub-layers in model, as well as embedding layers, produce outputs of dimension $d_{\rm model} = 512$.
+		
+		{\bf Decoder.} Decoder is also composed of a stack of $N = 6$ identical layers. In addition to 2 sub-layers in each encoder layer, decoder inserts a 3rd sub-layer, which performs multi-head attention over output of encoder stack. Similar to encoder, employ residual connections around each of sub-layers, followed by layer normalization. Also modify self-attention sub-layer in decoder stack to prevent positions from attending to subsequent positions. This masking, combined with fact: output embeddings are offset by 1 position, ensures: predictions for position $i$ can depend only on known outputs at positions $< i$.
+		\item {\sf3.2. Attention.} An attention function can be described as mapping a query \& a set of key-value pairs to an output, where query, keys, values, \& output are all vectors. Output is computed as a weighted sum of values, where weight assigned to each value is computed by a compatibility function of query with corresponding key.
+		\begin{itemize}
+			\item {\sf3.2.1. Scaled Dot-Product Attention.}
+			\item {\sf3.2.2. Multi-Head Attention.}
+			\item {\sf3.2.3. Applications of Attention in our Model.}
+		\end{itemize}
+		\item {\sf3.3. Position-wise Feed-Forward Networks.}
+		\item {\sf3.4. Embeddings \& Softmax.}
+	\end{itemize}
+	\item {\sf4. Why Self-Attention.}
+	\item {\sf5. Training.}
+	\item {\sf6. Results.}
+	\item {\sf7. Conclusion.}
+\end{itemize}
+
 %------------------------------------------------------------------------------%
 
 \section{Recurrent Neural Network}
@@ -10103,6 +10150,8 @@ Objective: to offer an accessible self-contained research monograph which can al
 		To estimate $\sup_{{\bf h},{\bf h}',{\bf x}} S({\bf h},{\bf h}',{\bf x})$, do: 1st, take ${\bf x}$ to be point in training set. In language modeling case, ${\bf x}$ is 1 of learned word-vectors. Randomly sample \& fix ${\bf x}$, \& then \fbox{perform gradient ascent on $S({\bf h},{\bf h}',{\bf x})$ to find worst-case} ${\bf h},{\bf h}'$. In our experiments, initialize ${\bf h},{\bf h}'\sim{\cal N}(0,0.1\cdot I)$ \& run gradient ascent with learning rate $0.9$ for 1000 steps. This procedure is repeated 20 times, \& estimate $\lambda$ as maximum value of $S({\bf h},{\bf h}',{\bf x})$ encountered during any iteration from any of 20 random starting points.
 	\end{itemize}
 \end{itemize}
+
+
 
 %------------------------------------------------------------------------------%
 

@@ -9883,27 +9883,225 @@ Objective: to offer an accessible self-contained research monograph which can al
 	\item {\sf Abstract.} Stability is a fundamental property of dynamical systems, yet to this date it has had little bearing on practice of RNNs. In this work, conduct a thorough investigation of stable recurrent models. Theoretically, prove stable RNNs are well approximated by feed-forward networks for purpose of both inference \& training by gradient descent. Empirically (theo kinh nghiệm), demonstrate stable recurrent models often perform as well as their unstable counterparts on benchmark sequence tasks. Taken together, these findings shed light on effective power of recurrent networks \& suggest much of sequence learning happens, or can be made to happen, in stable regime. Moreover, our results help to explain why in many cases practitioners succeed in replacing recurrent models by feed-forward models.
 	\item {\sf1. Introduction.} RNNs are a popular modeling choice for solving sequence learning problems arising in domains e.g. speech recognition \& natural language processing. At outset, RNNs are nonlinear dynamical systems commonly trained to fit sequence data via some variant of gradient descent.
 	
-	Stability is of fundamental importance in study of dynamical system. Surprisingly, however, stability has had little impact on practice of RNNs.
-	\item {\sf2. Stable Recurrent Models.}
+	Stability is of fundamental importance in study of dynamical system. Surprisingly, however, stability has had little impact on practice of RNNs. Recurrent models trained in practice do not satisfy stability in an obvious manner, suggesting: perhaps training happens in a chaotic regime. Difficulty of training recurrent models has compelled practitioners to successfully replace recurrent models with non-recurrent, feed-forward architectures.
+	
+	-- Tính ổn định có tầm quan trọng cơ bản trong nghiên cứu hệ thống động. Tuy nhiên, điều đáng ngạc nhiên là tính ổn định có ít tác động đến việc thực hành RNN. Các mô hình hồi quy được đào tạo trong thực hành không đáp ứng được tính ổn định theo cách rõ ràng, cho thấy: có lẽ việc đào tạo diễn ra trong chế độ hỗn loạn. Khó khăn trong việc đào tạo các mô hình hồi quy đã buộc các học viên phải thay thế thành công các mô hình hồi quy bằng các kiến trúc không hồi quy, truyền thẳng.
+	
+	This state of affairs raises important unresolved questions.
+	\begin{quote}\it
+		Is sequence modeling in practice inherently unstable? When \& why are recurrent models really needed?
+		
+		-- Mô hình trình tự trong thực tế có thực sự không ổn định không? Khi nào \& tại sao các mô hình tuần hoàn thực sự cần thiết?
+	\end{quote}
+	In this work, shed light on both of these questions through a theoretical \& empirical investigation of stability in recurrent models.
+	
+	1st prove stable recurrent models can be approximated by feed-forward networks. In particular, not only are models equivalent for {\it inference},they are also equivalent for {\it training} via gradient descent. While easy to contrive (chế tạo) nonlinear recurrent models that are some input sequence cannot be approximated by feed-forward models, our result implies such models are inevitably unstable. I.e., in particular they must have exploding gradients, which is in general an impediment to learnability via gradient descent.
+	
+	-- đầu tiên chứng minh các mô hình hồi quy ổn định có thể được xấp xỉ bằng các mạng truyền thẳng. Đặc biệt, các mô hình không chỉ tương đương với {\it suy luận}, mà còn tương đương với {\it đào tạo} thông qua giảm dần độ dốc. Trong khi các mô hình hồi quy phi tuyến tính dễ chế tạo (chế tạo) có một số chuỗi đầu vào không thể được xấp xỉ bằng các mô hình truyền thẳng, kết quả của chúng tôi ngụ ý rằng các mô hình như vậy chắc chắn không ổn định. Tức là, cụ thể chúng phải có độ dốc bùng nổ, nói chung là trở ngại đối với khả năng học thông qua giảm dần độ dốc.
+	
+	2nd, across a variety of different sequence tasks, show how {\it recurrent models can often be made stable without loss in performance}. Also show models that are nominally unstable often operate in stable regime on data distribution. Combined with our 1st result, these observation helps to explain why an increasingly large body of empirical research succeeds in replacing recurrent models with feed-forward models in important applications, including translation [6,26], speech synthesis [25], \& language modeling [5]. While stability does not always hold in practice to begin with, often possible to generate a high-performing stable model by {\it imposing stability} during training.
+	
+	Our results also shed light on effective representational properties of recurrent networks trained in practice. In particular, stable models cannot have long-term memory. Therefore, when stable \& unstable models achieve similar results, either task does not require long-term memory, or unstable model does not have it.
 	\begin{itemize}
-		\item {\sf2.1. Defining Stable Recurrent Models.}
-		\item {\sf2.2. Examples of Stable Recurrent Models.}
+		\item {\sf1.1. Contributions.} In this work, make following contributions.
+		\begin{enumerate}
+			\item Present a generic definition of stable recurrent models in terms of nonlinear dynamical systems \& show how to ensure stability of several commonly used models. Previous work establishes stability for vanilla recurrent neural networks. Give new sufficient conditions for stability of long short-term memory (LSTM) networks. These sufficient conditions come with an efficient projection operator that can be used at training time to enforce stability.
+			\item Prove, under stability assumption, feed-forward networks can approximate recurrent networks for purposes of both inference \& training by gradient descent. While simple in case of inference, training result lies on non-trivial stability properties of gradient descent.
+			\item Conduct extensive experimentation on a variety of sequence benchmarks, show stable models often have comparable performance with their unstable counterparts, \& discuss when, if ever, there is an intrinsic performance price to using stable models.
+		\end{enumerate}
 	\end{itemize}
-	\item {\sf3. Stable Recurrent Models Have Feed-forward Approximations.}
+	\item {\sf2. Stable Recurrent Models.} Define {\it stable recurrent models} \& illustrate concept for various popular model classes. From a pragmatic perspective, stability roughly corresponds to criterion that gradients of training objective do not {\it explode} over time. Common recurrent models can operate in both stable \& unstable regimes, depending on their parameters. To study stable variants of common architectures, give sufficient conditions to ensure stability \& describe how to efficiently enforce these conditions during training.
 	\begin{itemize}
-		\item {\sf3.1. Truncated recurrent models.}
-		\item {\sf3.2. Approximation during inference.}
-		\item {\sf3.3. Approximation during training via gradient descent.}
+		\item {\sf2.1. Defining Stable Recurrent Models.} A {\it recurrent model} is a nonlinear dynamical system given by a differentiable {\it state-transition map} $\phi_{\bf w}:\mathbb{R}^n\times\mathbb{R}^d\to\mathbb{R}^n$, parameterized by ${\bf w}\in\mathbb{R}^m$. Hidden state $h_t\in\mathbb{R}^n$ evolves in discrete time steps according to update rule
+		\begin{equation*}
+			\boxed{h_t = \phi_w(h_{t-1},x_t)},
+		\end{equation*}
+		where vector $x_t\in\mathbb{R}^d$ is an arbitrary input provided to system at time $t$. This general formulation allows us to unify many examples of interest. E.g., for a RNN, given weight matrices $W,U$, state evolves according to
+		\begin{equation*}
+			h_t = \phi_{W,U}(h_{t-1},x_t) = \tanh(Wh_{t-1} + Ux_t).
+		\end{equation*}
+		Recurrent models are typically trained using some variant of gradient descent. 1 natural -- even if not strictly necessary -- requirement for gradient descent to work: gradients of training objective do not explode over time. {\it Stable recurrent models} are precisely class of models where gradients cannot explode. They thus constitute a natural class of models where gradient descent can be expected to work. In general, define a stable recurrent model as follows.
+		\begin{definition}
+			A recurrent model $\phi_{\bf w}$ is {\rm stable} if there exists some $\lambda < 1$ s.t., for any weights ${\bf w}\in\mathbb{R}^m$, states ${\bf h},{\bf h}'\in\mathbb{R}^n$, \& input ${\bf x}\in\mathbb{R}^d$,
+			\begin{equation*}
+				\|\phi_{\bf w}({\bf h},{\bf x}) - \phi_{\bf w}({\bf h}',{\bf x})\|\le\lambda\|{\bf h} - {\bf h}'\|.
+			\end{equation*}
+			Equivalently, a recurrent model is stable if map $\phi_{\bf w}$ is $\lambda$-contractive in ${\bf h}$. If $\phi_{\bf w}$ is $\lambda$-stable, then $\|\nabla_{\bf h}\phi_{\bf w}({\bf h},{\bf x})\| < \lambda$, \& for Lipschitz loss $p$, $\|\nabla_{\bf w}p\|$ is always bounded [21].
+			
+			Stable models are particularly well-behaved \& well-justified from a theoretical perspective. E.g., at present, only {\it stable} linear dynamical systems are known to be learnable via gradient descent [7]. In unstable models, gradients of objective can explode, \& it is a delicate matter to even show: gradient descent converges to a stationary point. Following proposition offers 1 such example. Proof is provided in appendix.
+			\begin{proposition}
+				There exists an unstable system $\phi_{\bf w}$ where gradient descent does not converge to a stationary point, \& $\|\nabla_{\bf w}p\|\to\infty$ as number of iterations $N\to\infty$.
+			\end{proposition}
+		\end{definition}
+		\item {\sf2.2. Examples of Stable Recurrent Models.} Provide sufficient conditions to ensure stability for several common recurrent models. These conditions offer a way to require learning happens in stable regime -- after each iteration of gradient descent, one imposes corresponding stability condition via projection.
+		\begin{itemize}
+			\item {\sf Linear dynamical systems \& RNNs.} Given a Lipschitz, pointwise nonlinearity $\rho$ \& matrices $W\in\mathbb{R}^{n\times n},U\in\mathbb{R}^{n\times d}$, state-transition map for a RNN is
+			\begin{equation*}
+				h_t = \rho(Wh_{t-1} + Ux_t).
+			\end{equation*}
+			If $\rho$ is identity, then system is a linear dynamical system, [10] show if $\rho$ is $L_\rho$-Lipschitz, then model is stable provided $\|W\| < \frac{1}{L_\rho}$. Indeed, for any states ${\bf h},{\bf h}'$, \& any ${\bf x}$
+			\begin{equation*}
+				\|\rho(W{\bf h} + U{\bf x}) - \rho(W{\bf h}' + U{\bf x})\|\le L_\rho\|W{\bf h} + U{\bf x} - W{\bf h}' - U{\bf x}\|\le L_\rho\|W\|\|{\bf h} - {\bf h}'\|.
+			\end{equation*}
+			In case of a linear dynamical system, model is stable provided $\|W\| < 1$. Similarly, for 1-Lipschitz tanh-nonlinearity, stability obtains provided $\|W\| < 1$. In appendix, verify assumptions required by theorems given in next sect for this example. Imposing this condition during training corresponds to projecting onto spectral norm ball.
+			\item {\sf Long short-term memory networks.} Long Short-Term Memory (LSTM) networks are another commonly used class of sequence models [9]. State is a pair of vectors ${\bf s} = (c,h)\in\mathbb{R}^{2d}$, \& model is parameterized by 8 matrices, $W_\square\in\mathbb{R}^{d\times d},U_\square\in\mathbb{R}^{d\times n}$, for $\square\in\{i,f,o,z\}$. State-transition map $\phi_{\rm LSTM}$ is given by
+			\begin{align*}
+				f_t &= \sigma(W_f{\bf h}_{t-1} + U_f{\bf x}_t),\\
+				i_t &= \sigma(W_i{\bf h}_{t-1} + U_i{\bf x}_t),\\
+				o_t &= \sigma(W_o{\bf h}_{t-1} + U_o{\bf x}_t),\\
+				z_t &= \tanh(W_z{\bf h}_{t-1} + U_z{\bf x}_t),\\
+				c_t &= i_t\circ z_t + f_t\circ c_{t-1},\\
+				{\bf h}_t &= o_t\cot\tanh c_t,
+			\end{align*}
+			where $\circ$ denotes elementwise multiplication, \& $\sigma$: logistic function.
+			
+			Provide conditions under which iterated system $\phi_{\rm LSTM}^r = \phi_{\rm LSTM}\circ\cdots\circ\phi_{\rm LSTM}$ is stable. Let $\|f\|_\infty = \sup_t\|f_t\|_\infty$. If weights $W_f,U_f$ \& inputs ${\bf x}_t$ are bounded, then $\|f\|_\infty < 1$ since $|\sigma| < 1$ for any finite input. I.e., next state $c_t$ must ``forget'' a nontrivial portion of $c_{t-1}$. Leverage this phenomenon to give sufficient conditions for $\phi_{\rm LSTM}$ to be contractive in $l_\infty$ norm, which in turn implies iterated system $\phi_{\rm LSTM}^r$ is contractive in $l_2$ norm for $r = O(\log d)$. Let $\|W\|_\infty$ denote induced $l_\infty$ matrix norm, which corresponds to maximum absolute row sum $\max_i\sum_j |W_{ij}|$.
+			\begin{proposition}
+				If $\|W_i\|_\infty,\|W_o\|_\infty < 1 - \|f\|_\infty,\|W_z\|_\infty\le\frac{1}{4}(1 - \|f\|_\infty),\|W_f\|_\infty < (1 - \|f\|_\infty)^2$, \& $r = O(\log d)$, then iterated system $\phi_{\rm LSTM}^r$ is stable.
+			\end{proposition}
+			Proof is given in appendix. Conditions given in Prop. 2 are fairly restrictive. Somewhat surprisingly show in experiments models satisfying these stability conditions still achieve good performance on a number of tasks. Leave it as an open problem to find different parameter regimes where system is stable, as well as resolve whether original system $\phi_{\rm LSTM}$ is stable. Imposing these conditions during training \& corresponds to simple row-wise normalization of weight matrices \& inputs.
+		\end{itemize}
 	\end{itemize}
-	\item {\sf4. Experiments.}
+	\item {\sf3. Stable Recurrent Models Have Feed-forward Approximations.} Prove stable recurrent models can be well-approximated by feed-forward networks for purposes of both inference \& training by gradient descent. From a memory perspective, stable recurrent models are {\it equivalent} to feed-forward networks -- both models use same amount of context to make predictions. This equivalence has important consequences for sequence modeling in practice. When a stable recurrent model achieves satisfactory performance on some tasks, a feedforward network can achieve similar performance. Consequently, if sequence learning in practice is inherently stable, then recurrent models may not be necessary. Conversely, if feed-forward models cannot match performance of recurrent models, then sequence learning in practice is in unstable regime.
+	
+	-- Chứng minh các mô hình hồi quy ổn định có thể được xấp xỉ tốt bằng các mạng truyền thẳng cho mục đích suy luận \& đào tạo bằng phương pháp giảm dần độ dốc. Theo quan điểm về bộ nhớ, các mô hình hồi quy ổn định {\it tương đương} với các mạng truyền thẳng -- cả hai mô hình đều sử dụng cùng một lượng ngữ cảnh để đưa ra dự đoán. Sự tương đương này có những hậu quả quan trọng đối với mô hình chuỗi trong thực tế. Khi một mô hình hồi quy ổn định đạt được hiệu suất thỏa đáng trên một số tác vụ, một mạng truyền thẳng có thể đạt được hiệu suất tương tự. Do đó, nếu việc học chuỗi trong thực tế vốn đã ổn định, thì các mô hình hồi quy có thể không cần thiết. Ngược lại, nếu các mô hình truyền thẳng không thể khớp với hiệu suất của các mô hình hồi quy, thì việc học chuỗi trong thực tế đang ở chế độ không ổn định.
 	\begin{itemize}
-		\item {\sf4.1. Tasks.}
-		\item {\sf4.2. Cf. Stable \& Unstable Models.}
-		\item {\sf4.3. What is ``price of stability'' in sequence modeling?}
-		\item {\sf4.4. Unstable Models Operate in Stable Regime.}
+		\item {\sf3.1. Truncated recurrent models.} For our purposes, salient distinction (sự phân biệt nổi bật) between a recurrent \& feed-forward model is the latter has {\it finite-context}. Therefore, say a model is {\it feed-forward} if prediction made by model at step $t$ is a function only of inputs $x_{t-k},\ldots,x_t$ for some finite $k$.
+		
+		While there are many choices for a feed-forward approximation, consider simplest one -- truncation of system to some finite context $k$. I.e., feed-forward approximation moves over input sequence with a sliding window of length $k$ producing an output every time sliding window advances by 1 step. Formally, for context length $k$ chosen in advance, define {\it truncated model} via update rule
+		\begin{equation*}
+			{\bf h}_t^k = \phi_{\bf w}({\bf h}_{t-1}^k,{\bf x}_t),\ {\bf h}_{t-k}^k = {\bf0}.
+		\end{equation*}
+		Note: ${\bf h}_t^k$ is a function only of previous $k$ inputs ${\bf x}_{t-k},\ldots,{\bf x}_t$. While this definition is perhaps an abuse of term ``feed-forward'', truncated model can be implemented as a standard autoregressive, depth-$k$ feed-forward network, albeit with significant weight sharing.
+		
+		Let $f$ denote a prediction function that maps a state ${\bf h}_t$ to outputs $f({\bf h}_t) = y_t$. Let $y_t^k$ denote predictions from truncated model. To simplify presentation, prediction function $f$ is not parameterized. This is w.l.o.g. because always possible to fold parameters into system $\phi_{\bf w}$ itself. In sequel, study $\|y_t - y_t^k\|$ both during \& after training.
+		\item {\sf3.2. Approximation during inference.} Suppose train a full recurrent model $\phi_{\bf w}$ \& obtain a prediction $y_t$. For an appropriate choice of context $k$, truncated model makes essentially same prediction $y_t^k$ as full recurrent model. To show this result, 1st control difference between hidden states of both models.
+		\begin{lemma}
+			Assume $\phi_{\bf w}$ is $\lambda$-contractive in ${\bf h}$ \& $L_x$-Lipschitz in $x$. Assume input sequence $\|x_t\|\le B_x$ $\forall t$. If truncation length $k\ge\log_{\frac{1}{\lambda}} \frac{L_xB_x}{(1 - \lambda)\varepsilon}$, then difference in hidden states $\|{\bf h}_t - {\bf h}_t^k\|\le\varepsilon$.
+		\end{lemma}
+		Lemma 1 effectively says stable models do not have long-term memory -- distant inputs do not change states of system. If prediction function is Lipschitz, Lemma 1 immediately implies recurrent \& truncated model make nearly identical predictions.
+		\begin{proposition}
+			If $\phi_{\bf w}$ is a $L_x$-Lipschitz \& $\lambda$-contractive map, \& $f$ is $L_f$ Lipschitz, \& truncation length $k\ge\log_{\frac{1}{\lambda}} \frac{L_xB_x}{(1 - \lambda)\varepsilon}$, then $\|y_t - y_t^k\|\le\varepsilon$.
+		\end{proposition}
+		\item {\sf3.3. Approximation during training via gradient descent.} Equipped with our inference result, return towards optimization. Show gradient descent for stable recurrent models at same point \& track divergence in weights throughout course of gradient descent. Roughly, show if $k\approx O(\log\frac{N}{\varepsilon})$, then after $N$ steps of gradient descent, difference in weights between recurrent \& truncated models is at most $\varepsilon$. Even if gradients are similar for both models at same point, it is a priori possible: slight differences in gradients accumulate over time \& lead to divergent weights where no meaningful comparison is possible. Building on similar techniques as [8], show: gradient descent itself is stable, \& this type of divergence cannot occur.
+		
+		Our gradient descent result requires 2 essential lemmas. 1st bounds difference in gradient between full \& truncated model. 2nd establishes gradient map of both full \& truncated models is Lipschitz. Defer proofs of both lemmas to appendix.
+		
+		Let $p_T$ denote loss function evaluated on recurrent model after $T$ time steps, \& define $p_T^k$ similarly for truncated model. Assume there compact, convex domain $\Phi\subset\mathbb{R}^n$ so that map $\phi_{\bf w}$ is stable $\forall$ choices of parameters ${\bf w}\in\Theta$.
+		\begin{lemma}
+			Assume $p$ (\& therefore $p^k$) is Lipschitz \& smooth. Assume $\phi_{\bf w}$ is smooth, $\lambda$-contractive, \& Lipschitz in $x$ \& ${\bf w}$. Assume inputs satisfy $\|{\bf x}_t\|\le B_x$, then
+			\begin{equation*}
+				\|\nabla_{\bf w}p_T - \nabla_{\bf w}p_T^k\| = \gamma k\lambda^k,
+			\end{equation*}
+			where $\gamma = O(B_{\bf x}(1 - \lambda)^{-2})$, suppressing dependence on Lipschitz \& smoothness parameters.
+		\end{lemma}
+		
+		\begin{lemma}
+			For any $w,w'\in\Theta$, suppose $\phi_{\bf w}$ is smooth, $\lambda$-contractive, \& Lipschitz in ${\bf w}$. If $p$ is Lipschitz \& smooth, then
+			\begin{equation*}
+				\|\nabla_{\bf w}p_T({\bf w}) - \nabla_{\bf w}p_T({\bf w}')\|\le\beta\|{\bf w} - {\bf w}'\|,
+			\end{equation*}
+			where $\beta = O((1 - \lambda)^{-3})$, suppressing dependence on Lipschitz \& smoothness parameters.
+		\end{lemma}
+		Let $w_{\rm recurr}^i$: weights of recurrent model on step $i$ \& define $w_{\rm trunc}^i$ similarly for truncated model. At initialization, $w_{\rm recurr}^0 = w_{\rm trunc}^0$. For $k$ sufficiently large, Lemma 2 guarantees difference between gradient of recurrent \& truncated models is negligible. Therefore, after a gradient update, $\|w_{\rm recurr}^1 - w_{\rm trunc}^1\|$ is small. Lemma 3 then guarantees: this small difference in weights does not lead to large differences in gradient on subsequent time step. For an appropriate choice of learning rate, formalizing this argument leads to following proposition.
+		\begin{proposition}
+			Under assumptions of Lemmas 2--3, for compact, convex $\Theta$, after $N$ steps of projected gradient descent with step size $\alpha_t = \frac{\alpha}{t}$, $\|w_{\rm recurr}^N - w_{\rm trunc}^N\|\le\alpha\gamma k\lambda^kN^{\alpha\beta + 1}$.
+		\end{proposition}
+		Decaying step size in our theorem is consistent with regime in which gradient descent is known to be stable for non-convex training objectives [8]. While decay is faster than many learning rates encountered in practice, classical results nonetheless show: with this learning rate gradient descent still converges to a stationary point; see p. 119 in [4] \& references there. In appendix, give empirical evidence $O(\frac{1}{t})$ rate is necessary for our theorem \& show examples of stable systems trained with constant or $O(\frac{1}{\sqrt{t}})$ rates that do not satisfy our bound.
+		
+		Critically, bound in Prop. 4 goes to 0 as $k\to\infty$. In particular, if take $\alpha = 1$ \& $k\ge\Omega\log\frac{\gamma N^\beta}{\varepsilon}$, then after $N$ steps of projected gradient descent, $\|w_{\rm recurr}^N - w_{\rm trunc}^N\|\le\varepsilon$. For this choice of $k$, obtain main theorem. Proof is left to appendix.
+		\begin{theorem}
+			Let $p$ be Lipschitz \& smooth. Assume $\phi_{\bf w}$ is smooth, $\lambda$-contractive, Lipschitz in $x$ \& ${\bf w}$. Assume inputs are bounded, \& prediction function $f$ is $L_f$-Lipschitz. If $k\ge\Omega(\log\frac{\gamma N^\beta}{\varepsilon})$, then after $N$ steps of projected gradient descent with step size $\alpha_t = \frac{1}{t}$, $\|y_T - y_T^k\|\le\varepsilon$.
+		\end{theorem}		
 	\end{itemize}
-	\item {\sf5. Are recurrent models truly necessary?}
-	\item {\sf6. Related Work.}
+	\item {\sf4. Experiments.} In experiments, show stable recurrent models can achieve solid performance on several benchmark sequence tasks. Namely, show unstable recurrent models can often be made stable without a loss in performance. In some cases, there is a small gap between performance between unstable \& stable models. Analyze whether this gap is indicative of a ``price of stability'' \& show unstable methods involved are stable in a data-dependent sense.
+	\begin{itemize}
+		\item {\sf4.1. Tasks.} Consider 4 benchmark sequence problems -- word-level language modeling, character-level language modeling, polyphonic music modeling, \& slot-filling.
+		\begin{itemize}
+			\item {\bf Language modeling.} In language modeling, given a sequence of words or characters, model must predict next word or character. For character-level language modeling, train \& evaluate models on Penn Treebank [15]. To increase coverage of our experiments, train \& evaluate word-level language models on Wikitext-2 dataset, which is twice as large as Penn Treemark \& features a larger vocabulary [17]. Performance is reported using bits-per-character for character-level models \& perplexity for word-level models.
+			\item {\bf Polyphonic music modeling.} In polyphonic music modeling, a piece is represented as a sequence of 88-bit binary codes corresponding to 88 keys on a piano, with a 1 indicating a key that is pressed at a given time. Given a sequence of codes, task: predict next code. Evaluate our models on JSB Chorales, a polyphonic music dataset consisting of 382 harmonized chorales by {\sc J.S. Bach} [1]. Performance is measured using negative log-likelihood.
+			\item {\bf Slot-filling.} In slot filling, model takes as input a query like ``I want to Boston on Monday'' \& outputs a class label for each word in input, e.g. Boston maps to \verb|Departure_City| \& Monday maps to \verb|Departure_Time|. Use Airline Travel Information Systems (ATIS) benchmark \& report F1 score for each model [22].
+		\end{itemize}
+		\item {\sf4.2. Cf. Stable \& Unstable Models.} For each task, 1st train an unconstrained RNN \& an unconstrained LSTM. All hyperparameters are chosen via grid-search to maximize performance of unconstrained model. For consistency with our theoretical results in Sect. 3 \& stability conditions in Sect. 2.2, both models have a single recurrent layer \& are trained using plain SGD. In each case, resulting model is unstable. However, then retrain best models using projected gradient descent to enforce stability {\it without retuning hyperparameters}. In RNN case, constrain $\|W\| < 1$. After each gradient update, project $W$ onto spectral norm ball by computing SVD \& thresholding singular values to lie in $[0,1)$. In LSTM case, after each gradient update, normalize each row of weight matrices to satisfy sufficient conditions for stability given in Sect. 2.2.
+		
+		{\bf Stable \& unstable models achieve similar performance.} {\sf Table 1: Comparison of stable \& unstable models on a variety of sequence modeling tasks. For all tasks, stable \& unstable RNNs achieve same performance. For polyphonic music \& slot-filling, stable \& unstable LSTMs achieve same results. On language modeling, there is a small gap between stable \& unstable LSTMs. Discuss this in Sect. 4.3. Performance is evaluated on held-out test set. For negative log-likelihood (nll), bits per character (bpc), \& perplexity, lower is better. For F1 score, higher is better.} gives a comparison of performance between stable \& unstable RNNs \& LSTMs on each of different tasks. Each of reported metrics is computed on held-out test set. Also show a representative comparison of learning curves for word-level language modeling \& polyphonic music modeling in {\sf Fig. 1: Stable \& unstable variants of common recurrent architectures achieve similar performance across a range of different sequence tasks.} 
+		
+		Across all tasks considered, stable \& unstable RNNs have roughly same performance. Stable RNNs \& LSTMs achieve results comparable to published baselines on slot-filling [18] \& polyphonic music modeling [3]. On word \& character level language modeling, both stable \& unstable RNNs achieve comparable results to [3].
+		
+		On language modeling tasks, however, there is a gap between stable \& unstable LSTM models. Given restrictive conditions place on LSTM to ensure stability, surprising they work as well as they do. Weaker conditions ensuring stability of LSTM could reduce this gap. Also possible imposing stability comes at a cost in representational capacity required for some tasks.
+		\item {\sf4.3. What is ``price of stability'' in sequence modeling?} Gap between stable \& unstable LSTMs on language modeling raises question of whether there is an intrinsic performance cost for using stable models on some tasks. If measure stability in a data-dependent fashion, then unstable LSTM language models are stable, indicating this gap is illusory (ảo tưởng). However, in some cases with short sequences, instability can offer modeling benefits.
+		\begin{itemize}
+			\item {\bf LSTM language models are stable in a ``data-dependent'' way.} Our notion of stability is conservative \& requires stability to hold for every input \& pair of hidden states. If instead consider a weak, data-dependent notion of stability, word \& character-level LSTM models are stable (in iterated sense of Prop. 2). In particular, compute stability parameter only {\it using input sequences from data}. Furthermore, only evaluate stability on hidden states {\it reachable via gradient descent}. More precisely, to estimate $\lambda$, run gradient ascent to find worst-case hidden states ${\bf h},{\bf h}'$ to maximize $\frac{\|\phi_{\bf w}({\bf h},{\bf x}) - \phi_{\bf w}({\bf h}',{\bf x})\|}{\|{\bf h} - {\bf h}'\|}$ $\to$ Appendix.
+			
+			Data-dependent definition given above is a useful diagnostic -- when sufficient stability conditions fail to hold, data-dependent condition addresses whether model is still operating in stable regime. Moreover, when input representation is fixed during training, our theoretical results go through without modification when using data-dependent definition.
+			
+			Using data-dependent measure, in {\sf Fig. 2: What is intrinsic ``price of stability''? For language modeling, show unstable LSTMs are actually stable in weaker, data-dependent sense. On other hand, for polyphonic music modeling with short sequences, instability can improve model performance. (a) Data-dependent stability of character-level language models. Iterated-LSTM refers to iteration system $\phi_{\rm LSTM}^r = \phi_{\rm LSTM}\circ\cdots\circ\phi_{\rm LSTM}$.}, show: iterated character-level LSTM $\phi_{\rm LSTM}^r$ is stable for $r\approx80$ iterations. A similar result holds for word-level language model for $r\approx100$. These findings are consistent with experiments in [14] which find LSTM trajectories converge after $\approx70$ steps {\it only when evaluated on sequences from data}. For language models, ``price of stability'' is therefore much smaller than gap in {\sf Table 1} suggests -- even ``unstable'' models are operating in stable regime on data distribution.
+			\item {\bf Unstable systems can offer performance improvements for short-time horizons.} When sequences are short, training unstable models is less difficult because exploding gradients are less of an issue. In these case, unstable models can offer performance gains. To demonstrate this, train truncated unstable models on polyphonic music task for various values of truncation parameter $k$. In {\sf Fig. 2.(b): Unstable models can boost performance for short sequences.}, simultaneously plot performance of unstable model \& stability parameter $\lambda$ for converged model for each $k$. For short-sequences, final model is more unstable $\lambda\approx3.5$ \& achieves a better test-likelihood. For longer sequence lengths, $\lambda$ decreases closer to stable regime $\lambda\approx1.5$, \& this improved test-likelihood performance disappears.
+		\end{itemize}		
+		\item {\sf4.4. Unstable Models Operate in Stable Regime.} In prev sect, showed: nominally unstable models often satisfy a data-dependent notion of stability (các mô hình không ổn định về mặt danh nghĩa thường thỏa mãn khái niệm về tính ổn định phụ thuộc vào dữ liệu). In this sect, offer further evidence unstable models are operating in stable regime. These results further help explain why stable \& unstable models perform comparably in experiments.
+		\begin{itemize}
+			\item {\bf Vanishing gradients.} Stable models necessarily have vanishing gradients, \& indeed this ingredient is a key ingredient in proof of our training-time approximation result. For both word \& character-level language models, find both {\it unstable RNNs \& LSTMs also exhibit vanishing gradients}. In {\sf Fig. 3: Unstable word \& character-level language models exhibit vanishing gradients. Plot norm of gradient w.r.t. inputs $\|\nabla_{x_t}p_{t+i}\|$, as distance between input \& loss grows, averaged over entire training set. Gradient vanishes for moderate values of $i$ for both RNNs \& LSTMs, though decay is slower for LSTMs. (a) Distance $i$ from input $x_t$ to loss $p_{t+i}$. (b) Character-level language modeling.}, plot average gradient of loss at time $t + i$ w.r.t. input at time $t$, $\|\nabla_{x_t}p_{t+i}\|$ as $t$ ranges over training set. For either language modeling task, LSTM \& RNN suffer from limited sensitivity to distance inputs at initialization \& throughout training. Gradients of LSTM vanish more slowly than those of RNN, but both models exhibit same qualitative behavior.
+			\item {\bf Truncating Unstable Models.} Results in Sect. 3 show stable models can be truncated without loss of performance. In practice, unstable models can also be truncated without performance loss. In {\sf Fig. 4: Effect of truncating unstable models. On both language \& music modeling, RNNs \& LSTMs exhibit diminishing returns for large values of truncation parameter $k$. In LSTMs, larger $k$ doesn't affect performance, whereas for unstable RNNs, large $k$ slightly decreases performance. (a) Word-level language modeling. (b) Polyphonic music modeling.}, show: performance of both LSTMs \& RNNs for various values of truncation parameter $k$ on word-level language modeling \& polyphonic music modeling. Initially, increasing $k$ increases performance because model can use more context to make predictions. However, in both cases, there is diminishing returns to larger values of truncation parameter $k$. LSTMs are unaffected by longer truncation lengths, whereas performance of RNNs slight degrades as $k$ becomes very large, possibly due to training instability. In either case, diminishing returns to performance for large values of $k$ means truncation \& therefore feed-forward approximation is possible even for these unstable models.
+			\item {\bf Prop. 4 holds for unstable models.} In stable models, Prop. 4 in Sect. 3 ensures distance between weight matrices $\|{\bf w}_{\rm recurr} - {\bf w}_{\rm trunc}\|$ grows slowly as training progresses, \& this rate decreases as $k$ becomes large. In {\sf Fig. 5: Qualitative version of Prop. 4 for unstable, word-level language models. Assume $k = 65$ well-captures full-recurrent model \& plot $\|{\bf w}_{\rm recurr} - {\bf w}_{\rm trunc}\| = \|W_k - W_{65}\|$ as training proceeds, where $W$ denotes recurrent weights. As Pro. 4 suggests, this quantity grows slowly as training proceeds, \& rate of growth decreases as $k$ increases. (a) Unstable RNN language model. (b) Unstable LSTM language model.}, plot $\|W_k - W_{65}\|$ for $k\in\{5,10,15,25,35,50,64\}$ throughout training. As suggested by Prop. 4, after an initial rapid increase in distance, $\|W_k - W_{65}\|$ grows slowly. Moreover, there is a diminishing return to choosing larger values of truncation parameter $k$ in terms of accuracy of approximation.
+		\end{itemize}
+	\end{itemize}
+	\item {\sf5. Are recurrent models truly necessary?} Our experiments show recurrent models trained in practice operate in stable regime, \& our theoretical results show stable recurrent models are approximable by feed-forward networks. As a consequence, conjecture {\it recurrent networks trained in practice are always approximable by feed-forward networks}. Even with this conjecture, cannot yet conclude recurrent models as commonly conceived are unnecessary. 1st, our present proof techniques rely on truncated versions of recurrent models, \& truncated recurrent architectures like LSTMs may provide useful inductive bias on some problems. Moreover, implementing truncated approximation as a feed-forward network increases number of weights by a factor of $k$ over original recurrent model. Declaring recurrent models truly superfluous would require both finding more parsimonious feed-forward approximations \& proving natural feed-forward models, e.g., fully connected networks or CNNs, can approximate stable recurrent models during training. This remains an important question for future work.
+	
+	-- Các mô hình hồi quy có thực sự cần thiết không? Các thí nghiệm của chúng tôi cho thấy các mô hình hồi quy được đào tạo trong thực tế hoạt động ở chế độ ổn định, \& kết quả lý thuyết của chúng tôi cho thấy các mô hình hồi quy ổn định có thể xấp xỉ được bằng các mạng truyền thẳng. Do đó, phỏng đoán {\it các mạng truyền thẳng được đào tạo trong thực tế luôn có thể xấp xỉ được bằng các mạng truyền thẳng}. Ngay cả với phỏng đoán này, vẫn chưa thể kết luận các mô hình hồi quy như thường được quan niệm là không cần thiết. Trước tiên, các kỹ thuật chứng minh hiện tại của chúng tôi dựa trên các phiên bản cắt cụt của các mô hình hồi quy, \& các kiến trúc hồi quy cắt cụt như LSTM có thể cung cấp độ lệch quy nạp hữu ích cho một số vấn đề. Hơn nữa, việc triển khai phép xấp xỉ cắt cụt như một mạng truyền thẳng làm tăng số lượng trọng số lên gấp $k$ so với mô hình hồi quy ban đầu. Việc tuyên bố các mô hình hồi quy thực sự là thừa sẽ yêu cầu cả việc tìm ra các phép xấp xỉ truyền thẳng tiết kiệm hơn \& chứng minh các mô hình truyền thẳng tự nhiên, ví dụ như các mạng hoàn toàn kết nối hoặc CNN, có thể xấp xỉ các mô hình hồi quy ổn định trong quá trình đào tạo. Đây vẫn là một câu hỏi quan trọng cho công việc trong tương lai.
+	\item {\sf6. Related Work.} Learning dynamical systems with gradient descent has been a recent topic of interest in ML community. [7] shows gradient descent can efficiently learn a class of stable, linear dynamical systems, [20] shows gradient descent learns a class of stable, nonlinear dynamical systems. Work by [23] gives a moment-based approach for learning some classes of stable nonlinear RNNs. Our work explores theoretical \& empirical consequences of stability assumption made in these works. In particular, our empirical results show models trained in practice can be made closer to those currently being analyzed theoretically without large performance penalties.
+	
+	For {\it linear} dynamical systems, [24] exploit connection between stability \& truncation to learn a truncated approximation to full stable system. Their approximation  result is same as our inference result for linear dynamical systems, \& extend this result to nonlinear setting. Also analyze impact of truncation on training with gradient descent. Our training time analysis builds on stability analysis of gradient descent in [8], but increasingly uses it for an entirely different purpose. Results of this kind are completely new to our knowledge.
+	
+	For RNNs, link between vanishing \& exploding gradients \& $\|W\|$ was identified in [21]. For 1-layer RNNs, [10] give sufficient conditions for stability in terms of norm $\|W\|$ \& Lipschitz constant of nonlinearity. Our work additionally considers LSTMs \& provides new sufficient conditions for stability. Moreover, study consequences of stability in terms of feed-forward approximation.
+	
+	A number of recent works have sought to avoid vanishing \& exploding gradients by ensuring system is an isometry, i.e. $\lambda = 1$. In RNN case, this amounts to constraining $\|W\| = 1$ [2,11,12,19,28]. [27] observes strictly requiring $\|W\| = 1$ reduces performance on several tasks, \& instead proposes maintaining $\|W\|\in[1 - \varepsilon,1 + \varepsilon]$. [29] maintains this ``soft-isometry'' constraint using a parameterization based on SVD that obviates (loại bỏ) need for projection step used in our stable-RNN experiments. [13] sidestep these issues \& stabilizes training using a residual parameterization of model. At present, these unitary models have not yet seen widespread use, \& our work shows much of sequence learning in practice, even with nominally unstable models, actually occurs in stable regime.
+	
+	From an empirical perspective, [14] introduce a non-chaotic recurrent architecture \& demonstrate it can perform as well more complex models like LSTMs. [3] conducts a detailed evaluation of recurrent \& convolutional, feed-forward models outperform their recurrent counterparts. Their experiments are complimentary to ours; find recurrent models can often be replaced with stable recurrent models, which show are equivalent to feed-forward models.
+	\item {\sf A. Proofs from Sect. 2.}
+	\begin{itemize}
+		\item {\sf A.2.1. RNNs.}
+		\item {\sf A.2.2. LSTMs.}
+	\end{itemize}
+	\item {\sf B. Proofs from Sect. 3.}
+	\begin{itemize}
+		\item {\sf B.1. Proofs from Sect. 3.3.}
+		\begin{itemize}
+			\item {\sf B.1.1. Gradient difference rule to truncation is negligible.} Argue difference in gradient w.r.t. weights between recurrent \& truncated models is $O(k\lambda^k)$. Fur sufficiently large $k$ (independent of sequence length), impact of truncation is therefore negligible. Proof leverages ``vanishing-gradient'' phenomenon -- long-term components of gradient of full recurrent model quickly vanish. Remaining challenge: show short-term components of gradient are similar for full \& recurrent models.
+			\item {\sf B.1.2. Stable recurrent models are smooth.} Prove: gradient map $\nabla_{\bf w}p_T$ is Lipschitz. 1st, show on forward pass, difference between hidden states ${\bf h}_t({\bf w}),{\bf h}_t'({\bf w}')$ obtained by running model with weights ${\bf w},{\bf w}'$, resp., is bounded in terms of $\|{\bf w} - {\bf w}'\|$. Using smoothness of $\phi$, difference in gradients can be written in terms of $\|{\bf h}_t({\bf w}) - {\bf h}_t'({\bf w}')\|$, which in turn can be bounded in terms of $\|{\bf w} - {\bf w}'\|$. Repeatedly leverage this fact to conclude total difference in gradients must be similarly bounded. 1st show small differences in weights don't significantly change trajectory of recurrent model.
+			\begin{lemma}
+				For some ${\bf w},{\bf w}'$, suppose $\phi_{\bf w},\phi_{{\bf w}'}$ are $\lambda$-contractive \& $L_{\bf w}$ Lipschitz in ${\bf w}$. Let ${\bf h}_t({\bf w}),{\bf h}_t({\bf w}')$ be hidden state at time $t$ obtain from running model with weights ${\bf w},{\bf w}'$ on common inputs $\{{\bf x}_t\}$. If ${\bf h}_0({\bf w}) = {\bf h}_0({\bf w}')$, then
+				\begin{equation*}
+					\|{\bf h}_t({\bf w}) - {\bf h}_t({\bf w}')\|\le\frac{L_{\bf w}\|{\bf w} - {\bf w}'\|}{1 - \lambda}.
+				\end{equation*}
+			\end{lemma}
+			Proof of Lem. 3 is similar in structure to Lem. 2 \& follows from repeatedly using smoothness of $\phi$ \& Lem. 5.
+			\item {\sf B.1.3. Gradient descent analysis.} Equipped with smoothness \& truncation lemmas (Lems. 2--3), turn towards proving main gradient descent result.
+		\end{itemize}
+	\end{itemize}
+	\item {\sc C. Experiments.}
+	\begin{itemize}
+		\item {\bf$O(\frac{1}{t})$ rate may be necessary.} Key result underlying Thm. 1 is bound on parameter difference $\|{\bf w}_{\rm trunc} - {\bf w}_{\rm recurr}\|$ while running gradient descent obtained in Prop. 4. Show this bound has correct qualitative scaling using random instances \& training randomly initialized, stable linear dynamical systems \& tanh-RNNs. In {\sf Fig. 6}, plot parameter error $\|{\bf w}_{\rm trunc}^t - {\bf w}_{\rm recurr}\|$ as training progresses for both models (averaged $> 10$ runs). Error scales comparably with bound given in Prop. 4. Also find for larger step-sizes like $\frac{\alpha}{\sqrt{t}}$ or constant $\alpha$, bound fails to hold, suggesting $O(\frac{1}{t})$ condition is necessary.
+		
+		Concretely, generate random problem instance by fixing a sequence length $T = 200$, sampling input data $x_t\stackrel{\rm i.i.d}{\sim}{\cal N}(0,4\cdot I_{32})$, \& sampling $y_T\sim{\rm Unif}[-2,2]$. Next, set $\lambda = 0.75$ \& randomly initialize a stable linear dynamical system or RNN with tanh nonlinearity by sampling $U_{ij},W_{ij}\stackrel{\rm i.i.d}{\sim}{\cal N}(0,0.5)$ \& thresholding singular values of $W$ so $\|W\|\le\lambda$. Use squared loss \& prediction function $f({\bf h}_t,{\bf x}_t) = C{\bf h}_t + D{\bf x}_t$, wehre $C,D\stackrel{\rm i.i.d}{\sim}{\cal N}(0,I_{32})$. Fix truncation length to $k = 35$, set learning rate to $\alpha_t = \frac{\alpha}{t}$ for $\alpha = 0.01$, \& take $N = 200$ gradient steps. These parameters are chosen so that $\gamma k\lambda^kN^{\alpha\beta + 1}$ bound from Prop. 4 does not become vacuous (trống rỗng) -- by triangle inequality, always have $\|{\bf w}_{\rm trunc} - {\bf w}_{\rm recurr}\|\le2\lambda$.
+		\item {\bf Stable vs. unstable models.} Word \& character level language modeling experiments are based on publically available code from [16]. Polyphonic music modeling code is based on code in [3], \& slot-filling model is a reimplementation of [18]: Word-level language modeling code is based on \url{https://github.com/pytorch/examples/tree/master/word_language_model}, character-level code is based on \url{https://github.com/salesforce/awd-lstm-lm}, \& polyphonic music modeling code is based on \url{https://github.com/locuslab/TCN}.
+		
+		Since sufficient conditions for stability derived in Sect. 2.2. only apply for networks with a single layer, use a single layer RNN or LSTM $\forall$ experiments. Further, our theoretical results are only applicable for vanilla SGD, \& not adaptive gradient methods, so all models are trained with SGD. {\sf Table 2: Hyperparameters for all experiments} contains a summary of all hyperparameters for each experiment.
+		
+		All hyperparameters are shared between stable \& unstable variants of both models. In RNN case, enforcing stability is conceptually simple, though computationally expensive. Since tanh is 1-Lipschitz, RNN is stable as long as $\|W\| < 1$. Therefore, after each gradient update, project $W$ onto spectral norm ball by taking SVD \& thresholding singular values to lie in $[0,1)$. In LSTM case, enforcing stability is conceptually more difficult, but computationally simple. To ensure LSTM is stable, appeal to Prop. 2. Enforce following inequalities after each gradient update
+		\begin{enumerate}
+			\item Hidden-to-hidden forget gate matrix should satisfy $\|W_f\|_\infty < 0.128$, which is enforced by normalizing $l_1$-norm of each row to have value at most $0.128$.
+			\item Input vectors ${\bf x}_t$ must satisfy $\|{\bf x}_t\|_\infty\le B_{\bf x} = 0.75$, which is achieved by thresholding all values to lie in $[-0.75,0.75]$.
+			\item Bias of forget gate $b_f$, must satisfy $\|b_f\|_\infty\le0.25$, which is again achieved by thresholding all values to lie in $[-0.25,0.25]$.
+			\item Input-hidden forget gate matrix $U_f$ should satisfy $\|U_f\|_\infty\le0.25$. This is enforced by normalizing $l_1$-norm of each row to have value at most $0.25$.
+			\item Given 1--4, forget gate can take value at most $f_\infty < 0.64$. Consequently, enforce $\|W_i\|_\infty,\|W_o\|_\infty\le0.36,\|W_z\|\le0.091,\|W_f\|_\infty < \min\{0.128,(1 - 0.64)^2\} = 0.128$.
+		\end{enumerate}
+		After 1--5 are enforced, by Prop. 2, resulting (iterated)-LSTM is stable. Although above description is somewhat complicated, implementation boils down to normalizing rows of LSTM weight matrices, which can be done very efficiently in a few lines of PyTorch.
+		\item {\bf Data-dependent stability.} Unlike RNN, is an LSTM, not clear how to analytically compute stability parameter $\lambda$. Instead, rely on a heuristic method to estimate $\lambda$. Recall a model is stable if $\forall{\bf x},{\bf h},{\bf h}'$, have
+		\begin{equation*}
+			S({\bf h},{\bf h}',{\bf x})\coloneqq\frac{\|\phi_{\bf w}({\bf h},{\bf x}) - \phi_{\bf w}({\bf h}',{\bf x})\|}{\|{\bf h} - {\bf h}'\|}\le\lambda  < 1.
+		\end{equation*}
+		To estimate $\sup_{{\bf h},{\bf h}',{\bf x}} S({\bf h},{\bf h}',{\bf x})$, do: 1st, take ${\bf x}$ to be point in training set. In language modeling case, ${\bf x}$ is 1 of learned word-vectors. Randomly sample \& fix ${\bf x}$, \& then \fbox{perform gradient ascent on $S({\bf h},{\bf h}',{\bf x})$ to find worst-case} ${\bf h},{\bf h}'$. In our experiments, initialize ${\bf h},{\bf h}'\sim{\cal N}(0,0.1\cdot I)$ \& run gradient ascent with learning rate $0.9$ for 1000 steps. This procedure is repeated 20 times, \& estimate $\lambda$ as maximum value of $S({\bf h},{\bf h}',{\bf x})$ encountered during any iteration from any of 20 random starting points.
+	\end{itemize}
 \end{itemize}
 
 %------------------------------------------------------------------------------%

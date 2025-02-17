@@ -56,19 +56,73 @@
 	\begin{itemize}
 		\item {\it Olympic Tin Học Sinh Viên [OLP] \& ICPC}.
 		
-		PDF: {\sc url}: \url{.pdf}.
+		PDF: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/NQBH_OLP_ICPC.pdf}.
 		
-		\TeX: {\sc url}: \url{.tex}.
+		\TeX: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/NQBH_OLP_ICPC.tex}.
+		\item Codes:
+		\begin{itemize}
+			\item C:
+			\item C++:
+			\item Python: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/OLP_ICPC/Python}.
+		\end{itemize}
 	\end{itemize}
 \end{abstract}
 \tableofcontents
 
 %------------------------------------------------------------------------------%
 
+\section{Basic Competitive Programming -- Lập Trình Thi Đấu Cơ Bản}
+
+%------------------------------------------------------------------------------%
+
+\section{VNOI}
+
+\begin{baitoan}[gcd in Pascal triangle -- ƯCLN trong tam giác Pascal, \url{https://oj.vnoi.info/problem/gpt}]
+	Tam giác Pascal là 1 cách sắp xếp hình học của các hệ số nhị thức vào 1 tam giác. Hàng thứ $n\in\mathbb{N}$ của tam giác bao gồm các hệ số trong khai triển của đa thức $f(x,y) = (x + y)^n$. I.e., phần tử tại cột thứ $k$, hàng thứ $n$ của tam giác Pascal là $C_n^k = \binom{n}{k}$, i.e., tổ hợp chập $k$ của $n$ phần tử $0\le k\le n$. Cho $n\in\mathbb{N}$. Tính ${\rm GPT}(n)$ là ƯCLN của các số nằm giữa 2 số 1 trên hàng thứ $n$ của tam giác Pascal.
+	\begin{itemize}
+		\item {\sf Input.} Dòng đầu ghi $T$ là số lượng test. $T$ dòng tiếp theo, mỗi dòng ghi 1 số nguyên $n$.
+		\item {\sf Output.} Gồm $T$ dòng, mỗi dòng ghi ${\rm GPT}(n)$ tương ứng.
+		\item {\sf Constraint.} $1\le T\le20$, $2\le n\le10^9$.
+	\end{itemize}
+\end{baitoan}
+{\it Phân tích.} Công thức khai triển nhị thức Newton: $(a + b)^n = \sum_{i=0}^n C_n^ia^{n-i}b^i$, $\forall n\in\mathbb{N}$, see, e.g., \href{https://en.wikipedia.org/wiki/Binomial_theorem}{Wikipedia{\tt/}binomial theorem}. Cần tính $\gcd(\{C_n^i;1\le i\le n - 1\}) = \gcd(C_n^1,C_n^2,\ldots,C_n^{n-1})$. Chú ý mỗi hàng của tam giác Pascal có tính chất đối xứng nên chỉ cần xét ``1 nửa'' là đủ. Cụ thể hơn: $C_n^k = C_n^{n-k}$, $\forall k\in\mathbb{N}$, $k\le n$, nên
+\begin{equation*}
+	\{C_n^1,\ldots,C_n^{n-1}\} = \{C_n^1,\ldots,C_n^{\lfloor\frac{n}{2}\rfloor}\} = \left\{\begin{split}
+		&\{C_n^1,\ldots,C_n^{\frac{n-1}{2}}\}&&\mbox{if } n\not{\divby}\ 2,\\
+		&\{C_n^1,\ldots,C_n^{\frac{n}{2}}\}&&\mbox{if } n\divby2,
+	\end{split}\right.
+\end{equation*}
+nên thay vì xét $i = 1,\ldots,n-1$, chỉ cần xét $i = 1,\ldots,\lfloor\frac{n}{2}\rfloor$ là đủ.
+
+\begin{theorem}
+	\begin{equation*}
+		\gcd\{C_n^i\}_{i=1}^{n-1} = \left\{\begin{split}
+			&p&&\mbox{if } n = p^k\mbox{ for some prime } p\mbox{ \& some } n\in\mathbb{N}^\star,\\
+			&1&&\mbox{if } n\ne p^k\mbox{ for all prime } p\mbox{ \& any } n\in\mathbb{N}^\star.
+		\end{split}\right.
+	\end{equation*}
+\end{theorem}
+See also, e.g.:
+\begin{itemize}
+	\item \href{https://math.stackexchange.com/questions/2067235/gcd-of-binomial-coefficients}{Mathematics StackExchange{\tt/}GCD of binomial coefficients}.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
 \section{CSES Problem Set}
 Link: \url{https://cses.fi/problemset/}.
 
-\begin{problem}[\href{https://cses.fi/problemset/task/2164}{CSES{\tt/}Josephus Queries}]
+\subsection{Introductory Problems}
+
+\subsection{Dynamic Programming}
+
+\subsection{Graph Algorithms}
+
+\subsection{Range Queries}
+
+\subsection{Mathematics}
+
+\begin{problem}[CSES{\tt/}Josephus Queries, \url{https://cses.fi/problemset/task/2164}]
 	Consider a game where there are $n\in\mathbb{N}^\star$ children, numbered $1,2,\ldots,n$, in a circle. During the game, every 2nd child is removed from circle, until there are no children left. Task: process $q$ queries of the form: ``when there are $n$ children, who is the $k$th child that will be removed?''
 	\begin{itemize}
 		\item {\sf Input.} The 1st input line has an integer $q$: the number of queries. After this, there are $q$ lines that describe the queries. Each line has 2 integers $n,k$: the number of children \& the position of the child.
@@ -76,6 +130,25 @@ Link: \url{https://cses.fi/problemset/}.
 	\end{itemize}
 \end{problem}
 It seems to me that {\sf Jack97} proposed this problem.
+
+\begin{problem}[CSES{\tt/}Dice Probability, \url{https://cses.fi/problemset/task/1725}]
+	Throw a dice $n\in\mathbb{N}^\star$ times, \& every throw produces an outcome between $1$ \& $6$. What is the probability that the sum of outcomes is between $a,b\in\mathbb{Z}$?
+	\begin{itemize}
+		\item {\sf Input.} The only input line contains 3 integers $n,a,b\in\mathbb{N}^\star$.
+		\item {\sf Output.} Print probability rounded to 6 decimal places (rounding half to even).
+		\item {\sf Constraints.} $1\le n\le100,1\le a\le b\le6n$.
+		\item {\sf Example.} Input: {\tt2 9 10}. Output: {\tt0.194444}.
+	\end{itemize}
+\end{problem}
+{\it Phân tích.} Gọi $n$ outcomes là $a_1,\ldots,a_n\in\{1,\ldots,6\}$. Sum of outcomes: $S\coloneqq\sum_{i=1}^n a_i\in\{n,\ldots,6n\}$.
+
+\subsection{String Algorithms}
+
+\subsection{Geometry}
+
+\subsection{Advanced Techniques}
+
+\subsection{Additional Problems}
 
 %------------------------------------------------------------------------------%
 
@@ -88,6 +161,17 @@ It seems to me that {\sf Jack97} proposed this problem.
 %------------------------------------------------------------------------------%
 
 \section{Miscellaneous}
+
+\subsection{Contributors}
+
+\begin{enumerate}
+	\item {\sc Võ Ngọc Trâm Anh.}
+	\item {\sc Đặng Phúc An Khang.}
+	\begin{itemize}
+		\item {\it Combinatorics \& Number Theory in Competitive Programming -- Tổ Hợp \& Lý Thuyết Số trong Lập Trình Thi Đấu}.
+	\end{itemize}
+	\item {\sc Phan Vĩnh Tiến.}
+\end{enumerate}
 
 %------------------------------------------------------------------------------%
 

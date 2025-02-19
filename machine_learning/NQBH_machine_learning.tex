@@ -7117,8 +7117,237 @@ This book series intends to publish monographs, textbooks \& edited books with a
 	\item {\sf5. Architecture.} Deep networks are a natural evolution of neural networks, themselves being an evolution of Perceptron, proposed by {\sc Rosenblatt} in 1957 [165]. Historically speaking [See, e.g., [62, Sect. 1.2] for a more detailed analysis of key trends in history of DL.], Perceptron was criticized by {\sc Minsky \& Papert} in 1969 [130] for its inability to classify {\it nonlinearly separable domains} [A simple example \& a counterexample of linear separability (of a set of 4 points within a 2D space \& belonging to green cross or red circle classes) are shown in {\sf Fig. 5.1: Example \& counterexample of linear separability.} Elements of 2 classes are linearly separable if there is at least 1 straight line separating them. Note: discrete version of counterexample corresponds to case of exclusive or (XOR) logical operator, which was used as an argument by {\sc Minsky \& Papert} in [130].] Their criticism also served in favoring an alternative approach of AI, based on symbolic representations \& reasoning.
 	
 	Neural networks reappeared in 1980s, thanks to idea of {\it hidden layers} joint with nonlinear units, to resolve initial linear separability limitation, \& to {\it backpropagation} algorithm, to train such multilayer neural networks [166].
+	
+	In 1990s, neural networks suffered declining interest [Meanwhile, convolutional networks started to gain interest, notably though handwritten digit recognition applications [111]. As Goodfellow et al. in [62, Sect. 9.11] put it: ``In many ways, they carried torch for rest of DL \& paved way to acceptance of neural networks in general.''] because of difficulty in training efficiently neural networks with many layers [Another related limitation, although specific to case of recurrent networks, was difficulty in training them efficiently on very long sequences. This was solved in 1997 by {\sc Hochreiter \& Schmidhuber} with LSTM architecture [82], Sect. 5.8.3.] \& due to competition fro SVM [196], which were efficiently designed to maximize {\it separation margin} \& had a solid formal background.
+	
+	An importance advance was invention of {\it pre-training} technique [Pre-training consists in prior training in {\it cascade} (1 layer at a time, also named {\it greedy layer-wise unsupervised training}) of each hidden layer [79] [62, page 528]. It turned out to be a significant improvement for accurate training of neural networks with several layers [46]. I.e., pre-training is now rarely used \& has been replaced by other more recent techniques, e.g. {\it batch normalization} \& {\it deep residual learning}. But its underlying techniques are useful for addressing some new concerns like {\it transfer learning}, which deals with issue of {\it reusability} (of what has been learnt, Sect. 8.3).] by Hinton et al. in 2006 [79], which resolved this limitation. In 2012, an image recognition competition (ImageNet Large Scale Visual Recognition Challenge [167]) was won by a deep neural network algorithm named AlexNet [AlexNet was designed by SuperVision team headed by {\sc Hinton} \& composed of {\sc Alex Krizhevsky, Ilya Sutskever, \& Geoffrey E. Hinton} [103]. AlexNet is a deep convolutional neural network with 60 million parameters \& 650000 neurons, consisting of 5 convolutional layers, some followed by max-pooling layers, \& 3 globally-connected layers.], with a stunning margin [On 1st task, AlexNet won competition with a 15\% error rate whereas other teams did not achieve $> 26$\% error rate.] over other algorithms which were using handcrafted features. This striking victory was event which ended prevalent opinion that neural networks with many hidden layers could not be efficiently trained [Interesting, title of Hinton et al.'s article about pre-training [79] is about ``deep belief nets'' \& does not mention term ``neural nets'' because, as {\sc Hinton} remembers it in [105]: ``At that time, there was a strong belief: deep neural networks were no good \& could {\it never} be trained \& that ICML (International Conference on Machine Learning) should not accept papers about neural networks.''].
 	\begin{itemize}
-		\item {\sf5.1. Introduction to Neural Networks.}
+		\item {\sf5.1. Introduction to Neural Networks.} Purpose: review, or to introduce, basic principles of ANNs. Objective: define key {\it concepts \& terminology} used when analyzing various music generation systems. Then, will introduce concepts \& basic principles of various derived architectures, like autoencoders, recurrent networks, RBMs, etc., which are used in musical applications. Will not describe extensively techniques of neural networks \& DL, e.g. covered in recent book [62].
+		\begin{itemize}
+			\item {\sf5.1.1. Linear Regression.} Although bio-inpsired (biological neurons), foundation of neural networks \& DL is {\it linear regression}. In statistics, linear regression is an approach for modeling (assumed linear) relationship between a scalar variable $y\in\mathbb{R}$ \& 1 [Case of 1 explanatory variable is called {\it simple linear regression}, otherwise it is named {\it multiple linear regression}] or $> 1$ {\it explanatory variable(s)} $x_1,\ldots,x_n$, with $x_i\in\mathbb{R}$, jointly noted as vector ${\bf x}$. A simple example: predict value of a house, depending on some factors (e.g., size, height, location, $\ldots$). Eqn (5.1)
+			\begin{equation*}
+				h({\bf x}) = b + \sum_{i=1}^n \theta_ix_i
+			\end{equation*}
+			gives general model of a (multiple) linear regression, where
+			\begin{itemize}
+				\item $h$: {\it model}, also named {\it hypothesis}, as this is hypothetical best model to be discovered, i.e. learn
+				\item $b$: {\it bias} [it could be also noted as $\theta_0$, Sect. 5.1.5.], representing {\it offset}
+				\item $\theta_1,\ldots,\theta_n$: {\it parameters} of model, {\it weights}, corresponding to explanatory variables $x_1,\ldots,x_n$.
+			\end{itemize}
+			\item {\sf5.1.2. Notations.} Use following simple notation conventions
+			\begin{itemize}
+				\item a {\it constant} is in roman (straight) font, e.g., integer 1 \& note $C_4$.
+				\item a {\it variable} of a model is in roman font, e.g., input variable $x$ \& output variable $y$ (possibly vectors).
+				\item a {\it parameter} of a model is in italics, e.g., bias $b$, weight parameter $\theta_1$, model function $h$, number of explanatory variables $n$ \& index $i$ of a variable $x_i$.
+				\item a {\it probability} as well as a {\it probability distribution} are in italics \& upper case, e.g., probability $P({\rm note} = A_4)$ that value of variable note is $A_4$ \& probability distribution $P({\rm note})$ of variable note over all possible notes (outcomes).
+			\end{itemize}
+			\item {\sf5.1.3. Model Training.} Purpose of training a linear regression model: find values for each weight $\theta_i$ \& bias $b$ that best fit actual training data{\tt/}examples, i.e., various pairs of values $(x,y)$. I.e., want to find parameters \& bias values s.t. for all values of $x$, $h(x)$ is {\it as close as possible} [Actually, for neural networks that are more complex (nonlinear models) than linear regression \& that will be introduced in Sect. 5.5, best fit to training data is not necessarily best hypothesis because it may have a low {\it generalization}, i.e., a low ability to predict {\it yet unseen data}. This issue, named {\it overfitting}, will be introduced in Sect. 5.5.9.] to $y$, according to some measure named {\it cost}. This measure represents {\it distance} between $h(x)$ (prediction, also notated as $\hat{y}$) \& $y$ (actual ground value), for {\it all} examples.
+			
+			Cost, also named {\it loss}, is usually [or also $J(\theta),{\cal L}_\theta,{\cal L}(\theta)$] notated $J_\theta(h)$ \& could be measured, e.g., by a mean squared error (MSE), which measures average squared difference, as shown in (5.2)
+			\begin{equation*}
+				J_\theta(h) = \frac{1}{m}\sum_{i=1}^m (y^{(i)} - h(x^{(i)}))^2 = \frac{1}{m}\sum_{i=1}^m (y^{(i)} - \hat{y}^{(i)})^2.
+			\end{equation*}
+			An example is shown in {\sf Fig. 5.2: Example of simple linear regression.} for case of simple linear regression, i.e., with only 1 explanatory variable $x$. Training data are shown as blue solid dots. Once model has been trained, values of parameters are adjusted, illustrated by blue solid bold line which mostly fits examples. Then, model can be used for {\it prediction}, e.g., to provide a good estimate $\hat{y}$ of actual value of $y$ for a given value of $x$ by computing $h(x)$.
+			\item {\sf5.1.4. Gradient Descent Training Algorithm.} Basic algorithm for training a linear regression model, using simple {\it gradient descent} method, is actually pretty simple [See, e.g., [{\sc Andrew Ng} lecture notes] for more details.]:
+			\begin{itemize}
+				\item initialize each parameter $\theta_i$ \& bias $b$ to a random or some heuristic value [Pre-training led to a significant advance, as it improved initialization of parameters by using actual training data, via sequential training of successive layers [46].]
+				\item compute values of model $h$ for all examples [Computing cost for all examples is best method but also computationally costly. There are numerous heuristic alternatives to minimize computational cost, e.g., {\it stochastic gradient descent} (SGD), where 1 example is randomly chosen, \& {\it minibatch gradient descent}, where a subset of examples is randomly chosen. See, e.g., [62, Sects. 5.9 \& 8.1.3] for more details.]
+				\item compute {\it cost} $J_\theta(h)$, e.g., by (5.2)
+				\item compute {\it gradients} $\frac{\partial J_\theta(h)}{\partial\theta_i}$ which are {\it partial derivatives} of cost function $J_\theta(h)$ w.r.t. each $\theta_i$, as well as to bias $b$
+				\item {\it update simultaneously} [A simultaneous update is necessary for algorithm to behave correctly.] all parameters $\theta_i$ \& bias according to update rule [Update rule may also be notated as $\theta\coloneqq\theta - \alpha\nabla_\theta J_\theta(h)$, where $\nabla_\theta J_\theta(h)$ is vector of gradients $\frac{\partial J_\theta(h)}{\partial\theta_i}$.] shown in (5.3) 
+				\begin{equation*}
+					\theta_i\coloneqq\theta_i - \alpha\frac{\partial J_\theta(h)}{\partial\theta_i},
+				\end{equation*}
+				with $\alpha$ being {\it learning rate}. This represents an update in opposite direction of gradients in order to decrease cost $J_\theta(h)$, as illustrated in {\sf Fig. 5.3: Gradient descent.}
+				\item {\it iterate} until error reaches a {\it minimum} [If cost function is {\it convex} (case for linear regression), there is only 1 {\it global minimum}, \& thus there is a guarantee of finding {\it optimal} model.], or after a certain number of iterations.
+			\end{itemize}
+			\item {\sf5.1.5. From Model to Architecture.} Now introduce in {\sf Fig. 5.4: Architectural model of linear regression.} a graphical representation of a linear regression model, as a precursor of a neural network. {\it Architecture} represented is actually computational representation of model [Mostly use term {\it architecture} as, in this book, concerned with way to implement \& compute a given model \& also with relation between an architecture \& a representation.].
+			
+			Weighted sum is represented as a {\it computational unit} [Use term {\it node} for any component of a neural network, whether it is just an {\it interface} (e.g., an input node) or a {\it computational unit} (e.g., a weighted sum or a function). Use term {\it unit} only in case of a computational node. Term {\it neuron} is also often used in place of unit, as a way to emphasize inspiration from biological neural networks.], drawn as a squared box with a $\Sigma$, taking its inputs from $x_i$ nodes, drawn as circles.
+			
+			In example shown, there are 4 explanatory variables: $x_1,x_2,x_3,x_4$. Note: there is some convention of considering bias as a special case of weight (thus alternatively notated as $\theta_0$) \& having a corresponding input node named {\it bias node}, which is {\it implicit} [However, as will be explained in Sect. 5.5, bias nodes rarely appear in illustrations of non-toy neural networks.] \& has a constant value notated as $+1$. This actually corresponds to considering an implicit additional explanatory variable $x_0$ with constant value $+1$, as shown in (5.4)
+			\begin{equation*}
+				h(x) = \theta_0 + \theta_1x_1 + \cdots + \theta_nx_n = \sum_{i=0}^n \theta_ix_i,
+			\end{equation*}
+			alternative formulation of linear regression initially defined in (5.1).
+			\item {\sf5.1.6. From Model to Linear Algebra Representation.} Initial linear regression equation (5.1) may also be made more compact thanks to a linear algebra notation leading to (5.5)
+			\begin{equation*}
+				h({\bf x}) = b + \boldsymbol{\theta}^\top{\bf x},
+			\end{equation*}
+			where
+			\begin{enumerate}
+				\item $b,h({\bf x})$: scalars
+				\item $\theta$: a vector consisting of $n$ elements $\boldsymbol{\theta} = [\theta_1,\ldots,\theta_n]^\top$
+				\item ${\bf x} = [x_1,\ldots,x_n]$.
+			\end{enumerate}
+			\item {\sf5.1.7. From Simple to Multivariate Model.} Linear regression can be generalized to {\it multivariable linear regression}, case when there are multiple variables $y_1,\ldots,y_p$ to be predicted, as illustrated in {\sf Fig. 5.5: Architectural model of multivariate linear regression} with 3 predicted variables: $y_1,y_2,y_3$, each subnetwork represented in a different color.
+			
+			Corresponding linear algebra equation:
+			\begin{equation*}
+				h({\bf x}) = b + W{\bf x}
+			\end{equation*}
+			where
+			\begin{enumerate}
+				\item $b$ bias vector is a column vector of dimension $p\times1$, with $b_j$ representing weight of connection between bias input node \& $j$th sum operation corresponding to $j$th output node
+				\item $W$ weight matrix is a matrix of dimension $p\times n$, with $W_{i,j}$ representing weight of connection between $j$th input node \& $i$th sum operation corresponding to $i$th output node
+				\item $n$: number of input nodes (without considering bias node)
+				\item $p$: number of output nodes.
+			\end{enumerate}
+			For architecture shown in {\sf Fig. 5.5}, $n = 4$ (number of input nodes \& of columns of $W$) \& $p = 3$ (number of output nodes \& of rows of $W$). Corresponding $b$ bias vector \& $W$ weight matrix are shown in (5.7)--(5.8) [Indeed, $b,W$ are generalizations of $b,\theta$ for case of univariate linear regression (as shown in Sect. 5.1.6) to case of multivariate \& thus to multiple rows, each row corresponding to an output node.] [By showing only connections to 1 of output node, in order to keep readability.] \& {\sf Fig. 5.6: Architectural model of multivariate linear regression showing bias \& weights corresponding to connections to 3rd output.}
+			\item {\sf5.1.8. Activation Function.} Now also apply an {\it activation function} (AF) to each weighted sum unit, as shown in {\sf Fig. 5.7: Architectural model of multivariate linear regression with activation function.} This activation function allows us to introduce arbitrary {\it nonlinear functions}.
+			\begin{enumerate}
+				\item From an {\it engineering} perspective, a nonlinear function is necessary to overcome linear separability limitation of single layer Perceptron.
+				\item From a {\it biological inspiration} perspective, a nonlinear function can capture {\it threshold} effect for activation of a neuron through its incoming signals (via its dendrites), determining whether it fires along its output (axone).
+				\item From a {\it statistical} perspective, when activation function is sigmoid function, a model corresponds to {\it logistic regression}, which models probability of a certain class or event \& thus performs binary classification [For each output node{\tt/}variable. See more details in Sect. 5.5.3.].
+			\end{enumerate}
+			Historically speaking, sigmoid function (which is used for {\it logistic regression}) is most common. Sigmoid function (usually written $\sigma$) is defined in (5.9)
+			\begin{equation*}
+				{\rm sigmoid}(z) = \sigma(z) = \frac{1}{1 + e^{-z}},
+			\end{equation*}
+			\& is shown in {\sf Fig. 5.8: Sigmoid function}, further analyzed in Sect. 5.5.3.
+			
+			An alternative is hyperbolic tangent, often noted tanh, similar to sigmoid but having $[-1,1]$ as its domain interval ($[0,1]$ for sigmoid). Tanh is defined in (5.10)
+			\begin{equation*}
+				\tanh z = \frac{e^z - e^{-z}}{e^z + e^{-z}},
+			\end{equation*}
+			shown in {\sf Fig. 5.9: Tanh function}.
+			
+			But ReLU is now widely used for its simplicity \& effectiveness. ReLU, which stands for {\it rectified linear unit}, is defined as
+			\begin{equation*}
+				{\rm ReLU}(z) = \max(0,z)
+			\end{equation*}
+			shown in {\sf Fig. 5.10: ReLU function}. Note: as some notation convention use $z$ as name of variable of an activation function, as $x$ is usually reserved for input variables.
+		\end{itemize}
+		\item {\sf5.2. Basic Building Block.} Architectural representation (of multivariate linear regression with activation function) shown in {\sf Fig. 5.7} is an instance (with 4 input nodes \& 3 output nodes) of a {\it basic building block} of neural networks \& DL architectures. Although simple, this basic building block is actually a working neural network.
+		
+		It has 2 layers [Although, saw in Sect. 5.5.2, it will be considered as a single-layer neural network architecture. As it has no hidden layer, it still suffers from linear separability limitation of Perceptron.]:
+		\begin{itemize}
+			\item {\it Input layer}, on left of figure, is composed of {\it input nodes} $x_i$ \& {\it bias node} which is an {\it implicit} \& specific input node with a constant value of 1, therefore usually denoted as $+1$.
+			\item {\it Output layer}, on right of figure, is composed of {\it output nodes} $y_j$.
+		\end{itemize}
+		Training a basic building block is essentially the same as training a linear regression model, described in Sect. 5.1.3.
+		\begin{itemize}
+			\item {\sf5.2.1. Feedforward Computation.} After it has been trained, can use this basic building block neural network for prediction. Therefore, simply {\it feedforward} network, i.e. provide input data to network ({\it feed in}) \& compute output values. This corresponds to (5.12)
+			\begin{equation*}
+				\hat{y} = h({\bf x}) = {\rm AF}(b + W{\bf x}).
+			\end{equation*}
+			Feedforward computation of prediction (for architecture shown in {\sf Fig. 5.5}) is illustrated in (5.13),
+			\begin{equation*}
+				\hat{y} = h({\bf x}) = {\rm AF}(b + W{\bf x}) = \cdots = [h_1({\bf x}),h_2({\bf x}),h_3({\bf x})]^\top = [\hat{y}_1,\hat{y}_2,\hat{y}_3]^\top,
+			\end{equation*}
+			where $h_j({\bf x})$ (i.e., $\hat{y}_j$) is prediction of $j$th variable $y_j$.
+			\item {\sf5.2.2. Computing Multiple Input Data Simultaneously.} Feedforwarding simultaneously a set of examples is easily expressed is easily expressed as a matrix by matrix multiplication, by substituting single vector example ${\bf x}$ in (5.12) with a matrix of examples (usually notated as $X$), leading to (5.14).
+			\begin{equation*}
+				h(X) = {\rm AF}(b +  WX).
+			\end{equation*}
+			Successive columns of matrix of elements $X$ correspond to different examples. Use a superscript notation $X^{(k)}$ to denote $k$th example, $k$th column of $X$ matrix, to avoid confusion with subscript notation $x_i$ which is used to denote $i$th input variable. Therefore, $X_i^{(k)}$ denotes $i$th input value of $k$th example. Feedforward computation of a set of examples is illustrated in (5.15)
+			\begin{equation*}
+				h(X) = \cdots = {\rm AF}(b + WX) = \cdots = [h(X^{(1)})\ \cdots\ h(X^{(m)})],
+			\end{equation*}
+			with predictions $h(X^(k))$ being successive columns of resulting output matrix.
+			
+			Note: main computation taking place [Apart from computation of AF activation function. In case of ReLU this is fast.] is a product of matrices. This can be computed very efficiently, by using linear algebra vectorized implementation libraries \& furthermore with specialized hardware like graphics processing units (GPUs).
+		\end{itemize}
+		\item {\sf5.3. ML.} 
+		\begin{itemize}
+			\item {\sf5.3.1. Definition.} Reflect a bit on meaning of training a model, whether it is a linear regression model (Sect. 5.1.1) or basic building block architecture presented in Sect. 5.2. Therefore, consider what ML actually means. Our starting point: following concise \& general definition of ML provided by {\sc Mitchell} in [131]: ``A computer program is said to learn from experience $E$ w.r.t. some class of tasks $T$ \& performance measure $P$, if its performance at tasks in $T$, as measured by $P$, improves with experience $E$.''
+			
+			At 1st, note: word {\it performance} actually covers different meanings, specifically regarding computer music context of book:
+			\begin{enumerate}
+				\item {\it execution} of (action to perform) an action, notably an artistic act e.g. a musician playing a piece of music
+				\item a {\it measure} (criterium of evaluation) of that action, notably for a computer system its {\it efficiency} in performing a task, in terms of time \& memory [With corresponding analysis measurements, time complexity \& space complexity, for corresponding algorithms.] measurements; or
+				\item a measure of {\it accuracy} in performing a task, i.e. ability to predict or classify with minimal errors.
+			\end{enumerate}
+			In remainder of book, in order to try to minimize ambiguity, use terms as following:
+			\begin{itemize}
+				\item {\it performance} as an act by a musician
+				\item {\it efficiency} as a measure of computational ability
+				\item {\it accuracy} as a measure of quality of a prediction or a classification [In fact, accuracy may not be a pertinent metric (số liệu liên quan) for a classification task with {\it skewed} classes, i.e. with 1 class being vastly more represented in data than other(s), e.g., in case of detection of a rare disease. Therefore a confusion matrix \& additional metrics like {\it precision \& recall}, \& possible combinations like F-score, are used (see, e.g., [62, Sect. 11.1] for details). Will not address them in book, because primarily concerned with content generation \& not in pattern recognition (classification).].
+			\end{itemize}
+			Thus, could rephrase definition as: ``A computer program is said to learn from experience $E$ w.r.t. some class of tasks $T$ \& accuracy measure $A$, if its accuracy at tasks in $T$, as measured by $A$, improves with experience $E$.''
+			\item {\sf5.3.2. Categories.} May now consider 3 main categories of ML w.r.t. nature of experience conveyed by examples:
+			\begin{itemize}
+				\item {\it supervised learning} -- dataset is fixed \& a correct (expected) answer [usually named a {\it label} in case of a {\it classification} task \& a {\it target} in case of a {\it prediction{\tt/}regression} task.] is associated to each example, general objective being to {\it predict answers} for new examples. Examples of tasks are regression (prediction), classification \& translation
+				\item {\it unsupervised learning} -- dataset is fixed \& general objective is in {\it extracting information}. Examples of tasks are feature extraction, data compression (both performed by {\it autoencoders}, Sect. 5.6), probability distribution learning (performed by RBMs, Sect. 5.7), series modeling (performed by {\it recurrent} networks, Sect. 5.8), clustering \& anomaly detection
+				\item {\it reinforcement learning} (Sect. 5.12) -- experience is {\it incremental} through successive actions of an {\it agents} within an {\it environment}, with some feedback ({\it reward}) providing information about {\it value} of action, general objective being to learn a near optimal {\it policy} (strategy), i.e. a suite of actions maximizing its cumulated rewards (its {\it gain}). Examples of tasks are game playing \& robot navigation.
+			\end{itemize}
+			\item {\sf5.3.3. Components.} In his introduction to ML [38], {\sc Domingos} describes ML algorithms through 3 components:
+			\begin{enumerate}
+				\item {\it representation} -- way to represent model -- in our case, a {\it neural network}, as it has been introduced \& will be further developed in following sects
+				\item {\it evaluation} -- way to evaluate \& compare models -- via a {\it cost function}, analyzed in Sect. 5.5.4
+				\item {\it optimization} -- way to identify (search among models for) a best model.
+			\end{enumerate}
+			\item {\sf5.3.4. Optimization.} Searching for values (of parameters of a model) that minimize cost function is indeed an {\it optimization} problem. 1 of most simple optimization algorithms is gradient descent.
+			
+			There are various more sophisticated algorithms, e.g. stochastic gradient descent (SGD), Nesterov accelerated gradient (NAG), Adagrad, BFGS, etc. (see, e.g., [62, Chap. 9] for more details).			
+		\end{itemize}
+		\item {\sf5.4. Architectures.} From this basic building block, describe in following sects main {\it types} of {\it DL architectures} used for music generation (as well as for other purposes):
+		\begin{itemize}
+			\item feedforward
+			\item autoencoder
+			\item restricted Boltzmann machine (RBM)
+			\item recurrent (RNN).
+		\end{itemize}
+		Also introduce {\it architectural patterns} (Sect. 5.13.1) which could be applied to them:
+		\begin{itemize}
+			\item convolutional
+			\item conditioning
+			\item adversarial.
+		\end{itemize}
+		\item {\sf5.5. Multilayer Neural Network aka Feedforward Neural Network.} A {\it multilayer neural network}, also named a {\it feedforward neural network}, is an assemblage of successive layers of basic building blocks (1 tập hợp các lớp liên tiếp của các khối xây dựng cơ bản):
+		\begin{itemize}
+			\item {\it1st layer}, composed of input nodes, is called {\it input layer}
+			\item {\it last layer}, composed of output nodes, is called {\it output layer}
+			\item any layer {\it between} input layer \& output layer is named a {\it hidden layer}.
+		\end{itemize}
+		An example of a multilayer neural network with 2 hidden layers is illustrated in {\sf Fig. 5.11: Example of a feedforward neural network (detailed).}
+		
+		Combination of a hidden layer \& a nonlinear activation function makes neural network a {\it universal approximator}, able to overcome {\it linear separability} limitation [Universal approximation theorem [85] states: a feedforward network with a single hidden layer containing a finite number of neurons can approximate a wide variety of interesting functions when giving appropriate parameters (weights). However, there is no guarantee: neural network will be able to learn them!].
+		\begin{itemize}
+			\item {\sf5.5.1. Abstract Representation.} Note: in case of practical (non-toy) illustrations of neural network architectures, in order to simplify figures, bias nodes are very rarely illustrated. With a similar objective, sum units \& activation function units are also almost always omitted, resulting in a more abstract view e.g. that shown in {\sf Fig. 5.12: Example of feedforward neural network (simplified).}.
+			
+			Can further abstract each layer by representing it as an oblong form (hình thuôn dài) (by hiding its nodes) [Sometimes pictured as a rectangle, see {\sf Fig. 5.14: (left) GoogLeNet 27-layer deep network architecture. Reproduced from [181]. (right) ResNet 34-layer deep network architecture. Reproduced from [73].} or even as a circle, notably in case of recurrent networks, see {\sf Fig. 5.31: RNN (folded)}] as shown in {\sf Fig. 5.13: Example of a feedforward neural network (abstract)}.
+			\item {\sf5.5.2. Depth.} Architecture illustrated in {\sf Fig. 5.13} is called a 3-layer neural network architecture, also indicating: {\it depth} of architecture is 3. Note: number of layers (depth) is indeed 3 \& not 4, irrespective of fact: summing up input layer, output layer \& 2 hidden layers gives 4 \& not 3. This is because, by convention, only layers with weights (\& units) are considered when counting number of layers in a multilayer neural network; therefore, input layer is not counted. Indeed, input layer only acts as an input interface, without any weight or computation.
+			
+			In this book, use a superscript (power) notation [Set of compact notations for expressing dimension of an architecture or a representation will be introduced in Sect. 6.1.] to denote number of layers of a neural network architecture. E.g., architecture illustrated in {\sf Fig. 5.13} could be denoted as Feedforward.
+			
+			Depth of 1st neural network architectures was small. Original Perceptron [165], ancestor of neural networks, has only an input layer \& an output layer without any hidden layer, i.e., it is a single-layer neural network. In 1980s, conventional neural networks were mostly 2-layer or 3-layer architectures.
+			
+			For modern deep networks, depth can indeed by very large, deserving name of {\it deep} (or even {\it very deep}) networks. 2 recent examples, both illustrated in {\sf Fig. 5.14: (left) GoogLeNet 27-layer deep network architecture. Reproduced from [181]. (right) ResNet 34-layer deep network architecture. Reproduced from [73].}, are
+			\begin{itemize}
+				\item 27-layer GoogLeNet architecture [181]
+				\item 34-layer (up to 152-layer!) ResNet architecture [73] [It introduces technique of {\it residual learning}, reinjecting input between levels \& estimating residual function $h({\bf x}) - {\bf x}$, a technique aimed at very deep networks, see [73] for more details.]
+			\end{itemize}
+			Note: depth {\it does} matter. A recent theorem [43] states: there is a simple radial function [A {\it radial function} is a function whose value at each point depends only on distance between that point \& origin. More precisely, it is radial iff it is invariant under all rotations while leaving origin fixed.] on $\mathbb{R^d}$, expressible by a 3-layer neural network, which cannot be approximated by any 2-layer network to more than a constant accurcy unless its width is exponential in dimension $d$. Intuitively, i.e., reducing depth (removing a layer) means exponentially augmenting width (number of units) of layer left. On this issue, interested reader may also wish to review analyses in [4,192].
+				
+			Note: for both networks pictured in {\sf Fig. 5.14}, flow of computation is vertical, upwawrd for GoogLeNet \& downward for ResNet. These are different usages than convention for flow of computation that have introduced \& used so far, which is horizontal, from left to right. Unfortunately, there is no consensus in literature about notation for flow of computation. Note: in specific case of recurrent networks, introduced in Sect. 5.8, consensus notation is vertical, upward.
+			\item {\sf5.5.3. Output Activation Function.} Have seen in Sect. 5.2: in modern neural networks, activation function AF chosen for introducing nonlinearity at output of each hidden layer is often ReLU function. But output layer of a neural network has a special status. Basically, there are 3 main possible types of activation function for output layer, named in following, {\it output activation function} [A shorthand for output layer activation function.]:
+			\begin{itemize}
+				\item identity -- case or a prediction (regression) task. It has continuous (real) output values. Therefore, do not need \& do not {\it want} a nonlinear transformation at last layer
+				\item sigmoid -- case of a binary classification task, as in logistic regression [For details about logistic regression, see, e.g., [62, p. 137] or [72, Sect. 4.4]. For this reason, sigmoid function is also called {\it logistic function}.]. Sigmoid function (usually written $\sigma$) has been defined in (5.9) \& shown for {\sf Fig. 5.8}. Note its specific shape, which provides a ``separation'' effect, used for binary decision between 2 options represented by values 0 \& 1
+				\item softmax -- most common approach for a classification task with $> 2$ classes but with only 1 label to be selected [A very common example: estimation by a neural network architecture of next note, modeled as a classification task of a single note label within set of possible notes.] (\& where a 1-hot encoding is generally used, see Sect. 4.11).
+			\end{itemize}
+			Softmax function actually represents a {\it probability distribution} over a discrete output variable with $n$ possible values (i.e., probability of occurrence  of each possible value $v$, knowing input variable $x$, i.e. $P(y = v|x)$). Therefore, softmax ensures: sum of probabilities for each possible value $= 1$. Softmax function is defined in (5.16)
+			\begin{equation*}
+				\sigma(z)_i = \frac{e^{z_i}}{\sum_{i=1}^n e^{z_i}},
+			\end{equation*}
+			\& an example of its use is shown in (5.17). Note: $\sigma$ is used for softmax function, as for sigmoid function, because softmax is actually generalization of sigmoid to case of multiple values, being a variadic function, that is one which accepts a variable number of arguments.
+			
+			For a classification or prediction task, can simply select value with highest probability (i.e. via {\it argmax} function, indice of 1-hot vector with highest value). But distribution produced by softmax function can also be used as basis for {\it sampling}, in order to add nondeterminism \& thus content variability to generation (detailed in Sect. 6.6).
+			
+			-- Đối với nhiệm vụ phân loại hoặc dự đoán, có thể chỉ cần chọn giá trị có xác suất cao nhất (tức là thông qua hàm {\it argmax}, chỉ số của vectơ 1-hot có giá trị cao nhất). Nhưng phân phối được tạo ra bởi hàm softmax cũng có thể được sử dụng làm cơ sở cho {\it lấy mẫu}, để thêm tính không xác định \& do đó là tính biến thiên nội dung vào quá trình tạo (chi tiết trong Phần 6.6).
+			\item {\sf5.5.4. Cost Function.} Choice of a cost (loss) function is actually correlated to choice of output activation function \& to choice of encoding of target $y$ (true value). {\sf Table 5.1: Relation between output activation function \& cost (loss) function.} [Inspired by {\sc Ronaghan}'s concise pedagogical presentation in [164].] summarizes main cases.
+			
+			A cross-entropy function measures difference between 2 probability distributions, in our case (of a classification task) between target (true value) distribution $y$ \& predicted distribution $\hat{y}$. Note: there are 2 types of cross-entropy cost functions:
+			\begin{itemize}
+				\item binary cross-entropy, when classification is binary (Boolean),
+				\item categorical cross-entropy, when classification is multiclass with a single label to be selected.
+			\end{itemize}
+			In case of a classification with multiple labels, binary cross-entropy must be chosen joint with sigmoid (because in such cases want to compare distributions independently, class per class [In case of multiple labels, probability of each class is independent from other class probabilities -- sum $> 1$.]) \& costs for each class are summed up.
+			
+			In case of multiple simultaneous classifications (multi multiclass single label), each classification is now independent from other classification, thus have 2 approaches: apply sigmoid \& binary cross-entropy for each element \& sum up costs, or apply softmax \& categorical cross-entropy {\it independently} for each classification \& sum up costs.
+			\item {\sf5.5.5. Interpretation.}
+		\end{itemize}
 	\end{itemize}
 	\item {\sf6. Challenge \& Strategy.}
 	\item {\sf7. Analysis.}

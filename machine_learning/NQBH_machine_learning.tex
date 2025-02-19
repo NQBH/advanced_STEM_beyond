@@ -7346,8 +7346,138 @@ This book series intends to publish monographs, textbooks \& edited books with a
 			In case of a classification with multiple labels, binary cross-entropy must be chosen joint with sigmoid (because in such cases want to compare distributions independently, class per class [In case of multiple labels, probability of each class is independent from other class probabilities -- sum $> 1$.]) \& costs for each class are summed up.
 			
 			In case of multiple simultaneous classifications (multi multiclass single label), each classification is now independent from other classification, thus have 2 approaches: apply sigmoid \& binary cross-entropy for each element \& sum up costs, or apply softmax \& categorical cross-entropy {\it independently} for each classification \& sum up costs.
-			\item {\sf5.5.5. Interpretation.}
+			\item {\sf5.5.5. Interpretation.} Take some examples to illustrate these subtle but important differences, starting with cases of real \& binary values in {\sf Fig. 5.15: Cost functions \& interpretation for real \& binary values.}. They also include basic interpretation of results [Interpretation is actually part of {\it strategy} of generation of music content. It will be explored in Chap. 6. E.g., sampling from probability distribution may be used in order to ensure content generation variability, as will be explained in Sect. 6.6.].
+			\begin{itemize}
+				\item An example of use of {\it multiclass single label} type is a classification among a set of possible notes for a monophonic melody, therefore with only 1 single possible note choice (single label), as shown in {\sf Fig. 5.16: Cost function \& interpretation for a multiclass single label.} See, e.g., ${\rm Blues}_C$ system in Sect. 6.5.1.1.
+				\item An example of use of {\it multiclass multilabel} type is a classification among a set of possible notes for a single-voice polyphonic melody, therefore with several possible note choices (several labels), as shown in {\sf Fig. 5.17: Cost function \& interpretation for a multiclass multilabel}. See, e.g., Bi-Axial LSTM system in Sect. 6.9.3.
+				\item An example of use of {\it multi multiclass single label} type is a multiple classification among a set of possible notes for multivoice monophonic melodies, therefore with only 1 single possible note choice for each voice, as shown in {\sf Fig. 5.18: Cost function \& interpretation for a multi multiclass single label.} See, e.g., ${\rm Blues}_{MC}$ system in Sect. 6.5.1.2.
+				\item Another example of use of {\it multi multiclass single label} type is a multiple classification among a set of possible notes for a set of time steps (in a piano roll representation) for a monophonic melody, therefore with only 1 single possible note choice for each time step. See, e.g., ${\rm DeepHear}_M$ system in Sect. 6.4.1.1.
+				\item An example of use of a {\it multi multiclass single label} type is a 2-level multiple classification among a set of possible notes for a set of time steps for a multivoice set of monophonic melodies. See, e.g., MiniBach system in Sect. 6.2.2.
+			\end{itemize}
+			3 main interpretations used [In various systems to be analyzed in Chap. 6] are
+			\begin{itemize}
+				\item argmax (index of output vector with largest value), in case of a 1-hot multiclass single label (in order to select most likely note)
+				\item {\it sampling} from probability represented by output vector, in case of a 1-hot multiclass single label (in order to select a note sorted along its likelihood)
+				\item argsort [argsort is a numpy library Python function.] (indexes of output vector sorted according to their diminishing values), in case of a many-hot multiclass multi label, filtered by some thresholds (in order to select most likely notes above a probability threshold \& under a maximum number of simultaneous notes).
+			\end{itemize}
+			\item {\sf5.5.6. Entropy \& Cross-Entropy.} Mean squared error has been defined in (5.2) in Sect. 5.1.3. Without getting into details about information theory, now introduce notion \& formulation of cross-entropy [With some inspiration from Preiswerk's introduction in [155].].
+			
+			Intuition behind information theory: information content about an event with a likely (expected) outcome is low, while information content about an event with an unlikely (unexpected, i.e., a surprise) outcome is high.
+			
+			Take example of a neural network architecture used to estimate next note of a melody. Suppose: outcome is note $=$ B \& it has a probability $P({\rm note} = B)$. Can then introduce {\it self-information} (notated $I$) of that event in
+			\begin{equation*}
+				I({\rm note} = B) = \log\frac{1}{P({\rm note} = B)} = -\log P({\rm note} = B)
+			\end{equation*}
+			A probability is by def within $[0,1]$ interval. If look at $-\log$ function in {\sf Fig. 5.19: $-\log$ function}, could see: its value is high for a low probability value (unlikely outcome) \& its value is null for a probability value $= 1$ (certain outcome), which corresponds to objective introduced above. Note: use of a logarithm also makes self-information additive for independent events, i.e., $I(P_1P_2) = I(P_1) + I(P_2)$.
+			
+			Consider all possible outcomes ${\rm note} = {\rm Note}_i$, each outcome having $P({\rm note} = {\rm Note}_i)$ as its associated probability, \& $P({\rm note})$ being probability distribution for all possible outcomes. Intuition: define {\it entropy} (notated $H$) of probability distribution for all possible outcomes as sum of self-information for each possible outcome, weighted by probability of outcome. This leads to
+			\begin{equation*}
+				H(P) = \sum_{i=0}^n P({\rm note} = {\rm Note}_i)I({\rm note} = {\rm Note}_i) = -\sum_{i=0}^n P({\rm note} = {\rm Note}_i)\log P({\rm note} = {\rm Note}_i).
+			\end{equation*}
+			Note: can further rewrite def by using notion of expectation [As expectation, or expected value, of some function $f(x)$ w.r.t. a probability distribution $P(x)$, usually notated as $\mathbb{E}_{X\sim P}[f(x)]$, is average (mean) value that $f$ takes on when $x$ is drawn from $P$, i.e., $\mathbb{E}_{X\sim P}[f(x)] = \sum_x P(x)f(x)$ (here considering case of discrete variables, which is case for classification within a set of possible notes).], which leads to
+			\begin{equation*}
+				H(P) = \mathbb{E}_{{\rm note}\sim P}[I({\rm note})] = -\mathbb{E}_{{\rm note}\sim P}[\log P({\rm note})].
+			\end{equation*}
+			Introduce in
+			\begin{equation*}
+				D_{\rm KL}(P\parallel Q) = \mathbb{E}_{{\rm note}\sim P}\left[\log\frac{P({\rm note})}{Q({\rm note})}\right] = \mathbb{E}_{{\rm note}\sim P}[\log P({\rm note}) - \log Q({\rm note})] = \mathbb{E}_{{\rm note}\sim P}[\log P({\rm note})] - \mathbb{E}_{{\rm note}\sim P}[\log Q({\rm note})]
+			\end{equation*}
+			{\it Kullback-Leibler divergence} (often abbr. as {\it KL-divergence}, \& notated $D_{\rm KL}$), as some measure [Note: it is not a true distance measure as it not symmetric.] of how different are 2 separate probability distribution $P,Q$ over a same variable (note). $D_{\rm KL}$ may be rewritten as (5.22) [By using $H(P)$ def in (5.20)]
+			\begin{equation*}
+				D_{\rm KL}(P\parallel Q) = -H(P) + H(P,Q)
+			\end{equation*}
+			where $H(P,Q)$, named {\it categorical cross-entropy}, is defined in (5.23)
+			\begin{equation*}
+				H(P,Q) = -\mathbb{E}_{{\rm note}\sim P}[\log Q({\rm note})].
+			\end{equation*}
+			Note: categorical cross-entropy is similar to KL-divergence [just like Kl-divergence, it is not symmetric.], while lacking $H(P)$ term. But minimizing $D_{\rm KL}(P\parallel Q)$ or minimizing $H(P,Q)$, w.r.t. $Q$, are equivalent, because omitted term $H(P)$ is a constant w.r.t. $Q$.
+			
+			Now, remember [Sect. 5.5.4]: objective of neural network: predict $\hat{y}$ probability distribution, which is an estimation of $y$ true ground probability distribution, by minimizing difference between them. This leads to
+			\begin{align*}
+				D_{\rm KL}(y\parallel\hat{y}) &= \mathbb{E}_y[\log y - \log\hat{y}] = \sum_{i=0}^n y_i(\log y_i - \log\hat{y}_i),\\
+				H(y,\hat{y}) &= -\mathbb{E}_y[\log\hat{y}] = -\sum_{i=0}^n y_i\log\hat{y}_i.
+			\end{align*}
+			Minimizing $D_{\rm KL}(y\parallel\hat{y})$ or minimizing $H(y,\hat{y})$, w.r.t. $\hat{y}$, are equivalent, because omitted term $H(y)$ is a constant w.r.t. $\hat{y}$. Last, deriving {\it binary cross-entropy} (notated $H_{\rm B}$) is easy, as there are only 2 possible outcomes, which leads to
+			\begin{equation*}
+				H_{\rm B}(y,\hat{y}) = -(y_0\log\hat{y}_0 + y_1\log\hat{y}_1).
+			\end{equation*}
+			Because $y_1 = 1 - y_0$ \& $\hat{y}_1 = 1 - \hat{y}_0$ (as sum of probabilities of 2 possible outcomes is 1), this ends up into
+			\begin{equation*}
+				H_{\rm B}(y,\hat{y}) = -(y\log\hat{y} + (1 - y)\log(1 - \hat{y})).
+			\end{equation*}
+			More details \& principles for cost functions [Underlying principle of {\it maximum likelihood estimation}, not explained here.] can be found, e.g., in [62, Sect. 6.2.1] \& [62, Sect. 5.5], resp. In addition, information theory foundation of cross-entropy as number of bits needed for encoding information is introduced, e.g., in [36].			
+			\item {\sf5.5.7. Feedforward Propagation.} Feedforward propagation in a multilayer neural network consists in injecting input data [$x$ part of an example, for generation phase as well as for training phase.] into input layer \& propagating computation through its successive layers until output is produced. This can be implemented very efficiently because it consists in a pipelined computation of successive vectorized matrix products (intercalated with AF activation function calls).
+			
+			Each computation from layer $k - 1$ to layer $k$ is processed as (5.28)
+			\begin{equation*}
+				{\rm output}^{[k]} = {\rm AF}(b^{[k]} + W^{[k]}{\rm output}^{[k-1]}),
+			\end{equation*}
+			which is a generalization of (5.12) [Feedforward computation for 1 layer has been introduced in Sect. 5.2.1], where $b^{[k]},W^{[k]}$ [Use a superscript notation with brackets ${}^{[k]}$ to denote $k$th layer, to avoid confusion with superscript notation with parentheses ${}^{(k)}$ to denote $k$th example \& subscript notation ${}_i$ to denote $i$th input variable.] are resp. bias \& weight matrix between layer $k - 1$ \& layer $k$, \& where ${\rm output}^{[0]}$ is input layer, as shown in {\sf Fig. 5.20: Example of a feedforward neural network (abstract) pipelined computation.}
+			
+			Multilayer neural networks are therefore often also named {\it feedforward neural networks} or {\it multilayer Perceptron} (MLP) [Original Perceptron was a neural network with no hidden layer, \& thus equivalent to our basic building block, with only 1 output node \& with step function as activation function.]
+			
+			Note: neural networks are {\it deterministic}. I.e., same input will deterministically {\it always} produce {\it same} output. This is a useful guarantee for prediction \& classification purposes but may be a limitation for generating new content. However, this may be compensated by {\it sampling} from resultant probability distribution (see Sects. 5.5.3 \& 6.6).
+			\item {\sf5.5.8. Training.} For training phase [Remember: this is a case of supervised learning (Sect. 5.2).], computing derivatives becomes a bit more complex than for basic building block (with no hidden layer) presented in Sect. 5.1.4. {\it Backpropagation} is standard method of estimating derivatives (gradients) for a multilayer neural network. Based on {\it chain rule} principle [166], in order to estimate contribution of each weight to final prediction error, i.e. cost. See, e.g., [62, Chap. 6] for more details.
+			
+			Note: in most common case, cost function of a multilayer neural network is {\it not convex}, i.e., there may be {\it multiple local minima}. Gradient descent, as well as other more sophisticated heuristic optimization methods, does not guarantee global optimum will be reached. But in practice a clever configuration of model (notably, its {\it hyperparameters, see Sect. 5.5.11}) \& well-tuned optimization heuristics, e.g. stochastic gradient descent (SGD), will lead to accurate solutions [On this issue, see [23], which shows: (1) local minima are located in a well-defined band, (2) SGD converges to that band, (3) reaching global minimum becomes harder as network size increase \& (4) in practice this is irrelevant as global minimum often leads to overfitting.]
+			\item {\sf5.5.9. Overfitting.} A fundamental issue for neural networks (\& more generally speaking for ML algorithms) is their {\it generalization} ability, i.e. their capacity to perform well on {\it yet unseen data}. I.e., do not want a neural network to just perform well on training data [Otherwise, best \& simpler algorithm would be a memory-based algorithm, which simply {\it memorizes} all $(x,y)$ pairs. It has best fit to training data but it does not have any generalization ability.] but also on future data [Future data is not yet known but that does not mean that it is {\it any kind} of (random) data, otherwise a ML algorithm would not be able to learn \& generalize well. There is indeed a fundamental assumption of regularity of data corresponding to a task (e.g., images of human faces, jazz chord progressions, etc.) that neural networks will exploit.] This is actually a fundamental dilemma, 2 opposing risks being
+			\begin{itemize}
+				\item {\it underfitting} -- when {\it training error} (error measure on {\it training data}) is large
+				\item {\it overfitting} -- when {\it generalization error} (expected error on {\it yet unseen data}) is large.
+			\end{itemize}
+			A simple illustrative example of underfit, good fit, \& overfit models for same training data (green solid dots) is shown in {\sf Fig. 5.21: Underfit, good fit, \& overfit models.}
+			
+			In order to be able to estimate potential for generalization, dataset is actually divided into 2 portions, with a ratio of $\approx70/30$:
+			\begin{itemize}
+				\item {\it training set} -- which will be used for training neural network
+				\item {\it validation set}, also named {\it test set}\footnote{Actually, a difference could (should) be made, as explained by Hastie et al. in [72, p. 222]: ``It is important to note: there are in fact 2 separate goals that might have in mid:
+				\begin{enumerate}
+					\item Model selection: estimating performance of different models in order to choose best one.
+					\item Model assessment: having chosen a final model, estimating its prediction error (generalization error) on new data.
+				\end{enumerate}
+				If we are in a data-rich situation, best approach for both problems is to randomly divided dataset into 3 parts: a training set, a validation set, \& a test set. Training set is used to fit models; validation set is used to estimate prediction error for model selection; test set is used for assessment of generalization error of final chosen model.'' However, as a matter of simplification, will not consider that difference in book.} -- which will be used to estimate capacity of model for generalization.
+			\end{itemize}
+			\item {\sf5.5.10. Regularization.} There are various techniques to control overfitting, i.e., to improve generalization. They are usually named {\it regularization} \& some examples of well-known techniques are:
+			\begin{itemize}
+				\item {\it weight decay} (also known as $L^2$), by penalizing over-predonderant weights
+				\item {\it dropout}, by introducing random disconnections
+				\item {\it early stopping}, by storing a copy of model parameters every time error on validation set reduces, then terminating after an absence of progress during a pre-specified number of iterations, \& returning these parameters
+				\item {\it dataset augmentation}, by data synthesis (e.g., by mirroring, translation \& rotation for images; by transposition for music, see Sect. 4.12.1), in order to augment number of training examples.
+			\end{itemize}
+			Will not further detail regularization techniques, see, e.g., [62, Sect. 7].
+			\item {\sf5.5.11. Hyperparameters.} In addition to {\it parameters} of model, which are weights of connections between nodes, a model also includes {\it hyperparameters}, which are parameters at an {\it architectural meta-level}, concerning both {\it structure \& control}.
+			
+			Examples of {\it structural} hyperparameters, mainly concerned with architecture, are
+			\begin{itemize}
+				\item number of layers
+				\item number of nodes
+				\item nonlinear activation function.
+			\end{itemize}
+			Examples of {\it control} hyperparameters, mainly concerned with learning process, are
+			\begin{itemize}
+				\item optimization procedure
+				\item learning rate
+				\item regularization strategy \& associated parameters.
+			\end{itemize}
+			Choosing proper values for (tuning) various hyperparameters is fundamental both for efficiency \& accuracy of neural networks for a given application. There are 2 approaches for exploring \& tuning hyperparameters: {\it manual tuning} or {\it automated tuning} -- by algorithmic exploration of multidimensional space of hyperparameters \& for each sample evaluating generalization error. 3 main strategies for automated tuning are:
+			\begin{itemize}
+				\item {\it random search} -- by defining a distribution for each hyperparameter, sampling configurations, \& evaluating them
+				\item {\it grid search} -- as opposed to random search, exploration is systematic on a small set of values for each hyperparameter
+				\item {\it model-based optimization} -- by building a model of generalization error \& running an optimization algorithm over it.
+			\end{itemize}
+			Challenge of automated tuning is its computational cost, although trials may be run in parallel. Will not detail these approaches here; however, further information can be found in [62, Sect. 11.4].
+			
+			Note: this tuning activity is more objective for conventional tasks e.g. prediction \& classification because evaluation measure is objective, being error rate for validation set. When task is generation of new musical content, tuning is more subjective because there is no preexisting evaluation measure. It then turns out to be more {\it qualitative}, e.g. through a manual evaluation of generated music by musicologists. This evaluation issue will be addressed in Sect. 8.6.
+			\item {\sf5.5.12. Platforms \& Libraries.} Various platforms [See, e.g., survey in [153].], e.g. CNTK, MXNet, PyTorch \& TensorFlow, are available as a foundation for developing \& running DL systems [There are also more general libraries for ML \& data analysis, e.g. SciPy library for Python language, or language R \& its libraries.]. They include libraries of
+			\begin{itemize}
+				\item basic architectures, e.g. ones presented in this chap
+				\item components, e.g. optimization algorithms
+				\item runtime interfaces for running models on various hardware, including GPUs or distributed Web runtime facilities
+				\item visualization \& debugging facilities.
+			\end{itemize}
+			Keras is an example of a higher-level framework to simplify development, with CNTK, TensorFlow, \& Theano as possible backends. ONNX is an open format for representing DL models \& was designed to ease transfer of models between different platforms \& tools.
 		\end{itemize}
+		\item {\sf5.6. Autoencoder.}
 	\end{itemize}
 	\item {\sf6. Challenge \& Strategy.}
 	\item {\sf7. Analysis.}

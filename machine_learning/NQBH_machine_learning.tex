@@ -7043,7 +7043,7 @@ A full understanding of ML requires some mathematical background \& so book incl
 
 %------------------------------------------------------------------------------%
 
-\subsection{\cite{Briot_Hadjeres_Pachet2020}. {\sc Jean-Pierre Briot, Ga\"etan Hadjeres, Fran\c{c}ois-David Pachet. Deep Learning Techniques for Music Generation}. 2020}
+\subsection{\cite{Briot_Hadjeres_Pachet2020}. {\sc Jean-Pierre Briot, Ga\"etan Hadjeres, Fran\c{c}ois-David Pachet}. Deep Learning Techniques for Music Generation. 2020}
 {\sf[2 Amazon ratings][324--454 citations]}
 
 {\sf Amazon review.} This book is a survey \& analysis of how DL can be used to generate musical content. Authors offer a comprehensive presentation of foundations of DL techniques for music generation. They also develop a conceptual framework used to classify \& analyze various types of architecture, encoding models, generation strategies, \& ways to control generation. 5 dimensions of this framework are: objective (kind of musical content to be generated, e.g., melody, accompaniment); representation (musical elements to be considered \& how to encode them, e.g., chord, silence, piano roll, 1-hot encoding); architecture (structure organizing neurons, their connections, \& flow of their activations, e.g., feedforward, recurrent, variational autoencoder); challenge (desired properties \& issues, e.g., variability, incrementality, adaptability); \& strategy (way to model \& control process of generation, e.g., single-step feedforward, iterative feedforward, decoder feedforward, sampling). To illustrate possible design decisions \& to allow comparison \& correlation analysis, analyze \& classify $> 40$ systems, \& discuss important open challenges e.g. interactivity, originality, \& structure.
@@ -7477,9 +7477,203 @@ This book series intends to publish monographs, textbooks \& edited books with a
 			\end{itemize}
 			Keras is an example of a higher-level framework to simplify development, with CNTK, TensorFlow, \& Theano as possible backends. ONNX is an open format for representing DL models \& was designed to ease transfer of models between different platforms \& tools.
 		\end{itemize}
-		\item {\sf5.6. Autoencoder.}
+		\item {\sf5.6. Autoencoder.} An {\it autoencoder} is a neural network with 1 hidden layer \& with an additional {\it constraint}: number of output nodes $=$ number of input nodes [Bias is not counted{\tt/}considered here as it is an implicit additional input node.] Output layer actually {\it mirrors} input layer. It is shown in {\sf Fig. 5.22: Autoencoder architecture}, with its peculiar symmetric diabolo (or sand-timer) shape aspect.
+		
+		p. 83
+		\begin{itemize}
+			\item {\sf5.6.1. Sparse Autoencoder.}
+			\item {\sf5.6.2. Variational Autoencoder.}
+		\end{itemize}
 	\end{itemize}
-	\item {\sf6. Challenge \& Strategy.}
+	\item {\sf6. Challenge \& Strategy.} Core of this book. This chap will analyze in depth how to apply architectures presented in Chap. 5 to learn \& generate music. 1st start with a naive, straightforward strategy, using basic prediction task of a neural network to generate an accompaniment for a melody.
+	
+	-- Chương này sẽ phân tích sâu về cách áp dụng các kiến trúc được trình bày trong Chương 5 để học \& tạo ra âm nhạc. Đầu tiên, hãy bắt đầu với một chiến lược đơn giản, dễ hiểu, sử dụng nhiệm vụ dự đoán cơ bản của mạng nơ-ron để tạo ra phần đệm cho một giai điệu.
+	
+	See: although this simple direct strategy does work, it suffers from some limitations. Then study these limitations, some relatively simple to solve, some more difficult \& profound -- challenges. Analyze various strategies [Remember, \& this will be important for following sects, as stated in Chap. 2, consider here strategy related to {\it generation phase} \& not training phase (which could be different).] for each challenge, \& illustrate them though different systems [As proposed in Chap. 2, use term {\it systems} for various proposals -- architectures, models, prototypes, systems, \& related experiments -- for DL-based music generation, collected from related literature.] taken from relevant literature. This also provides an opportunity to study possible relationships between architectures \& strategies.
+	\begin{itemize}
+		\item {\sf6.1. Notations for Architecture \& Representation Dimensions.} At 1st, introduce some compact notations for dimension of an architecture \& for size of a representation:
+		\begin{itemize}
+			\item {\it Architecture-type}${}^n$ for a $n$-layer architecture [This notation has actually been introduced in Sect. 5.5.2.], e.g., Feedforward${}^2$ for 2-layer feedforward architecture of MiniBach system introduced in Sect. 6.2.2
+			\item {\it Architecture-type}$\times n$ for a $n$-instance compound architecture, e.g., RNN$\times2$ for double RNN compound architecture of RL-Tuner introduced in Sect. 6.10.6.1
+			\item 1-hot$\times n$ for a multi-1-hot encoding representation, e.g.:
+			\begin{itemize}
+				\item a $n$-time steps 1-hot encoding, e.g., 1-hot$\times64$ for 64-time steps representation of DeepHear${}_M$ system introduced in Sect. 6.4.1.1
+				\item a $n$-voice 1-hot encoding, e.g., 1-hot$\times2$ for melody$+$chords representation of ${\rm Blues}_{MC}$ system introduced in Sect. 6.5.1.2, or
+				\item a combination of a multi-time steps encoding \& a multivoice encoding, e.g., 1-hot$\times64\times(1 + 3)$ for 64-time steps 1-voice input \& 3-voices output representation of MiniBach system introduced in Sect. 6.2.2.
+			\end{itemize}
+		\end{itemize}
+		An example of a combination  of 2 notations is ${\rm LSTM}^2\times2$ for double 2-layer RNN compound architecture of Anticipation-RNN system introduced in Sect. 6.10.3.5.
+		\item {\sf6.2. An Introductory Example.}
+		\begin{itemize}
+			\item {\sf6.2.1. Single-Step Feedforward Strategy.} Most direct strategy is using prediction or classification task of a neural network in order to generate musical content. Consider following objective: for a given melody want to generate an accompaniment, e.g., a counterpoint. Consider a dataset of examples, each one being a pair $({\rm melody},{\rm counterpointmelody}({\rm ies}))$. Then train a feedforward neural network architecture in a supervised learning manner on this dataset. Once trained, can choose an arbitrary melody \& feedforward it into architecture in order to produce a corresponding counterpoint accompaniment, in style of dataset. Generation is completed in a single-step of feedforward processing. Therefore, have named this strategy {\it single-step feedforward strategy}.
+			\item {\sf6.2.2. Example: MiniBach Chorale Counterpoint Accompaniment Symbolic Music Generation System.} Consider following objective: generating a counterpoint accompaniment to a given melody for a soprano voice, through 3 matching parts, corresponding to alto, tenor, \& bass voices. Use as a corpus set of {\sc J. S. Bach}'s polyphonic chorales [5]. As want this 1st introductory system to be simple, consider only 4 measures long excerpts from corpus. Dataset is constructed by extracting all possible 4 measures long excerpts from original 352 chorales, also transposed in all possible keys. Once trained on this dataset, system may be used to generate 3 counterpoint voices corresponding to an arbitrary 4 measures long melody provided as an input. Somehow, it does capture practice of {\sc J. S. Bach}, who chose various melodies for a soprano \& composed 3 additional voices melodies (for alto, tenor, \& bass) in a counterpoint manner.
+			
+			1st, need to decide input as well as output representations. Represent 4 measures of 4{\tt/}4 music. Both input \& output representations are symbolic, of piano roll type, with 1-hot recording for each voice, i.e. a multi-1-hot encoding for output representation. 3 1st voices (soprano, alto, \& tenor) have a scope of 20 possible notes plus an additional token to encode a hold [see Sect. 4.9.1. Note: as a simplification, MiniBach does not consider rests.], while last voice (bass) has a scope of 27 possible notes plus hold symbol. Time quantization (value of time step) is set at 16th note, which is minimal note duration used in corpus. Input representation has a size of 21 possible notes $\times16$ time steps $\times4$ measures, i.e., $21\times16\times4 = 1344$, while output representation has a size of $(21 + 21 + 28)\times16\times4 = 4480$.
+			
+			Architecture, a feedforward network, is shown in {\sf Fig. 6.1: MiniBach architecture}. As explained previously \& because of mapping between representation \& architecture, input layer has 1344 nodes \& output layer 4480. There is a single hidden layer with 200 units [This is an arbitrary choice.]. Nonlinear activation function used for hidden layer is ReLU. Output layer activation function is sigmoid \& cost function used is binary cross-entropy (this is a case of multi${}^2$ multiclass single label, see Sect. 5.5.4).
+			
+			Detail of architecture \& encoding is shown in {\sf Fig. 6.2: MiniBach architecture \& encoding}. It shows encoding of successive music time slices into successive 1-hot vectors directly mapped to input nodes (variables). In figure, each blackened vector element as well as each corresponding blackened input node element illustrate specific encoding (1-hot vector index) of a specific note time slice, depending of its actual pitch (or a hold in case of a longer note, shown with a bracket). Dual process happens at output. Each grey output node element illustrates chosen note (the one with highest probability), leading to a corresponding 1-hot index, leading ultimately to a sequence of notes for each counterpoint voice.
+			
+			Characteristics of this system, named MiniBach [MiniBach is actually a strong simplification -- but with same objective, corpus, \& representation principles -- of DeepBach system introduced in Sect. 6.14.2.], are summarized in multidimensional conceptual framework (as defined in Chap. 2 Method) in {\sf Table 6.1: MiniBach summary}. Notation [These notations, introduced in Sect. 6.1, will be summarized in Sect. 7.2.] 1-hot$\times64\times(1 + 3)$ means an encoding with 1 input $+$ 3 output voices, each with 64 (for 4 measures of 16 time steps each) 1-hot encodings of notes. Notation Feedforward${}^2$ means a 2-layer feedforward architecture (with 1 hidden layer). An example of a chorale counterpoint generated from a soprano melody is shown in {\sf Fig. 6.3: Example of a chorale counterpoint generated by MiniBach from a soprano melody}.
+			\item {\sf6.2.3. A 1st Analysis.} Chorales produced by Minibach look convincing at 1st glance. But, independently of a qualitative musical evaluation, where an expert could detect some defects, objective limitations of MiniBach appear:
+			\begin{itemize}
+				\item A structural limitation: music produced (as well as input melody) has a {\it fixed size} (one cannot produce a longer or shorter piece of music).
+				\item The same melody will always produce exactly {\it same} accompaniment because of {\it deterministic} nature of a feedforward neural network architecture.
+				\item Generated accompaniment is produced with a {\it single atomic step}, without any possibility of human intervention (i.e., without {\it incrementality} \& {\it interactivity}).
+			\end{itemize}
+		\end{itemize}
+		\item {\sf6.3. A Tentative List of Limitations \& Challenges.} Introduce a tentative list of limitations (in most cases, properties not fulfilled) \& challenges [Our shallow distinction between a limitation \& a challenge: {\it limitations} have relatively well-understood solutions, whereas {\it challenges} are more profound \& still subject of open research.]:
+		\begin{itemize}
+			\item {\it Ex nihilo} generation (vs accompaniment)
+			\item Length variability (vs fixed length)
+			\item Content variability (vs determinism)
+			\item Expressiveness (vs mechanization)
+			\item Melody-harmony consistency
+			\item Control (e.g., tonality conformance, maximum number of repeated notes $\ldots$)
+			\item Style transfer
+			\item Structure
+			\item Originality (vs imitation)
+			\item Incrementality (vs 1-hot generation)
+			\item Interactivity (vs automation)
+			\item Adaptability (vs no improvement through usage)
+			\item Explainability (vs black box).
+		\end{itemize}
+		Analyze them with possible matching solutions \& illustrate them through various examples systems.
+		\item {\sf6.4. {\it Ex Nihilo} Generation.} MiniBach system is good at generating an accompaniment (a counterpoint composed of 3 distinct melodies) matching an input melody. This is an example of supervised learning, as training examples include both an input (a melody) \& a corresponding output (accompaniment).
+		
+		Now suppose: our objective: generate a melody on its own -- not as an accompaniment of some input melody -- while being based on a style learn from a corpus of melodies. A standard feedforward architecture \& its companion single-step feedforward strategy, e.g. those used in MiniBach (described in Sect. 6.2.2), are not appropriate for such an objective.
+		
+		Introduce some strategies to generate new music content {\it ex nihilo} or from minimal {\it seed} information, e.g. a starting note or a high-level description.
+		\begin{itemize}
+			\item {\sf6.4.1. Decoder Feedforward.} 1st strategy is based on an autoencoder architecture. As explained in Sect. 5.6, through training phase an autoencoder will specialize its hidden layer into a detector of features characterizing type of music learnt \& its variations [To enforce this specialization, sparse autoencoders are often used (Sect. 5.6.1).]. One can then use these features as an {\it input inference} to {\it parameterize} generation of musical content. Idea is then to:
+			\begin{itemize}
+				\item {\it choose a seed} as a vector of values corresponding to hidden layer units
+				\item {\it insert} it in hidden layer
+				\item {\it feedforward} it through decoder.
+			\end{itemize}
+			This strategy, named {\it decoder feedforward}, will produce a {\it new} musical content corresponding to features, in same format as training examples.
+			
+			In order to have a minimal \& high-level vector of features, a stacked autoencoder (Sect. 5.6.3) is often used. Seed is then inserted at {\it bottleneck hidden layer} of stacked autoencoder [I.e., at exact middle of encoder{\tt/}decoder stack, as shown in {\sf Fig. 6.6: Generation in DeepHear. Extension of a figure reproduced from [179].}] \& feedforwarded through chain of decoders. Therefore, a simple seed information can generate an arbitrarily long, although fixed-length, musical content.
+			\begin{itemize}
+				\item {\sf6.4.1.1. \#1 Example: DeepHear Ragtime Melody Symbolic Music Generation System.} An example of this strategy: DeepHear system by {\sc Sun} [179]. Corpus used is 600 measures of {\sc Scott Joplin}'s ragtime music, split into 4 measures long segments. Representation used is piano roll with a multi-1-hot encoding. Quantization (time step) is a 16th note, thus representation includes $4\times16 = 64$ time steps (notated as 1-hot$\times64$). Number of input nodes is round 5000, which provides a vocabulary of about 80 possible note values. Architecture is shown in {\sf Fig. 6.4: DeepHear stacked autoencoder architecture. Extension of a figure reproduced from [179].} \& is a 4-layer stacked autoencoder (notated as Autoencoder${}^4$) with a decreasing number of hidden units, down to 16 units.
+				
+				After a pre-training phase [Do not detail pre-training here, refer to, e.g., [62, p. 528].], final training is performed, with each provided example used both as an input \& as an output, in self-supervised learning manner (see Sect. 5.6) shown in {\sf Fig. 6.5: Training DeepHear. [179]}.
+				
+				Generation is performed by inputting random data as seed into 16 bottleneck hidden layer units [units of hidden layer represent an embedding (Sect. 4.9.3), of which an arbitrary instance is named by {\sc Sun} a {\it label}.] (shown within a red rectangle) \& then by feedforwarding it into chain of decoders to produce an output (in same 4 measures long format as training examples), as shown in {\sf Fig. 6.6: Generation in DeepHear. Extension of a figure reproduced from [179].}. Summarize characteristics of ${\rm DeepHear}_M$ [Notate ${\rm DeepHear}_M$ this DeepHear melody generation system, where $M$ stands for melody, because another experiment with same DeepHear architecture but with a different objective will be presented later on in Sect. 6.10.4.1.] in {\sf Table 6.2: ${\rm DeepHear}_M$ summary.}
+				
+				In [179], {\sc Sun} remarks: system produces a certain amount of plagiarism. Some generated music is almost recopied from corpus. He states: this is because of small size of bottleneck hidden layer (only 16 nodes) [179]. Measured similarity (defined as percentage of notes in a generated piece that are also in 1 of training pieces) \& found: on average, it is 59.6\%, which is indeed quite high, although it does not prevent most of generated pieces from sounding different.
+				\item {\sf6.4.1.2. \#2 Example: deepAutoController Audio Music Generation System.} deepAutoController system, by {\sc Sarroff \& Casey} [169], is similar to DeepHear (Sect. 6.4.1.1) in that it also uses a stacked autoencoder. But representation is {\it audio}, more precisely a spectrum generated by Fourier transform, see [169] for more details. Dataset is composed of 8000 songs of 10 musical genres, leading to 70000 frames of magnitude Fourier transforms [As authors state in [169]: ``Chose to use frames of magnitude FFs (Fast Fourier transforms) for our models because they may be reconstructed exactly into original time domain signal when phase information is preserved, Fourier coefficients are not altered, \& appropriate windowing \& overlap-add is applied. It was thus easier to subjectively evaluate quality of reconstructions that had been processed by autoencoding models.'']. Entire data is normalized to $[0,1]$ range. Cost function used is mean squared error. Architecture is a 2-layer stacked autoencoder, bottleneck hidden layer having 256 units \& input \& output layers having 1000 nodes. Authors report: increasing number of hidden units does not appear to improve model performance.
+				
+				System, summarized in {\sf Table 6.3: deepAutoController summary}, also provides a user interface, analyzed in Sect. 6.15, to interactively control generation, e.g., selecting a given input (to be inserted at bottleneck hidden layer), generating a random input, \& controlling (by scaling or muting) activation of a given unit.
+			\end{itemize}
+			\item {\sf6.4.2. Sampling.} Another strategy is based on sampling. {\it Sampling} is action of generating an element (a {\it sample}) from a {\it stochastic} model according to a {\it probability distribution}.
+			\begin{itemize}
+				\item {\sf6.4.2.1. Sampling Basics.} Main issue for sampling: ensure: samples generated match a given distribution. Basic idea: generate a sequence of sample values in such a way that, as more \& more sample values are generated, distribution of values more closely approximates target distribution. Sample values are thus produced {\it iteractively}, with distribution of next sample being dependent only on current sample value. Each successive sample is generated through a {\it generate-\&-test} strategy, i.e., by generating a prospective candidate, accepting or rejecting it (based on a defined {\it probability density}) \&, if needed, regenerating it. Various sampling strategies have been proposed: Metropolis-Hastings algorithm, Gibbs sampling (GS), block Gibbs sampling, etc. See, e.g. [62, Chap. 17] for more details about sampling algorithms.
+				\item {\sf6.4.2.2. Sampling for Music Generation.} For musical content, may consider 2 different levels of probability distribution (\& sampling):
+				\begin{enumerate}
+					\item {\it item-level} or {\it vertical} dimension -- at level of a compound musical item, e.g., a chord. In this case, distribution is about relations between components of chord, i.e., describing probability of notes to occur together
+					\item {\it sequence}-level or {\it horizontal} dimension -- at level of a sequence of items, e.g., a melody composed of successive notes. In this case, distribution is about sequence of notes, i.e., it describes probability of occurrence of a specific note after a given note.
+				\end{enumerate}
+				An RBM (restricted Boltzmann machine) architecture is generally [A counterexample is C-RBM convolutional RBM architecture, introduced in Sect. 6.10.5.1, which models both vertical dimension (simultaneous notes) \& horizontal dimension (sequence of notes) for single-voice polyphonies.] used to model vertical dimension, i.e. which notes should be played together. As noted in Sect. 5.7, an RBM architecture is dedicated to learning distributions \& can learn efficiently from few examples. This is particularly interesting for learning \& generating chords, as combinatorial nature of possible notes forming a chord is large \& number of examples is usually small. An example of a {\it sampling strategy} applied on an RBM for horizontal dimension will be presented in Sect. 6.4.2.3.
+				
+				An RNN architecture is often used for horizontal dimension, i.e. which note is likely to be played after a given note, described in Sect. 6.5.1. As in Sect. 6.6.1, a sampling strategy may be also added to enforce variability.
+				
+				See in Sect. 6.9.1: a compound architecture named RNN-RBM may combine \& {\it articulate} [This issue of how to articulate vertical \& horizontal dimensions, i.e. harmony with melody, will be further analyzed in Sect. 6.9.] these 2 different approaches:
+				\begin{enumerate}
+					\item an RBM architecture with a sampling strategy for vertical dimension
+					\item an RNN architecture with an iterative feedforward strategy for horizontal dimension.
+				\end{enumerate}
+				An alternative approach: use sampling as {\it unique} strategy for both dimensions, as witnessed by DeepBach system to be analyzed in Sect. 6.14.2.
+				\item {\sf6.4.2.3. Example: RBM-based Chord Music Generation System.} In [11], Boulanger-Lewandowski et al. propose to use a restricted Boltzmann machine (RBM) [80] to model polyphonic music. Their objective is actually to improve transcription of polyphonic music from audio. But prior to that, authors discuss generation of samples from model that has been learnt as a qualitative evaluation \& also for music generation [12]. In their 1st experiment, RBM learns from corpus distribution of possible simultaneous notes, i.e., repertoire of chords.
+				
+				Corpus is set of {\sc J. S. Bach}'s chorales (as for MiniBach, described in Sect. 6.2.2). Polyphony (number of simultaneous notes) varies from 0 to 15 \& average polyphony is 3.9. Input representation has 88 binary visible units that span whole range of piano from $A_0$ to $C_8$, following a many-hot encoding. Sequences are aligned (transposed) onto a single common tonality (e.g., C major{\tt/}minor) to ease learning process.
+				
+				One can sample from RBM through block Gibbs sampling, by performing alternative steps of sampling hidden layer nodes (considered as variables) from visible layer nodes (Sect. 5.7). {\sf Fig. 6.7: Samples generated by RBM trained on {\sc J. S. Bach} chorales. [11]} shows various examples of samples. Vertical axis represents successive possible notes. Each column represents a specific sample composed of various simultaneous notes, with name of chord written below when analysis is unambiguous. {\sf Table 6.4: ${\rm RBM}_C$ summary.} summarizes this RBM-based chord generation system, which notate ${\rm RBM}_C$ where $C$ stands for chords.
+			\end{itemize}
+		\end{itemize}
+		\item {\sf6.5. Length Variability.} An important limitation of single-step feedforward strategy (Sect. 6.2.1) \& of decoder feedforward strategy (Sect. 6.4.1): length of music generated (more precisely number of times steps or measures) is {\it fixed}. It is actually fixed by architecture, namely number of nodes of output layer [In case of an RBM, number of nodes of input layer (which also has role of an output layer).]. To generate a longer (or shorter) piece of music, one needs to reconfigure architecture \& its corresponding representation.
+		\begin{itemize}
+			\item {\sf6.5.1. Iterative Feedforward.} Standard solution to this limitation is to use a RNN. Typical usage, as initially described for text generation by {\sc Graves} in [64], is to
+			\begin{itemize}
+				\item select some {\it seed} information as {\it1st} item (e.g., 1st note of a melody)
+				\item {\it feedforward} it into recurrent network in order to produce {\it next} item (e.g., next note)
+				\item use this next item as next input to produce {\it next next} item
+				\item repeat this process iteratively until a {\it sequence} (e.g., of notes, i.e., a melody) of desired length is produced.
+			\end{itemize}
+			Note: {\it iterative} aspect of generation, processed element by element. Therefore, name this approach {\it iterative time step feedforward} strategy, abbr. as {\it iterative feedforward} strategy. Actually, a {\it recursion} -- current output reenters as next input -- is also often present. However, there are a few rare exceptions, as will see, e.g., in Sequential (Sect. 6.8.2) \& in BLSTM (Sect. 6.8.3) architectures, where there is an iteration but {\it no} recusion.
+			
+			Note: iterative feedforward straetgy, as decoder feedforward strategy (Sect. 6.4.1), is 1 kind of {\it seed-based generation} (Sect. 6.4), as full sequence (e.g., a melody) is generated iteratively from an initial seed item (e.g., a starting note).
+			\begin{itemize}
+				\item {\sf6.5.1.1. \#1 Example: Blues Chord Sequence Symbolic Music Generation System.} In [42], {\sc Eck \& Schmidhuber} describe a double experiment undertaken with a recurrent network architecture using LSTMs [This was actually 1st experiment in using LSTMs to generate music.] In their 1st experiment, objective: learn \& generate chord sequences. Format of representation is piano roll, with 2 types of sequences: melody \& chords, although chords are represented as notes. Melodic range as well as chord vocabulary is strongly constrained, as corpus consists of 12 measures long blues \& is handcrafted (melodies \& chords). 13 possible notes extend from middle C $C_4$ to tensor C $C_5$. 12 possible chords extend from C to B.
+				
+				A 1-hot encoding is used. Time quantization (time step) is set at 8th note, half of minimal note duration used in corpus, which is a quarter note. With 12 measures long music this equates to 96 time steps. An example of chord sequence training example is shown in {\sf Fig. 6.8: A chord training example for blues generation [42].}
+				
+				Architecture for this 1st experiment is: an input layer with 12 nodes (corresponding to a 1-hot encoding of 12 chord vocabulary), a hidden layer with 4 LSTM blocks containing 2 cells each [see Sect. 5.8.3 for difference between LSTM cells \& blocks.] \& an output layer with 12 nodes (identical to input layer).
+				
+				Generation is performed by presenting a {\it seed} chord (represented by a note) \& by iteratively feedforwarding network, producing prediction of next time step chord, using it as next input \& so on, until a sequence of chords has been generated. Architecture \& iterative generation is illustrated in {\sf Fig. 6.9: Blues chord generation architecture}. This system, which notate ${\rm Blues}_C$, where $C$ stands for chords, is summarized in {\sf Table 6.5: ${\rm Blues}_C$ summary.}
+				\item {\sf6.5.1.2. \#2 Example: Blues Melody \& Chords Symbolic Music Generation System.} In {\sc Eck \& Schmidhuber}'s 2nd experiment [42], objective: simultaneously generate melody \& chord sequences. New architecture is an extension of prev one: it has an input layer with 25 nodes (corresponding to a 1-hot encoding of 12 chord vocabulary \& to a 1-hot encoding of 13 melody note vocabulary), a hidden layer with 8 LSTM blocks (4 chord blocks \& 4 melody blocks), containing 2 cells each, \& an output layer with 25 nodes (identical to input layer).
+				
+				Separation between chords \& melody is ensured as follows:
+				\begin{enumerate}
+					\item chord blocks are fully connected to input nodes \& to output nodes corresponding to chords
+					\item melody blocks are fully connected to input nodes \& to output nodes corresponding to melody
+					\item chord blocks have recurrent connections to themselves \& to melody blocks, \&
+					\item melody blocks have recurrent connections {\it only} to themselves.
+				\end{enumerate}
+				Generation is performed by presenting a seed (note \& chord) \& by recursively feedforwarding it into network, producing prediction of next time step note \& chord, \& so on, until a sequence of notes with chords is generated. {\sf Fig. 6.10: Example of blues generated (excerpt).} shows an example of melody \& chords generated. {\sf Table 6.6: ${\rm Blues}_{MC}$ summary} summarizes this 2nd system, which notate ${\rm Blues}_{MC}$ (where $MC$ stands for melody \& chords).
+				
+				This 2nd experiment is interesting in that it {\it simultaneously} generates melody \& chords. Note: in this 2nd architecture, recurrent connections are {\it asymmetric} as authors wanted to ensure preponderant role of chords. Chord blocks have recurrent connections to themselves but also to melody blocks, whereas melody blocks do not have recurrent connections to chord blocks. I.e., chord blocks will receive previous step information about chords \& melody, whereas melody blocks cannot use previous step information about chords. This somewhat ad hoc configuration of recurrent connections in architecture is a way to control interaction between harmony \& melody in a master-slave manner. Control of interaction \& consistency between melody \& harmony is indeed an effective issue \& it will be further addressed in Sect. 6.9 where analyze alternative approaches.
+			\end{itemize}
+		\end{itemize}
+		\item {\sf6.6. Content Variability.} A limitation of iterative feedforward strategy on an RNN, as illustrated by blues generation experiment described in Sect. 6.5.1.2: generation is {\it deterministic}. Indeed, a neural network is deterministic [There are stochastic versions of ANNs -- an RBM is an example -- but they are not mainstream.]. As a consequence, feedfowarding {\it same input} will always produce {\it same output}. As generation of next note, next next note, etc., is deterministic, {\it same} seed note will lead to {\it same} generated series of notes [Actual length of melody generated depends on number of iterations.]. Moreover, as there are only 12 possible input values (12 pitch classes), there are only 12 possible melodies.
+		\begin{itemize}
+			\item {\sf6.6.1. Sampling.} Fortunately, usual solution is quite simple. Assumption: output representation of melody is 1-hot encoded. I.e., output representation is of a piano roll type, output activation layer is softmax \& generation is modeled as a classification task. See an example in {\sf Fig. 6.11: Sampling softmax output}, where $P(x_t = C|x_{<t})$ represents conditional probability for element (note) $x_t$ at step $t$ to be a C given previous elements $x_{<t}$ (melody generated so far).
+			
+			Default {\it deterministic} strategy consists in choosing class (note) with {\it highest probability}, i.e. ${\arg\max}_{x_t} P(x_t|x_{<t})$, i.e. Ab in {\sf Fig. 6.11}. Can then easily switch to a {\it nondeterministic} strategy, by {\it sampling} output which corresponds (through softmax function) to a probability distribution between possible notes. By sampling a note following distribution generated [Chance of sampling a given class{\tt/}note is its corresponding probability. In example shown in {\sf Fig. 6.11}, Ab has around 1 chance in 2 of being selected \& Bb 1 chance in 4.], introduce {\it stochasticity} in process \& thus {\it variability} in generation.
+			\begin{itemize}
+				\item {\sf6.6.1.1. \#1 Example: CONCERT Bach Melody Symbolic Music Generation System.} CONCERT (an acronym for CONnectionist Composer of ERudite Tunes) developed by Mozer [138] in 1994, was actually 1 of 1st systems for generating music based on recurrent networks (\& before LSTM). It is aimed at generating melodies, possibly with some chord progression as an accompaniment.
+				
+				Input \& output representation includes 3 aspects of a note: pitch, duration, \& {\it harmonic chord accompaniment}. Representation of a pitch, named PHCCCH, is inspired by psychological pitch representation space of Shepard [172], \& is based on 5 dimensions, as illustrated in {\sf Fig. 6.12: CONCERT PHCCCH pitch representation. Inspired by [172] \& [138].}
+				
+				3 main components are as follows:
+				\begin{enumerate}
+					\item pitch height (PH)
+					\item (modulo) chroma circle (CC) cartesian coordinates
+					\item (harmonic) circle of 5ths (CH) cartesian coordinates.
+				\end{enumerate}
+				Motivation is in having a more musically meaningful representation of pitch by capturing similarity of octaves \& also harmonic similarity between a note \& its 5th. Proximity of 2 pitches is determined by computing Euclidean distance between their PHCCCH representations, that distance being invariant under transposition. Encoding of pitch height is through a scalar variable scaled to range from $-9.798$ for $C_1$ to $+9.798$ for $C_5$. Encoding of chroma circle \& of circle of 5ths is through a 6 binary value vector, for reasons detailed in [138]. Resulting encoding includes 13 input variables, with some examples shown in {\sf Table 6.7: Examples of PHCCCF pitch representation.} Note: a rest is encoded as a pitch with a unique code.
+				
+				Durations are considered at a very fine-grain level, each beat (a quarter note) being divided into 12ths, thus having a duration of 12{\tt/}12. This choice allows to represent binary (2 or 4 divisions) as well as ternary (3 divisions) rhythms. In a similar way to representation of pitch, a duration is represented through a scalar \& 2 circle coordinates, for 1/4 \& 1/3 beat cycles, as illustrated in {\sf Fig. 6.13: CONCERT duration representation. Inspired by [138]}, resulting in 5 dimensions directly encoded through a 5 binary value vector see more details in [138]). Temporal scope is a {\it note step}, i.e., granularity of processing by architecture is a {\it note} [\& not a fixed time step as for most of recurrent architectures, e.g., in Sect. 6.5.1.1. Various types of temporal scope have been introduced in Sect. 4.8.1.]
+				
+				Chords are represented in an exceptional way as a triad or a tetrachord, through root, 3rd (major or minor) \& 5th (perfect, augmented or diminished), with possible addition of a 7th component (minor or major). To represent next note to be predicted, CONCERT system actually uses both this rich \& distributed representation (named next-node-distributed, see {\sf Fig. 6.14: CONCERT architecture [138].}) \& a more concise \& traditional representation (named next-node-local), in order to be more intelligible. Activation function is sigmoid function resccaled to $[-1,1]$ range \& cost function is mean squared error.
+				
+				In generation phase, output is interpreted as a probability distribution over a set of possible notes as a basis for deciding next node in a nondeterministic way, following {\it sampling} strategy.
+				
+				CONCERT has been tested on different examples, notably after training with melodies of {\sc J. S. Bach}. {\sf Fig. 6.15: Example of melody generation by CONCERT based on J. S. Bach training set [138].} shows an example of a melody generated based on Bach training set. Although now a bit dated, CONCERT has been a pioneering model \& discussion in article about representation issues is still relevant.
+				
+				Note also: CONCERT, summarized in {\sf Table 6.8: CONCERT summary}, is a representative of early generation systems, before advent of DL architectures, when representations were designed with rich handcrafted features. 1 of benefits of using DL architectures: this kind of rich \& deep representation may be automatically extracted \& managed by architecture.
+				\item {\sf6.6.1.2. \#2 Example: Celtic Melody Symbolic Music Generation System.} Another representative example: system by Sturm et al. to generate Celtic music melodies [178]. Architecture used is a recurrent network with 3 hidden layers, which could notate [Note: as explained in Sect. 5.5.2, notate number of hidden layers without considering input layer.] as LSTM${}^3$, with 512 LSTM cells in each layer.
+				
+				Corpus comprises folk \& Celtic monophonic melodies retrieved from a repository \& discussion platform named The Session [98]. Pieces that were too short, too complex (with varying meters) or contained errors were filtered out, leaving a dataset of 23636 melodies. All melodies are aligned (transposed) onto single C key. 1 of specificities: representation chosen is {\it textual}, namely token-based {\it folk-rnn} notation, a transformation of character-based ABC notation (Sect. 4.7.3). Number of input \& output nodes $=$ number of tokens in vocabulary (i.e. with a 1-hot encoding), in practice $= 137$. Output of network is a probability distribution over its vocabulary.
+				
+				Training recurrent network is done in an iterative way, as network learns to predict next item. Once trained, generation is done iteratively by inputting a random token or a specific token (e.g., corresponding to a specific starting note), feedforwarding it to generate output, sampling from this probability distribution, \& recursively using selected vocabulary element as a subsequent input, in order to produce a melody element by element.
+				
+				Final step: decode folk-rnn representation generated into a MIDI format melody to be played. See in {\sf Fig. 6.16: Score of ``The Mal's Copporim'' automatically generated [178].} for an example of a melody generated. One may also see \& listen to results on [177]. Results are very convincing, with melodies generated in a clear Celtic style. System is summarized in {\sf Table 6.9: Celtic system summary}.
+				
+				As observed in [66]: ``Interesting to note: in this approach bar lines \& repeat bar lines are given explicitly \& are to be predicted as well. This can cause some issues, since there is no guarantee: output sequence of tokens would represent a valid song in ABC format. There could be too many notes in 1 bar e.g., but according to authors, this rarely occurs. This would tend to show: such an architecture is able to learn to count.'' [On this issue, see also [59].]
+			\end{itemize}
+		\end{itemize}
+		\item {\sf6.7. Expressiveness.} 1 limitation of most existing systems: they consider fixed dynamics (amplitude) for all notes as well as an exact quantization (a fixed tempo), which makes music generated too mechanical, without {\it expressiveness} or {\it nuance}.
+		
+		A natural approach resides in considering representations recorded from real performances \& not simply scores, \& therefore with musically grounded (by skilled human musicians) variations of tempo \& of dynamics, discussed in Sect. 4.10.
+		
+		Note: an alternative approach: automatically {\it augment} generated music information (e.g., a standard MIDI piece) with slight transformations on amplitude \&{\tt/}or tempo. E.g.: Cyber-João system [29], which performs bossa nova guitar accompaniment with expressiveness, through automatic retrieval [By a mixed use of production rules \& case-based reasoning (CBR).] \& application of rhythmic patterns [These patterns have been manually extracted from a corpus of performances by guitarist \& single {\sc João Gilberto}, 1 of inventors of Bossa nova style. One could also consider automatic extraction, as, e.g., in [31].].
+		
+		As noted in Sect. 4.10.3, in case of an audio representation, expressiveness is implicit to representation. However, difficult to separately control expressiveness (dynamics or tempo) of a single instrument or voice as representation is global.
+		\begin{itemize}
+			\item {\sf6.7.1. Example: Performance RNN Piano Polyphony Symbolic Music Generation System.} +++
+		\end{itemize}
+	\end{itemize}
 	\item {\sf7. Analysis.}
 	\item {\sf8. Discussion \& Conclusion.}
 \end{itemize}

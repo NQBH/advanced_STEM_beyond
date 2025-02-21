@@ -7669,9 +7669,128 @@ This book series intends to publish monographs, textbooks \& edited books with a
 		
 		Note: an alternative approach: automatically {\it augment} generated music information (e.g., a standard MIDI piece) with slight transformations on amplitude \&{\tt/}or tempo. E.g.: Cyber-João system [29], which performs bossa nova guitar accompaniment with expressiveness, through automatic retrieval [By a mixed use of production rules \& case-based reasoning (CBR).] \& application of rhythmic patterns [These patterns have been manually extracted from a corpus of performances by guitarist \& single {\sc João Gilberto}, 1 of inventors of Bossa nova style. One could also consider automatic extraction, as, e.g., in [31].].
 		
-		As noted in Sect. 4.10.3, in case of an audio representation, expressiveness is implicit to representation. However, difficult to separately control expressiveness (dynamics or tempo) of a single instrument or voice as representation is global.
+		As noted in Sect. 4.10.3, in case of an audio representation, expressiveness is implicit to representation. However, difficult [But not impossible to achieve, regarding recent achievements made on audio source separation through DL techniques, as has been pointed out in Sect. 4.10.3.] to separately control expressiveness (dynamics or tempo) of a single instrument or voice as representation is global.
 		\begin{itemize}
-			\item {\sf6.7.1. Example: Performance RNN Piano Polyphony Symbolic Music Generation System.} +++
+			\item {\sf6.7.1. Example: Performance RNN Piano Polyphony Symbolic Music Generation System.} In [173], {\sc Simon \& Oore} present their architecture \& methodology named Performance RNN -- an LSTM-based RNN architecture. 1 of specificities is in dataset characteristics, as corpus is composed of recorded human performances, with records of exact timing as well as dynamics for each note played. Corpus used is Yamaha e-Piano Competition dataset, whose participants MIDI performance records are made available to public [209]. It captures $> 1400$ performances by skilled pianists. To create additional training examples, some time stretching (up to 5\% faster or slower) as well as some transposition (up to a major 3rd) is applied.
+			
+			Representation is adapted to objective. At 1st look, it resembles a piano roll with MIDI note numbers but it is actually a bit different. Each time slice is a multi-1-hot vector of possible values for each of following possible events:
+			\begin{itemize}
+				\item start of a new note -- with 128 possible values (MIDI pitches).
+				\item end of a note -- with 128 possible values (MIDI pitches)
+				\item time shift -- with 100 possible values (from 10 milisecs to 1 sec)
+				\item dynamics -- with 32 possible values (128 MIDI velocities quantized into 32 bins [See description of binning transformation in Sect. 4.11.]).
+			\end{itemize}
+			An example of a performance representation is shown in {\sf Fig. 6.17: Example of Performance RNN representation [173].}
+			
+			Some control is made available to user, referred to as {\it temperature}, which controls randomness of generated events in following way:
+			\begin{itemize}
+				\item a temperature of 1.0 uses exact distribution predicted
+				\item a value $< 1.0$ reduces randomness \& thus increases repetition of patterns
+				\item a larger value increases randomness \& decreases repetition of patterns.
+			\end{itemize}
+			Examples are available on web page [173]. Performance RNN is summarized in {\sf Table 6.10: Performance RNN summary}.
+		\end{itemize}
+		\item {\sf6.8. RNN \& Iterative Feedforward Revisited.} As saw in prev examples, iterative feedforward strategy is based on idea of RNN architecture to iteratively generate successive item of a sequence. It looks like a RNN architecture \& iterative feedforward strategy are strongly coupled. Indeed, almost all RNN-based systems use an iterative feedforward strategy \& recursively reenter output produced (next time step generated) into input. But will introduce in this sect some exceptions.
+		\begin{itemize}
+			\item {\sf6.8.1. \#1 Example: Time-Windowed Melody Symbolic Music Generation System.} Experiments by {\sc Todd} in [189] were 1 of very 1st attempts (in 1989) at exploring how to use ANNs to generate music. Although architectures he proposed are not directly used nowadays, his experiments \& discussion were pioneering \& are still an important source of information.
+			
+			{\sf Todd}'s objective was to generate a monophonic melody in some iterative way. He has experimented with different choices for representing notes (Sect. 4.5.3) \& durations, but finally had decided to use a conventional pitch note representation with a 1-hot encoding \& a time step temporal scope approach. Time step is set at duration of an 8th note. In most of experiments, input melodies used for training are 34 time steps long (i.e., 4 measures \& a half long), padded at end with rests. A note begin is represented with a specific token \& is encoded as an additional value encoding node (Sects. 4.9.1 \& 4.11.7). Rests are not encoded explicitly but as absence of a note, i.e., as note 1-hot encoding being all filled with null values (Sect. 4.11.7).
+			
+			1st experiment is what author named Time-Windowed architecture, where a sliding window of successive time-periods of fixed size is considered. In practice this sliding window of a melody segment is 1 measure long, i.e. 8 time steps. Its representation may be considered as a piano roll, like in MiniBach architecture (Sect. 6.2.2), with successive 1-hot encodings of notes for 8 successive time steps, notated as 1-hot$\times8$.
+			
+			Architecture is a feedforward network (\& not an RNN), with a melody segment as its input, next melody segment as its output \& with a single hidden layer. Generation is conducted iteratively (\& recursively), melody segment by melody segment. Architecture is illustrated in {\sf Fig. 6.18: Time-Windowed architecture. Inspired from [189]}.
+			
+			For each time step of melody segment, predicted note is the one with highest probability. Because of 0-hot encoding of a rest (i.e. as all values being null), there is an ambiguity between case of every possible note has a low probability \& case of a rest (Sect. 4.11.7). For that reason, a probability threshold is introduced, namely 0.5. Thus, predicted note is the one with highest probability if it is $> 0.5$ \& is a rest otherwise.
+			
+			Network is trained in a supervised way by presenting a melody segment as an input \& its corresponding next segment as output, \& repeating this for various segments. Note: as architecture is not recurrent, although network will learn pairwise correlations between 2 successive melody segments [In that respect, Time-Windowed model is analog to an order 1 Markov model (considering only prev state) at level of a melody measure.], there is no explicit memory for learning long term correlations e.g. in case of recurrent network architecture. Thus, although author does not show a comparison with its next experiment (see next sect), architecture appears to have a low ability to learn long term correlations. Time-Windowed architecture is summarized in {\sf Table 6.11: Time-Windowed summary}.
+			\item {\sf6.8.2. \#2 Example: Sequential Melody Symbolic Music Generation System.} In [189], {\sc Todd} proposed another architecture, named Sequential, as notes are generated in a sequence. It is illustrated in {\sf Fig. 6.19: Sequential architecture. Inspired from [189]}.
+			
+			Input layer is divided in 2 parts, named {\it context \& plan}. Context is actual memory (of melody generated so far) \& consists in units corresponding to each note ($D_4$ to $C_6$), plus a unit about note begin information (notated as ``nb'' in {\sf Fig. 6.19}). Therefore, it receives information from output layer which produces next note, with a reentering connection corresponding to each unit [Note: output layer is isomorphic to context layer.]. In addition, as {\sc Todd} explains it: ``A memory of more than just single prev output (note) is kept by having a self-feedback connection on each individual context unit.'' [This is a peculiar characteristic of this architecture, as in a standard recurrent network architecture recurrent connections are encapsulated within hidden layer (see {\sf Fig. 5.30: Standard connections vs. recurrent connections (unfolded).} \& {\sf Fig. 5.34: LSTM architecture (conceptual).}). Argument by {\sc Todd} in [189]: context units are more interpretabel than hidden units: ``Since hidden units typically compute some complicated, often uninterpretable function of their inputs, memory kept in context units will likely also be uninterpretable. This is in contrast to [this] design, where, as described earlier, each context unit keeps a memory of its corresponding output unit, which is interpretable.'']
+			
+			Plan represents a melody (among many): network has learnt. {\sc Todd} has experimented with various encodings, 1-hot or distributed (through a many-hot embedding).
+			
+			Training is done by selecting a plan (melody) to be learnt. Activations of context units are initialized to 0 in order to begin with a clean empty context. Network is then feedforward \& its output, corresponding to 1st time step note, is compared to 1st tie step note of melody to be learnt, resulting in adjustment of weights. Output values [Actually, as an optimization, {\sc Todd} proposes in following of his description to pass back target values \& not output values.] are passed back to current context. \& then, network is feedforwarded again, leading to next time step note, again compared to melody target, \& so on until last time step of melody. This process is then repeated for various plans (melodies).
+			
+			Generation of new melodies is conducted by feedforwarding network with a new plan embedding, corresponding to a new melody (not part of training plans{\tt/}melodies). Activations of context units are initialized to 0 in order to begin with a clean empty context. Generation takes place iteratively, time step after time step. Note: as opposed to most cases of iterative feedforward strategy (Sect. 6.5.1), in which output is explicitly reentered (recursively) into input of architecture, in {\sc Todd}'s Sequential architecture reentrance is implicit because of specific nature of recurrent connections: output is reentered into context units while input -- plan melody -- is constant.
+			
+			After having trained network on a plan melody, various melodies may be generated by extrapolation by inputting new plans, as shown in {\sf Fig. 6.20: Examples of melodies generated by Sequential architecture. (o) Original plan melody learnt. ($e_1,e_2$) Melodies generated by extrapolating from a new plan melody. Inspired from [189].} A repeat sign {\bf:} indicates when network output goes into a fixed loop.
+			
+			One could also do interpolation between several (2 or more) plans melodies that have been learnt [Note: this way of doing is actually some precursor of doing interpolation on embeddings of melodies to be generated by combining a decoder feedforward strategy \& an iterative feedforward strategy, e.g. in VRAE or Music VAE systems, described in Sects. 6.10.2.3 \& 6.12.1, resp.]. Examples are shown in {\sf Fig. 6.21: Examples of melodies generated by Sequential architecture. ($o_A,o_B$) Original plan melodies learnt. ($i_1,i_2$) Melodies generated by interpolating between $o_A$ plan \& $o_B$ plan melodies. Inspired from [189].}. Sequential architecture is summarized in {\sf Table 6.12: Sequential architecture summary}.
+			\item {\sf6.8.3. \#3 Example: BLSTM Chord Accompaniment Symbolic Music Generation System.} BLSTM (Bidirectional LSTM) chord accompaniment system by Lim et al. [119] is a rare \& interesting case [As noted in Sects. 5.8.2 \& 6.5.1.] of an accompaniment system based on a recurrent architecture. Objective: generate a progression (sequence) of chords as an accompaniment to a melody (specified symbolically).
+			
+			Corpus is imported from a now defunct lead sheet public data base. Authors selected 2252 selected lead sheets of various western modern music (rock, pop, country, jazz, folk, R\&B, children's song, etc.), all in major key \& majority with a single chord per measure (otherwise only 1st chord is considered). This results in a training set of 1,802 songs (making a total of 72,418 measures) \& a test set of 450 songs (17768 measures). All songs are transposed (aligned) to C major key.
+			
+			Desired characteristics are extracted from original XML files \& converted to a CSV [CSV stands for Comma-separated values.] (spreadsheet) matrix format, as shown in {\sf Fig. 6.22: Example of extracted data from a single measure [119].} Specificities (simplifications) of representation are as follows:
+			\begin{itemize}
+				\item for melody [\& obviously also for chords.], only pitch classes are considered (\& octaves are not), resulting in a 12 notes 1-hot encoding (named 12-semitone-vector) plus the rest				
+				\item for chords, only their primary triads are considered, with only 2 types: major \& minor, resulting in a 24 chords 1-hot encoding.
+			\end{itemize}
+			Architecture is a bidirectional LSTM with 2 LSTM layers, each one with 128 unis. Motivation: provide network with musical context backward \& also forward in time. Time step considered by architecture is 4 measures long, as shown in {\sf Fig. 6.23: BLSTM architecture [119]}. Tanh function is used as nonlinear activation function for hidden layers \& softmax is used as output layer activation function, with categorical cross-entropy as its associated cost function.
+			
+			Training is done with various 4 measures long samples as input \& their associated 4 chords as output, generated by sliding a 4 measures long window over each training song. Generation is done by iteratively feedforwarding successive 4 measures long melody fragments (time slices) of a song \& concatenating resulting 4 measures long chord progression fragments.
+			
+			Architecture is peculiar (riêng) in that, although recurrent, generation is not recursive \& output data has a different nature \& structure (chords) than input data (notes). Furthermore, note: although strategy is iterative \& architecture is recurrent, granularity (độ chi tiết) of each iterative step is quite coarse as it is 4 measures long, as opposed to most of systems based on recurrent architectures \& iterative feedforward strategy which consider time step at level of smallest notre duration (see, e.g., system analyzed in Sect. 6.5.1.1). This kind of mixed architecture{\tt/}strategy between forward{\tt/}single step \& recurrent{\tt/}iterative may have been motivated by objective of capturing sufficiently history of horizontal correlations (between notes of melody \& between chords of accompaniment) as LSTM cells focus on capturing history of vertical correlations (between notes \& chords).
+			
+			System has been evaluated by comparing to some hidden Markov model (HMM) model \& to some deep neural network--HMM hybrid model (named DNN-HMM, see details in [198]), both quantitatively (by comparing accuracies \& through confusion matrices), \& qualitatively (through a web-based survey of 25 musically untrained participants). Results are showing a better accuracy \& preference for BLSTM model, see a simple example in {\sf Fig. 6.24: Comparison of generated chord progressions (HMM, DNN-HMM, BLSTM \& original) [119]}. Authors note: evaluation also shows: when songs are unknown, preference for BLSTM model is weaker. They conjecture: this is because BLSTM often generates a more diverse chord sequence than original. BLSTM system is summarized in {\sf Table 6.13: BLSTM summary}.
+			\item {\sf6.8.4. Summary.} In summary, have seen: an RNN architecture is usually coupled to an iterative feedforward strategy, which allows a recursive seed-based variable length generation, as discussed in Sect. 6.5. However, there are some exceptions:
+			\begin{itemize}
+				\item Time-Windowed system by {\sc Todd} (Sect. 6.8.1) uses an iterative feedforward strategy on a feedforward architecture in order to generate a melody,
+				\item BLSTM system (Sect. 6.8.3) uses an iterative feedforward strategy on a recurrent architecture in order to generate a chord accompaniment to a melody.
+			\end{itemize}
+			See further (with VRAE system to be described in Sect. 6.10.2.3) use of an RNN Encoder-Decoder compound architecture (Sect. 5.13.3), as a way to decouple length of input sequence with length of output sequence, by combining decoder feedforward strategy with iterative feedforward strategy.
+			
+			Some other examples of couplings between architectures \& strategies, or between challenges, will be discussed in Sect. 6.18. Before that, continue to analyze challenges \& possible solutions or directions.
+		\end{itemize}
+		\item {\sf6.9. Melody--Harmony Interaction.} When objective: generate simultaneously a melody with an accompaniment, expressed through some harmony or counterpoint [Harmony \& counterpoint are dual approaches of accompaniment with different focus \& priorities. Harmony focuses on {\it vertical} relations between simultaneous notes, as objects on their own ({\it chords}), \& then considers horizontal relations between them (e.g., harmonic cadences). Conversely, counterpoint focuses on {\it horizontal} relations between successive notes for each simultaneous melody (a {\it voice}), \& then considers vertical relations between their progression (e.g., to avoid parallel 5ths). Note: although their perspectives are different, analysis \& control of relations between vertical \& horizontal dimensions are their shared objectives.], an issue: musical consistency between melody \& harmony. Although a general architecture e.g. MiniBach (Sect. 6.2.2) is supposed to have learnt correlations, interactions between vertical \& horizontal dimensions are not explicitly considered.
+		
+		Have analyzed in Sect. 6.5.1.2 an example of a specific architecture to generate simultaneously melody \& chords, with explicit relations between them (i.e. chords can use prev step information about melody but not opposite). However, this architecture is a bit ad hoc. In following sects, will analyze some more general architectures having in mind interactions between melody \& harmony.
+		\begin{itemize}
+			\item {\sf6.9.1. \#1 Example: RNN-RBM Polyphony Symbolic Music Generation System.} In [11], {\sc Boulanger-Lewandowski} et al. have associated to RBM-based architecture introduced in Sect. 6.4.2.3 a RNN in order to represent temporal sequence of notes. Idea: {\it couple} RBM to a deterministic RNN with a single hidden layer, s.t.
+			\begin{itemize}
+				\item RNN models {\it temporal sequence} to produce successive outputs, corresponding to successive time steps,
+				\item which are {\it parameters}, more precisely {\it biases}, of an RBM that models {\it conditional probability distribution} of {\it accompaniment notes}, i.e., which notes should be played together.
+			\end{itemize}
+			I.e., objective: combine a {\it horizontal view} (temporal sequence) \& a {\it vertical view} (combination of notes for a particular time step). Resulting architecture named RNN-RBM is shown in {\sf Fig. 6.25: RNN-RBM architecture [12]}, \& can be interpreted as follows:
+			\begin{itemize}
+				\item bottom line represents temporal sequence of RNN hidden units $u^{(0)},u^{(0)},\ldots,u^{(t)}$, where $u^{(t)}$ notation means [Note: usual notation would be $u_t$, as $u^{(t)}$ notation is usually reserved to index dataset examples ($t$th example), Sect. 5.8.] value of RNN hidden layer $u$ at time (index) $t$
+				\item upper part represents sequence of each RBM instance at time $t$, which could notate ${\rm RBM}^{(t)}$, with
+				\begin{enumerate}
+					\item $v^{(t)}$ its visible layer with $b_v^{(t)}$ its bias
+					\item $h^{(t)}$ its hidden layer with $b_h^{(t)}$ its bias,
+					\item $W$: weight matrix of connections between visible layer $v^{(t)}$ \& hidden layer $h^{(t)}$.
+				\end{enumerate}
+				There is a specific training algorithm, not detailed here, see [11]. During generation, each $t$ time step of processing is as follows:
+				\begin{enumerate}
+					\item compute biases $b_v^{(t)}$ \& $b_h^{(t)}$ of ${\rm RBM}^{(t)}$, via (6.1)--(6.2) resp.
+					\item sample from ${\rm RBM}^{(t)}$ by using block Gibbs sampling to produce $v^{(t)}$,
+					\item feedforward RNN with $v^{(t)}$ as input, using RNN hidden layer value $u^{(t-1)}$, in order to produce RNN new hidden layer value $u^{(t)}$ via (6.3), where
+					\begin{enumerate}
+						\item $W_{vu}$: weight matrix \& $b_u$: bias for connections between input layer of RBM \& hidden layer of RNN
+						\item $W_{uu}$: weight matrix for recurrent connections of hidden layer of RNN.
+						\begin{align*}
+							b_v^{(t)} &= b_v + W_{uv}u^{(t-1)},\\
+							b_h^{(t)} &= b_h + W_{uh}u^{(t-1)},\\
+							u^{(t)} &= \tanh(b_u + W_{uu}u^{(t-1)} + W_{vu}v^{(t)}).
+						\end{align*}
+					\end{enumerate}
+				\end{enumerate}
+				Note: biases $b_v^{(t)},b_h^{(t)}$ of ${\rm RBM}^{(t)}$ are variable for each time step, i.e., they are {\it time dependent}, whereas weight matrix $W$ for connections between visible \& hidden layer of ${\rm RBM}^{(t)}$ is {\it shared} for all time steps ($\forall$ RBMs), i.e., it is {\it time independent} [$W_{uv},W_{uh},W_{uu},W_{vu}$ weight matrices are also shared \& thus time independent.].
+				
+				4 different corpora have been used in experiments: classical piano, folk tunes, orchestral classical music \& {\sc J. S. Bach} chorales. Polyphony varies from 0 to 15 simultaneous notes, with an average value of 3.9. A piano roll representation is used with many-hot encoding of 88 units representing pitches from $A_0$ to $C_8$. Discretization (time step) is a quarter note. All examples are aligned onto a single common tonality (âm giai): C major or minor. An example of a sample generated in a piano roll representation is shown in {\sf Fig. 6.26: Example of a sample generated by RNN-RBM trained on {\sc J. S. Bach} chorales [12].}. Quality of model has made RNN-RBM, summarized at {\sf Table 6.14: RNN-RBM summary}, 1 of reference architectures for polyphonic music generation.
+				
+				{\sf6.9.1.1. Other RNN-RBM Systems.} There have been a few systems following on \& extending RNN-RBM architecture, but they are not significantly different \& furthermore they have not been thoroughly evaluated. However, worth mentioning following:
+				\begin{enumerate}
+					\item RNN-DBN architecture [This is apparently state of art for {\sc J. S. Bach} Chorales dataset in terms of cross-entropy loss.], using multiple hidden layers [60]
+					\item LSTM-RTRBM architecture, using an LSTM instead of an RNN [120].
+				\end{enumerate}
+				\item {\sf6.9.2. \#2 Example: Hexahedria Polyphony Symbolic Music Generation Architecture.} System for polyphonic music proposed by {\sc Johnson} in his Hexahedria blog [93] is hybrid \& original in that it {\it integrates} into same architecture
+				\begin{enumerate}
+					\item a 1st part made of 2 RNNs (actually LSTM) layers, each with 300 hidden units, recurrent over {\it time dimension}, which are in charge of {\it temporal} horizontal aspect, i.e., relations between notes in a sequence. Each layer has connections across time steps, while being independent across notes
+					\item a 2nd part made of 2 other RNN (LSTM) layers, with 100 \& 50 hidden units, recurrent over {\it note dimension}, which are in charge of {\it harmony} vertical aspect, i.e., relations between simultaneous notes within same time step. Each layer is independent between time steps but has transversal directed connections between notes.
+				\end{enumerate}
+				\item {\sf6.9.3. \#3 Example: Bi-Axial LSTM Polyphony Symbolic Music Generation Architecture.}
+			\end{itemize}
+			\item {\sf6.10. Control.}
 		\end{itemize}
 	\end{itemize}
 	\item {\sf7. Analysis.}

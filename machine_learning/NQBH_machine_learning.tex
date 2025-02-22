@@ -7230,10 +7230,189 @@ This book series intends to publish monographs, textbooks \& edited books with a
 	\begin{itemize}
 		\item {\sf3.1. Facets.} May consider 5 main {\it facets} of an objective:
 		\begin{itemize}
-			\item {\it Type.} Musical nature of generated content.
+			\item {\it Type.} Musical nature of generated content. E.g.: a melody, a polyphony or an accompaniment.
+			\item {\it Destination.} Entity aimed at using (processing) generated content. E.g.: a human musician, a software or an audio system.
+			\item {\it Use}: Way destination entity will process generated content. E.g.: playing an audio file or performing a music score.
+			\item {\it Mode}: way {\it generation} will be conducted, i.e., with some human intervention ({\it interaction}) or without any intervention ({\it automation}).
+			\item {\it Style}: Musical style of content to be generated. E.g.: {\sc Johann Sebastian Bach} chorales, {\sc Wolfgang Amadeus Mozart} sonatas, {\sc Cole Porter} songs or {\sc Wayne Shorter} music. Style will actually be set though choice of dataset of musical examples (corpus) used as training examples.
+			\begin{itemize}
+				\item {\sf3.1.1. Type.} Main examples of musical types:
+				\begin{enumerate}
+					\item {\it Single-voice monophonic melody}, abbr. {\it Melody}. It is a sequence of notes for a single instrument or vocal, with {\it at most} 1 note at same time. E.g.: music produced by a monophonic instrument like a flute [Although there are non-standard techniques to produce $> 1$ note, simplest one being to sing simultaneously as playing. There are also non-standard diphonic techniques for voice.].
+					\item {\it Single-voice polyphony} (also named {\it Single-track polyphony}), abbr. as {\it Polyphony}. It is a sequence of notes for a single instrument, where $> 1$ note can be played at same time. E.g.: music produced by a polyphonic instrument e.g. a piano or guitar.
+					\item {\it Multivoice polyphony} (also named {\it Multitrack polyphony}), abbr. {\it Multivoice} or {\it Multitrack}. It is a set of multiple {\it voices{\tt/}tracks}, which is intended for $> 1$ voice or instrument. E.g.: a chorale with soprano, alto, tenor, \& bass voices or a jazz trio with piano, bass, \& drums.
+					\item {\it Accompaniment} to a given melody. E.g.:
+					\begin{enumerate}
+						\item {\it Counterpoint}, composed of 1 or more melodies (voices), or
+						\item {\it Chord progression}, which provides some associated {\it harmony}.
+					\end{enumerate}
+					\item {\it Association of a melody with a chord progression}: E.g.: what is named a {\it lead sheet} [{\sf Fig. 4.13: Lead sheet of ``Very Late'' ({\sc Pachet \& d'Inverno}.)} in Chap. 4 Representation will show an example of a lead sheet.] \& is common in jazz. It may also include {\it lyrics} [Note: lyrics could be generated too. Although this target is beyond scope of this book, see in Sect. 4.7.3: in some systems, music is encoded as a text. Thus, a similar technique could be applied to lyric generation.].
+				\end{enumerate}
+				Note: {\it type} facet is actually most important facet, as it captures musical nature of objective for content generation. In this book, will frequently identify an objective according to its {\it type}, e.g., a melody, as a matter of simplification. Next 3 facets -- {\it destination, use, \& mode} -- will turn out important when regarding dimension of {\it interaction} of human user(s) with process of content generation.
+				\item {\sf3.1.2. Destination \& Use.} Main examples of destination \& use are as follows:
+				\begin{enumerate}
+					\item {\it Audio system}: which will {\it play} generated content, as in case of generation of an audio file.
+					\item {\it Sequencer software}: which will {\it process} generated content, as in case of generation of a MIDI file.
+					\item {\it Human(s)}: who will perform \& {\it interpret} generated content, as in case of generation of a music score.
+				\end{enumerate}
+				\item {\sf3.1.3. Mode.} There are 2 main modes of music generation:
+				\begin{enumerate}
+					\item {\it Autonomous \& Automated}: Without any human intervention
+					\item {\it Interactive} (to some degree): With some control interface for human user(s) to have some interactive control over process of generation.
+				\end{enumerate}
+				As DL for music generation is recent \& basic neural network techniques are non-interactive, majority of systems that have analyzed are not yet very interactive [Some examples of interactive systems will be introduced in Sect. 6.15.]. Therefore, an important goal appears to be design of fully interactive support systems for musicians (for composing, analyzing, harmonizing, arranging, producing, mixing, etc.), as pioneered by FlowComposer prototype [152] introduced in Sect. 6.11.4.
+				\item {\sf3.1.4. Style.} As stated previously, musical style of content to be generated will be governed by choice of dataset of musical examples that will be used as training examples. As discussed further in Sect. 4.12, see: choice of a dataset, notably properties like {\it coherence, coverage} (vs. {\it sparsity}) \& {\it scope} (specialized vs. large breadth), is actually fundamental for good music generation.
+				
+				-- Như đã nêu trước đó, phong cách âm nhạc của nội dung được tạo ra sẽ được điều chỉnh bởi sự lựa chọn tập dữ liệu các ví dụ âm nhạc sẽ được sử dụng làm ví dụ đào tạo. Như đã thảo luận thêm trong Phần 4.12, hãy xem: sự lựa chọn tập dữ liệu, đặc biệt là các thuộc tính như tính mạch lạc, độ phủ (so với độ thưa thớt) \& phạm vi (chuyên biệt so với độ rộng lớn), thực sự là nền tảng cho việc tạo ra âm nhạc tốt.
+			\end{itemize}
 		\end{itemize}
 	\end{itemize}
-	\item {\sf4. Representation.}
+	\item {\sf4. Representation.} 2nd dimension of our analysis, {\it representation}, is about way musical content is represented. Choice of representation \& its encoding is tightly connected to configuration of input \& output of architecture, i.e., number of input \& output variables as well as their corresponding types.
+	
+	See: although a DL architecture can automatically extract significant {\it features} from data, choice of representation may be significant for accuracy of learning \& for quality of generated content.
+	
+	E.g., in case of an audio representation, could use a spectrum representation (computed by a Fourier transform) instead of a raw waveform representation. In case of a symbolic representation, could consider (as in most systems) enharmony (sự hòa hợp), i.e., A$\sharp\Leftrightarrow$ B$\flat$ \& C$\flat\Leftrightarrow$ B, or instead preserve distinction in order to keep harmonic \&{\tt/}or voice leading meaning.
+	\begin{itemize}
+		\item {\sf4.1. Phases \& Types of Data.} Before getting into choices of representation for various data to be processed by a DL architecture, important to identify 2 main phases related to activity of a DL architecture: {\it training phase} \& {\it generation phase}, as well as related 4 [There may be more types of data depending on complexity of architecture, which may include {\it intermediate} processing steps.] main types of data to be considered:
+		\begin{itemize}
+			\item {\it Training phase}
+			\begin{itemize}
+				\item {\it Training data}: Set of examples used for training DL system
+				\item {\it Validation data} (also [Actually, a difference could be made, explained in Sect. 5.5.9.] named {\it Test data}): set of examples used for testing DL system [Motivation is introduced in Sect. 5.5.9.]
+			\end{itemize}
+			\item {\it Generation phase.}
+			\begin{itemize}
+				\item {\it Generation (input) data}: data that will be used as input for generation, e.g., a melody for which system will generate an accompaniment, or a note that will be 1st note of a generated melody
+				\item {\it Generated (output) data}: Data produced by generation, as specified by objective.
+			\end{itemize}
+		\end{itemize}
+		Depending on objective [As stated in Sect. 3.1.1, identify an objective by its type as a matter of simplification.], these 4 types of data may be equal or different. E.g.:
+		\begin{itemize}
+			\item in case of generation of a melody (e.g., in Sect. 6.6.12), both training data \& generated data are melodies; whereas
+			\item in case of generation of a counterpoint accompaniment (e.g., in Sect. 6.2.2), generated data is a set of melodies.
+		\end{itemize}
+		\item {\sf4.2. Audio vs. Symbolic.} A big divide in terms of choice of representation (both for input \& output) is {\it audio vs. symbolic}. This also corresponds to divide between {\it continuous \& discrete} variables. Their respective raw material is very different in nature, as are types of techniques for possible processing \& transformation of initial representation [Initial representation may be transformed, through, e.g., data compression or extraction of higher-level representations, in order to improve learning \&{\tt/}or generation.]. They in fact correspond to different scientific \& technical communities, namely {\it signal processing \& knowledge representation}.
+		
+		However, actual processing of these 2 main types of representation by a DL architecture is basically {\it same} [Indeed, at level of processing by a deep network architecture, initial distinction between audio \& symbolic representation boils down, as only {\it numerical} values \& operations are considered.]. Therefore, actual audio \& symbolic architectures for music generation may be pretty similar. E.g., WaveNet audio generation architecture (introduced in Sect. 6.10.3.2) has been transposed into MidiNet symbolic music generation architecture (in Sect. 6.10.3.3). This polymorphism (possibility of multiple representations leading to genericity) is an additional advantage of DL approach.
+		
+		I.e., focus in this book on {\it symbolic} representations \& on DL techniques for generation of {\it symbolic} music. There are various reasons for this choice:
+		\begin{itemize}
+			\item grand majority of current DL systems for music generation are symbolic
+			\item believe: essence of music (as opposed to sound [Without minimizing importance of orchestration \& production.]) is in compositional process, which is exposed via symbolic representations (like musical scores or lead sheets) \& is subject to analysis (e.g., harmonic analysis)
+			\item covering details \& variety of techniques for processing \& transforming audio representations (e.g., spectrum, cepstrum, MFCC [Mel-frequency cepstral coefficients (Hệ số cepstral tần số Mel).], etc.) would necessitate an additional book [An example entry point: recent review by Wyse of audio representations for deep convolutional networks [207].]
+			\item as stated previously, independently of considering audio or symbolic music generation, principles of DL architectures as well as encoding techniques used are actually pretty similar.
+		\end{itemize}
+		Last, mention a recent DL-based architecture which combines audio \& symbolic representations. In this proposal from Manzelli et al. [125], a symbolic representation is used as a conditioning input [Conditioning is introduced in Sect. 6.10.3.] in addition to audio representation main input, in order to better guide \& structure generation of (audio) music (see more details in Sect. 6.10.3.2).
+		\item {\sf4.3. Audio.} 1st type of representation of musical content is audio {\it signal}, either in its raw form (waveform) or transformed.
+		\begin{itemize}
+			\item {\sf4.3.1. Waveform.} Most direct representation: raw audio signal: {\it waveform}. Visualization of a waveform is shown in {\sf Fig. 4.1: Example of a waveform.} \& another one with a finer grain resolution (độ phân giải hạt mịn hơn) is shown in {\sf Fig. 4.2: Example of a waveform with a fine grain resolution. Excerpt from a waveform visualization (sound of a guitar) by {\sc Michael Jancsy}.} In both figures, x axis represents time \& y axis represents amplitude of signal.
+			
+			Advantage of using a waveform is in considering raw material untransformed, with its full initial resolution. Architectures that process raw signal are sometimes named {\it end-to-end} architectures [Term {\it end-to-end} emphasizes: a system learns all features from raw unprocessed data -- without any pre-processing, transformation of representation, or extraction of features -- to produce final output.]. Disadvantage is in computational load: low level raw signal is demanding in terms of both memory \& processing.
+			\item {\sf4.3.2. Transformed Representations.} Using transformed representations of audio signal usually leads to data compression \& higher-level information, but as noted previously, at cost of losing some information \& introducing some bias.
+			\item {\sf4.3.3. Spectrogram.} A common transformed representation for audio is {\it spectrum}, obtained via a {\it Fourier transform} [Objective of Fourier transform (which could be continuous or discrete) is decomposition of an arbitrary signal into its elementary components (sinusoidal waveforms). As well as compressing information, its role is fundamental for musical purposes as it reveals {\it harmonic} components of signal.]. {\sf Fig. 4.3: Example of a spectrogram of spoken words ``19th century''. Reproduced from {\sc Aquegg}'s original image at \url{https://en.wikipedia.org/wiki/Spectrogram}.} shows an example of a {\it spectrogram}, a visual representation of a spectrum, where x axis represents time (in secs), y axis represents frequency (in kHz) \& 3rd axis in color represents intensity of sound (in dBFS [Decibel relative to full scale, a unit of measurement for amplitude levels in digital systems.]).
+			\item {\sf4.3.4. Chromagram.} A variation of spectrogram, discretized onto tempered scale \& independent of octave, is a {\it chromagram}. It is restricted to {\it pitch classes} [A {\it pitch class} (also named a {\it chroma}) represents name of corresponding note independently of octave position. Possible pitch classes are C, C$\sharp$ (or D$\flat$), D, $\ldots$, A$\sharp$ (or B$\flat$) \& B.]. Chromagram of C major scale played on a piano is illustrated in {\sf Fig. 4.4: Examples of chromagrams. (a) Musical score of a C-major scale. (b) Chromagram obtained from score. (c) Audio recording of C-major scale played on a piano. (d) Chromagram obtained from audio recording. Reproduced from {\sc Meinard Mueller}'s original image at \url{https://en.wikipedia.org/wiki/Chroma feature}.}. x axis common to 4 subfigures (a--d) represents time (in secs). y axis of score (a) represents note, y axis of chromagrams (b \& d) represents chroma (pitch class) \& y axis of signal (c) represents amplitude. For chromagrams (b \& d), 3rd axis in color represents intensity.
+		\end{itemize}
+		\item {\sf4.4. Symbolic.} Symbolic representations are concerned with concepts like notes, duration, \& chords, which will be introduced in following sects.
+		\item {\sf4.5. Main Concepts.}
+		\begin{itemize}
+			\item {\sf4.5.1. Note.} In a symbolic representation, a note is represented through following main features, \& for each future there are alternative ways of specifying its value:
+			\begin{itemize}
+				\item {\it Pitch ([singular, uncountable] how high or low a sound is, especially a musical note) -- cao độ} -- specified by
+				\begin{enumerate}
+					\item {\it frequency}, in Hertz (Hz)
+					\item {\it vertical position (height)} on a score, or
+					\item {\it pitch notation} [Also named {\it international pitch notation} or {\it scientiﬁc pitch notation}.], which combines a musical note name, e.g., A, A$\sharp$, B, etc. -- actually its pitch class -- \& a number (usually notated in subscript) identifying pitch class octave which belongs to $[-1,9]$ discrete interval. An example is $A_4$, which corresponds to A440 -- with a frequency of 440 Hz -- \& serves as a general pitch tuning standards.
+				\end{enumerate}
+				\item {\it Duration} -- specified by
+				\begin{enumerate}
+					\item {\it absolute value}, in milliseconds (ms), or
+					\item {\it relative value}, notated as a division or a multiple of a reference note duration, i.e., whole note. E.g.: a quarter note [Named a {\it crotchet} in British English.] \& an 8th note [Named a {\it quaver} in British English.]
+				\end{enumerate}
+				\item {\it Dynamics} -- specified by
+				\begin{enumerate}
+					\item {\it absolute \& quantitative value}, in decibels (dB), or
+					\item {\it qualitative value}, an annotation on a score about how to perform note, which belongs to discrete set $\{ppp,pp,p,f,f,ff,fff\}$, from pianissimo to fortissimo.
+				\end{enumerate}
+			\end{itemize}
+			\item {\sf4.5.2. Rest.} Rests are important in music as they represent intervals of silence allowing a pause for breath [As much for appreciation of music as for respiration by human performer(s)! -- Cũng giống như việc thưởng thức âm nhạc cũng như việc hô hấp của người biểu diễn vậy!]. A {\it rest} can be considered as a special case of a note, with only 1 feature, its duration, \& no pitch or dynamics. Duration of a rest may be specified by
+			\begin{itemize}
+				\item {\it absolute value}, in milliseconds (ms); or
+				\item {\it relative value}, notated as a division or a multiple of a reference rest duration, whole rest having same duration as a whole note. Examples are a quarter rest \& an 8th rest, corresponding resp. to a quarter note \& an 8th note.
+			\end{itemize}
+			\item {\sf4.5.3. Interval.} An interval is a relative transition between 2 notes. E.g.: a major 3rd (which includes 4 semitones -- nửa cung), a minor 3rd (3 semitones) \& a (perfect) 5th (7 semitones). Intervals are basis of chords. E.g., 2 main chords in classical music are major (with a major 3rd \& a 5th) \& minor (with a minor 3rd \& a 5th).
+			
+			In pioneering experiments described in [189], {\sc Todd} discusses an alternative way for representing pitch of a note. Idea: not to represent it in an {\it absolute} way as in Sect. 4.5.1, but in a {\it relative} way by specifying relative transition (measured in semitones), i.e., interval, between 2 successive notes. E.g., melody $C_4,E_4,G_4$ would be represented as $C_4,+4,+3$.
+			
+			In [189], {\sc Todd} points out as 2 advantages fact: there is no fixed bounding of pitch range \& fact: it is independent of a given key (tonality). However, he also points out: this 2nd advantage may also be a major drawback, because in case of an error in generation of an interval (resulting in a change of key), wrong tonality (because of a wrong index) will be maintained in rest of melody generated. Another limitation: this strategy applies only to specification of a monophonic melody \& cannot directly represent a single-voice polyphony, unless separating parallel intervals into different voices. Because of these pros \& cons, an interval-based representation is actually rarely used in DL-based music generation systems.
+			
+			-- Trong [189], {\sc Todd} chỉ ra 2 lợi thế thực tế: không có ranh giới cố định của phạm vi cao độ \& thực tế: nó độc lập với một khóa nhất định (âm điệu). Tuy nhiên, ông cũng chỉ ra: lợi thế thứ 2 này cũng có thể là một nhược điểm lớn, bởi vì trong trường hợp xảy ra lỗi khi tạo ra một khoảng (dẫn đến thay đổi khóa), âm điệu sai (do chỉ số sai) sẽ được duy trì trong phần còn lại của giai điệu được tạo ra. Một hạn chế khác: chiến lược này chỉ áp dụng cho việc chỉ định một giai điệu đơn âm \& không thể biểu diễn trực tiếp một phức điệu đơn âm, trừ khi tách các khoảng song song thành các giọng khác nhau. Do những ưu \& nhược điểm này, biểu diễn dựa trên khoảng thực sự hiếm khi được sử dụng trong các hệ thống tạo nhạc dựa trên DL.
+			\item {\sf4.5.4. Chord.} A representation of a {\it chord}, which is a set of at least 3 notes (a triad) [Modern music extends original major \& minor triads into a huge set of richer possibilities (diminished, augmented, dominant 7th, suspended, 9th, 13th, etc.) by adding \&{\tt/}or altering intervals{\tt/}components.], could be
+			\begin{itemize}
+				\item {\it implicit \& extensional}, enumerating exact notes composing it. This permits specification of precise octave as well as position (voicing) for each note, see, e.g., in {\sf Fig. 4.5: C major chord with an open position{\tt/}voicing: 1-5-3 (root, 5th, \& 3rd)}, or
+				\item {\it explicit \& intensional}, by using a chord symbol combining
+				\begin{enumerate}
+					\item pitch class of its root note, e.g., C, \&
+					\item {\it type}, e.g., major, minor, dominant 7th, or diminished [There are some abbreviated notations, frequent in jazz \& popular music, e.g. C minor $=$ Cmin $=$ Cm $=$ C-; C major 7th $=$ CM7 $=$ Cmaj7 $=$ C$\Delta$, etc.]
+				\end{enumerate}
+				Extensional approach (explicitly listing all component notes) is more common for DL-based music generation systems, but there are some examples of systems representing chords explicitly with intensional approach, as e.g. MidiNet system introduce in Sect. 6.10.3.3.
+				
+				-- Phương pháp mở rộng (liệt kê rõ ràng tất cả các nốt thành phần) phổ biến hơn đối với các hệ thống tạo nhạc dựa trên DL, nhưng có một số ví dụ về các hệ thống biểu diễn hợp âm rõ ràng bằng phương pháp mở rộng, chẳng hạn như hệ thống MidiNet được giới thiệu trong Phần 6.10.3.3.
+			\end{itemize}
+			\item {\sf4.5.5. Rhythm.} {\it Rhythm} is fundamental to music. It conveys pulsation as well as stress on specific beats, indispensable for dance! Rhythm introduces pulsation, cycles \& thus structure in what would otherwise remain a flat linear sequence of notes.
+			\begin{itemize}
+				\item {\sf4.5.5.1. Beat \& Meter.} A {\it beat} is unit of pulsation in music. Beats are grouped into measures, separated by {\it bars} [Although (\& because) a bar is actually {\it graphical entity} -- line segment ``|'' -- separating measures, term bar is also often used, specially in US, in place of measure. In this book, stick to term {\it measure}.]. Number of beats in a measure as well as duration between 2 successive beats constitute rhythmic signature of a measure \& consequently of a piece of music [For more elaborate music, meter may change within different portions of music.]. This {\it time signature} is also often named {\it meter}. It is expressed as fraction {\it numberOfBeats{\tt/}BeatDuration}, where
+				\begin{enumerate}
+					\item {\it numberOfBeats}: number of beats within a measure, \&
+					\item {\it beatDuration}: duration between 2 beats. As with relative duration of a note (Sect. 4.5.1) or of a rest, it is expressed as a division of duration of a whole note.
+				\end{enumerate}
+				More frequent meters are {\tt2/4, 3/4, 4/4}. E.g., {\tt3/4} means 3 beats per measure, each one with duration of a quarter note. It is rhythmic signature of a Waltz. Stress (or accentuation -- sự nhấn mạnh) on some beats or their subdivisions may form actual style of a rhythm for music as well as for a dance, e.g., ternary jazz vs. binary rock.
+				\item {\sf4.5.5.2. Levels of Rhythm Information.} May consider 3 different levels in terms of amount \& granularity (độ chi tiết) of information about rhythm to be included in a musical representation for a DL architecture:
+				\begin{enumerate}
+					\item {\it None}: only notes \& their durations are represented, without any explicit representation of measures. This is case for most systems.
+					\item {\it Measures}: measures are explicitly represented. An example is system described in Sect. 6.6.1.2 [Interesting to note: as pointed out by Sturm et al. in [178], generated music format also contains bars separating measures \& there is no guarantee: number of notes in a measure will always fit to a measure. However, errors rarely occurs, indicating: this representation is sufficient for architecture to learn to count, see [59] \& Sect. 6.6.1.2.].
+					\item {\it Beats}: information abut meter, beats, etc. is included. E.g.: C-RBM system described in Sect. 6.10.5.1, which allows us to impose a specific meter \& beat stress for music to be generated.
+				\end{enumerate}
+			\end{itemize}
+		\end{itemize}
+		\item {\sf4.6. Multivoice{\tt/}Multitrack.} A {\it multivoice} representation, also named {\it multitrack}, considers independent various voices, each being a different vocal range (e.g., soprano, alto, $\ldots$) or a different instrument (e.g., piano, bass, drums, $\ldots$). Multivoice music is usually modeled as  parallel tracks, each one with a distinct sequence of notes [With possibly simultaneous notes for a given voice, see Sect. 3.1.1.], sharing same meter but possibly with different strong (stressed) beats [Dance music is good at this, by having some syncopated bass \&{\tt/}or guitar not aligned on strong drum beats, in order to create some bouncing pulse. -- Nhạc dance rất hay ở điểm này, bằng cách sử dụng một số âm trầm \&{\tt}hoặc tiếng guitar không đồng bộ với nhịp trống mạnh, nhằm tạo ra nhịp đập mạnh mẽ.].
+		
+		Note: in some cases, although there are simultaneous notes, representation will be a single-voice polyphony, as introduced in Sect. 3.1.1. Common examples are polyphonic instruments like a piano or a guitar. Another example is a drum or percussion kit -- bộ gõ, where each of various components, e.g., snare, hi-hat, ride cymbal, kick, etc., will usually be considered as a distinct note for same voice.
+		
+		-- Lưu ý: trong một số trường hợp, mặc dù có các nốt nhạc đồng thời, nhưng cách thể hiện sẽ là một hợp âm đơn âm, như đã giới thiệu trong Phần 3.1.1. Ví dụ phổ biến là các nhạc cụ hợp âm như piano hoặc guitar. Một ví dụ khác là bộ trống hoặc bộ gõ -- bộ gõ, trong đó mỗi thành phần khác nhau, ví dụ như snare, hi-hat, ride cymbal, kick, v.v., thường được coi là một nốt riêng biệt cho cùng một giọng.
+		
+		Different ways to encode single-voice polyphony \& multivoice polyphony are further discussed in Sect. 4.11.2.
+		\item {\sf4.7. Format.} Fromat is language (i.e., grammar \& syntax) in which a piece of music is expressed (specified) in order to be interpreted by a computer [Standard format for humans is a musical score -- âm phổ.].
+		\begin{itemize}
+			\item {\sf4.7.1. MIDI.} Musical Instrument Digital Interface (MIDI) is a technical standard that describes a protocol, a digital interface \& connectors for interoperability between various electronic musical instruments, softwares, \& devices [132]. MIDI carries event messages that specify real-time note performance data as well as control data. Only consider here 2 most important messages for our concerns:
+			\begin{itemize}
+				\item {\it Note on}: to indicate: a note is played. It contains
+				\begin{enumerate}
+					\item a {\it channel number}, which indicates instrument or track, specified by an integer within set $\{0,1,\ldots,15\}$
+					\item a MIDI {\it note number}, which indicates note {\it pitch}, specified by an integer within set $\{0,1,\ldots,127\}$
+					\item a {\it velocity}, which indicates how loud note is played [For a keyboard, it means speed of pressing down key \& therefore corresponds to volume.], specified by an integer within set $\{0,1,\ldots,127\}$.
+				\end{enumerate}
+				E.g.: ``Note on, 0. 60, 50'' which means ``On channel 1, start playing a middle C with velocity 50''
+				\item {\it Note off}: to indicate : a note ends. In this situation, velocity indicates how fast note is released. E.g.: ``Note off, 0, 60, 20'' which means ``On channel 1, stop playing a middle C with velocity 20''.
+			\end{itemize}
+			Each note even is actually embedded into a track chunk, a data structure containing a delta-time value which specifies timing information \& event itself. A {\it delta-time value} represents time position of event \& could represent
+			\begin{itemize}
+				\item p. 29 +++
+			\end{itemize}
+			\item {\sf4.7.2. Piano Roll.}
+			\item {\sf4.7.3. Text.}
+			\item {\sf4.7.4. Markup Language.}
+			\item {\sf4.7.5. Lead Sheet.}
+		\end{itemize}
+		\item {\sf4.8. Temporal Scope \& Granularity.} Representation of time is fundamental for musical processes.
+		\begin{itemize}
+			\item {\sf4.8.1. Temporal Scope.}
+			\item {\sf4.8.2. Temporal Granularity.}
+		\end{itemize}
+		\item {\sf4.9. Metadata.}
+		\item {\sf4.10. Expressiveness.}
+		\item {\sf4.11. Encoding.}
+		\item {\sf4.12. Dataset.}
+	\end{itemize}
 	\item {\sf5. Architecture.} Deep networks are a natural evolution of neural networks, themselves being an evolution of Perceptron, proposed by {\sc Rosenblatt} in 1957 [165]. Historically speaking [See, e.g., [62, Sect. 1.2] for a more detailed analysis of key trends in history of DL.], Perceptron was criticized by {\sc Minsky \& Papert} in 1969 [130] for its inability to classify {\it nonlinearly separable domains} [A simple example \& a counterexample of linear separability (of a set of 4 points within a 2D space \& belonging to green cross or red circle classes) are shown in {\sf Fig. 5.1: Example \& counterexample of linear separability.} Elements of 2 classes are linearly separable if there is at least 1 straight line separating them. Note: discrete version of counterexample corresponds to case of exclusive or (XOR) logical operator, which was used as an argument by {\sc Minsky \& Papert} in [130].] Their criticism also served in favoring an alternative approach of AI, based on symbolic representations \& reasoning.
 	
 	Neural networks reappeared in 1980s, thanks to idea of {\it hidden layers} joint with nonlinear units, to resolve initial linear separability limitation, \& to {\it backpropagation} algorithm, to train such multilayer neural networks [166].

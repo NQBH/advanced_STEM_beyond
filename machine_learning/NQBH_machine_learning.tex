@@ -7967,10 +7967,166 @@ This book series intends to publish monographs, textbooks \& edited books with a
 		\end{itemize}
 		\item {\sf5.6. Autoencoder.} An {\it autoencoder} is a neural network with 1 hidden layer \& with an additional {\it constraint}: number of output nodes $=$ number of input nodes [Bias is not counted{\tt/}considered here as it is an implicit additional input node.] Output layer actually {\it mirrors} input layer. It is shown in {\sf Fig. 5.22: Autoencoder architecture}, with its peculiar symmetric diabolo (or sand-timer) shape aspect.
 		
-		Training an autoencoder represents a case of {\it unsupervised learning}, as examples do not contain any additional label information (effective value or class to be predicted). But trick: this is implemented using conventional supervised learning techniques, by presenting output data $=$ input data [This is sometimes called {\it self-supervised} learning [109].]. In practice, autoencoder tries to learn identity function. As hidden layer usually has fewer nodes than input layer, {\it encoder} component must {\it compress} information while {\it decoder} has to {\it reconstruct}, as accurately as possible, initial information [Compared to traditional dimension reduction algorithms, e.g. principal component analysis (PCA), this approach has 2 advantages: (1) feature extraction is nonlinear (case of {\it manifold learning}, see [62, Sect. 5.11.3] \& Sect. 5.6.2) \&  ]
+		Training an autoencoder represents a case of {\it unsupervised learning}, as examples do not contain any additional label information (effective value or class to be predicted). But trick: this is implemented using conventional supervised learning techniques, by presenting output data $=$ input data [This is sometimes called {\it self-supervised} learning [109].]. In practice, autoencoder tries to learn identity function. As hidden layer usually has fewer nodes than input layer, {\it encoder} component must {\it compress} information while {\it decoder} has to {\it reconstruct}, as accurately as possible, initial information [Compared to traditional dimension reduction algorithms, e.g. principal component analysis (PCA), this approach has 2 advantages: (1) feature extraction is nonlinear (case of {\it manifold learning}, see [62, Sect. 5.11.3] \& Sect. 5.6.2) \& (2) in case of a sparse autoencoder (see next sect), number of features may be arbitrary (\& not necessarily smaller than number of input parameters).]. This forces autoencoder to {\it discover} significant (discriminating) {\it features} to encode useful information into hidden layer nodes (also named {\it latent variables} [In statistics, {\it latent variables} are variables that are not directly observed but are rather inferred (through a mathematical model) from other variables that are observed (directly measured). They can serve to reduce dimensionality of data.]). Therefore, autoencoders may be used to automatically extract high-level {\it features} [109]. Set of features extracted are often named an {\it embedding} [See def of embedding in Sect. 4.9.3.]. Once trained, in order to extract features from an input, one just needs to feedforward input data \& gather activations of hidden layer (values of latent variables).
+		
+		Another interesting use of decoders: high-level control of content generation. Latent variables of an autoencoder constitute a compact representation of common features of learnt examples. By instantiating these latent variables \& decoding embedding, can generate a new musical content corresponding to values of latent variables. Explore this strategy in Sect. 6.4.1.
 		\begin{itemize}
-			\item {\sf5.6.1. Sparse Autoencoder.}
-			\item {\sf5.6.2. Variational Autoencoder.}
+			\item {\sf5.6.1. Sparse Autoencoder.} A {\it sparse autoencoder} is an autoencoder with a {\it sparsity} constraint, s.t. its hidden layer units are inactive most of time. Objective: enforce {\it specialization} of each unit in hidden layer as a specific {\it feature detector}.
+			
+			E.g., a sparse autoencoder with 100 units in its hidden layer \& trained on $10\times10$ pixel images will learn to detect edges at different positions \& orientations in images, as shown in {\sf Fig. 5.23: Visualization of input image motives that maximally activate each of hidden units of a sparse autoencoder architecture [140].} When applied to other input domains, e.g. audio or symbolic music data, this algorithm will learn useful features for those domains too.
+			
+			Sparsity constraint is implemented by adding an additional term to cost function to be minimized, see more details in [140] or [62, Sect. 14.2.1].
+			\item {\sf5.6.2. Variational Autoencoder.} A {\it variational autoencoder} (VAE) [101] has added constraint that encoded representation, latent variables, by convention denoted by variable $z$, follow some prior probability distribution $P(z)$. Usually, a {\it Gaussian distribution} [Also named {\it normal distribution}.] is chosen for its generality.
+			
+			This constraint is implemented by adding a specific term to cost function, by computing cross-entropy between values of latent variables \& prior distribution [Actual implementation is more complex \& has some tricks (e.g., encoder actually generates a mean vector \& a standard deviation vector) not detailed here.]. For more details about VAEs, an example of tutorial could be found in [37] \& there is a nice introduction of its application to music in [162].
+			
+			As with an autoencoder, a VAE will learn identity function, but furthermore decoder part will learn relation between a Gaussian distribution of latent variables \& learnt examples. As a result, sampling from VAE is immediate, one just needs to
+			\begin{itemize}
+				\item sample a value for latent variables $z\sim P(z)$, i.e., $z$ following distribution $P(z)$
+				\item input it into decoder
+				\item feedforward decoder to generate an output corresponding to distribution of examples, following $P(x|z)$ conditional probability distribution learnt by decoder.
+			\end{itemize}
+			This is in contrast to need for indirect \& computationally expensive strategies e.g. Gibbs sampling for other architectures e.g. RBM, introduced in Sect. 5.7.
+			
+			By construction, a variational autoencoder is representative of dataset that it has learnt, i.e., for any example in dataset, there is at least 1 setting of latent variables which causes model to generate something very similar to that example [37].
+			
+			A very interesting characteristic of variational autoencoder architecture for generation purposes -- therefore often considered as 1 type of a class of models named {\it generative models} -- is in meaningful exploration of latent space, as a variational autoencoder is able to learn a ``smooth'' [I.e., a small change in latent space will correspond to a small change in generated examples, without any discontinuity or jump. For a more detailed discussion about which (\& how) interesting effects (smoothness, parsimony \& axis-alignment between data \& latent variability) a VAE has on latent representation (vector of latent variables) learnt, see, e.g., [205].] latent space mappping to realistic examples. Note: this general objective is named {\it manifold learning} \& more generally {\it representation learning} [8], i.e., learning of a representation capturing topology of a set of examples. As defined in [62, Sect. 5.11.3], a {\it manifold} is a connected set of points (examples) that can be approximated by a small number of dimensions, each one corresponding to a local direction of variation. An intuitive example is a 2D map capturing topology of cities dispersed (phân tán) on 3D earth, where a movement on map corresponds to a movement on earth.
+			
+			To illustrate possibilities, train a VAE with only 2 latent variables on MNIST handwritten digits database dataset [112] (with 60000 examples, each one being an image of $28\times28$ pixels). Then, scan latent 2D plane, sampling latent values for 2 latent variables (i.e., sampling points within 2D latent space) at regular intervals \& generating corresponding artificial digits by decoding latent points [As proposed \& implemented in [22].]. {\sf Fig. 5.24: Various digits generated by decoding sampled latent points at regular intervals on MNIST handwritten digits database.} shows examples of artificial digits generated.
+			
+			Note: training VAE has forced it to compress information about actual examples by splitting (though encoder) information in 2 subsets:
+			\begin{itemize}
+				\item {\it specific} (discriminative) part, encoded within latent variables, \&
+				\item {\it common} part, encoded within weights of decoder, in order to be able to reconstruct as close as possible each original data [Indeed, there is no magic here, reversible compression from $28\times28$ variables to 2 variables must have extracted \& stored missing information somewhere.].
+			\end{itemize}
+			VAE actually has been forced to find out dimensions of variations for dataset examples. By looking at figure, can guess: 2D {\it could} be:
+			\begin{itemize}
+				\item from angular to round elements for 1st variable ($z_1$, horizontally represented),
+				\item size of compound element (circle or angle) for 2nd latent variable ($z_2$, vertically represented).
+			\end{itemize}
+			Note: cannot expect{\tt/}force VAE towards semantics (meaning) of specific dimensions, as VAE will automatically extract them (this depends on dataset as well as on training configuration), \& can only try to interpret them {\it a posteriori} [However, can construct arbitrary characteristic attributes from a subset of examples \& impose them on other examples, by doing {\it attribute vector arithmetics}, as defined in immediately following list, \& as will be illustrated in {\sf Fig. 6.73: Example of a melody generated by MusicVAE by adding a ``high note density'' attribute vector to latent space of an existing melody [161].} in Sect. 6.12.1.]. Examples of possible dimensions for music generation could be: number of notes [illustrated in {\sf Fig. 6.33: Examples of 2 measures long melodies (separated by double bar lines) generated by GLSR-VAE [68].} in Sect. 6.10.2.3.], range (distance from lowest to highest pitch), etc.
+			
+			Once learnt by a VAE, latent representation (a vector of latent variables) can be used to explore latent space with various operations to control{\tt/}vary generation of content. Some examples of operations on latent space, as proposed in [161,162] for MusicVAE system described in Sect. 6.12.1, are
+			\begin{itemize}
+				\item {\it translation}
+				\item {\it interpolation}
+				\item {\it averaging} of some points
+				\item {\it attribute vector arithmetics}, by addition or subtraction of an attribute vector capturing a given characteristics [This attribute vector is composed as average latent vector for a collection of examples sharing that attribute (characteristic).]
+			\end{itemize}
+			{\sf Fig. 5.25: Comparison of interpolations between top \& bottom melodies by (left) interpolating in data (melody) space \& (right) interpolating in latent space \& decoding it into melodies [161].} shows an interesting comparison of melodies resulting from
+			\begin{itemize}
+				\item interpolation in {\it data space}, i.e. space of representation of melodies
+				\item interpolation in {\it latent space}, which is then decoded into corresponding melodies.
+			\end{itemize}
+			Interpolation in latent space produces more meaningful \& interesting melodies than interpolation in data space (which basically just varies ratio of notes from 2 melodies), as can be heard in [160,163]. More details about these experiments will be provided in Sect. 6.12.1.
+			
+			Variational autoencoders are therefore elegant \& promising models, \& as a result they are currently among hot approaches explored for generating content with controlled variations. Application to music generation is illustrated in Sects. 6.10.2.3 \& 6.12.1.			
+			\item {\sf5.6.3. Stacked Autoencoder.} Idea of a {\it stacked autoencoder}: hierarchically nest successive autoencoders with decreasing numbers of hidden layer units. An example of a 2-layer stacked autoencoder [Note: convention in this case: count \& notate number of nested autoencoders, i.e., number of hidden layers. This is different from depth of {\it whole} architecture, which is double. E.g., a 2-layer stacked autoencoder results in a 4-layer whole architecture, as shown in {\sf Fig. 5.26: A 2-layer stacked autoencoder architecture, resulting in a 4-layer full architecture}.], i.e. 2 nested autoencoders that we could notate as Autoencoder${}^2$, is illustrated in {\sf Fig. 5.26}.
+			
+			Chain of encoders will increasingly compress data \& extract higher-level features. Stacked autoencoders, which are indeed deep networks, are therefore used for feature extraction (an example will be introduced in Sect. 6.10.7.1). They are also useful for music generation, as see in Sect. 6.4.1. This is because {\it innermost hidden layer}, sometimes named {\it bottleneck hidden layer}, provides a compact \& high-level encoding (embedding) as a seed for generation (by chain of decoders).
+		\end{itemize}
+		\item {\sf5.7. Restricted Boltzmann Machine (RBM).} A {\it restricted Boltzmann machine} (RBM) [80] is a {\it generative stochastic} ANN that can learn a {\it probability distribution} over its set of inputs. Its name comes from fact: it is restricted (constrained) form [Which actually makes RBM practical, as opposed to general form, which besides its interest suffers from a learning scalability limitation.] of a (general) {\it Boltzmann machine} [81], named after {\it Boltzmann distribution} in statistical mechanics, which is used in its sampling function. Architectural restrictions of an RBM ({\sf Fig. 5.27: Restricted Boltzmann machine (RBM) architecture}) are that:
+		\begin{itemize}
+			\item it is organized in {\it layers}, just as for a feedforward network or an autoencoder, \& more precisely 2 layers:
+			\begin{itemize}
+				\item {\it visible} layer (analog to both input layer \& output layer of an autoencoder)
+				\item {\it hidden} layer (analog to hidden layer of an autoencoder)
+			\end{itemize}
+			\item as for a standard neural network, there cannot be connections between nodes within same layer.
+		\end{itemize}
+		An RBM bears some similarity in spirit \& objective to an autoencoder. However, there are some important differences:
+		\begin{itemize}
+			\item an RBM has {\it no output} -- input also acts as output
+			\item an RBM is {\it stochastic} (\& therefore {\it not deterministic}, as opposed to a feedforward network or an autoencoder)
+			\item an RBM is trained in an {\it unsupervised learning} manner, with a specific algorithm (named {\it contrastive divergence}, see Sect. 5.7.1), whereas an autoencoder is trained using a standard supervised learning method, with same data as input \& output
+			\item values manipulated are {\it booleans} [Although there are extensions with multinoulli (categorical) or continuous values, Sect. 5.7.3.].
+		\end{itemize}
+		RBMs became popular after {\sc Hinton} designed a specific fast learning algorithm for them, named {\it contrastive divergence} [78], \& used them for {\it pre-training} DNNs [46] (Sect. 5).
+		
+		An RBM is an architecture dedicated to learning distributions. Moreover, it can learn efficiently from only a few examples. For musical applications, this is interesting for learning (\& generating) chords, as combinatorial nature of possible notes forming a chord is large \& number of examples is usually small. See an example of such an application in Sect. 6.4.2.3.
+		\begin{itemize}
+			\item {\sf5.7.1. Training.} Training an RBM has some similarity to training an autoencoder, with practical difference that, because there is no decoder part, RBM will alternate between 2 steps:
+			\begin{itemize}
+				\item {\it feedforward step}: to encode input (visible layer) into hidden layer, by making predictions about hidden layer node activations
+				\item {\it backward step}: to decode{\tt/}reconstruct input (visible layer), by making predictions about visible layer node activations.
+			\end{itemize}
+			Not detail here learning technique behind RBMs, see, e.g., [62, Sect. 20.2]. Note: reconstruction process is an example of {\it generative learning} (\& not {\it discriminative learning}, as for training autoencoders which is based on regression) [See, e.g., aa nice introduction to generative learning (\& difference with discriminative learning) in [142].].
+			\item {\sf5.7.2. Sampling.} After training phase has been completed, in {\it generation} phase, a {\it sample} can be drawn from model by randomly initializing visible layer vector ${\bf v}$ (following a standard uniform distribution) \& running {\it sampling} [More precisely {\it Gibbs sampling (GS)}, see [106]. Sampling will be introduced in Sect. 6.4.2.1.] until convergence. To this end, hidden nodes \& visible nodes are alternately updated (as during training phase).
+			
+			In practice, convergence is reached when energy stabilizes. {\it Energy} of a {\it configuration} (pair of visible \& hidden layers) is expressed [For more details, see, e.g., [62, Sect. 16.2.4].] in
+			\begin{equation*}
+				E({\bf v},{\bf h}) = -{\bf a}^\top{\bf v} - {\bf b}^\top{\bf h} - {\bf v}^\top W{\bf h},
+			\end{equation*}
+			where
+			\begin{itemize}
+				\item ${\bf v},{\bf h}$, resp.: column vectors representing visible \& hidden layers
+				\item $W$: matrix of weights associated with connections between visible \& hidden nodes
+				\item ${\bf a},{\bf b}$, resp.: column vectors representing bias weights for visible \& hidden nodes, with ${\bf a}^\top,{\bf b}^\top$ being their respective transpositions into row vectors
+				\item ${\bf v}^\top$: transposition of ${\bf v}$ into a row vector.
+			\end{itemize}			
+			\item {\sf5.7.3. Types of Variables.} Note: there are actually 3 possibilities for nature of RBM variables (units, visible or hidden):
+			\begin{itemize}
+				\item {\it Boolean} or {\it Bernoulli}: this is case of standard RBMs, in which units (visible \& hidden) are Boolean, with a {\it Bernoulli distribution} (see [62, Sect. 3.9.2])
+				\item {\it multinoulli}: an extension with {\it multinoulli} units [As explained by Goodfellow et al. in [62, Sect. 3.9.2]: ````Multinoulli'' is a term that was recently coined by {\sc Gustavo Lacerdo} \& popularized by {\sc Murphy} in [139]. Multinoulli distribution is a special case of multinomial distribution. A multinomial distribution: distribution over vectors in $\{0,\ldots,n\}^k$ representing how many times each of $k$ categories is visited when $n$ samples are drawn from a multinoulli distribution. Many texts use term ``multinomial'' to refer to multinoulli distributions without clarifying that they refer only to $n = 1$ case.''], i.e., with $> 2$ possible discrete values
+				\item {\it continuous}: another extension with continuous units, taking arbitrary real values (usually within $[0,1]$ range). E.g.: C-RBM architecture analyzed in Sect. 6.10.5.1.
+			\end{itemize}
+		\end{itemize}
+		\item {\sf5.8. RNN.} A RNN is a feedforward neural network extended with {\it recurrent connections} in order to learn series of items (e.g., a melody as a sequence of notes). Input of RNN is an element $x_t$ [This $x_t$ notation -- or sometimes $s_t$ to stress fact: it is a sequence -- is very common but unfortunately introduces possible confusion with notation of $x_i$ as $i$th input variable. Context -- recurrent vs. nonrecurrent network -- usually helps to discriminate, as well as use of letter $t$ (for time) as index. An example of an exception: RNN-RBM system analyzed in Sect. 6.9.1, which uses $x^{(t)}$ notation.] of sequence, where $t$ represents {\it index} or {\it time}, \& expected output is next element $x_{t+1}$. I.e., RNN will be trained to predict next element of a sequence.
+		
+		In order to do so, output of hidden layer {\it reenters} itself as an additional input (with a specific corresponding weight matrix). This way, RNN can learn, not only based on {\it current} item but also on its {\it previous} own state, \& thus, recursively, on whole of prev sequence. Therefore, an RNN can learn sequences, notably {\it temporal sequences}, as in case of musical content.
+		
+		An example of RNN (with 2 hidden layers) is shown in {\sf Fig. 5.28: RNN (folded).} Recurrent connections are signaled with a solid square, in order to distinguish them from standard connections [Actually, there are some variations of this basic architecture, depending on exact nature \& location of recurrent connections. Most standard case is a recurrent connection for each hidden unit, as shown in {\sf Fig. 5.28}. But there are some other cases, see e.g. in [62, Sect. 10.2]. An example of a music generation architecture with recurrent connections from output to a special context input is introduced in Sect. 6.8.2.]. Unfolded version of visual representation is in {\sf Fig. 5.29: RNN (unfolded).}, with a new diagonal axis representing time dimension, in order to illustrate prev step value of each layer (in thinner \& lighter color). Note: as for standard connections, recurrent connections fully connect (with a specific weight matrix) all nodes corresponding to prev step nodes to nodes corresponding to current step, as illustrated in {\sf Fig. 5.30: Standard connections. vs. recurrent connections (unfolded).}
+		
+		An RNN can learn a probability distribution over a sequence by being trained to predict next element at time step $t$ in a sequence as being conditional probability distribution $P(s_t|s_{t-1},\ldots,s_1)$, also notated as $P(s_t|s_{< t})$, i.e., probability distribution $P(s_t)$ given all prev elements generated $s_1,s_2,\ldots,s_{t-1}$. In summary, recurrent networks (RNNs) are good at learning sequences \& therefore are routinely used for natural text processing \& for music generation.
+		\begin{itemize}
+			\item {\sf5.8.1. Visual Representation.} A more frequent visual representation for an RNN is actually showing flow upwards \& time rightwards, see folded version (of an RNN with only 1 hidden layer) in {\sf Fig. 5.31: RNN (folded)} \& unfolded version in {\sf Fig. 5.32: RNN (unfolded)}, with $h_t$ being value of hidden layer at step $t$, \& $x_t,y_t$ being values of input \& output at step $t$.
+			\item {\sf5.8.2. Training.} A recurrent network is not trained in exactly same manner as a feedforward network. Idea: present an example element of a sequence (e.g., a note within a melody) as input $x_t$ \& next element of sequence (next note) $x_{t+1}$ as output $y_t$. This will train recurrent network to predict next element of sequence. In practice, an RNN is rarely trained element by element but with a sequence as an input \& same sequence shifted left by 1 step{\tt/}item as output. See an example in {\sf Fig. 5.33} [End of sequence is marked by a special symbol.]. Therefore, recurrent network will learn to predict [Pictured as dashed arrows.] next element for all successive elements of sequence.
+			
+			Backpropagation algorithm to compute gradients for feedforward networks, introduced in Sect. 5.5.8, has been extended into a {\it backpropagation through time} (BPTT) algorithm for recurrent networks. Intuition is in unfolding RNN through time \& considering an ordered sequence of input-output pairs, but with every unfolded copy of network sharing same parameters, \& then applying standard backpropagation algorithm. More details may be found, e.g., in [62, Sect. 10.2.2].
+			
+			Note: a RNN has usually an output layer identical to its input layer [RNNs are actually more general \& there are actually some rare cases of an RNN with an arbitrary output different from input (as for a feedforward network). E.g.: a RNN-based architecture to generate a chord-based accompaniment, analyzed in Sect. 6.8.3. As {\sc Karpathy} puts it in [97]: ``Depending on your background you might be wondering: What makes Recurrent Networks so special? Aa glaring limitation of Vanilla Neural Networks (\& also Convolution Networks): their API is too constrained: they accept a fixed-sized vector as input (e.g. an image) \& produce a fixed-size vector as output (e.g. probabilities of different classes). Not only: These models perform this mapping using a fixed amount of computational steps (e.g. number of layers in model). Core reason: recurrent nets are more exiting: they allow us to operate over sequences of vectors: Sequences in input, output, or in most general case both.''], as a recurrent network predicts next item, which will be used iteratively as next input in a recursive way in order to produce a sequence.
+			
+			Note: training a recurrent network is usually considered as a case of supervised learning as, for each item, next item is presented as expected prediction, although it is not an additional label information (effective value or class to be predicted) but only recurrent information about next item ({\it intrinsically} present within a sequence).
+			\item {\sf5.8.3. LSTM.} Recurrent networks suffered from a training problem caused by difficulty of estimating gradients because in backpropagation through time recurrence brings repetitive multiplications, \& could thus lead to over {\it amplify} or {\it minimize} effects [This has been coined as {\it vanishing or exploding gradient problem} \& also as {\it challenge of long-term dependencies} (see, e.g., [62, Sect. 10.7]).]. This problem has been addressed \& resolved by {\it long short-term memory} (LSTM) architecture, proposed by {\sc Hochreiter \& Schmidhuber} in 1997 [82]. As solution has been quite effective, LSTM has become de facto standard for recurrent networks [Although, there are a few subsequent but similar proposals, e.g. {\it gated recurrent units} (GRUs). See a comparative analysis of LSTM \& GRU in [24].].
+			
+			Idea behind LSTM: secure information in memory {\it cells}, within a {\it block} [Cells within same block {\it share} input, output, \& forget gates. Therefore, although each cell might hold a different value in its memory, all cell memories within a block are read, written or erased {\it all at once} [82].], protected from standard data flow of recurrent network. Decisions about {\it writing} to, {\it reading} from \& {\it forgetting (erasing)} values of cells within a block are performed by opening or closing of {\it gates} \& are expressed at a distinct control level ({\it meta-level}), while being learnt during training process. Therefore, each gate is modulated by a {\it weight} parameter, \& thus is suitable for backpropagation \& standard training process. I.e., each LSTM block learns how to maintain its memory as a function of its input in order to minimize loss.
+			
+			See a conceptual view of an LSTM cell in {\sf Fig. 5.34: LSTM architecture (conceptual)}. Not further detail here inner mechanism of an LSTM cell (\& block) because may consider it here as a {\it black box} (refer to original article [82]).
+			
+			Note: a more general model of memory with access customized through training has recently been proposed: neural Turing machines (NTM) [65]. In this model, memory is global \& has {\it read \& write operations} with differentiable controls, \& thus is subject to learning through backpropagation. Memory to be accessed, specified by {\it location} or by {\it content}, is controlled via an {\it attention} mechanism.
+			\item {\sf5.8.4. Attention Mechanism.} Motivation for an {\it attention mechanism} has been inspired by human visual system ability to efficiently track \& recognize objects by focusing its {\it attention}. It has therefore been 1st introduced into neural network architectures for image recognition, as e.g. for object tracking [34]. It has then been adapted to recurrent architectures for NLP (\& more specifically for translation tasks) \& has showed significant improvement for management of long-term dependencies.
+			
+			Idea of an attention mechanism: focus at each time step on some specific elements of input sequence. This is modeled by weighted connections onto sequence elements (or onto sequence of hidden units). Therefore it is differentiable \& subject to backpropagation-based learning at a meta-level, as with LSTM gate control described in prev sect. For more details, see, e.g., [62, Sect. 12.4.5.1].
+			
+			Interestingly, a novel architecture for translation of sequences, named {\it Transformer} \& which is {\it solely} based on an attention mechanism [Architecture introduces {\it multi-head attention} which allows model to jointly attend to information from different representation subspaces at different positions [197].], has recently being proposed \& shows promising results [197]. Its very recent application to music generation is shortly discussed in Sect. 8.2.
+		\end{itemize}		
+		\item {\sf5.9. Convolutional Architectural Pattern.} {\it Convolutional neural network} (CNN or ConvNet) architectures for DL have become common place for image applications. Concept was originally inspired by both a model of human vision \& {\it convolution} mathematical operator [In mathematics, a convolution is a mathematical operation on 2 functions sharing same domain (usually noted $f*g$) that produces a 3rd function which is integral (or sum in discrete case -- case of images made of pixels) of pointwise multiplication fo 2 functions varying within domain in an opposing way. In case of a continuous domain [{\it low high}]:
+		\begin{equation*}
+			(f*g)(x) = \int_{\rm low}^{\rm high} f(x - t)g(t)\,{\rm d}t.
+		\end{equation*}
+		In discrete case:
+		\begin{equation*}
+			(f*g)(n) = \sum_{m = {\rm low}}^{\rm high} f(n - m)g(m).
+		\end{equation*}
+		]. It has been carefully adapted to neural networks \& improved by {\sc LeCun}, at 1st for handwritten character \& object recognition [110]. This resulted in efficient \& accurate architectures for pattern recognition, exploiting spatial local {\it correlation} present in natural images.
+		\begin{itemize}
+			\item {\sf5.9.1. Principles.} Basic idea [Inspired by nice intuitive explanation provided by {\sc Karn} in [96]. For more technical details see, e.g., [116] or [62, Chap. 9].] is to
+			\begin{itemize}
+				\item {\it slide} a matrix (named a {\it filter}, a {\it kernel} or a {\it feature detector}) through entire image (seen as input matrix)
+				\item for each mapping position:
+				\begin{enumerate}
+					\item compute dot product of filter with each mapped portion of image \&
+					\item then sum up all elements of resulting matrix
+				\end{enumerate}
+				\item resulting in a new matrix (composed of different sums for each sliding{\tt/}mapping position), named {\it convolved feature}, or also {\it feature map}.
+			\end{itemize}
+			Size of feature map is controlled by 3 hyperparameters:
+			\begin{itemize}
+				\item {\it depth}: number of filters used
+				\item {\it stride}: number of pixels by which slide filter matrix over input matrix
+				\item {\it0-padding}: padding of input matrix with 0s around its border.
+			\end{itemize}
+			\item {\sf5.9.2. Stages.}
 		\end{itemize}
 	\end{itemize}
 	\item {\sf6. Challenge \& Strategy.} Core of this book. This chap will analyze in depth how to apply architectures presented in Chap. 5 to learn \& generate music. 1st start with a naive, straightforward strategy, using basic prediction task of a neural network to generate an accompaniment for a melody.

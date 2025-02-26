@@ -7396,21 +7396,133 @@ This book series intends to publish monographs, textbooks \& edited books with a
 			\end{itemize}
 			Each note even is actually embedded into a track chunk, a data structure containing a delta-time value which specifies timing information \& event itself. A {\it delta-time value} represents time position of event \& could represent
 			\begin{itemize}
-				\item p. 29 +++
+				\item a {\it relative metrical} time -- number of {\it ticks} from beginning. A reference, named {\it division} \& defined in file header, specifies number of ticks per quarter note; or
+				\item an {\it absolute time} -- useful for real performances, not detailed here, see [132].
 			\end{itemize}
-			\item {\sf4.7.2. Piano Roll.}
+			An example of an excerpt from a MIDI file (turned into readable ascii) \& its corresponding score are shown {\sf Fig. 4.6: Excerpt from a MIDI file} \& {\sf Fig. 4.7:Score corresponding to MIDI excerpt}. Division has been set to 384, i.e. 384 ticks per quarter note (which corresponds to 96 ticks for a 16th note).
+			\begin{verbatim}
+				2, 96, Note_on, 0, 60, 90
+				2, 192, Note_off, 0, 60, 0
+				2, 192, Note_on, 0, 62, 90
+				2, 288, Note_off, 0, 62, 0
+				2, 288, Note_on, 0, 64, 90
+				2, 384, Note_off, 0, 64, 0
+			\end{verbatim}
+			In [86], {\sc Huang \& Hu} claim: 1 drawback of encoding MIDI messages directly: it does not effectively preserve notion of multiple notes being played at once through use of multiple tracks. In their experiment, they concatenate tracks end-to-end \& thus posit: it will be difficult for such a model to learn: multiple notes in same position across different tracks can really be played at same time. Piano roll does not have this limitation but at cost another limitation.
+			
+			-- Trong [86], {\sc Huang \& Hu} tuyên bố: 1 nhược điểm của việc mã hóa trực tiếp các thông điệp MIDI: nó không bảo toàn hiệu quả khái niệm về nhiều nốt nhạc được chơi cùng một lúc thông qua việc sử dụng nhiều bản nhạc. Trong thí nghiệm của họ, họ nối các bản nhạc từ đầu đến cuối \& do đó đưa ra giả thuyết: sẽ rất khó để một mô hình như vậy học được: nhiều nốt nhạc ở cùng một vị trí trên các bản nhạc khác nhau thực sự có thể được chơi cùng một lúc. Piano roll không có hạn chế này nhưng lại có 1 hạn chế khác.
+			\item {\sf4.7.2. Piano Roll.} {\it Piano roll} representation of a melody (monophonic or polyphonic) is inspired from automated pianos ({\sf Fig. 4.8: Automated piano \& piano roll. Yaledmot's post \url{https://www.youtube.com/watch?v=QrcwR7eijyc}.}). This was a continuous roll of paper with perforations (holes) punched into it. Each perforation represents a piece of {\it note control information}, to trigger a given note. {\it Length} of perforation corresponds to duration of a note. In other dimensions, {\it localization} of a perforation corresponds to its pitch.
+			
+			An example of a modern piano roll representation (for digital music systems) is shown in {\sf Fig. 4.9: Example of symbolic piano roll [70] permission of Hao Staff Music Publishing (Hong Kong) Co Ltd.} x axis represents time \& y axis pitch.
+			
+			There are several music environments using piano roll as a basic visual representation, in place of or in {\it complement} to a score, as more intuitive than tradition score notation [Another notation specific to guitar or string instruments is a {\it tablature}, in which 6 lines represent chords of a guitar (4 lines for a bass) \& note is specified by number of fret used to obtain it.]. E.g.: Hao Staff piano roll sheet music [70], shown in {\sf Fig. 4.9} with time axis being horizontal rightward \& notes represented as green cells. E.g.: tabs, where melody is represented in a piano roll-like format [84], in complement to chords \& lyrics. Tabs are used as an input by MidiNet system, introduced in Sect. 6.10.3.3.
+			
+			Piano roll is 1 of most commonly used representations, although it has some limitations. An important one, compared to MIDI representation: there is no note off information. As a result, there is no way to distinguish between a long note \& a repeated short note [Actually, in original mechanical paper piano roll, distinction is made: 2 holes are different from a longer single hole. End of hole is encoding of end of note.]. In Sect. 4.9.1, look at different ways to address this limitation. For a more detailed comparison between MIDI \& piano roll, see [86,199].
 			\item {\sf4.7.3. Text.}
-			\item {\sf4.7.4. Markup Language.}
-			\item {\sf4.7.5. Lead Sheet.}
+			\begin{itemize}
+				\item {\sf4.7.3.1. Melody.} A melody can be encoded in a textual representation \& processed as a {\it text}. A significant example: ABC notation [201], a {\it de facto} standard for folk \& traditional music [Note: ABC notation has been designed {\it independently} of computer music \& ML concerns.]. {\sf Fig. 4.10: Score of ``A Cup of Tea'' (Traditional), reproduced from The Session [98].} \& {\sf Fig. 4.11: ABC notation of ``A Cup of Tea'' reproduced from The Session [98].} show original score \& its associated ABC notation for a tune named ``A Cup of Tea'', from repository \& discussion platform The Session [98].
+				
+				1st 6 lines are header \& represent {\it metadata}: T: title of music, M: meter, L: default note length, K: key, etc. Header is followed by main text representing melody. Some basic principles of encoding rules of ABC notation are as follows [Refer to [201] for more details]:
+				\begin{enumerate}
+					\item pitch class of a note is encoded as letter corresponding to its English notation, e.g., {\tt A} for A or La
+					\item its pitch is encoded as following: {\it A} corresponds to $A_4$, {\tt a} to an A one octave up \& {\tt a'} to an A 2 octaves up
+					\item duration of a note is encoded as following: if default length is marked as {\tt1/8} (i.e. an 8th note, case for ``A Cup of Tea'' example), {\tt a} corresponds to an 8th note, {\tt a/2} to a 16th note \& {\tt a2} to a quarter note [Note: rests may be expressed in ABC notation through {\tt z} letter. Their durations are expressed as for notes, e.g., {\tt z2} is a double length rest.]
+					\item measure are separated by | (bars).
+				\end{enumerate}
+				Note: \fbox{ABC notation can only represent monophonic melodies.}
+				
+				In order to be processed by a DL architecture, ABC text is usually transformed from a character vocabulary text into a {\it token} vocabulary text in order to properly consider concepts which could be noted on $> 1$ character, e.g., {\tt g2}. Sturm et al.'s experiment, described in Sect. 6.6.1.2, uses a token-based notation named folk-rnn notation [178]. A tune is enclosed within a {\tt<s>} begin mark \& an \verb|<\s>| end mark. Last, all examples melodies are transposed to same C root base, resulting in notation of tune ``A Cup of Tea'' shown in {\sf Fig. 4.12: Folk-rnn notation of a ``A Cup of Tea'' [178].}
+				\item {\sf4.7.3.2. Chord \& Polyphony.} When represented extensionally, chords are usually encoded with simultaneous notes as a vector. An interesting alternative extensional representation of chords, named Chord2Vec [Chord2Vec is inspired by Word2Vec model for natural language processing [129].], has recently been proposed in [121] [For information, there is another similar model, also named Chord2Vec, proposed in [87].]. Rather than thinking of chords (vertically) as vectors, it represents chords (horizontally) as sequences of constituent notes. More precisely,
+				\begin{enumerate}
+					\item a chord is represented as an arbitrary length-ordered sequence of notes
+					\item chords are separated by a special symbol, as with sentence markers in natural language processing.
+				\end{enumerate}
+				When using this representation for predicting neighboring chords, a specific compound architecture is used, named RNN Encoder-Decoder described in Sect. 6.10.2.3.
+				
+				Note: a somewhat similar model is also used for polyphonic music generation by BachBot system [118] introduced in Sect. 6.17.1. In this model, for each time step, various notes (ordered in a descending pitch) are represented as a sequence \& a special delimiter symbol | | | indicates next time frame.
+			\end{itemize}
+			\item {\sf4.7.4. Markup Language.} Mention case of general text-based structured representations based on markup languages (famous examples are HTML \& XML). Some markup languages have been designed for music applications, like e.g. open standard MusicXML [61]. Motivation: provide a common format to facilitate sharing, exchange \& storage of scores by musical software systems (e.g. score editors \& sequencers). MusicXML, as well as similar languages, is not intended for direct use by humans because of its verbosity (sự dài dòng), which is down side of its richness \& effectiveness as an interchange language. Furthermore, not very appropriate as a direct representation for ML tasks for same reasons, as its verbosity \& richness would create too much overhead as well as bias.
+			
+			-- Ngôn ngữ đánh dấu. Đề cập đến trường hợp biểu diễn có cấu trúc dựa trên văn bản chung dựa trên ngôn ngữ đánh dấu (ví dụ nổi tiếng là HTML \& XML). Một số ngôn ngữ đánh dấu đã được thiết kế cho các ứng dụng âm nhạc, chẳng hạn như chuẩn mở MusicXML [61]. Động lực: cung cấp một định dạng chung để tạo điều kiện chia sẻ, trao đổi \& lưu trữ bản nhạc của các hệ thống phần mềm âm nhạc (ví dụ: trình chỉnh sửa bản nhạc \& trình sắp xếp). MusicXML, cũng như các ngôn ngữ tương tự, không dành cho con người sử dụng trực tiếp vì tính dài dòng của nó, đây là nhược điểm của tính phong phú \& hiệu quả của nó như một ngôn ngữ trao đổi. Hơn nữa, không thực sự phù hợp để biểu diễn trực tiếp cho các tác vụ ML vì những lý do tương tự, vì tính dài dòng \& phong phú của nó sẽ tạo ra quá nhiều chi phí cũng như thiên vị.
+			\item {\sf4.7.5. Lead Sheet.} Lead sheets are an important representation format for popular music (jazz, pop, etc.). A {\it lead sheet} conveys in upto a few pages score of a melody \& its corresponding chord progression via an intentional notation (Sect. 4.5.4). Lyrics may also be added. Some important information for performer, e.g. composer, author, style \& tempo, is often also present. An example of lead sheet is shown in {\sf Fig. 4.13: Lead sheet of ``Very Late'' (Pachet \& d'Inverno).}
+			
+			Paradoxically, few systems \& experiments use this rich \& concise representation, \& most of time they focus on notes. Note: {\sc Eck \& Scmidhuber}'s Blues generation system, introduced in Sect. 6.5.1.1, outputs a combination of melody \& chord progression, although not as an {\it explicit} lead sheet. A notable contribution: systematic encoding of lead sheets done in Flow Machines project [48], resulting in Lead Sheet Data Base (LSBD) repository [146], which includes $> 12000$ lead sheets.
+			
+			Note: there are some alternative notations, notably tabs [84], where melody is represented in a piano roll-like format (Sect. 4.7.2) \& complemented with corresponding chords. An example of use of tabs: MidiNet system to be analyzed in Sect. 6.10.3.3.
 		\end{itemize}
 		\item {\sf4.8. Temporal Scope \& Granularity.} Representation of time is fundamental for musical processes.
 		\begin{itemize}
-			\item {\sf4.8.1. Temporal Scope.}
-			\item {\sf4.8.2. Temporal Granularity.}
+			\item {\sf4.8.1. Temporal Scope.} An initial design decision concerns {\it temporal scope} of representation used for generation data \& for generated data, i.e. way representation will be interpreted by architecture w.r.t. time, as illustrated in {\sf Fig. 4.14}:
+			\begin{itemize}
+				\item {\it Global}: in this 1st case, temporal scope of representation is {\it whole} musical piece. Deep network architecture (typically a feedforward or an autoencoder architecture, see Sects. 5.5--5.6) will process input \& produce output within a {\it global single step} [In Chap. 6, name it {\it single-step feedforward strategy}, Sect. 6.2.1.]. E.g.: MiniBach \& DeepHear systems introduced in Sects. 6.2.2 \& 6.4.1.1, resp.
+				\item {\it Time step} (or {\it time step}) -- in this 2nd case, most frequent one, temporal scope of representation is a {\it local time slice} of musical piece, corresponding to a specific temporal moment (time step). Granularity of processing by deep network architecture (typically a recurrent network) is a {\it time step} \& generation is iterative [In Chap. 6, name it {\it interactive feedforward strategy}, see Sect. 6.5.1.]. Note: time step is usually set to {\it shortest note duration} (see more details in Sect. 4.8.2), but it may be larger, e.g., set to a measure in system as discussed in [189].
+				\item {\it Note step}: this 3rd case was proposed by {\sc Mozer} in [138] in his CONCERT system [138], see Sect. 6.6.1.1. In this approach there is {\it no fixed time step}. Granularity of processing by deep network architecture is a {\it note}. This strategy uses a distributed encoding of duration that allows to process a note of any duration in a single network processing step. Note: by considering as a single processing step a note rather than a time step, number of processing steps to be bridged by network is greatly reduced. Approach proposed later on by {\sc Walder} in [199] is similar.
+				
+				Note: a global temporal scope representation actually also considers time steps (separated by dash lines in {\sf Fig. 4.14: Temporal scope for a piano role-like representation.}). However, although time steps are present at representation level, they will not be interpreted as distinct processing steps by neural network architecture. Basically, encoding of successive time slices will be concatenated into a global representation considered as a whole by network, as shown in {\sf Fig. 6.2: MiniBach architecture \& encoding} of an example to be introduced in Sect. 6.2.2.
+				
+				Note: in case of a global temporal scope musical content generated has a {\it fixed length} (number of time steps), whereas in case of a time step or a note step temporal scope musical content generated has an {\it arbitrary length}, because generation is iterative as see in Sect. 6.5.1.
+			\end{itemize}
+			\item {\sf4.8.2. Temporal Granularity.} In case of a global or a time step temporal scope, granularity of time step, corresponding to granularity of time {\it discretization}, must be defined. There are 2 main strategies:
+			\begin{itemize}
+				\item Most common strategy: set time step to a {\it relative duration}, smallest duration of a note in corpus (training examples{\tt/}dataset), e.g., a 16th note. To be more precise, as stated by {\sc Todd} in [189], time step should be {\it greatest common factor} of durations of all notes to be learned. This ensures: duration of every note will be properly represented with a whole number of time steps. 1 immediate consequence of this ``leveling down'': number of processing steps necessary, independent of duration of actual notes.
+				\item Another strategy: set time step to a fixed {\it absolute duration}, e.g., 10 milliseconds. This strategy permits us to capture expressiveness in timing of each note during a human performance, as see in Sect. 4.10.
+			\end{itemize}
+			Note: in case of a note step temporal scope, there is no uniform discretization of time (no fixed time step) \& no need for.
 		\end{itemize}
-		\item {\sf4.9. Metadata.}
+		\item {\sf4.9. Metadata.} In some systems, additional information from score may also be explicitly represented \& used as {\it metada}, e.g.
+		\begin{itemize}
+			\item note tie [A tied note on a music score specifies how a note duration extends across a single measure. In our case, issue is how to specify: duration extends across a single {\it time step}. Therefore, consider it as metadata information, as it is specific to representation \& its processing by a neural network architecture.]
+			\item fermata
+			\item harmonics
+			\item key
+			\item meter
+			\item instrument associated as a voice.
+		\end{itemize}
+		This extra information may lead to more accurate learning \& generation.
+		\begin{itemize}
+			\item {\sf4.9.1. Note Hold{\tt/}Ending.} An important issue: how to represent if a note is held, i.e., tied to prev note. This is actually $\Leftrightarrow$ issue of how to represent ending of a note.
+			
+			In MIDI representation format, end of a note is explicitly stated (via a ``Note off'' event [Note: in MIDI, a ``Note on'' message with a null (0) velocity is interpreted as a ``Note off'' message.]). In piano roll format discussed in Sect. 4.7.2, there is no explicit representation of ending of a note \&, as a result, one cannot distinguish between 2 repeated quarter notes \& a half note.
+			
+			Main possible techniques:
+			\begin{itemize}
+				\item introduce a {\it hold{\tt/}replay} representation, as a dual representation of sequence of notes. This solution is used, e.g., by Mao et al. in their DeepJ system [126] (to be analyzed in Section 6.10.3.4), by introducing a replay matrix similar to piano roll-type matrix of notes
+				\item divide size of time step [See Sect. 4.8.2 for details of how value of time step is defined.] by 2 \& always mark a {\it note ending} with a special tag, e.g., 0. This solution is used, e.g., by {\sc Eck \& Schmidhüber} in [42], \& analyzed in Sect. 6.5.1.1
+				\item divide size of time step as before but instead mark a {\it new note beginning}. This solution is used by {\sc Todd} in [189] or
+				\item use a special {\it hold} symbol \verb|__| in place of a note to specify when prev note is held. This solution was proposed by Hadjeres et al. in their DeepBach system [69] to be analyzed in Sect. 6.14.2.
+			\end{itemize}
+			This last solution considers hold symbol as a note, see an example in {\sf Fig. 4.15: (a) Extract from a {\sc J. S. Bach} chorale \& (b) its representation using hold symbol \verb|__| [69].} Advantages of hold symbol technique:
+			\begin{itemize}
+				\item simple \& uniform as hold symbol is considered as a note
+				\item there is no need to divide value of time step by 2 \& mark a note ending or beginning.
+			\end{itemize}
+			Authors of DeepBach also emphasize: good results they obtain using Gibbs sampling rely exclusively on their choice to integrate hold symbol into list of notes (see [69] \& Sect. 6.14.2). An important limitation: hold symbol only applies to case of a monophonic melody, i.e. it cannot directly express held notes in an unambiguous way in case of a single-voice polyphony. In this case, single-voice polyphony must be reformulated into a multivoice representation with each voice being a monophoniic melody; then a hold symbol is added separately for each voice. Note: in case of replay matrix, additional information (matrix row) is for each possible note \& not for each voice.
+			
+			Discuss in Sect. 4.11.7 how to encode a hold symbol.
+			\item {\sf4.9.2. Note Denotation (vs. Enharmony).} Most systems consider {\it enharmony}, i.e., in tempered system A$\sharp$ is {\it enharmonically equivalent} to (i.e., has same pitch as) B$\flat$, although harmonically \& in composer's intention they are different. An exception: DeepBach system, described in Sect. 6.14.2, which encodes notes using their real names \& not their MIDI note numbers. Authors of DeepBach state: this additional information leads to a more accurate model \& better results [69].
+			\item {\sf4.9.3. Feature Extraction.} Although DL is good at processing raw unstructured data, from which its hierarchy of layers will extract higher-level representations adapted to task (Sect. 1.1.4), some systems include a preliminary step of automatic {\it feature extraction}, in order to represent data in a more compact, characteristic \& discriminative form. 1 motivation could be to gain efficiency \& accuracy for training \& for generation. Moreover, this {\it feature-based representation} is also useful for indexing data, in order to control generation through compact labeling (see, e.g., DeepHear system in Sect. 6.4.1.1), or for indexing musical units to be queried \& concatenated (see Sect. 6.10.7.1).
+			
+			Set of {\it features} can be defined {\it manually (handcrafted)} or {\it automatically} (e.g., by an autoencoder, Sect. 5.6). In case of handcrafted features, bag-of-words (BOW) model is a common strategy for natural language text processing, which may also be applied to other types of data, including musical data, as see in Sect. 6.10.7.1. It consists in transforming original text (or arbitrary representation) into a ``bag of words'' (vocabulary composed of all occurring words, or more generally speaking, all possible tokens); then various measures can be used to characterize text. Most common is {\it term frequency}, i.e., number of times a term appears in text [Note: this bag-of-words representation is a {\it lossy representation} (i.e., without effective means to perfectly reconstruct original data representation).]
+			
+			Sophisticated methods have been designed for neural network architectures to automatically compute a vector representation which preserves, as much as possible, relations between items. Vector representations of texts are named {\it word embeddings} [Term {\it embedding} comes from analogy with {\it mathematical embedding}, which is an objective \& structure-preserving mapping. Initially used for natural language processing, it is now often used in DL as a general term for {\it encoding} a given representation into a vector representation. Note: term embedding, which is an abstract model representation, is often also used (we think, abusively) to define a specific instance of an embedding (which may be better named, e.g., a {\it label}, see [179] \& Sect. 6.4.1.1).]. A recent reference model for NLP is Word2Vec model [129]. It has recently been transposed to Chord2Vec model for vector encoding of chords, as described in [121] (Sect. 4.5.4).
+		\end{itemize}
 		\item {\sf4.10. Expressiveness.}
-		\item {\sf4.11. Encoding.}
+		\begin{itemize}
+			\item {\sf4.10.1. Timing.} If training examples are processed from conventional scores or MIDI-format libraries, there is a good chance: music is perfectly {\it quantized} -- i.e., note onsets [An onset refers to beginning of a musical note (or sound).] are exactly aligned onto tempo -- resulting in a mechanical sound without {\it expressiveness}. 1 approach: consider symbolic records -- in most cases recorded directly in MIDI -- from real human {\it performances}, with musician interpreting tempo. An example of a system for this purpose is PerformanceRNN [173], analyzed in Sect. 6.7.1. It follows {\it absolute time duration} quantization strategy, presented in Sect. 4.8.2.
+			\item {\sf4.10.2. Dynamics.} Another common limitation: many MIDI-format libraries do not include {\it dynamics} (volume of sound produced by an instrument), which stays fixed throughout whole piece. 1 option: take into consideration (if present on score) annotations made by composer about dynamics, from pianissimo ppp to fortissimo fff, see Sect. 4.5.1. As for tempo expressiveness, addressed in Sect. 4.10.1, another option: use real human performances, recorded with explicit dynamics variation -- velocity field in MIDI.
+			\item {\sf4.10.3. Audio.} Note: in case of an audio representation, expressiveness as well as tempo \& dynamics are entangled within whole representation. Although easy to control global dynamics (global volume), less easy to separately control dynamics of a single instrument or voice [More generally speaking, audio source separation, often coined as {\it cocktail party effect}, has been known for a long time to be a very difficult problem, see original article in [18]. Interestingly, this problem has been solved in 2015 by DL architectures [45], opening up ways for disentangling instruments or voices \& their relative dynamics as well as tempo (by using audio time stretching techniques).]
+		\end{itemize}
+		\item {\sf4.11. Encoding.} Once format of a representation has been chosen, issue still remains of how to {\it encode} this representation. {\it Encoding} of a representation (of a musical content) consists in {\it mapping} of representation (composed of a set of {\it variables}, e.g., pitch or dynamics) into a set of {\it inputs} (also named {\it input nodes} or {\it input variables}) for neural network architecture [See Sect. 5.4 for more details abut input nodes of a neural network architecture.].
+		\begin{itemize}
+			\item {\sf4.11.1. Strategies.}
+			\item {\sf4.11.2. From 1-Hot to Many-Hot \& to Multi-1-Hot.}
+			\item {\sf4.11.3. Summary.}
+			\item {\sf4.11.4. Binning.}
+			\item {\sf4.11.5. Pros \& Cons.}
+			\item {\sf4.11.6. Chords.}
+			\item {\sf4.11.7. Special Hold \& Rest Symbols.}
+			\item {\sf4.11.8. Drums \& Percussion.}
+		\end{itemize}
 		\item {\sf4.12. Dataset.}
 	\end{itemize}
 	\item {\sf5. Architecture.} Deep networks are a natural evolution of neural networks, themselves being an evolution of Perceptron, proposed by {\sc Rosenblatt} in 1957 [165]. Historically speaking [See, e.g., [62, Sect. 1.2] for a more detailed analysis of key trends in history of DL.], Perceptron was criticized by {\sc Minsky \& Papert} in 1969 [130] for its inability to classify {\it nonlinearly separable domains} [A simple example \& a counterexample of linear separability (of a set of 4 points within a 2D space \& belonging to green cross or red circle classes) are shown in {\sf Fig. 5.1: Example \& counterexample of linear separability.} Elements of 2 classes are linearly separable if there is at least 1 straight line separating them. Note: discrete version of counterexample corresponds to case of exclusive or (XOR) logical operator, which was used as an argument by {\sc Minsky \& Papert} in [130].] Their criticism also served in favoring an alternative approach of AI, based on symbolic representations \& reasoning.
@@ -8244,7 +8356,7 @@ This book series intends to publish monographs, textbooks \& edited books with a
 		\item {\bf Sampling.} Action of producing an item (a sample) according to a given probability distribution over possible values. As more \& more samples are generated, their distribution should more closely approximate given distribution.
 		\item {\bf Sampling strategy.} A strategy for generating content where variables of a content representation are incrementally instantiated \& refined according to a target probability distribution which has been previously learnt.
 		\item {\bf Seed-based generation.} An approach to generate arbitrary content (e.g., a  long melody) with a minimal (seed) information (e.g., a 1st note).
-		\item [\bf Self-supervised learning.] A category of ML when output value of example (target value of supervision) $=$ input value. An example: training of an autoencoder.
+		\item {\bf Self-supervised learning.} A category of ML when output value of example (target value of supervision) $=$ input value. An example: training of an autoencoder.
 		\item {\bf Sigmoid.} Also named logistic function, it is used as an output layer activation function for binary classification tasks \& it may also be used as a hidden layer nonlinear activation function.
 		\item {\bf Single-step feedforward strategy.} A strategy for generating content where a feedforward architecture processes in a single processing step a global temporal scope representation which includes all time slices.
 		\item {\bf Softmax.} Generalization of sigmoid (logistic) function to case of multiple classes. Used as an output activation function for multiclass single-label classification.

@@ -7512,18 +7512,95 @@ This book series intends to publish monographs, textbooks \& edited books with a
 			\item {\sf4.10.2. Dynamics.} Another common limitation: many MIDI-format libraries do not include {\it dynamics} (volume of sound produced by an instrument), which stays fixed throughout whole piece. 1 option: take into consideration (if present on score) annotations made by composer about dynamics, from pianissimo ppp to fortissimo fff, see Sect. 4.5.1. As for tempo expressiveness, addressed in Sect. 4.10.1, another option: use real human performances, recorded with explicit dynamics variation -- velocity field in MIDI.
 			\item {\sf4.10.3. Audio.} Note: in case of an audio representation, expressiveness as well as tempo \& dynamics are entangled within whole representation. Although easy to control global dynamics (global volume), less easy to separately control dynamics of a single instrument or voice [More generally speaking, audio source separation, often coined as {\it cocktail party effect}, has been known for a long time to be a very difficult problem, see original article in [18]. Interestingly, this problem has been solved in 2015 by DL architectures [45], opening up ways for disentangling instruments or voices \& their relative dynamics as well as tempo (by using audio time stretching techniques).]
 		\end{itemize}
-		\item {\sf4.11. Encoding.} Once format of a representation has been chosen, issue still remains of how to {\it encode} this representation. {\it Encoding} of a representation (of a musical content) consists in {\it mapping} of representation (composed of a set of {\it variables}, e.g., pitch or dynamics) into a set of {\it inputs} (also named {\it input nodes} or {\it input variables}) for neural network architecture [See Sect. 5.4 for more details abut input nodes of a neural network architecture.].
+		\item {\sf4.11. Encoding.} Once format of a representation has been chosen, issue still remains of how to {\it encode} this representation. {\it Encoding} of a representation (of a musical content) consists in {\it mapping} of representation (composed of a set of {\it variables}, e.g., pitch or dynamics) into a set of {\it inputs} (also named {\it input nodes} or {\it input variables}) for neural network architecture [See Sect. 5.4 for more details about input nodes of a neural network architecture.].
 		\begin{itemize}
-			\item {\sf4.11.1. Strategies.}
-			\item {\sf4.11.2. From 1-Hot to Many-Hot \& to Multi-1-Hot.}
-			\item {\sf4.11.3. Summary.}
-			\item {\sf4.11.4. Binning.}
-			\item {\sf4.11.5. Pros \& Cons.}
-			\item {\sf4.11.6. Chords.}
-			\item {\sf4.11.7. Special Hold \& Rest Symbols.}
-			\item {\sf4.11.8. Drums \& Percussion.}
+			\item {\sf4.11.1. Strategies.} At 1st, consider 3 possible types for a variable:
+			\begin{itemize}
+				\item {\it Continuous} variables -- an example is pitch of a note defined by its frequency in Hertz, that is a real value within $(0,\infty)$ interval.
+				
+				Straightforward way: directly encode variable [In practice, different variables are also usually scaled \& normalized, in order to have similar domains of values ($[0,1]$ or $[-1,1]$) for all input variables, in order to ease learning convergence.] as a {\it scalar} whose domain is real values. Call this strategy {\it value encoding}.
+				\item {\it Discrete integer} variables -- e.g.: pitch of a note defined by its MIDI note number, i.e., an integer value within $\{0,1,\ldots,127\}$ discrete set [See summary of MIDI specification in Sect. 4.7.1.].
+				
+				Straightforward way: encode variable as a real value {\it scalar}, by casting integer into a real. This is another case of {\it value encoding}.
+				\item {\it Boolean (binary)} variables -- e.g.: specification of a note ending (see Sect. 4.9.1).
+				
+				Straightforward way: encode variable as a real value {\it scalar}, with 2 possible values: 1 (for true) \& 0 (for false).
+				\item {\it Categorical} variables [In statistics, a {\it categorical variable} is a variable that can take 1 of a limited -- \& usually fixed -- number of possible values. In CS it is usually referred as an {\it enumerated type}.] -- an example is a component of a drum kit; an element within a set of possible values: \{snare, high-hat, kick, middle-tom, ride-cymbal, etc.\}.
+				
+				Usual strategy: encode a categorical variable as a {\it vector} having as its length number of possible elements, i.e., cardinality of set of possible values. Then, in order to represent a given element, corresponding element of encoding vector is set to 1 \& all other elements to 0. Therefore, this encoding strategy is usually called {\it1-hot encoding} [Name comes from digital circuits, {\it1-hot} referring to a group of bits among which only legal (possible) combinations of values are those with a single {\it high} (hot!) (1) bit, all others being {\it low} (0).]. This frequently used strategy is also often employed for encoding discrete integer variables, e.g. MIDI note numbers.
+			\end{itemize}
+			\item {\sf4.11.2. From 1-Hot to Many-Hot \& to Multi-1-Hot.} Note: a 1-hot encoding of a note corresponds to a time slice of piano roll representation ({\sf Fig. 4.9}), with as many lines as there are possible pitches. Note: while a 1-hot encoding of a piano roll representation of a {\it monophonic} melody (with 1 note at a time) is straightforward, a 1-hot encoding of a {\it polyphony} (with simultaneous notes, as for a guitar playing a chord) is not. One could then consider
+			\begin{itemize}
+				\item {\it many-hot encoding}: where all elements of vector corresponding to notes or to active components are set to 1
+				\item {\it multi-1-hot encoding}: where different voices or tracks are considered (for multivoice representation, Sect. 4.6) \& a 1-hot encoding is used for each different voice{\tt/}track, or
+				\item {\it multi-many-hot encoding}: which is a multivoice representation with simultaneous notes for at least 1 or all of voices.
+			\end{itemize}
+			\item {\sf4.11.3. Summary.} Various approaches for encoding are illustrated in {\sf Fig. 4.16: Various types of encoding}, showing from left to right
+			\begin{itemize}
+				\item a scalar continuous value encoding of $A_4$ (A440), real number specifying its frequency in Hertz
+				\item a scalar discrete integer value encoding [Note: because processing level of an ANN only considers real values, an integer value will be casted into a real value. Thus, case of a scalar integer value encoding boils down to prev case of a scalar continuous value encoding.] of $A_4$, integer number specifying its MIDI note number
+				\item a 1-hot encoding of $A_4$
+				\item a many-hot encoding of a D minor chord $D_4,F_4,A_4$
+				\item a multi-1-hot encoding of a 1st voice with A4 \& a 2nd voice with D3
+				\item a multi-many-hot encoding of a 1st voice with a D minor chord $D_4,F_4,A_4$ \& a 2nd voice with $C_3$ (corresponding to a minor 7th on bass).
+			\end{itemize}
+			\item {\sf4.11.4. Binning.} In some cases, a continuous variable is transformed into a discrete domain. A common technique, named {\it binning}, or also {\it bucketing}, consists of
+			\begin{itemize}
+				\item dividing original domain of values into smaller interval [This can be automated through a learning process, e.g., by automatic construction of a decision tree.], named {\it bins}
+				\item replacing each bin (\& values within it) by a {\it value representative}, often central value.
+			\end{itemize}
+			Note: this binning technique may also be used to reduce cardinality of discrete domain of a variable. E.g.: Performance RNN system described in Sect. 6.7.1, for which initial MIDI set of 127 values for note dynamics is reduced into 32 bins.
+			\item {\sf4.11.5. Pros \& Cons.} In general, value encoding is rarely used except for audio, whereas 1-hot encoding is most common strategy for symbolic representation [Remind (as pointed out in Sect. 4.2): at level of encoding of a representation \& its processing by a deep network, distinction between audio \& symbolic representation boils down to nothing, as only numerical values \& operations are considered. In fact general principles of a DL architecture are independent of that distinction \& this is 1 of vectors of generality of approach. See also in [125] example of an architecture (introduced in Sect. 6.10.3.2) which combines audio \& symbolic representations.].
+			
+			A counterexample is case of DeepJ symbolic generation system described in Sect. 6.10.3.4, which is, in part, inspired by WaveNet audio generation system. DeepJ's authors state: ``Keep track of dynamics of every note in an $N\times T$ dynamics matrix that, for each time step, stores values of each note's dynamics scaled between 0 \& 1, where 1 denotes loudest possible volume. In preliminary work, also tried an alternate representation of dynamics as a categorical value with 128 bins as suggested by Wavenet [193]. Instead of predicting a scalar value, our model would learn a multinomial distribution of note dynamics. Would then randomly sample dynamics during generation from this multinomial distribution. Contrary to Wavenet's results, our experiments concluded: scalar representation yielded results that were more harmonious.'' [126].
+			
+			Advantage of value encoding is its compact representation, at cost of sensibility because of numerical operations (approximations). Advantage of 1-hot encoding is its robustness (discrete vs. analog), at cost of a high cardinality \& therefore a potentially large number of inputs.
+			
+			Also important to understand: choice of 1-hot encoding at {\it output} of network architecture is often (albeit not always) associated to a {\it softmax} function [Introduced in Sect. 5.5.3.] in order to compute probabilities of each possible value, e.g. probability of a note being an A, or an A$\sharp$, a B, a C, etc. This actually corresponds to a {\it classification task} between possible values of categorical variable, further analyzed in Sect. 5.5.3.
+			\item {\sf4.11.6. Chords.} 2 methods of encoding chords, corresponding to 2 main alternative representations discussed in Sect. 4.5.4, are
+			\begin{itemize}
+				\item {\it implicit \& extensional}: enumerating exact notes composing chord. Natural encoding strategy is many-hot. E.g.: RBM-based polyphonic music generation system described in Sect. 6.4.2.3
+				\item {\it explicit \& intensional} -- using a chord symbol combining a pitch class \& a type (e.g., D minor). Natural encoding strategy is multi-1-hot, with an initial 1-hot encoding of pitch class \& a 2nd 1-hot encoding of class type (major, minor, dominant 7th, etc.). E.g.: MidiNet system [In MidiNet, possible chord types are actually reduced to only major \& minor. Thus, a boolean variable can be used in place of 1-hot encoding.] described in Sect. 6.10.3.3.
+			\end{itemize}
+			\item {\sf4.11.7. Special Hold \& Rest Symbols.} Have to consider case of special symbols for hold (``hold prev note'', Sect. 4.9.1) \& rest (``no note'', Sect. 4.5.2) \& how they relate to encoding of actual notes.
+			
+			1st, note: there are some rare cases where rest is actually {\it implicit}:
+			\begin{itemize}
+				\item in MIDI format -- when there is no ``active'' ``Note on'', i.e., when they al have been ``closed'' by a corresponding ``Note off''
+				\item in 1-hot encoding -- when all elements of vector encoding possible notes are $= 0$ (i.e., a ``0-hot'' encoding, i.e., none of possible notes is currently selected). This is e.g. case in experiments by {\sc Todd} (described in Sect. 6.8.1) [This may appear at 1st as an economical encoding of a rest, but at cost of some ambiguity when interpreting probabilities (for each possible note) produced by softmax output of network architecture. A vector with low probabilities for each note may be interpreted as a rest or as an equiprobability between notes. See threshold trick proposed in Sect. 6.8.1 in order to discriminate between 2 possible interpretations.]
+			\end{itemize}
+			Consider how to encode hold \& rest depending on how a note pitch is encoded:
+			\begin{itemize}
+				\item {\it value encoding}: in this case, one needs to add 2 extra boolean variables (\& their corresponding input nodes) {\it hold \& rest}. This must be done for each possible independent voice in case of a polyphony, or
+				\item {\it1-hot encoding}: In that case (most frequent \& manageable strategy), one just needs to extend vocabulary of 1-hot encoding with 2 additional possible values: {\it hold \& rest}. They will be considered at same level, \& of same nature, as possible notes (e.g., $A_3$ or $C_4$) for input as well as for output.
+			\end{itemize}
+			\item {\sf4.11.8. Drums \& Percussion.} (Trống \& Bộ gõ) Some systems explicitly consider drums \&{\tt/}or percussion. A drum or percussion kit is usually modeled as a single-track polyphony by considering distinct simultaneous ``notes'', each ``note'' corresponding to a drum or percussion component (e.g., snare, kick, bass tom, hi-hat, ride cymbal, etc.), i.e. as a many-hot encoding.
+			
+			An example of a system dedicated to rhythm generation is described in Sect. 6.10.3.1. It follows single-track polyphony approach. In this system, each of 5 components is represented through a binary value, specifying whether or not there is a related event for current time step. Drum events are represented as a binary word [In this system, encoding is made in text, similar to format described in Sect. 4.7.3 \& more precisely following approach proposed in [21].] of length 5, where each binary value corresponds to 1 of 5 drum components; e.g., 10010 represents simultaneous playing of kick (bass drum) \& high-hat, following a many-hot encoding.
+			
+			Note: this system also includes -- as an additional voice{\tt/}track -- a condensed representation of bass line part \& some information representing meter, see more details in Sect. 6.10.3.1. Authors [122] argue: this extra explicit information ensures: network architecture is aware of beat structure at any given point.
+			
+			E.g.: MusicVAE system (Sect. 6.12.1), where 9 different drum{\tt/}percussion components are considered, which gives $2^9$ possible combinations, i.e., $2^9 = 512$ different tokens.
 		\end{itemize}
-		\item {\sf4.12. Dataset.}
+		\item {\sf4.12. Dataset.} Choice of a dataset is fundamental for good music generation. At 1st, a dataset should be of sufficient size (i.e., contain a sufficient number of examples) to guarantee accurate learning [Neural networks \& DL architectures need lots of examples to function properly. However, 1 recent research area is about learning from scarce data (dữ liệu khan hiếm).]. As noted by Hadjeres in [66]: ``believe: this tradeoff between size of a dataset \& its coherence is 1 of major issues when building deep generative models. If dataset is very heterogeneous (rất không đồng nhất), a good generative model should be able to distinguish different subcategories \& manage to generalize well. On contrary, if there are only slight differences between subcategories, important t know if ``averaged model'' can produce musically-interesting results.''
+		\begin{itemize}
+			\item {\sf4.12.1. Transposition \& Alignment.} (Chuyển vị \& Căn chỉnh) A common technique in ML: generate {\it synthetic data} as a way to artificially augment size of dataset (number of training examples) [This is named {\it dataset augmentation}.], in order to improve accuracy \& generalization of learnt model (Sect. 5.5.10). In musical domain, a natural \& easy way is {\it transposition}, i.e., to transpose all examples in all keys. In addition to artificially augmenting dataset, this  provides a key (tonality) invariance of all examples \& thus makes examples more generic (chung chung hơn). Moreover, this also reduces sparsity in training data. This transposition technique is, e.g., used in C-RBM system [108] described in Sect. 6.10.5.1.
+			
+			An alternative approach: transpose (align) all examples into a {\it single common key}. This has been advocated for RNN-RBM system [11] to facilitate learning, see Sect. 6.9.1.
+			\item {\sf4.12.2. Datasets \& Libraries.} A practical issue: availability of datasets for training systems \& also for evaluating \& comparing systems \& approaches. There are some reference datasets in image domain (e.g., MNIST [MNIST stands for Modiﬁed National Institute of Standards \& Technology.] dataset about handwritten digits [112]), but none yet in music domain. However, various datasets or libraries [Difference between a dataset \& a library: a dataset is almost ready for use to train a neural network architecture, as all examples are encoded within a single file \& in same format, although some extra data processing may be needed in order to adapt format to encoding of representation for architecture or vice-versa, whereas a library is usually composed of a set of files, 1 for each example.] have been made public, with some examples listed below:
+			\begin{itemize}
+				\item Classical piano MIDI database [104]
+				\item JSB Chorales dataset [Note: this dataset uses a quarter note quantization, whereas a smaller quantization at level of a 16th note should be used in order to capture smallest note duration (8th note), Sect. 4.9.1.] [1].
+				\item LSDB (Lead Sheet Data Base) repository [146], with $> 12000$ lead sheets (including from all jazz \& bossa nova song books), developed within Flow Machines project [48]
+				\item MuseData library, an electronic library of classical music $> 800$ pieces, from CCARH in Stanford University [76]
+				\item MusicNet dataset [187], a collection of 330 freely-licensed classical music recordings together with $> 1$ million annotated labels (indicating timing \& instrumental information)
+				\item Nottingham database, a collection of 1200 folk tunes in ABC notation [53], each tune consisting of a simple melody on top of chords, i.e. an ABC equivalent of a lead sheet
+				\item Session [98], a repository \& discussion platform for Celtic music in ABC notation containing $> 15000$ songs
+				\item Symbolic Music dataset by Walder [200], a huge set of cleaned \& preprocessed MIDI files
+				\item TheoryTab database [84], a set of songs represented in a tab format, a combination of a piano roll melody, chords \& lyrics, i.e. a piano roll equivalent of a lead sheet
+				\item Yamaha e-Piano Competition dataset, in which participants MIDI performance records are made available [209].
+			\end{itemize}
+		\end{itemize}
 	\end{itemize}
 	\item {\sf5. Architecture.} Deep networks are a natural evolution of neural networks, themselves being an evolution of Perceptron, proposed by {\sc Rosenblatt} in 1957 [165]. Historically speaking [See, e.g., [62, Sect. 1.2] for a more detailed analysis of key trends in history of DL.], Perceptron was criticized by {\sc Minsky \& Papert} in 1969 [130] for its inability to classify {\it nonlinearly separable domains} [A simple example \& a counterexample of linear separability (of a set of 4 points within a 2D space \& belonging to green cross or red circle classes) are shown in {\sf Fig. 5.1: Example \& counterexample of linear separability.} Elements of 2 classes are linearly separable if there is at least 1 straight line separating them. Note: discrete version of counterexample corresponds to case of exclusive or (XOR) logical operator, which was used as an argument by {\sc Minsky \& Papert} in [130].] Their criticism also served in favoring an alternative approach of AI, based on symbolic representations \& reasoning.
 	

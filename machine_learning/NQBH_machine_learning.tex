@@ -8217,7 +8217,98 @@ This book series intends to publish monographs, textbooks \& edited books with a
 		
 		There are many approaches \& algorithms for reinforcement learning (for a more detailed presentation, refer, e.g., [95]). Among them, {\it$Q$-learning} [202] turned out to be a relatively simple \& efficient method, \& thus is widely used. Name comes from objective to learn (estimate) $Q$ function $Q^*(s,a)$, which represents expected gain for a given pair $(s,a)$, where $s$ is a state \& $a$ an action, for an agent choosing actions optimally (i.e., by following optimal policy $\pi^*$). Agent will manage a table, called {\it$Q$-table}, with values corresponding to all possible pairs. As agent explores environment, table is incrementally updated, with estimates becoming more accurate.
 		
-		A recent combination of reinforcement learning (more specifically Q-learning) \& DL, named {\it deep reinforcement learning}, has been proposed [133] in order to make learning more efficient. As Q-table could be huge [Because of high combinatorial natural when number of possible states \& possible actions is huge.]
+		A recent combination of reinforcement learning (more specifically Q-learning) \& DL, named {\it deep reinforcement learning}, has been proposed [133] in order to make learning more efficient. As Q-table could be huge [Because of high combinatorial natural when number of possible states \& possible actions is huge.], idea: use a DNN in order to approximate expected values of Q-table through learning of many replaced experiences.
+		
+		A further optimization, named {\it double Q-learning} [195] {\it decouples action selection} from {\it evaluation}, in order to avoid value overestimation. Task of 1st network, named Target Q-Network: estimate gain $Q$, while task of Q-Network: select next action.
+		
+		Reinforcement learning appears to be a promising approach for incremental adaptation of music to be generated, e.g., based on {\it feedback} from listeners (this issue is addressed in Sect. 6.16). Meanwhile, a significant move has been made in using reinforcement learning to inject some control into generation of music by DL architectures, through reward mechanism, as described in Sect. 6.10.6.
+		\item {\sf5.13. Compound Architectures.} Often {\it compound} architectures are used. Some cases are {\it homogeneous} compound architectures, combining various instances of same architecture, e.g., a stacked autoencoder (see Sect. 5.6.3), \& most cases are {\it heterogeneous} compound architectures, combining various types of architectures, e.g., an RNN Encoder-Decoder which combines an RNN \& autoencoder, see Sect. 5.13.3.
+		\begin{itemize}
+			\item {\sf5.13.1. Composition Types.} From an architectural point of view, various types of composition [We are taking inspiration from concepts \& terminology in programming languages \& software architectures [171], e.g. {\it refinement, instantiation, nesting \& pattern} [54].] may be used:
+			\begin{itemize}
+				\item {\it Composition}: at least 2 architectures, of same type or of different types, are combined, e.g.
+				\begin{enumerate}
+					\item a bidirectional RNN (Sect. 5.13.2) combining 2 RNNs, forward \& backward in time
+					\item RNN-RBM architecture (Sect. 5.13.5) combining an RNN architecture \& an RBM architecture.
+				\end{enumerate}
+				\item {\it Refinement}: 1 architecture is {\it refined \& specialized} through some additional constraint(s0 [Both cases are refinements of standard autoencoder architecture through additional constraints, in practice adding an extra term onto cost function.]), e.g.
+				\begin{enumerate}
+					\item a sparse autoencoder architecture (Sect. 5.6.1)
+					\item a variational autoencoder (VAE) architecture (Sect. 5.6.2).
+				\end{enumerate}
+				\item {\it Nested}: 1 architecture is nested into other one, e.g.
+				\begin{enumerate}
+					\item a stacked autoencoder architecture (Sect. 5.6.3)
+					\item RNN Encoder-Decoder architecture (Sect. 5.13.3), where 2 RNN architectures are nested within encoder \& decoder parts of an autoencoder, which could therefore also notate as Autoencoder(RNN, RNN).
+				\end{enumerate}
+				\item {\it Pattern instantiation}: an architectural pattern is instantiated onto a given architecture(s), e.g.
+				\begin{enumerate}
+					\item C-RBM architecture (Sect. 6.58) that instantiates convolutional architectural pattern onto an RBM architecture, which could notate as Convolutional(RBM)
+					\item C-RNN-GAN architecture (Sect. 6.10.2.4), where GAN architectural pattern is instantiated onto an RNN architecture, which we could notate as GAN(RNN, RNN)
+					\item Anticipation-RNN architecture (Sect. 6.10.3.5) that instantiates conditioning architectural pattern onto an RNN with output of another RNN as conditioning input, which could notate as Conditioning(RNN, RNN).
+				\end{enumerate}
+			\end{itemize}
+			\item {\sf5.13.2. Bidirectional RNN.} Bidirectional RNNs were introduced by {\sc Schuster \& Paliwal} [170] to handle case when prediction depends not only on prev elements but also on {\it next} elements, as e.g. with speech recognition. In practice, a bidirectional RNN combines [See more details in [170].]
+			\begin{itemize}
+				\item a 1st RNN that moves {\it forward} through time \& begins from {\it start} of sequence
+				\item a 2nd symmetric RNN that moves {\it backward} through time \& begins from {\it end} of sequence.
+			\end{itemize}
+			Output $y_t$ of bidirectional RNN at step $t$ combines
+			\begin{itemize}
+				\item output $h_t^f$ at step $t$ of hidden layer of ``forward RNN''
+				\item output $h_{N-t+1}^b$ at step $N - t + 1$ of hidden layer of ``backward RNN''.
+			\end{itemize}
+			As illustration is in {\sf Fig. 5.41: Bidirectional RNN architecture}. Examples of use:
+			\begin{itemize}
+				\item BLSTM architecture (Sect. 6.8.3)
+				\item C-RNN-GAN architecture (Sect. 6.10.2.4) that encapsulates a bidirectional RNN into discriminator of a GAN
+				\item MusicVAE architecture (Sect. 6.12.1) that encapsulates a bidirectional RNN into encoder of a VAE (variational autoencoder).
+			\end{itemize}
+			\item {\sf5.13.3. RNN Encoder-Decoder.} Idea of encapsulating 2 identical recurrent networks (RNNs) into an autoencoder, named {\it RNN Encoder-Decoder} [Could also notate it as Autoencoder(RNN, RNN).], was initially proposed in [19] as a technique to encode a variable length sequence learnt by a recurrent network into another variable length sequence produced by another recurrent network [This is named {\it sequence-to-sequence learning} [180].]. Motivation \& application target is translation from 1 language to another, resulting inn sentences of possibility different lengths.
+			
+			Idea: use a fixed-length vector representation as a {\it pivot} representation between an encoder \& a decoder architecture, see illustration in {\sf Fig. 5.42: RNN Encoder-Decoder architecture. Inspired from [19]}. Hidden layer(s) $h_t^e$ of encoder will act as a memory which
+			\begin{itemize}
+				\item iteratively accumulates information about some input sequence of length $N$, while reading its successive $x_t$ elements [End of sequence is marked by a special symbol, as when training an RNN, Sect. 5.8.2.], resulting in a final state $h_N^e$
+				\item which is passed to decoder as summary $c$ of whole input sequence
+				\item decoder then iteratively generates output sequence of length $M$, by predicting next item $y_t$ given its hidden state $h_t^d$ \& summary (as a conditioning additional input) $c$ [As noted by Goodfellow et al. in [62, Section 10.4], an alternative: use summary $c$ only to initialize initial hidden state of decoder $h_0^d$, i.e., e.g., strategy chosen in GLSR-VAE architecture described in Sect. 6.10.2.3.]
+			\end{itemize}
+			2 components of RNN Encoder-Decoder are jointly trained to minimize cross-entropy between input \& output. See in {\sf Fig. 5.43: RNN Encoder-Decoder audio Word2Vec architecture [25].} example of Audio Word2Vec architecture for processing audio phonetic structures [25].
+			
+			1 limitation of RNN Encoder-Decoder approach: difficulty for summary to memorize very long sequences [In text translation applications, sentences have a limited size.]. 2 possible directions:
+			\begin{itemize}
+				\item using an {\it attention mechanism} [Introduced in Sect. 5.8.4.]
+				\item using a {\it hierarchical model}, as proposed in MusicVAE architecture, to be introduce in Sect. 6.12.1.
+			\end{itemize}
+			\item {\sf5.13.4. Variational RNN Encoder-Decoder.} An interesting development is a {\it variational} version of RNN Encoder-Decoder, i.e., a variational autoencoder (VAE) encapsulating 2 RNNs. Could notate it as Variational(Autoencoder(RNN, RNN)). Objective: combine
+			\begin{itemize}
+				\item {\it variational} property of VAE for controlling generation (Sect. 5.6.2)
+				\item {\it sequence} generation property of RNN.
+			\end{itemize}
+			Examples of its application to music generation are introduced in Sect.6.10.2.3.
+			\item {\sf5.13.5. Polyphonic Recurrent Networks.} RNN-RBM architecture, introduced in Sect. 6.9.1, combines an RBM architecture \& a recurrent (LSTM) architecture by {\it coupling} them to associate vertical perspective (simultaneous notes) with horizontal perspective (temporal sequences of notes) of a polyphony to be generated.
+			\item {\sf5.13.6. Further Compound Architectures.} Possible to further combine architecture that are already compound, e.g.
+			\begin{itemize}
+				\item WaveNet architecture (Sect. 6.10.3.2), which is a conditioning convolutional feedforward architecture with some tag as conditioning input, which could notate as Conditioning(Convolutional(Feedforward), Tag)
+				\item VRASH architecture (Sect. 6.10.3.6), which is a variational autoencoder encapsulating RNNs with decoder being conditioned on history, which could notate as Variational(Autoencoder(RNN, Conditioning(RNN, History))).
+			\end{itemize}
+			There are also some more specific (ad hoc) compound architectures, e.g.
+			\begin{itemize}
+				\item {\sc Johnson}'s Hexahedria architecture (Sect. 6.9.2), which combines 2 layers recurrent on time dimension with 2 other layers recurrent on pitch dimension, as an integrated alternative to RNN-RBM architecture
+				\item DeepBach architecture (Sect. 6.14.2), which combines 2 feedforward architectures with 2 recurrent architectures.
+			\end{itemize}
+			\item {\sf5.13.7. Limits of Composition.} There is a natural tendency to explore possible combinations of different architectures with hope of combining their respective features \& merits. An example of a sophisticated compound architecture: VRASH architecture (Sect. 6.10.3.6), which combines
+			\begin{itemize}
+				\item variational autoencoder
+				\item recurrent networks
+				\item conditioning (on decoder).
+			\end{itemize}
+			However, note:
+			\begin{itemize}
+				\item not all combinations make sense. E.g., recurrence \& convolution over time dimension would complete, as discussed in Sect. 5.9
+				\item there is no guarantee that combining a maximal variety of types will make a sound \& accurate architecture [As in case of a good cook, whose aim is not to simply mix {\it all} possible ingredients but to discover original successful combinations.].
+			\end{itemize}
+			See in Chap. 6: an important additional design dimension is {\it strategy}, which governs how an architecture will process representations in order to reach a given objective with some expected properties ({\it challenges}).
+		\end{itemize}
 	\end{itemize}
 	\item {\sf6. Challenge \& Strategy.} Core of this book. This chap will analyze in depth how to apply architectures presented in Chap. 5 to learn \& generate music. 1st start with a naive, straightforward strategy, using basic prediction task of a neural network to generate an accompaniment for a melody.
 	
@@ -8517,65 +8608,170 @@ This book series intends to publish monographs, textbooks \& edited books with a
 					\item RNN-DBN architecture [This is apparently state of art for {\sc J. S. Bach} Chorales dataset in terms of cross-entropy loss.], using multiple hidden layers [60]
 					\item LSTM-RTRBM architecture, using an LSTM instead of an RNN [120].
 				\end{enumerate}
-				\item {\sf6.9.2. \#2 Example: Hexahedria Polyphony Symbolic Music Generation Architecture.} System for polyphonic music proposed by {\sc Johnson} in his Hexahedria blog [93] is hybrid \& original in that it {\it integrates} into same architecture
-				\begin{enumerate}
-					\item a 1st part made of 2 RNNs (actually LSTM) layers, each with 300 hidden units, recurrent over {\it time dimension}, which are in charge of {\it temporal} horizontal aspect, i.e., relations between notes in a sequence. Each layer has connections across time steps, while being independent across notes
-					\item a 2nd part made of 2 other RNN (LSTM) layers, with 100 \& 50 hidden units, recurrent over {\it note dimension}, which are in charge of {\it harmony} vertical aspect, i.e., relations between simultaneous notes within same time step. Each layer is independent between time steps but has transversal directed connections between notes.
-				\end{enumerate}
-				Can notate this architecture as LSTM${}^{2+2}$ in order to highlight 2 successive 2-level recurrent layers, recurrent in 2 different dimensions (time \& note). Architecture is actually a kind of integration within a single architecture [See in Sect. 6.9.3 an alternative architecture, named Bi-Axial LSTM, where each of 2-level time-recurrent layers is encapsulated into a different architectural module.] of RNN-RBM architecture described in prev sect. Main originality is in using recurrent networks not only on time dimension but also on note dimension, more precisely on pitch class dimension. This latter type of recurrence is used to model occurrence of a simultaneous note based on other simultaneous notes. Like for time relation, which is oriented towards future, pitch class relation is oriented towards higher pitch, from C to B.
-				
-				Resulting architecture is shown in its folded from {\sf Fig. 6.27: Hexahedria architecture (folded) [93].} \& in its unfolded form [Our unfolded pictorial representation of an RNN shown in {\sf Fig. 6.29: Bi-Axial LSTM architecture [126].} was actually inspired by {\sc Johnson}'s Hexahedria pictorial representation.] in Fig. {\sf Fig. 6.28: Hexahedria architecture (unfolded) [93].}, with 3 axes represented:
-				\begin{enumerate}
-					\item {\it flow axis}, shown horizontally \& directed from left to right, represents flow of (feedforward) computation through architecture, from input layer to output layer
-					\item {\it note axis}, shown vertically \& directed from top to bottom, represents connections between units corresponding to successive notes of each of 2 last (note-oriented) recurrent hidden layers
-					\item {\it time axis}, only in unfolded in {\sf Fig. 6.28}, shown diagonally \& directed from top left to bottom right, represents time steps \& propagation of memory within a same unit of 2 1st (time-oriented) recurrent hidden layers.
-				\end{enumerate}
-				Dataset is constructed by extracting 8 measures long parts from MIDI files from Classical piano MIDI database [104]. Input representation used is piano roll, with pitch represented as MIDI note number. More specific information is added: pitch class, prev note played (as a way to represent a possible hold), how many times a pitch class has been played in prev time step \& beat (position within measure, assuming a 4{\tt/}4 time signature). Output representation is also a piano roll, in order to represent possibility of $> 1$ note at same time. Generation is done in an iterative way (i.e., following iterative feedforward strategy), as for most recurrent networks. System is summarized in {\sf Table 6.15: Hexahedria summary}.
-				\item {\sf6.9.3. \#3 Example: Bi-Axial LSTM Polyphony Symbolic Music Generation Architecture.} {\sc Johnson} recently proposed an evolution of his original Hexahedria architecture, described in Sect. 6.9.2, named Bi-Axial LSTM (or BALSTM) [94].
-				
-				Representation used is piano roll, with note hold \& rest tokens added to vocabulary. Various corpora are used: JSB Chorales dataset, a corpus of 382 4-part chorales by {\sc J. S. Bach} [1]; MuseData library, an electronic classical music library from CCARH in Stanford [76]; Nottingham database, a collection of 1200 folk tunes in ABC notation [53]; \& Classical piano MIDI database [104]. Each dataset is transposed (aligned) into key of C major or C minor.
-				
-				Probability of playing a note depends on 2 types of information:
-				\begin{enumerate}
-					\item all notes at prev time steps -- this is modeled by {\it time-axis module}
-					\item all notes within current time step that have already been generated (order being lowest to highest) -- this is modeled by {\it note-axis module}.
-				\end{enumerate}
-				There is an additional front end layer, named ``Note Octaves'', which transforms each note into a vector of all its possible corresponding octave notes (i.e., an extensional version of pitch classes). Resulting architecture is illustrated in {\sf Fig. 6.29: Bi-Axial LSTM architecture [126]} [This figure comes from description of another system based on Bi-Axial LSTM architecture, named DeepJ, described in Sect. 6.10.3.4.]. ``x2'' represents fact: each module is stacked twice (i.e., has 2 layers).
-				
-				Time-axis module is recurrent in time (as for a classical RNN), LSTM weights being shared across notes in order to gain note transposition invariance. Note-axis module [Note: as opposed to {\sc Johnson}'s 1st architecture (refer to as Hexahedria, introduced in Sect. 6.9.2), which integrates 2-level time-recurrent layers with 2-level note-recurrent layers within a single architecture \& therefore notated as ${\rm LSTM}^{2+2}$, Bi-Axial LSTM architecture explicitly separates each 2-level time-recurrent layers into distinct architecture modules \& is therefore notated as ${\rm LSTM}^2\times2$.] is recurrent in note. For each note input of note-axis module, $\oplus$ represents concatenation of corresponding output from time-axis module with already predicted lower notes. Sampling (into a binary value, by using a coin flip) is applied to each note output probability in order to compute final prediction (whether that note is played or not).
-				
-				As pointed out by Johnson [94], during training phase, as all notes at all time steps are known, training process may be accelerated by processing each layer independently (e.g., on a GPU), by running input through 2 time-axis layers in parallel across all notes, \& using 2 note-axis layers to compute probabilities in parallel across all time steps.
-				
-				Generation phase is sequential for each time step (by following both iterative feedforward strategy \& sampling strategy). An excerpt of music generated is shown in {\sf Fig. 6.30: Example of Bi-Axial LSTM generated music (excerpt) [94].}
-				
-				Bi-Axial LSTM system, summarized in {\sf Table 6.16: Bi-Axial LSTM summary}, has been evaluated \& compared to some other architectures. Author reports noticeably better results with Bi-Axial LSTM, greatest improvements being on MuseData [76] \& Classical piano MIDI database [104] datasets, \& states in [94]: ``It is likely due to fact: those datasets contain many more complex musical structures in different keys, which are an ideal case for a translation-invariant architecture.'' Note: an extension of Bi-Axial LSTM architecture with conditioning, named DeepJ, introduced in Sect. 6.10.3.4.
 			\end{itemize}
-			\item {\sf6.10. Control.} A deep architecture generates musical content matching style learnt from corpus. This capacity of induction from a corpus without any explicit modeling or programming is an important ability, as discussed in Chap. 1 \& also in [51]. However, like a fast car that needs a good steering wheel, control is also needed as musicians usually want to {\it adapt} ideas \& patterns {\it borrowed} from other contexts to their own objective \& context, e.g., transposition to another key, minimizing number of notes, finishing with a given note, etc.
-			\begin{itemize}
-				\item {\sf6.10.1. Dimensions of Control Strategies.} Arbitrary control is a difficult issue for DL architectures \& techniques because neural networks have not been designed to be controlled. In case of Markov chains, they have an operational model on which on can attach constraints to control generation [2 examples: Markov constraints [148] \& factor graphs [147].]. However, neural networks do not offer such an operational entry point \& distributed nature of their representation does not provide a clear relation to structure of content generated. Therefore, most of strategies for controlling DL generation rely on {\it external} intervention at various {\it entry points} (hooks) \& {\it levels}:
-				\begin{enumerate}
-					\item input
-					\item output
-					\item input \& output
-					\item encapsulation{\tt/}reformulation.
-				\end{enumerate}
-				Various control {\it strategies} can be employed:
-				\begin{enumerate}
-					\item sampling
-					\item conditioning
-					\item input manipulation
-					\item reinforcement
-					\item unit selection.
-				\end{enumerate}
-				Some strategies (e.g. sampling, Sect. 6.10.2) are more {\it bottom-up} \& others (e.g. structure imposition, Sect. 6.10.5.1, a unit selection, Sect. 6.10.7) are more {\it top-down}. Lastly, there is also a continuum between {\it partial} solutions (e.g. conditioning{\tt/}parametrization, Sect. 6.10.3) \& more {\it general} approaches (e.g. reinforcement, Sect. 6.10.6).
-				\item {\sf6.10.2. Sampling.} Sampling from a stochastic architecture (e.g. a restricted Boltzmann machine (RBM), Sect. 6.4.2), or from a deterministic architecture (in order to introduce {\it variability}, Sect. 6.6.1), may be an entry point for control if introduce {\it constraints} into sampling process. This is called {\it constrained sampling}, see e.g. C-RBM system in Sect. 6.10.5.1.
-				
-				Constrained sampling is usually implemented by a {\it generate-\&-test} approach, where valid solutions are picked from a set of random samples generated from model. But this could be a very costly process \&, moreover, with no guarantee of success. A key \& difficult issue is therefore how to {\it guide} sampling process in order to fulfill constraints.
-				\begin{enumerate}
-					\item {\sf6.10.2.1. Sampling for Iterative Feedforward Generation.} p. 156
-				\end{enumerate}
-			\end{itemize}
+			\item {\sf6.9.2. \#2 Example: Hexahedria Polyphony Symbolic Music Generation Architecture.} System for polyphonic music proposed by {\sc Johnson} in his Hexahedria blog [93] is hybrid \& original in that it {\it integrates} into same architecture
+			\begin{enumerate}
+				\item a 1st part made of 2 RNNs (actually LSTM) layers, each with 300 hidden units, recurrent over {\it time dimension}, which are in charge of {\it temporal} horizontal aspect, i.e., relations between notes in a sequence. Each layer has connections across time steps, while being independent across notes
+				\item a 2nd part made of 2 other RNN (LSTM) layers, with 100 \& 50 hidden units, recurrent over {\it note dimension}, which are in charge of {\it harmony} vertical aspect, i.e., relations between simultaneous notes within same time step. Each layer is independent between time steps but has transversal directed connections between notes.
+			\end{enumerate}
+			Can notate this architecture as LSTM${}^{2+2}$ in order to highlight 2 successive 2-level recurrent layers, recurrent in 2 different dimensions (time \& note). Architecture is actually a kind of integration within a single architecture [See in Sect. 6.9.3 an alternative architecture, named Bi-Axial LSTM, where each of 2-level time-recurrent layers is encapsulated into a different architectural module.] of RNN-RBM architecture described in prev sect. Main originality is in using recurrent networks not only on time dimension but also on note dimension, more precisely on pitch class dimension. This latter type of recurrence is used to model occurrence of a simultaneous note based on other simultaneous notes. Like for time relation, which is oriented towards future, pitch class relation is oriented towards higher pitch, from C to B.
+			
+			Resulting architecture is shown in its folded from {\sf Fig. 6.27: Hexahedria architecture (folded) [93].} \& in its unfolded form [Our unfolded pictorial representation of an RNN shown in {\sf Fig. 6.29: Bi-Axial LSTM architecture [126].} was actually inspired by {\sc Johnson}'s Hexahedria pictorial representation.] in Fig. {\sf Fig. 6.28: Hexahedria architecture (unfolded) [93].}, with 3 axes represented:
+			\begin{enumerate}
+				\item {\it flow axis}, shown horizontally \& directed from left to right, represents flow of (feedforward) computation through architecture, from input layer to output layer
+				\item {\it note axis}, shown vertically \& directed from top to bottom, represents connections between units corresponding to successive notes of each of 2 last (note-oriented) recurrent hidden layers
+				\item {\it time axis}, only in unfolded in {\sf Fig. 6.28}, shown diagonally \& directed from top left to bottom right, represents time steps \& propagation of memory within a same unit of 2 1st (time-oriented) recurrent hidden layers.
+			\end{enumerate}
+			Dataset is constructed by extracting 8 measures long parts from MIDI files from Classical piano MIDI database [104]. Input representation used is piano roll, with pitch represented as MIDI note number. More specific information is added: pitch class, prev note played (as a way to represent a possible hold), how many times a pitch class has been played in prev time step \& beat (position within measure, assuming a 4{\tt/}4 time signature). Output representation is also a piano roll, in order to represent possibility of $> 1$ note at same time. Generation is done in an iterative way (i.e., following iterative feedforward strategy), as for most recurrent networks. System is summarized in {\sf Table 6.15: Hexahedria summary}.
+			\item {\sf6.9.3. \#3 Example: Bi-Axial LSTM Polyphony Symbolic Music Generation Architecture.} {\sc Johnson} recently proposed an evolution of his original Hexahedria architecture, described in Sect. 6.9.2, named Bi-Axial LSTM (or BALSTM) [94].
+			
+			Representation used is piano roll, with note hold \& rest tokens added to vocabulary. Various corpora are used: JSB Chorales dataset, a corpus of 382 4-part chorales by {\sc J. S. Bach} [1]; MuseData library, an electronic classical music library from CCARH in Stanford [76]; Nottingham database, a collection of 1200 folk tunes in ABC notation [53]; \& Classical piano MIDI database [104]. Each dataset is transposed (aligned) into key of C major or C minor.
+			
+			Probability of playing a note depends on 2 types of information:
+			\begin{enumerate}
+				\item all notes at prev time steps -- this is modeled by {\it time-axis module}
+				\item all notes within current time step that have already been generated (order being lowest to highest) -- this is modeled by {\it note-axis module}.
+			\end{enumerate}
+			There is an additional front end layer, named ``Note Octaves'', which transforms each note into a vector of all its possible corresponding octave notes (i.e., an extensional version of pitch classes). Resulting architecture is illustrated in {\sf Fig. 6.29: Bi-Axial LSTM architecture [126]} [This figure comes from description of another system based on Bi-Axial LSTM architecture, named DeepJ, described in Sect. 6.10.3.4.]. ``x2'' represents fact: each module is stacked twice (i.e., has 2 layers).
+			
+			Time-axis module is recurrent in time (as for a classical RNN), LSTM weights being shared across notes in order to gain note transposition invariance. Note-axis module [Note: as opposed to {\sc Johnson}'s 1st architecture (refer to as Hexahedria, introduced in Sect. 6.9.2), which integrates 2-level time-recurrent layers with 2-level note-recurrent layers within a single architecture \& therefore notated as ${\rm LSTM}^{2+2}$, Bi-Axial LSTM architecture explicitly separates each 2-level time-recurrent layers into distinct architecture modules \& is therefore notated as ${\rm LSTM}^2\times2$.] is recurrent in note. For each note input of note-axis module, $\oplus$ represents concatenation of corresponding output from time-axis module with already predicted lower notes. Sampling (into a binary value, by using a coin flip) is applied to each note output probability in order to compute final prediction (whether that note is played or not).
+			
+			As pointed out by Johnson [94], during training phase, as all notes at all time steps are known, training process may be accelerated by processing each layer independently (e.g., on a GPU), by running input through 2 time-axis layers in parallel across all notes, \& using 2 note-axis layers to compute probabilities in parallel across all time steps.
+			
+			Generation phase is sequential for each time step (by following both iterative feedforward strategy \& sampling strategy). An excerpt of music generated is shown in {\sf Fig. 6.30: Example of Bi-Axial LSTM generated music (excerpt) [94].}
+			
+			Bi-Axial LSTM system, summarized in {\sf Table 6.16: Bi-Axial LSTM summary}, has been evaluated \& compared to some other architectures. Author reports noticeably better results with Bi-Axial LSTM, greatest improvements being on MuseData [76] \& Classical piano MIDI database [104] datasets, \& states in [94]: ``It is likely due to fact: those datasets contain many more complex musical structures in different keys, which are an ideal case for a translation-invariant architecture.'' Note: an extension of Bi-Axial LSTM architecture with conditioning, named DeepJ, introduced in Sect. 6.10.3.4.
 		\end{itemize}
+		\item {\sf6.10. Control.} A deep architecture generates musical content matching style learnt from corpus. This capacity of induction from a corpus without any explicit modeling or programming is an important ability, as discussed in Chap. 1 \& also in [51]. However, like a fast car that needs a good steering wheel, control is also needed as musicians usually want to {\it adapt} ideas \& patterns {\it borrowed} from other contexts to their own objective \& context, e.g., transposition to another key, minimizing number of notes, finishing with a given note, etc.
+		\begin{itemize}
+			\item {\sf6.10.1. Dimensions of Control Strategies.} Arbitrary control is a difficult issue for DL architectures \& techniques because neural networks have not been designed to be controlled. In case of Markov chains, they have an operational model on which on can attach constraints to control generation [2 examples: Markov constraints [148] \& factor graphs [147].]. However, neural networks do not offer such an operational entry point \& distributed nature of their representation does not provide a clear relation to structure of content generated. Therefore, most of strategies for controlling DL generation rely on {\it external} intervention at various {\it entry points} (hooks) \& {\it levels}:
+			\begin{enumerate}
+				\item input
+				\item output
+				\item input \& output
+				\item encapsulation{\tt/}reformulation.
+			\end{enumerate}
+			Various control {\it strategies} can be employed:
+			\begin{enumerate}
+				\item sampling
+				\item conditioning
+				\item input manipulation
+				\item reinforcement
+				\item unit selection.
+			\end{enumerate}
+			Some strategies (e.g. sampling, Sect. 6.10.2) are more {\it bottom-up} \& others (e.g. structure imposition, Sect. 6.10.5.1, a unit selection, Sect. 6.10.7) are more {\it top-down}. Lastly, there is also a continuum between {\it partial} solutions (e.g. conditioning{\tt/}parametrization, Sect. 6.10.3) \& more {\it general} approaches (e.g. reinforcement, Sect. 6.10.6).
+			\item {\sf6.10.2. Sampling.} Sampling from a stochastic architecture (e.g. a restricted Boltzmann machine (RBM), Sect. 6.4.2), or from a deterministic architecture (in order to introduce {\it variability}, Sect. 6.6.1), may be an entry point for control if introduce {\it constraints} into sampling process. This is called {\it constrained sampling}, see e.g. C-RBM system in Sect. 6.10.5.1.
+			
+			Constrained sampling is usually implemented by a {\it generate-\&-test} approach, where valid solutions are picked from a set of random samples generated from model. But this could be a very costly process \&, moreover, with no guarantee of success. A key \& difficult issue is therefore how to {\it guide} sampling process in order to fulfill constraints.
+			\begin{itemize}
+				\item {\sf6.10.2.1. Sampling for Iterative Feedforward Generation.} In case of an iterative feedforward strategy on a recurrent network, some refinements in sampling produce can be made.
+				
+				In Sect. 6.6.1, introduced technique of sampling softmax output of a recurrent network in order to introduce content variability. However, this may sometimes lead to generation of an unlikely note (with a low probability). Moreover, as noted in [66], generating such a ``wrong'' note can have a cascading effect on remaining of generated sequence.
+				
+				A counter measure consist in adjusting a learnt RNN model (conditional probability distribution $P(s_t|s_{< t})$, as defined in Sect. 5.8) by not considering notes with a probability under a certain threshold. New model, with a probability distribution $P_{\rm threshold}(s_t|s_{< t})$, is defined in
+				\begin{equation*}
+					P_{\rm threshold}(s_t|s_{< t})\coloneqq\left\{\begin{split}
+						&0&&\mbox{if }\frac{P(s_t|s_{< t})}{\max_{s_t} P(s_t|s_{< t})} < {\rm threshold},\\
+						&\frac{P(s_t|s_{< t})}{z}&&\mbox{otherwise}.
+					\end{split}\right.
+				\end{equation*}
+				\begin{enumerate}
+					\item $\max_{s_t} P(s_t|s_{< t})$: note maximum probability
+					\item {\it threshold}: threshold hyperparameter
+					\item $z$: a normalization constant.
+				\end{enumerate}
+				A slightly more sophisticated version interpolates between original distribution $P(s_t|s_{<t})$ \& $\arg\max_{s_t'} P(s_t'|s_{<t})$ deterministic variant (Sect. 6.6.1), with some temperature user control hyperparameter (see more details in [66, Sect. 4.1.1.3]).
+				
+				This technique will be further generalized \& combined with conditioning strategy in order to control generation of notes at specific positions via positional constraints. This will be exemplified by Anticipation-RNN system to be introduced in Sect. 6.10.3.5.
+				\item {\sf6.10.2.2. Sampling for Incremental Generation.} In case of an incremental generation (introduced in Sect. 6.14), user may select
+				\begin{enumerate}
+					\item on which part (e.g., a given part of a melody \&{\tt/}or a given voice) sampling will occur (or reoccur),
+					\item interval of possible values on which sampling will occur.
+				\end{enumerate}
+				In case of DeepBach system (introduced in Sect. 6.15.2), this will be basis for introducing user control on generation, notably to regenerate only some parts of a music, to restrict note range, \& to impose some basic rhythm.
+				\item {\sf6.10.2.3. Sampling for Variational Decoder Feedforward Generation.} Another interesting case: use of sampling for {\it generative models}, e.g. variational autoencoders (VAEs) \& generative adversarial networks (GANs), introduced in Sect. 6.10.2.4. Some nice control of sampling, e.g., to produce an interpolation, averaging or attribute modification, will produce meaningful variations in content generated by decoder feedforward strategy. Moreover, as has been discussed in Sect. 5.6.2, a variational autoencoder (VAE) is interesting for its ability for controlling generation over significant dimensions that have been learnt.
+				\begin{example}[VRAE Video Game Melody Symbolic Music Generation System]
+					In [49], {\sc Fabius \& van Amersfoort} propose extension of RNN Encoder-Decoder architecture to case of a variational autoencoder (VAE), which is therefore named a variational recurrent autoencoder (VRAE). Both encoder \& decoder encapsulate an RNN (actually an LSTM), as has been explained in Sect. 5.13.3. In terms of strategy, VRAE combines iterative feedforward strategy with decoder feedforward strategy \& sampling strategy.
+					
+					Corpus used in experiment is a set of MIDI files of 8 video game songs from 1980s \& 1990s (Sponge Bob, Super Mario, Tetris, $\ldots$), which are divided into various shorter parts of 50 time steps. A 1-hot encoding of 49 possible pitches is used (pitches with too few occurrences of notes were not considered). Experiments have been conducted with 2 or 20 hidden layer units (latent variables). Training takes place as for training recurrent networks, i.e. for each input note presenting next note as output.
+					
+					After training phase, latent space vector can be sampled \& used by RNN encapsulated within decoder to generate iteratively a melody. This could be done by random sampling or also by interpolating between values of latent variables corresponding to different songs that have been learnt, creating a sort of ``medley'' of these songs. {\sf Fig. 6.31: Visualization of VRAE latent space encoded data. Extended from [49].} visualizes organization of encoded data in latent space, each color representing data points from 1 song. Result is positive, but low musical quality of corpus hampers a careful evaluation. VRAE system is summarized in {\sf Table 6.17: VRAE summary}.
+				\end{example}
+				
+				\begin{example}[GLSR-VAE Melody Symbolic Music Generation System]
+					Architecture proposed by {\sc Hadjeres \& Nielsen} in [68] is based on a variational autoencoder (VAE) architecture (Sect. 5.6.2), but it proposes an improvement in control of variation in generation, named {\it geodesic latent space regularization} (GLSR), with a system named GLSR-VAE.
+					
+					Starting point: a straight line between 2 points in latent space will not necessarily produce \emph{best} interpolation in generated content domain space. Idea: introduce a regularization to relate variations in latent space to variations in attributes of decoded elements. Details of definition of added cost term may be found in [68].
+					
+					Experiment consists in generating chorale melodies in style of {\sc J. S. Bach}. Dataset comprises monophonic soprano voices from {\sc J. S. Bach} chorales corpus [5].
+					
+					GLSR-VAE shares principle of representation initiated by DeepBach system (Sect. 6.14.2), i.e.
+					\begin{enumerate}
+						\item 1-hot encoding of a note
+						\item with addition to vocabulary of hold symbol \verb|__| \& rest symbol to specify, resp., a note repetition \& a rest (Sect. 4.11.7)
+						\item using names of notes (with no enharmony, e.g., $\sharp$ \& G$\flat$ are considered to be different, Sect. 4.9.2).
+					\end{enumerate}
+				\end{example}
+				Quantization is at level of a 16th note. Latent variable space is set to 12 dimensions (12 latent variables).
+				
+				In experiments conducted, regularization is executed on a 1st dimension which has been found (Sect. 5.6.2) to represent number of notes (named $z_1$). {\sf Fig. 6.32: Visualization of GLSR-VAE latent space encoded data [68]: With \& Without geodesic latent space regularization} shows organization of encoded data in latent space, with number of notes $z_1$ being abscissa axis, with from left to right an effective progressive increase in number of notes (shown with scales of colors). {\sf Fig. 6.33: Examples of 2 measures long melodies (separated by double bar lines) generated by GLSR-VAE [68].} shows examples of melodies generated (each 2 measures long, separated by double bar lines) while increasing $z_1$, showing a progressive correlated densification of melodies generated.
+				
+				GLSR-VAE is summarized in {\sf Table 6.18: GLSR-VAE summary}. More examples of sampling from variational autoencoders are described in Sect. 6.12.1.
+				\item {\sf6.10.2.4. Sampling for Adversarial Generation.} Another example of a generative model is a generative adversarial networks (GAN) architecture. In such an architecture, after having trained generator in an adversarial way, generation of content is done by sampling latent random variables.
+				\begin{example}[Mogren's C-RNN-GAN Classical Polyphony Symbolic Music Generation System]
+					Objective of Mogren's C-RNN-GAN [134] system: generation of single voice polyphonic music. Representation chosen is inspired by MIDI \& models each musical event (note) via 4 attributes: duration, pitch, intensity \& time elapsed since prev event, each attribute being encoded as a real value scalar. This allows representation of simultaneous notes (in practice up to 3). Musical genre of corpus is classical music, retrieved in MIDI format from Web \& contains 3697 pieces from 160 composers.
+					
+					C-RNN-GAN is based on a generative adversarial networks (GAN) architecture, with both generator \& discriminator being recurrent networks [This generative GAN architecture encapsulates 2 recurrent networks, in same spirit that generative VRAE variational autoencoder architecture encapsulates 2 recurrent network as explained in Sect. 6.10.2.3.], more precisely each having 2 LSTM layers with 350 units each. A specificity: discriminator (but not generator) has a bidierctional recurrent architecture, in order to take context from both past \& future for its decisions. Architecture is shown in {\sf Fig. 6.34: C-RNN-GAN architecture [134].} \& summarized in {\sf Table 6.19: C-RNN-GAN summary}.
+					
+					Discriminator is trained, in parallel to generator, to classify if a sequence input is coming from real data. Similar to case of encoder part of RNN Encoder-Decoder, which summarizes a musical sequence into values of hidden layer (see Sect. 5.13.3), bidirectional RNN decoder part of C-RNN-GAN summarizes sequence input into values of 2 hidden layers (forward sequence \& backward sequence) \& then classifies them.
+					
+					An example of generated music is shown in {\sf Fig. 6.35: C-RNN-GAN generated example (excerpt) [134]}. Author conducted a number of measurements on generated music. He states: model trained with feature matching [A regularization technique for improving GANs, see Sect. 5.11.1.] achieves a better trade-off between structure \& surprise than other variants. Note: this is consonant with use of feature matching regularization technique to control creativity in Midinet (introduced in Sect. 6.10.3.3). C-RNN-GAN is summarized in {\sf Table. 6.19}.
+				\end{example}
+				\item {\sf6.10.2.5. Sampling for Other Generation Strategies.} Sampling may also be combined with other strategies for content generation, as e.g.
+				\begin{enumerate}
+					\item {\it Conditioning}, as a way to {\it parameterize} generation with constraints, in Sect. 6.10.3.5, or
+					\item {\it Input manipulation}, as a way to {\it correct} manipulation performed in order to {\it realign} samples with learnt distribution, in Sect. 6.10.5.
+				\end{enumerate}
+			\end{itemize}
+			\item {\sf6.10.3. Conditioning.} Idea of {\it conditioning} (sometimes also named {\it conditional architecture}): condition architecture on some extra information, which could be arbitrary, e.g., a class label or data from other modalities. E.g.
+			\begin{itemize}
+				\item a {\it bass line} or a {\it beat structure}, in rhythm generation architecture (Sect. 6.10.3.1)
+				\item a {\it chord progression}, in MidiNet architecture (Sect. 6.10.3.3)
+				\item {\it previously generated note}, in VRASH architecture (Sect. 6.10.3.6)
+				\item some {\it positional constraints on notes}, in Anticipation-RNN architecture (Sect. 6.10.3.5)
+				\item a {\it musical genre} or an {\it instrument}, in WaveNet architecture (Sect. 6.10.3.2)
+				\item a {\it musical style}, in DeepJ architecture (Sect. 6.10.3.4).
+			\end{itemize}
+			In practice, conditioning information is usually fed into architecture as an additional input layer (e.g., see {\sf Fig. 6.38: Example of a rhythm pattern generated with a specific bass line as conditioning input [122].}). This distinction between {\it standard input \& conditioning input} follows a good architectural modularity principle [Note: do not consider conditioning as a strategy because consider: essence of conditioning relates to {\it conditioning architecture}. Generation uses a conventional strategy (e.g., single-step feedforward, iterative feedforward $\ldots$) depending on type of architecture (e.g., feedforward, recurrent $\ldots$).]. Conditioning is a way to have some degree of parameterized control over generation process.
+			
+			Conditioning layer could be
+			\begin{itemize}
+				\item a simple input layer. E.g.: a tag specifying a musical genre or an instrument in WaveNet system (Sect. 6.10.3.2)
+				\item some output of some architecture, being
+				\begin{enumerate}
+					\item same architecture, as a way to condition architecture on some history [This is close in spirit to a recurrent architecture (RNN).] -- e.g.: Midinet system (Sect. 6.10.3.3) in which history information from prev measure(s) is injected back into architecture, or
+					\item another architecture -- e.g.: rhythm generation system (Sect. 6.10.3.1) in which a feedforward network in charge of bass line \& metrical structure information produces conditioning input, \& DeepJ system (Sect. 6.10.3.4) in which 2 successive transformation layers of a style tag produce an embedding used as conditioning input.
+				\end{enumerate}
+			\end{itemize}
+			If architecture is time-invariant -- i.e., recurrent or convolutional over time -- there are 2 options
+			\begin{itemize}
+				\item {\it global conditioning}: if conditioning input is shared for all time steps, or
+				\item {\it local conditioning}: if conditioning input is specific to each time step.
+			\end{itemize}
+			WaveNet architecture, which is convolutional over time (Sect. 5.9.5), offers 2 options, as analyzed in Sect. 6.10.3.2.
+			\begin{itemize}
+				\item {\sf6.10.3.1. \#1 Example: Rhythm Symbolic Music Generation System.}
+				\item {\sf6.10.3.2. \#2 Example: WaveNet Speech \& Music Audio Generation System.}
+				\item {\sf6.10.3.3. \#3 Example: MidiNet Pop Music Melody Symbolic Music Generation System.}
+			\end{itemize}
+			\item {\sf6.10.4. Input Manipulation.}
+			\item {\sf6.10.5. Input Manipulation \& Sampling.}
+			\item {\sf6.10.6. Reinforcement.}
+			\item {\sf6.10.7. Unit Selection.}
+		\end{itemize}
+		\item {\sf6.11. Style Transfer.}
+		\item {\sf6.12. Structure.}
+		\item {\sf6.13. Originality.}
 	\end{itemize}
 	\item {\sf7. Analysis.}
 	\item {\sf8. Discussion \& Conclusion.}

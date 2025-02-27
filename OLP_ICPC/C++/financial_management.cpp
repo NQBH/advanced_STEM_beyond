@@ -1,3 +1,4 @@
+// source: Wu_Wang2016
 #include<iostream>
 using namespace std;
 int main() {
@@ -10,3 +11,5 @@ int main() {
 	printf("$%.2f", avg);
 	return 0;
 }
+// nqbh@nqbh-msi:~/advanced_STEM_beyond/OLP_ICPC/C++$ g++ -O2 -Wall financial_management.cpp -o financial_management
+// nqbh@nqbh-msi:~/advanced_STEM_beyond/OLP_ICPC/C++$ ./financial_management < financial_management.inp > financial_management.out

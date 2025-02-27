@@ -8124,10 +8124,100 @@ This book series intends to publish monographs, textbooks \& edited books with a
 			\begin{itemize}
 				\item {\it depth}: number of filters used
 				\item {\it stride}: number of pixels by which slide filter matrix over input matrix
-				\item {\it0-padding}: padding of input matrix with 0s around its border.
+				\item {\it0-padding}: padding of input matrix with 0s around its border [0-padding allows mapping of filter up to borders of image. It also avoids shrinking representation, which otherwise would be problematic when using multiple consecutive convolutional layers [62, Sect. 9.5].].
 			\end{itemize}
-			\item {\sf5.9.2. Stages.}
+			An example is illustrated in {\sf Fig. 5.35: Convolution, filter \& feature map. Inspired by {\sc Karn}'s DS blog post [96].} with some simple settings: depth $= 1$, stride $= 1$ \& no 0-padding. Various filter matrices can be used with different objectives, e.g. detection of different features (e.g., edges or curves) or other operations e.g. sharpening or blurring.
+			
+			Parameter sharing used by convolution (because of shared fixed filter) brings important property of {\it equivariance} to translation, i.e. a motif in an image can be detected independently of its location [62, Chap. 9].
+			\item {\sf5.9.2. Stages.} A convolution usually consists of 3 successive {\it stages}:
+			\begin{itemize}
+				\item a {\it convolution stage}, as described in Sect. 5.9.1
+				\item a {\it nonlinear rectification stage}, sometimes named detector stage, which applies a nonlinear operation, usually ReLU
+				\item a {\it pooling stage}, also named {\it subsampling}, to reduce dimensionality.
+			\end{itemize}
+			\item {\sf5.9.3. Pooling.} Motivation for {\it pooling}: reduce dimensionality of each feature map while retaining significant information. Operations used for pooling are, e.g., max, average \& sum. In addition to reducing dimensionality of data, pooling brings important property of {\it invariance} to small transformations, distortions \& translations in input image. This provides an overall robustness to processing [96]. Like convolution, pooling has hyperparameters to control process. A simple example of max pooling with stride $= 2$ is illustrated in {\sf Fig. 5.36: Pooling. Inspired by {\sc Karn}'s DS blog post [96]}.
+			\item {\sf5.9.4. Multilayer Convolutional Architecture.} A typical example of a convolutional architecture with successive layers -- each one including 3 stages of convolution, nonlinearity \& pooling -- is illustrated in {\sf Fig. 5.37: Convolutional DNN architecture. Inspired by {\sc Karn}'s DS blog post [96]}. Final layer is a fully connected layer, like in standard feedforward networks, \& typically ends up in a softmax in order to classify image types.
+			
+			Note: a convolution is an {\it architectural pattern}, as it may be applied internally to almost any architecture listed.
+			\item {\sf5.9.5. Convolution over Time.} For musical applications, it could be interesting to apply convolutions to {\it time dimension} [This approach is actually basis for {\it time-delay neural networks} [107].], in order to model temporally invariant motives. Therefore, convolution operation will share parameters across time [62, p. 374], like for RNNs [Indeed, RNNs are invariant in time, as remarked in [93].]. However, sharing of parameters is {\it shallow}, as it applies only to a small number of temporal neighboring members of input, in contrast to RNNs that share parameters in a {\it deep} way, for {\it all} time steps. RNNs are indeed much more frequent than convolutional networks for musical applications.
+			
+			I.e., have noticed recent occurrence of some convolutional architectures as an alternative to RNN architectures, following pioneering WaveNet architecture for audio [193], described in Sect. 6.10.3.2. WaveNet presents a stack of causal convolutional layers, somewhat analogous to recurrent layers. Another example: C-RBM architecture, described in Sect. 6.10.5.1.
+			
+			If consider {\it pitch dimension}, in most cases pitch intervals are not considered invariants, \& thus convolutions should not a {\it priori} apply to pitch dimension [An example: {\sc Johnson}'s architecture [93], analyzed in Sect. 6.9.2, which explicitly looks for invariance in pitch (although this seems to be a rare choice) \& accordingly uses an RNN over pitch dimension.].
+			
+			This issue of convolution vs. recurrence (recurrent networks) for musical applications will be further discussed in Sect. 8.2.
 		\end{itemize}
+		\item {\sf5.10. Conditioning Architectural Pattern.} Idea of a {\it conditioning} (sometimes also named {\it conditional}) architecture: parameterize architecture based on some extra {\it conditioning} information, which could be arbitrary, e.g., a class label or data from other modalities. Objective: have some control over data generation process. Examples of conditioning information:
+		\begin{itemize}
+			\item a {\it bass line} or a {\it beat structure} in rhythm generation system to be described in Sect. 6.10.3.1
+			\item a {\it chord progression} in MidiNet system to be described in Sect. 6.10.3.3
+			\item some {\it positional constraints on notes} in Anticipation-RNN system to be described in Sect. 6.10.3.5
+			\item a {\it musical genre} or an {\it instrument} in WaveNet system to be described in Sect. 6.10.3.2.
+		\end{itemize}
+		In practice, conditioning information is usually fed into architecture as an additional \& specific input layer, shown in purple in {\sf Fig. 5.38: Conditioning architecture}.
+		
+		Conditioning layer could be
+		\begin{itemize}
+			\item a simple input layer. E.g.: a tag specifying a musical genre or an instrument in WaveNet system to be described in Sect. 6.10.3.2; or
+			\item some output of some architecture, being
+			\begin{itemize}
+				\item same architecture, as a way to condition architecture on some history [This is close in spirit to a recurrent architecture (RNN).]. E.g.: MidiNet system to be described in Sect. 6.10.3.3, in which history information from prev measure(s) is injected back into architecture; or
+				\item another architecture. E.g.: DeepJ system to be described in Sect. 6.10.3.4, in which 2 successive transformation layers of a style tag produce an embedding used as conditioning input.
+			\end{itemize}
+			In case of {\it conditioning} a time-invariant architecture -- recurrent or convolutional over time -- there are 2 options
+			\begin{itemize}
+				\item {\it global conditioning}: if conditioning input is shared for all time steps
+				\item {\it local conditioning}: if conditioning input is specific to each time step.
+			\end{itemize}
+			WaveNet architecture, which is convolutional over time (Sect. 5.9.5), offers 2 options, as analyzed in Sect. 6.10.3.2.
+		\end{itemize}
+		\item {\sf5.11. Generative Adversarial Networks (GAN) Architectural Pattern.} A significant conceptual \& technical innovation was introduced in 2014 by Goodfellow et al. with concept of {\it generative adversarial networks} (GAN) [63]. Idea: train simultaneously 2 neural networks [In original version, 2 feedforward networks are used. But other networks may be used, e.g., recurrent networks in C-RNN-GAN architecture (Sect. 6.10.2.4) \& convolutional feedforward networks in MidiNet architecture (Sect. 6.10.3.3).], as illustrated in {\sf Fig. 5.39: Generative adversarial networks (GAN) architecture [157]}:
+		\begin{itemize}
+			\item a {\it generative model} (or {\it generator}) G, whose objective: transform a random noise vector into a synthetic (faked) {\it sample}, which resembles real samples drawn from a distribution of real images
+			\item a {\it discriminative model} (or {\it discriminator}) D, which estimates probability that a sample came from real data rather than from generator $G$ [In some ways, a GAN represents an automated Turing test setting, with discriminator being evaluator \& generator being hidden actor.].
+		\end{itemize}
+		This corresponds to a {\it minimax} 2-player game, with 1 unique (final) solution [It corresponds to Nash equilibrium of game. In game theory, intuition of a Nash equilibrium is a solution where no player can benefit by changing strategies while other plays keep theirs unchanged, see, e.g., [144].]: $G$ recovers training data distribution \& $D$ outputs $\frac{1}{2}$ everywhere. Generator is then able to produce user-appealing synthetic samples from noise vectors. Discriminator may then be discarded.
+		
+		Minimax relationship is defined in (5.30)
+		\begin{equation*}
+			\min_G\max_D V(G,D) = \mathbb{E}_{x\sim P_{\rm Data}}[\log D(x)] + \mathbb{E}_{z\sim P_z(z)}[\log(1 - D(G(z)))].
+		\end{equation*}
+		\begin{itemize}
+			\item $D(x)$ represents probability that $x$ came from real data (i.e., {\it correct} estimation by $D$)
+			\item $\mathbb{E}_{x\sim P_{\rm Data}}[\log D(x)]$: expectation of $\log D(x)$ w.r.t. $x$ being drawn from real data.
+		\end{itemize}
+		It is thus D's objective to estimate correctly {\it real data}, i.e. maximize $\mathbb{E}_{x\sim P_{\rm Data}}[\log D(x)]$ term.
+		\begin{itemize}
+			\item $D(G(z))$ represents probability that $G(z)$ came from real data (i.e., {\it uncorrect} estimation by $D$)
+			\item $1 - D(G(z))$ represents probability that $G(z)$ did not come from real data, i.e., that it was generated by $G$ (i.e., {\it correct} estimation by $D$)
+			\item $\mathbb{E}_{z\sim P_z(z)}[\log(1 - D(G(z)))]$: expectation of $\log(1 - D(G(z)))$ w.r.t. $G(z)$ being produced by G from $z$ random noise.
+		\end{itemize}
+		It is thus also D's objective to estimate correctly {\it synthetic data}, i.e., maximize $\mathbb{E}_{z\sim P_z(z)}[\log(1 - D(G(z)))]$ term.
+		
+		In summary, it is D's objective to estimate correctly both {\it real data \& synthetic data} \& thus to maximize both $\mathbb{E}_{x\sim P_{\rm Data}}[\log D(x)]$ \& $\mathbb{E}_{z\sim P_z(z)}[\log(1 - D(G(z)))]$ terms, i.e. to maximize $V(G,D)$. On opposite side, G's objective: minimize $V(G,D)$. Actual training is organized with successive turns between training of generator \& training of discriminator.
+		
+		1 of initial motivations for GAN was for classification tasks to prevent adversaries from manipulating deep networks to force misclassification of inputs (this vulnerability is analyzed in detail in [182]). However, from perspective of content generation (which is our interest), GAN improves generation of samples, which became hard to distinguish from actual corpus examples.
+		
+		To generate music, random noise is used as an input to generator $G$, whose goal: transform random noises into objective, e.g., melodies [In that respect, generation from a GAN has some similarity with generation by decoding hidden layer variables of a variational autoencoder (Sect. 5.6.2), as in both cases generation is done from latent variables. An important difference: by construction, a variational encoder is representative of whole dataset that it has learnt, i.e., for any example in dataset, there is at least 1 setting of latent variables which causes model to generate sth very similar to that example [37]. A GAN does not offer such guarantee \& does not offer a smooth generation control interface over latent space (by, e.g., interpolation or attribute arithmetics, see Sect. 5.6.2), but it can usually generate better quality (better resolution) images than a variational autoencoder [124]. Note: resolution limitation for a VAE may be a problem too for audio generation of music, but it appears {\it a priori} less a direct concern in case of symbolic generation of music.]. An example of us of GAN for generating music: MidiNet system, described in Sect. 6.10.3.3.
+		\begin{itemize}
+			\item {\sf5.11.1. Challenges.} Training based on a minimax objective is known to be challenging to optimize [210], with a risk of nonconverging oscillations. Thus, careful selection of model \& its hyperparameters is important [62, p. 701]. There are also some newer techniques, e.g. {\it feature matching} [Feature matching changes objective for generator (\& accordingly its cost function) to minimize statistical difference between features of real data \& generated samples, see more details in [168].], among others, to improve training [168].
+			
+			A recent proposed alternative both to GANs \& to autoencoders is {\it generative latent optimization} (GLO) [9]. It is an approach to train a generator without need to learn a discriminator, by learning a mapping from noise vectors to images. GLO can thus be viewed both as an encoder-less autoencoder, \& as a discriminator-less GAN. It can also be used, as for a VAE (variational autoencoder) introduced in Sect. 5.6.2, to control generation by exploring latent space. GLO has been tested on images but not yet on music \& needs more evaluation.
+		\end{itemize}
+		\item {\sf5.12. Reinforcement Learning.} {\it Reinforcement learning (RL)} may appear at 1st glance to be outside of our interest in DL architectures, as it has distinct objectives \& models. However, 2 approaches have recently been combined. 1st move, in 2013, was to use DL architectures to efficiently implement reinforcement learning techniques, resulting in {\it deep reinforcement learning} [133]. 2nd move, in 2016, is directly related to our concerns, as it explored use of reinforcement learning to control music generation, resulting in RL-Tuner architecture [92] to be described in Sect. 6.10.6.1.
+		
+		Start with a reminder of basic concepts of reinforcement learning, illustrated in {\sf Fig. 5.40: Reinforcement learning – conceptual model [39]}
+		\begin{itemize}
+			\item an {\it agent} within an {\it environment} sequentially selects \& performs {\it actions} in an environment
+			\item where each action performed brings it to a new {\it state}
+			\item agent receives a {\it reward (reinforcement signal)}, which represents {\it fitness} of action to environment (current situation)
+			\item objective of agent being to learn a near optimal {\it policy} (sequence of actions) in order to maximize its {\it cumulated rewards} (named its {\it gain}).
+		\end{itemize}
+		Note: agent does not know beforehand model of environment \& reward, thus it needs to balance between {\it exploring} to learn more \& {\it exploiting} (what it has learned) in order to improve its gain -- this is {\it exploration exploitation dilemma}.
+		
+		There are many approaches \& algorithms for reinforcement learning (for a more detailed presentation, refer, e.g., [95]). Among them, {\it$Q$-learning} [202] turned out to be a relatively simple \& efficient method, \& thus is widely used. Name comes from objective to learn (estimate) $Q$ function $Q^*(s,a)$, which represents expected gain for a given pair $(s,a)$, where $s$ is a state \& $a$ an action, for an agent choosing actions optimally (i.e., by following optimal policy $\pi^*$). Agent will manage a table, called {\it$Q$-table}, with values corresponding to all possible pairs. As agent explores environment, table is incrementally updated, with estimates becoming more accurate.
+		
+		A recent combination of reinforcement learning (more specifically Q-learning) \& DL, named {\it deep reinforcement learning}, has been proposed [133] in order to make learning more efficient. As Q-table could be huge [Because of high combinatorial natural when number of possible states \& possible actions is huge.]
 	\end{itemize}
 	\item {\sf6. Challenge \& Strategy.} Core of this book. This chap will analyze in depth how to apply architectures presented in Chap. 5 to learn \& generate music. 1st start with a naive, straightforward strategy, using basic prediction task of a neural network to generate an accompaniment for a melody.
 	

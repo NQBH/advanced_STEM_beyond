@@ -1,6 +1,5 @@
 #include <iostream>
 using namespace std;
-
 long long diff = 1e18;
 long long get_sum(int a, int b) {
 	return (a*1LL + b*1LL) * (b*1LL - a*1LL + 1)/2;

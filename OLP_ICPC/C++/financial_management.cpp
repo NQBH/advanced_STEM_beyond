@@ -1,5 +1,4 @@
-// source: [Wu_Wang2016, p. 5]
-#include<iostream>
+#include <iostream>
 using namespace std;
 int main() {
 	double avg, sum = 0.0, a[12] = {0};
@@ -11,5 +10,3 @@ int main() {
 	printf("$%.2f", avg); // output average monthly
 	return 0;
 }
-// nqbh@nqbh-msi:~/advanced_STEM_beyond/OLP_ICPC/C++$ g++ -O2 -Wall financial_management.cpp -o financial_management
-// nqbh@nqbh-msi:~/advanced_STEM_beyond/OLP_ICPC/C++$ ./financial_management < financial_management.inp > financial_management.out

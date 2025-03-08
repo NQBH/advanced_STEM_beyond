@@ -1,5 +1,4 @@
-// source: [Wu_Wang2016, pp. 6--7]
-#include<iostream>
+#include <iostream>
 using namespace std;
 int main() {
 	int i, j, n, count, a[20];
@@ -22,5 +21,3 @@ int main() {
 	}
 	return 0;
 }
-// nqbh@nqbh-msi:~/advanced_STEM_beyond/OLP_ICPC/C++$ g++ -O2 -Wall double.cpp -o double
-// nqbh@nqbh-msi:~/advanced_STEM_beyond/OLP_ICPC/C++$ ./double < double.inp > double.out

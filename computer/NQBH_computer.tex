@@ -584,7 +584,7 @@ Want to kill it at your job interview in tech industry? Want to win that coding 
 	\end{itemize}
 	
 	\begin{itemize}
-		\item {\sf16.1. Introduction.} 
+		\item {\sf16.1. Introduction.} At beginning of this book, created a C++ solution to {\it Weird Algorithm} problem from CSES Problem Set. Now solve problem in Python.
 		
 		When solved problem in C++, had to carefully select type of variable $n$ so that it is large enough to hold all intermediate values during calculation. In Python, do not have to think about this because built-in Python integers can contain arbitrary large values. Other than that, there are no big differences when implementing solution in C++ \& Python.
 		\begin{itemize}
@@ -597,6 +597,446 @@ Want to kill it at your job interview in tech industry? Want to win that coding 
 			\begin{verbatim}
 				t = input().split()
 			\end{verbatim}
+			Using above code, each value in list is a string. To convert each value to an integer, can use following code which uses list comprehension syntax to construct a list of integers:
+			\begin{verbatim}
+				t = [int(x) for x in input().split()]
+			\end{verbatim}
+			Another approach: use {\tt map} function for integer conversion \& {\tt list} function to create a list from a map object.
+			\begin{verbatim}
+				t = list(map(int, input().split()))
+			\end{verbatim}
+			{\tt print} function writes a line to standard output. E.g., code writes 3 lines:
+			\begin{verbatim}
+				print(a)
+				print(b)
+				print(c)
+			\end{verbatim}
+			Code writes each value on same line, separated by spaces:
+			\begin{verbatim}
+				print(a, b, c)
+			\end{verbatim}
+			{\tt end, sep} parameters can be used to change newline \& separator strings when {\tt print} function. By default, {\tt end} is \verb|"\n"| \& {\tt sep} is {\tt" "}. Code writes values on same line, separated by spaces:
+			\begin{verbatim}
+				print(a, end=" ")
+				print(b, end=" ")
+				print(c)
+			\end{verbatim}
+			Code writes each value on a separate line:
+			\begin{verbatim}
+				print(a, b, c, sep="\n")
+			\end{verbatim}
+			\item {\sf16.1.2. Working with Numbers.} In Python, built-in integers can contain arbitrarily large values. E.g., following code prints integer $1337^{13}$:
+			\begin{verbatim}
+				print(1337**13)
+			\end{verbatim}
+			Output of code:
+			\begin{verbatim}
+				43622273306113847375878664912656177214297
+			\end{verbatim}
+			Thus, convenient to use Python when necessary to handle integers that do not fit into 64 bit or 128 bit integer types in C++. [However, in some recent Python versions, conversions between large integers \& their string representations are restricted. E.g., not possible by default to print an integer that has $> 4300$ digits. Purpose of this change: prevent denial of service attacks in Python applications, because such conversions are slow. \verb|sys.set_int_max_str_digits| function can be used to increase limit.]
+			
+			Operator {\tt/} always produces a floating point number, even if both numbers are integers. Operator {\tt//} can be used for integer division.
+			\begin{verbatim}
+				print(3 / 2) # 1.5
+				print(3 // 2) # 1
+			\end{verbatim}
+			{\tt pow} function can be used to efficiently calculate value of an expression $a^b\mod c$. E.g., code prints value of $999^{10^>6}\mod123$.
+			\begin{verbatim}
+				print(pow(999, 10**6, 123)) # 42
+			\end{verbatim}
+			Module {\tt math} contains some useful functions for integer calculations. [Some of these functions are not available in older Python versions.] Functions {\tt gcd, lcm} calculate greatest common divisor \& lowest common multiple for a list of numbers. Function {\tt factorial} returns factorial of a number, \& function {\tt comb} can be used to calculate binomial coefficients.
+			\begin{verbatim}
+				import math
+				print(math.gcd(8, 12)) # 4
+				print(math.gcd(8, 12, 6)) # 2
+				print(math.lcm(8, 12)) # 24
+				print(math.factorial(5)) # 120
+				print(math.comb(5, 3)) # 10
+			\end{verbatim}
+			Module {\tt fractions} provides a way to perform exact calculations with fractions. E.g., code creates fractions $\frac{1}{2}$ \& $\frac{5}{7}$:
+			\begin{verbatim}
+				from fractions import Fraction
+				a = Fraction(1, 2)
+				b = Fraction(5, 7)
+				print(a) # 1/2
+				print(b) # 5/7
+				print(float(a)) # 0.5
+				print(float(b)) # 0.7142857142857143
+			\end{verbatim}
+			Fractions are automatically shown in reduced form:
+			\begin{verbatim}
+				print(Fraction(1, 2)) # 1/2
+				print(Fraction(2, 4)) # 1/2
+				print(Fraction(3, 6)) # 1/2
+			\end{verbatim}
+			Mathematical operators can be used for calculating with fractions:
+			\begin{verbatim}
+				a = Fraction(1, 2)
+				b = Fraction(5, 7)
+				print(a + b) # 17/14
+				print(a * b) # 5/14
+				print(a < b) # True
+			\end{verbatim}
+			\item {\sf16.1.3. Generating Combinations.} Module {\tt itertools} can be used to generate combinations of objects. Module includes following functions:
+			\begin{itemize}
+				\item Function {\tt permutations} generate all permutations of input sequence. E.g., permutations of $[1,2,3]$ are $(1,2,3),(1,3,2),(2,1,3),(2,3,1),(3,1,2),(3,2,1)$.
+				\item Function {\tt combinations} generates all subsequences of input sequence that have $k$ elements. E.g., when input sequence is $[1,2,3]$ \& $k = 2$, combinations are $(1,2),(1,3),(2,3)$. Each subsequence corresponds to a subset of size $k$.
+				\item Function {\tt product} generates all sequences of length $k$ where each element comes from input sequence. E.g., when input sequence if $[1,2,3]$ \& $k = 2$, sequences are $(1,1),(1,2),(1,3),(2,1),(2,2),(2,3),(3,1),(3,2),(3,3)$.
+				\item Function \verb|combinations_with_replacements| generates all sequences of length $k$ where each element comes from input sequence \& order of elements is same as input sequence. E.g., when input sequence is $[1,2,3]$ \& $k = 2$, combinations are $(1,1),(1,2),(1,3),(2,2),(2,3),(3,3)$.
+			\end{itemize}
+			Code demonstrates how to use functions:
+			\begin{verbatim}
+				import itertools
+				s = [1, 2, 3]
+				k = 2
+				print(list(itertools.permutations(s)))
+				print(list(itertools.combinations(s, k)))
+				print(list(itertools.product(s, repeat=k)))
+				print(list(itertools.combinations_with_replacement(s, k)))
+			\end{verbatim}
+			Output of code:
+			\begin{verbatim}
+				[(1, 2, 3), (1, 3, 2), (2, 1, 3), (2, 3, 1), (3, 1, 2),
+				(3, 2, 1)]
+				[(1, 2), (1, 3), (2, 3)]
+				[(1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3), (3, 1),
+				(3, 2), (3, 3)]
+				[(1, 1), (1, 2), (1, 3), (2, 2), (2, 3), (3, 3)]
+			\end{verbatim}
+		\end{itemize}
+		\item {\sf16.2. Data Structures.} Python standard library has several data structures that are useful in CP. In this sect, discuss some of those data structures \& also highlight some differences between Python \& C++ data structures.
+		
+		1 difference between Python \& C++: in Python, syntax {\tt a = b} only copies reference to data structure \& does not copy contents of data structure like in C++. Code demonstrates this:
+		\begin{verbatim}
+			a = [1, 2, 3]
+			b = a
+			a.append(4)
+			print(a) # [1, 2, 3, 4]
+			print(b) # [1, 2, 3, 4]
+		\end{verbatim}
+		Here variables {\tt a, b} point to same list \& when an element is added through {\tt a}, it will also be visible through {\tt b}.
+		
+		Same applies to function calls: if modify a list given to a function as a parameter, changes will be visible outside function. In following code, function adds a new element to a list that is given as a parameter.
+		\begin{verbatim}
+			def test(x):
+			    x.append(4)
+			a = [1, 2, 3]
+			test(a)
+			print(a) # [1, 2, 3, 4]
+		\end{verbatim}
+		Another difference: Python has 2 types of data structures: mutable \& immutable data structures. Mutable data structures can be modified using methods \& operators but immutable data structures cannot be modified.
+		
+		E.g., a list is a mutable data structure because can use {\tt[]} syntax to modify list:
+		\begin{verbatim}
+			x = [1, 2, 3]
+			x[1] = 5
+			print(x) # [1, 5, 3]
+		\end{verbatim}
+		However, strings \& tuples are immutable \& there are no methods or operators that could be used to modify them. E.g., following code does not work because it is not allowed to modify a string:
+		\begin{verbatim}
+			x = "abc"
+			x[1] = "e" # TypeError
+			print(x)
+		\end{verbatim}
+		\begin{itemize}
+			\item {\sf16.2.1. List Structures.} In Python, a list is a dynamic array where elements can be efficiently added \& removed at end of list. Python list structure corresponds to C++ vector structure.
+			
+			Lists can be created using {\tt[]} syntax. Following code creates a list with 3 elements:
+			\begin{verbatim}
+				t = [1, 2, 3]
+			\end{verbatim}
+			Another way to create a list: use method {\tt append} that adds a new element at end of list:
+			\begin{verbatim}
+				t = []
+				t.append(1)
+				t.append(2)
+				t.append(3)
+				print(t) # [1, 2, 3]
+			\end{verbatim}
+			Method {\tt pop} removes \& returns last element of list:
+			\begin{verbatim}
+				t = [1, 2, 3]
+				print(t.pop()) # 3
+				print(t) # [1, 2]
+			\end{verbatim}
+			Elements of list can be accessed using {\tt[]} syntax:
+			\begin{verbatim}
+				t = [1, 2, 3]
+				print(t[1]) # 2
+				t[1] = 5
+				print(t[1]) # 5
+			\end{verbatim}
+			{\bf Sorting lists.} There are 2 ways to sort a list. 1st way: use {\tt sort} method:
+			\begin{verbatim}
+				t = [3, 2, 1]
+				t.sort()
+				print(t) # [1, 2, 3]
+			\end{verbatim}
+			Another way: use {\tt sorted} function which creates a new sorted list without modifying original list:
+			\begin{verbatim}
+				t = [3, 2, 1]
+				print(sorted(t)) # [1, 2, 3]
+				print(t) # [3, 2, 1]
+			\end{verbatim}
+			{\bf Deques.} Python also has a deque data structure that allows efficient insertion \& deletion of elements both at beginning at end of list. It has 2 special methods {\tt appendleft, popleft} that modify beginning of list.
+			
+			Code shows how a deque can be used:
+			\begin{verbatim}
+				from collections import deque
+				d = deque()
+				d.append(1)
+				d.append(2)
+				d.appendleft(3)
+				print(d) # [3, 1, 2]
+				d.pop()
+				print(d) # [3, 1]
+				d.popleft()
+				print(d) # [1]
+			\end{verbatim}
+			In Python, deques are implemented as linked lists \& not possible to efficiently access their elements using {\tt[]} syntax. This differs from C++ where deques are implemented as dynamic arrays.
+			\item {\sf16.2.2. Hash Structures.} Python has 2 useful data structures that are based on hash tables: a set \& a dictionary. They correspond to C++ \verb|unordered_set, unordered_map| data structures.
+			
+			{\bf Sets.} A set maintains a collection of elements. It provides efficient methods {\tt add, remove} for element insertion \& removal. In addition, operator {\tt in} can be used to efficiently check if a set contains an element.
+			
+			Code shows how to use set data structure:
+			\begin{verbatim}
+				s = set()
+				s.add(1)
+				s.add(2)
+				s.add(3)
+				print(s) # {1, 2, 3}
+				print(2 in s) # True
+				s.remove(2)
+				print(2 in s) # False
+			\end{verbatim}
+			Each element can appear at most once in a set:
+			\begin{verbatim}
+				s = set()
+				s.add(5)
+				s.add(5)
+				s.add(5)
+				print(s) # {5}
+			\end{verbatim}
+			{\bf Dictionaries.} A dictionary consists of key-value pairs which can be efficiently accessed through keys. Dictionaries can be created using \verb|{}| syntax, \& values can be accessed using {\tt[]} syntax.
+			
+			Code shows how to use dictionary data structure:
+			\begin{verbatim}
+				d = {}
+				d["monkey"] = 1
+				d["banana"] = 2
+				d["harpsichord"] = 3
+				print("banana" in d) # True
+				print(d["banana"]) # 2
+			\end{verbatim}
+			Unlike in C++, there are no default values. E.g., following code does not work because dictionary does not have key ``monkey''.
+			\begin{verbatim}
+				d = {}
+				print(d["monkey"]) # KeyError: 'monkey'
+			\end{verbatim}
+			However, there is another data structure {\tt defaultdict} that has default values for missing keys. E.g., can define a dictionary with type {\tt int} that works as follows:
+			\begin{verbatim}
+				from collections import defaultdict
+				d = defaultdict(int)
+				print(d["monkey"]) # 0
+				d["monkey"] += 1
+				print(d["monkey"]) # 1
+			\end{verbatim}
+			Only immutable values, e.g. members, strings \& tuples, can be used as keys in Python sets \& dictionaries. E.g., code does not work because a list is not immutable:
+			\begin{verbatim}
+				s = set()
+				s.add([1, 2, 3]) # TypeError
+			\end{verbatim}			
+			\item {\sf16.2.3. Priority Queues.} Module {\tt heapq} has functions that perform binary heap operations on a list. 1st element of list is minimum element. Function {\tt heappush} adds an element to heap, \& function {\tt heappop} removes \& returns minimum element. Using those functions, can use lists as priority queues.
+			
+			Code shows how functions can be used:
+			\begin{verbatim}
+				from heapq import heappush, heappop
+				q = []
+				heappush(q, 2)
+				heappush(q, 1)
+				heappush(q, 4)
+				heappush(q, 3)
+				print(q[0]) # 1
+				heappop(q)
+				print(q[0]) # 2
+			\end{verbatim}
+			Both functions {\tt heappush, heappop} work in $O(\log n)$ time. In addition, function {\tt heapify} can be used to convert a list to a heap in $O(n)$ time. Function can be used as follows:
+			\begin{verbatim}
+				from heapq import heapify
+				q = [2, 1, 4, 3]
+				heapify(q)
+				print(q) # [1, 2, 4, 3]
+			\end{verbatim}
+		\end{itemize}
+		\item {\sf16.3. Coping Without Binary Search Trees.} Python standard library does not have binary search tree data structures. Thus, there are no equivalents for C++ data structures {\tt set, map} in Python.
+		
+		Using binary search tree data structures, can maintain a set where possible to efficiently find minimum \& maximum elements \& also process queries like ``what is smallest element larger than $x$'' or ``what is largest element smaller than $x$''. In Python, such features are not available in standard library.
+		
+		Fortunately, even if it would seem at 1st glance: a problem requires binary search trees, can often solve problem using an alternative way that only requires tools included in Python standard library, e.g. sorting, hash structures \& priority queues.
+		\begin{itemize}
+			\item {\sf16.3.1. Minimum Queries.} 1st consider situation where would like to use a data structure that has following operations:
+			\begin{itemize}
+				\item add an element to set
+				\item remove an element from set
+				\item find minimum element in set
+			\end{itemize}
+			Turn out: can create such a data structure using 2 Python data structures: a set \& a priority queue. When an element is added, add it to both data structures. When an element is removed, remove it only from set because not possible to remove arbitrary elements from a priority queue.
+			
+			Most interesting operation in data structure is finding minimum element. Priority queue can be used to find minimum element, but it can contain elements that have already been removed. For this reason, as long as minimum element in priority queue is not in set anymore, remove it also from priority queue. Then, when find an element that is also in set, return it.
+			
+			Can implement operations as follows:
+			\begin{verbatim}
+				def add(x):
+				    s.add(x)
+				    heappush(q, x)
+				def remove(x):
+				    s.remove(x)
+				def find_min():
+				    while q[0] not in s:
+				        heappop(q)
+				    return q[0]
+			\end{verbatim} 
+			Using this implementation, \verb|find_min| function may need to remove a large number of elements from priority queue before returning actual minimum element. However, every element that is added to set is removed at most once. For this reason, each function works efficiently on average.
+			
+			Note: previously used as similar trick for implementing Dijkstra's algorithm using a C++ priority queue (Sect. 7.3.2).
+			\item {\sf16.3.2. Example Problem.} While can support minimum \& maximum queries using a combination of a set \& a priority queue, there is no easy way to process queries like ``what is smallest element $> x$''. However, if would need such queries in a problem, there may still be a way to avoid them using an alternative approach.
+			
+			Consider problem from CSES Problem Set:
+			\begin{problem}
+				There are $n$ concert tickets available, each with a certain price. Then, $m$ customers arrive, one after another.
+				
+				Each customer announces the maximum price they are willing to pay for a ticket, \& after this, they will get a ticket with nearest possible price such that it does not exceed the maximum price.
+				\item {\sf Input.} 1st input line contains $n,m\in\mathbb{N}$: number of tickets \& number of customers. The next line contains $n$ integers $h_1,h_2,\ldots,h_n$: the price of each ticket. The last line contains $m$ integers $t_1,t_2,\ldots,t_m$: the maximum price for each customer in the order they arrive.
+				\item {\sf Output.} Print, for each customer, the price that they will pay for their ticket. After this, ticket cannot be purchased again. If a customer cannot get any ticket, print $-1$.
+				\item {\sf Constraints.} $1\le m,n\le 2\cdot10^5$, $1\le h_i,t_i\le10^9$.
+			\end{problem}
+			In C++, could use a {\tt multiset} for solving problem. 1st, could add all ticket prices to set \& then efficiently find ticket price for each customer. To find ticket price, could use \verb|upper_bound| function to find smallest ticket price that is too large \& then choose prev element in set which is desired ticket price.
+			
+			To solve problem in Python, have to design another solution that does not require maintaining a set of ticket prices with efficient queries for finding ticket price for a customer. Turn out: this problem is easier to solve if change order customers are processed \& create an offline solution.
+			
+			Idea: create a list of events. There are 2 types of events: (1) a customer wants to buy a ticket whose price is $\le x$ \& (2) there is a new ticket available with price $x$. Sort list in descending order by ticket price, \& then process events 1 by 1. In addition, maintain a priority queue that contains customers who have already requested a ticket. Customers are sorted by arrival time in priority queue.
+			
+			When process an event of type 1, add customer to priority queue. When process an event of type 2, remove customer with minimum arrival time from priority queue \& give ticket to that customer. If there are no customers in priority queue, nobody will get ticket. After have processed all events, can report ticket price for each customer.
+			
+			There is a linear number of events \& can efficiently process each event using priority queue, which results in an efficient algorithm.
+		\end{itemize}
+		\item {\sf16.4. Recursive Functions.} Consider recursive Python function that computes factorial of $n$:
+		\begin{verbatim}
+			def factorial(n):
+			    if n == 0:
+			        return 1
+			    return factorial(n - 1) * n
+		\end{verbatim}
+		For small numbers, function works fine:
+		\begin{verbatim}
+			print(factorial(0)) # 1
+			print(factorial(2)) # 2
+			print(factorial(5)) # 120
+			print(factorial(9)) # 362880
+		\end{verbatim}
+		However, cannot compute factorial of 1000:
+		\begin{verbatim}
+			print(factorial(1000)) # RecursionError
+		\end{verbatim}
+		Reason for this: maximum recursion depth in Python is quite small by default. Can increase limit by using {\tt sys.setrecursionlimit} functions as follows:
+		\begin{verbatim}
+			import sys
+			sys.setrecursionlimit(5000)
+			print(factorial(1000)) # 402387260077093773543702433923...
+		\end{verbatim}
+		
+		\begin{itemize}
+			\item {\sf16.4.1. Dynamic Programming.} Can often use dynamic programming to make a recursive function efficient. A recursive function that calculates Catalan numbers (Sect. 11.2.2):
+			\begin{verbatim}
+				def catalan(n):
+				    if n == 0:
+				        return 1
+				    s = 0
+				    for i in range(n):
+				        s += catalan(i) * catalan(n - i - 1)
+				    return s
+			\end{verbatim}
+			For small numbers, function works fine:
+			\begin{verbatim}
+				print(catalan(2)) # 2
+				print(catalan(3)) # 5
+				print(catalan(5)) # 42
+			\end{verbatim}
+			However, for larger numbers function is slow because number of recursive calls is too large.
+			\begin{verbatim}
+				print(catalan(100)) # too slow
+			\end{verbatim}
+			A way to make function efficient using DP:
+			\begin{verbatim}
+				def catalan(n, d={}):
+				    if n == 0:
+				        return 1
+				    if n not in d:
+				        s = 0
+				        for i in range(n):
+				            s += catalan(i) * catalan(n - i - 1)
+				        d[n] = s
+				    return d[n]
+			\end{verbatim}
+			Function uses a dictionary to store its return values \& it makes recursive calls only once for each parameter. After this modification, function is efficient:
+			\begin{verbatim}
+				print(catalan(100)) # 896519947090131496687170070074...
+			\end{verbatim}
+			Note how each function call uses same dictionary to store results, which is given as a parameter. In Python, if a function parameter has a default value which creates a data structure, each function call that uses default value uses same data structure.
+			
+			In above situation this feature is useful but it can sometimes cause confusion. E.g., consider following code:
+			\begin{verbatim}
+				def test(t=[]):
+				    t.append(1)
+				    print(t)
+				test() # [1]
+				test() # [1, 1]
+				test() # [1, 1, 1]
+			\end{verbatim}
+			One could think: each function call adds an element to an empty list. However, in reality each function call adds an element to same list.
+			\item {\sf16.4.2. Cache Decorator.} In Python there is also a built-in way to store function results \& create efficient dynamic programming solutions. Module {\tt functools} has a decorator {\tt cache} that can be used as follows [{\tt cache} decorator was recently added to Python. Older Python versions have a similar decorator \verb|lru_cache(maxsize=None)|.]
+			\begin{verbatim}
+				import functools
+				@functools.cache
+				def catalan(n):
+				    if n == 0:
+				        return 1
+				    s = 0
+				    for i in range(n):
+				        s += catalan(i) * catalan(n - i - 1)
+				    return s
+			\end{verbatim}
+			Using decorator, function return values for different parameters are stored automatically \& previously calculated value is returned if function is called again with same parameter.
+		\end{itemize}
+		\item {\sf16.5. Efficiency.} In this sect, compare efficiency of 2 Python implementations (CPython \& PyPy) \& C++. CPython is standard Python implementation which is most common way to execute Python code. PyPy is an alternative Python implementation which includes a just-in-time compiler \& is often faster.
+		\begin{itemize}
+			\item {\sf16.5.1. Finding Primes.} In 1st experiment, count number of primes between 2 \& $n$ using sieve of Eratosthenes. Python code used in experiment:
+			\begin{verbatim}
+				sieve = [0]*(n+1)
+				count = 0
+				for i in range(2, n+1):
+				    if sieve[i]:
+				        continue
+				    count += 1
+				    for j in range(2*i, n+1, i):
+				        sieve[j] = 1
+				print(count)
+			\end{verbatim}
+			Corresponding code in C++:
+			\begin{verbatim}
+				vector<int> sieve(n+1);
+				int count = 0;
+				for (int i = 2; i <= n; i++) {
+				    if (sieve[i]) continue;
+				    count++;
+				    for (int j = 2*i; j <= n; j += i) {
+				        sieve[j] = 1;
+				    }
+				}
+				cout << count << "\n";
+			\end{verbatim}
+			{\sf Table 16.1: Results of prime counting experiment} shows results of experiment. It can be seen: PyPy \& C++ are much faster than CPython in large tests. However, difference between PyPy \& C++ is quite small.
+			\item {\sf16.5.2. Counting Permutations.}
 		\end{itemize}
 	\end{itemize}
 	\item {\sf17. Preparing for IOI.}

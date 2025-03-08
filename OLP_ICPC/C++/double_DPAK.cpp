@@ -30,3 +30,4 @@ int main() {
 		ma[n]++;
 	}
 }
+// comment: have not passed POJ 1552 yet

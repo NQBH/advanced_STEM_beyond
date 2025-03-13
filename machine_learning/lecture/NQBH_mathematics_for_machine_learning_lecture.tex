@@ -120,11 +120,15 @@ Input data can be considered as a vector of features of the problem considered.
 See, e.g., \cite[Chap. 8, Sect. 8.1.1: Data as Vectors]{Deisenroth_Faisal_Ong2024}.
 
 \subsection{How to describe models}
-2 major approaches:
+2 major approaches to describe models in ML:
 \begin{itemize}
-	\item a predictor as a function
-	\item a predictor as a probabilistic model.
+	\item a predictor as a function (i.e., non-probabilistic view of ML)
+	\item a predictor as a probabilistic model (i.e., probabilistic view of ML).
 \end{itemize}
+
+\begin{remark}[Cf. Deterministic world vs. Stochastic world]
+	
+\end{remark}
 
 \subsubsection{Models as functions -- Mô hình như hàm số}
 See, e.g., \cite[Chap. 8, Sect. 8.1.2: Models as Functions]{Deisenroth_Faisal_Ong2024}.
@@ -134,16 +138,70 @@ A predictor is a function that, when given a particular input example produces a
 	\mbox{predictor}:\mbox{Input Space}&\to\mbox{Output Space},\\
 	\mbox{input example}&\mapsto\mbox{output}\coloneqq\mbox{predictor}(\mbox{input example}).
 \end{align*}
-Input- \& Output Spaces in this formula are usually vector spaces. If they are, we usually take $\mbox{Input Space}\coloneqq\mathbb{R}^{n_{\rm input}}$, $\mbox{Output Space}\coloneqq\mathbb{R}^{n_{\rm output}}$, or $\mbox{Input Space}\coloneqq\mathbb{C}^{n_{\rm input}}$, $\mbox{Output Space}\coloneqq\mathbb{C}^{n_{\rm output}}$, but each complex number can be decomposed as $z = \Re z + i\Im z$, $\forall z\in\mathbb{C}$, so it is equivalent to consider $\mbox{Input Space}\coloneqq\mathbb{R}^{2n_{\rm input}}$, $\mbox{Output Space}\coloneqq\mathbb{R}^{2n_{\rm output}}$ instead of $\mbox{Input Space}\coloneqq\mathbb{C}^{n_{\rm input}}$, $\mbox{Output Space}\coloneqq\mathbb{C}^{n_{\rm output}}$. Briefly, a pair of Euclidean spaces $(\mathbb{R}^{n_{\rm input}},\mathbb{R}^{n_{\rm output}})$ is good enough to represent input- \& output spaces.
-
-For simplicity, consider the output to be a single real number, i.e., a real-valued scalar output, which can be written as
+Input- \& Output Spaces in this formula are usually vector spaces. If they are, we usually take $\mbox{Input Space}\coloneqq\mathbb{R}^{n_{\rm input}}$, $\mbox{Output Space}\coloneqq\mathbb{R}^{n_{\rm output}}$, or $\mbox{Input Space}\coloneqq\mathbb{C}^{n_{\rm input}}$, $\mbox{Output Space}\coloneqq\mathbb{C}^{n_{\rm output}}$, but each complex number can be decomposed as $z = \Re z + i\Im z$, $\forall z\in\mathbb{C}$, so it is equivalent to consider $\mbox{Input Space}\coloneqq\mathbb{R}^{2n_{\rm input}}$, $\mbox{Output Space}\coloneqq\mathbb{R}^{2n_{\rm output}}$ instead of $\mbox{Input Space}\coloneqq\mathbb{C}^{n_{\rm input}}$, $\mbox{Output Space}\coloneqq\mathbb{C}^{n_{\rm output}}$. Briefly, a pair of Euclidean spaces $(\mathbb{R}^{n_{\rm input}},\mathbb{R}^{n_{\rm output}})$ is good enough to represent input- \& output spaces. For simplicity, consider the output to be a single real number, i.e., a real-valued scalar output, which can be written as
 \begin{equation*}
 	f:\mathbb{R}^D\to\mathbb{R},
 \end{equation*}
-where the input vector ${\bf x}$ is $D$-dimensional (has $D$ features), \& the function $f$ then applied to it (written as $f({\bf x})$) returns a real number.
+where the input vector ${\bf x}$ is $D$-dimensional (has $D$ features), \& the function $f$ then applied to it (written as $f({\bf x})$) returns a real number. In \cite{Deisenroth_Faisal_Ong2024}, the authors did not considered the general case of all functions, which would involve the need for functional analysis (see some classical texts of Functional Analysis, e.g., \cite{Alt2016,Brezis2011,Rudin1991}). Instead, they considered the special case of linear functions
+\begin{equation}
+	\label{linear predictor}
+	\tag{linprd}
+	f({\bf x}) = \boldsymbol{\theta}^\top{\bf x} + \theta_0 = \boldsymbol{\theta}\cdot{\bf x} + \theta_0 = \sum_{i=1}^D \theta_ix_i + \theta_0,\mbox{ also } f({\bf x}) = {\bf w}^\top{\bf x} + b = {\bf w}\cdot{\bf x} + b = \sum_{i=1}^D w_ix_i + b,
+\end{equation}
+for unknown $\boldsymbol{\theta},\theta_0$ (or more precisely, unknown but adjustable parameters) (or weights ${\bf w}$ \& bias $b$). The linear restriction of possible forms of predictors means that basic concepts of Linear Algebra \& Analytic Geometry suffice for precisely stating the notion of a predictor for the non-probabilistic view of machine learning. Linear functions strike a good balance between the generality of the problems that can be solved \& the amount of background mathematics, especially for computer science-major students, that is needed.
+
+\begin{remark}[Pros \& cons of linear world vs. nonlinear world -- Ưu \& nhược điểm của thế giới tuyến tính so với thế giới phi tuyến tính]
+	\item(i) Cf: Linear Functional Analysis vs. Nonlinear Functional Analysis.
+	\item(ii) Cf: Linear Partial Differential Equations (linear PDEs) vs. Nonlinear Partial Differential Equations (nonlinear PDEs).
+\end{remark}
+Philosophically \& mathematically speaking, in any case, some compromises that are good enough are needed to be established for particular goals.
 
 \subsubsection{Models as probability distributions -- Mô hình như phân phối xác suất}
 See, e.g., \cite[Chap. 8, Sect. 8.1.3: Models as Probability Distributions]{Deisenroth_Faisal_Ong2024}.
+
+We often consider data to be noisy observations of some true underlying effect, i.e.,
+\begin{equation*}
+	\mbox{noise data}\coloneqq\mbox{true data} + \mbox{noise},\ {\bf x}_{\rm noise}\coloneqq{\bf x}_{\rm true} + \delta_{\rm noise},
+\end{equation*}
+\& hope that by apply ML we can identity the signal from the noise (denoise), which requires
+\begin{itemize}
+	\item a language for quantifying the effect of noise (probability theory provides a language for quantifying uncertainty), \&
+	\item predictors being able to express some sort of uncertainty, e.g., to quantify the confidence we have about the value of the prediction for a particular test data point.
+\end{itemize}
+{\sf Idea.} Instead of considering a predictor as a single function, we could consider predictors to be probabilistic models, i.e., models describing the distribution of possible functions. In \cite{Deisenroth_Faisal_Ong2024}, the authors limited themselves to the special case of distributions with finite-dimensional parameters, which allows them to describe probabilistic models without needing stochastic processes \& random measures. For this special case, we can think about probabilistic models as multivariate probability distributions, which already allow for a rich class of models.
+
+\subsubsection{Learning is finding parameters}
+See, e.g., \cite[Chap. 8, Sect. 8.1.4: Learning is Finding Parameters]{Deisenroth_Faisal_Ong2024}.
+
+The goal of learning is to find a model \& its corresponding parameters such that the resulting predictor will perform well on unseen data. There are conceptually 3 distinct algorithmic phases when discussing ML algorithms:
+\begin{enumerate}
+	\item Prediction or inference -- Dự đoán hoặc suy luận
+	\item Training or parameter estimation -- Đào tạo hoặc ước tính tham số
+	\item Hyperparameter tuning or model selection -- Điều chỉnh siêu tham số hoặc lựa chọn mô hình
+\end{enumerate}
+The prediction phase is when we use a trained predictor on previously unseen test data, i.e., the parameters \& model choice is already fixed \& the predictor is applied to new vectors representing new input data points. Recall that we consider 2 schools of ML, corresponding to whether the predictor is a function or a probabilistic model. When we have a probabilistic model (see, e.g., \cite[Sect. 8.4]{Deisenroth_Faisal_Ong2024}) the prediction phase is called {\it inference}.
+
+\begin{remark}[Usage of word ``inference'' -- Các cách sử dụng từ ``suy luận'']
+	``Unfortunately, there is no agreed upon naming for different algorithmic phases. The word ``inference'' is sometimes also used to mean parameter estimation of a probabilistic model, \& less often may be also used to mean prediction for non-probabilistic models.'' -- \cite[Rmk, p. 257]{Deisenroth_Faisal_Ong2024})
+	
+	-- Thật không may, không có cách đặt tên thống nhất cho các giai đoạn thuật toán khác nhau. Từ ``suy luận'' đôi khi cũng được dùng để chỉ ước tính tham số của một mô hình xác suất, \& ít thường xuyên hơn có thể được dùng để chỉ dự đoán cho các mô hình không xác suất.
+\end{remark}
+We are interested in learning a model based on data s.t. it performs well on future data. It is not enough for the model to only fit the training data well, the predictor needs to perform well on unseen data. We simulate the behavior of our predictor on future unseen data using {\it cross-validation}. To check the goal of performing well on unseen data, we will need to balance between fitting well on training data \& finding ``simple'' explanations of the phenomenon. This trade-off is achieved using {\it regularization} or by {\it adding a prior}. In philosophy, this is considered to be neither induction nor deduction, but is called {\it abduction}. According to the {\it Stanford Encyclopedia of Philosophy, abduction} is the process of inference to the best explanation.
+
+We often need to make high-level modeling decisions about the structure of the predictor, e.g. the number of components to use or the class of probability distributions to consider. The choice of the number of components is an example of a {\it hyperparameter}, \& this choice can affect the performance of the model significantly. The problem of choosing among different models is called {\it model selection} (see, e.g., \cite[Sect. 8.6: Model Selection]{Deisenroth_Faisal_Ong2024}). For non-probabilistic models, model selection is often done using {\it nested cross-validation} (see, e.g., \cite[Subsect. 8.6.1: Nested Cross-Validation]{Deisenroth_Faisal_Ong2024}). We also use model selection to choose hyperparameters of our model.
+
+\begin{remark}[Cf. Parameter vs. Hyperparameter]
+	The distinction between parameters \& hyperparameters is somewhat arbitrary, \& is mostly driven by the distinction between what can be numerically optimized vs. what needs to use search techniques. Another way to consider the distinction is to consider parameters as the explicit parameters of a probabilistic model, \& to consider hyperparameters (higher-level parameters) as parameters that control the distribution of these explicit parameters.
+\end{remark}
+3 flavors of ML:
+\begin{enumerate}
+	\item Empirical risk minimization, see, e.g., \cite[Sect. 8.2: Empirical Risk Minimization]{Deisenroth_Faisal_Ong2024};
+	\item Principle of maximum likelihood, see, e.g., \cite[Sect. 8.3: Parameter Estimation]{Deisenroth_Faisal_Ong2024};
+	\item Probabilistic modeling, see, e.g., \cite[Sect. 8.4: Probabilistic Modeling \& Inference]{Deisenroth_Faisal_Ong2024}.
+\end{enumerate}
+The learning part of ML boils down to estimating parameters based on training data.
+
+%------------------------------------------------------------------------------%
 
 \section{Introduction to Supervised Learning -- Giới Thiệu về Học Có Giám Sát}
 \textbf{\textsf{References -- Tài nguyên.}}
@@ -200,15 +258,31 @@ The loss function only concerns the output space ${\cal Y}$ independent of the i
 		\end{split}\right.
 	\end{equation*}
 	is the most commonly used.
-	\item {\bf Multicategory classification.} ${\cal Y} = \{1,\ldots,k\}$, $l(y,z) = 1_{y\ne z}$ ($0$--$1$ loss).
-	\item {\bf Regression.} ${\cal Y} = \mathbb{R}$, $l(y,z) = (y - z)^2$ (square loss). The absolute loss $l(y,z) = |y - z|$ is often used for robust estimation (đánh giá{\tt/}ước tính mạnh mẽ) (since the penalty for large errors is smaller).
-	\item {\bf Structured prediction.} There are many practical problems where ${\cal Y}$ is more complicated, with associated algorithms \& theoretical results. E.g., when ${\cal Y} = \{0,1\}^k$ (leading to \emph{multilabel classification}), the \emph{Hamming loss} $l(y,z) = \sum_{j=1}^k 1_{y_j\ne z_j}$ is commonly used; also, ranking problems involve losses on permutations, see, e.g., \cite[Chap. 13: Structured Prediction]{Bach2024}.
+	\item(ii) {\bf Multicategory classification.} ${\cal Y} = \{1,\ldots,k\}$, $l(y,z) = 1_{y\ne z}$ ($0$--$1$ loss).
+	\item(iii) {\bf Regression.} ${\cal Y} = \mathbb{R}$, $l(y,z) = (y - z)^2$ (square loss). The absolute loss $l(y,z) = |y - z|$ is often used for robust estimation (đánh giá{\tt/}ước tính mạnh mẽ) (since the penalty for large errors is smaller).
+	\item(iv) {\bf Structured prediction.} There are many practical problems where ${\cal Y}$ is more complicated, with associated algorithms \& theoretical results. E.g., when ${\cal Y} = \{0,1\}^k$ (leading to \emph{multilabel classification}), the \emph{Hamming loss} $l(y,z) = \sum_{j=1}^k 1_{y_j\ne z_j}$ is commonly used; also, ranking problems involve losses on permutations, see, e.g., \cite[Chap. 13: Structured Prediction]{Bach2024}.
 \end{example}
 
 \begin{assumption}[Loss function $l$]
 	Assume that the loss function is given to us.
 \end{assumption}
 In practice, the final user imposes the loss function, as this is how models will be evaluated. Clearly, a single real number may not be enough to characterize the entire prediction behavior. E.g., in binary classification, there are 2 types of errors, false positives \& false negatives, which can be considered simultaneously. Since we now have 2 performance measures (\& in any case with $\ge2$ performance measures), we typically need a curve to characterize the performance of a prediction function.
+
+\subsection{Empirical risk minimization -- Giảm thiểu rủi ro thực nghiệm}
+See, e.g., \cite[Sect. 8.2: Empirical Risk Minimization]{Deisenroth_Faisal_Ong2024}. In this subsection, we consider the case of a predictor that is a function. 
+
+\subsection{Parameter estimation -- Ước tính{\tt/}lượng tham số}
+See, e.g., \cite[Sect. 8.3: Parameter Estimation]{Deisenroth_Faisal_Ong2024}, \cite{Aster_Borchers_Thurber2018}. In the previous framework of empirical risk minimization, we did not explicitly model our problem using probability distributions. In this subsection, we learn how to use probability distributions to model our uncertainty due to the observation process \& our uncertainty in the parameters of our predictors. 
+
+\begin{remark}[Relation with Bayesian inverse problem?]
+	See, e.g., \cite{Ito_Jin2015}.
+\end{remark}
+
+\subsubsection{Maximum Likelihood Estimation (MLE)}
+\ldots For data represented by a random variable ${\bf x}$ \& for a family of probability densities $p({\bf x}|\boldsymbol{\theta})$ parametrized by $\boldsymbol{\theta}$, the {\it negative log-likelihood} is given by
+\begin{equation}
+	{\cal L}_{\bf x}(\boldsymbol{\theta}) = -\log p({\bf x}|\boldsymbol{\theta}).
+\end{equation}
 
 %------------------------------------------------------------------------------%
 
@@ -217,7 +291,8 @@ In practice, the final user imposes the loss function, as this is how models wil
 \begin{enumerate}
 	\item \cite{Bach2024}. {\sc Francis Bach}. {\it Learning Theory from First Principles}. Chap. 3: Linear Least-Squares Regression.
 	\item \cite{Deisenroth_Faisal_Ong2024}. {\sc Marc Peter Deisenroth, A. Aldo Faisal, Cheng Soon Ong}. {\it Mathematics for Machine Learning}. Chap. 9: Linear Regression.
-	\item {\sc Andrew Ng}'s Machine Learning Specialization slides: \url{}.
+	\item DeepLearning.AI's resources: \url{https://www.deeplearning.ai/resources/}.
+	\item {\sc Andrew Ng}'s Machine Learning Specialization slides: \url{https://home-wordpress.deeplearning.ai/wp-content/uploads/2022/03/andrew-ng-machine-learning-yearning.pdf}.
 	\item \cite{Tiep_ML_co_ban}. {\sc Vũ Hữu Tiệp}. {\it Machine Learning Cơ Bản}. Chap. 7: Hồi Quy Tuyến Tính.
 	\item Wikipedia: \href{https://en.wikipedia.org/wiki/Linear_function}{Wikipedia{\tt/}linear function}. \href{https://en.wikipedia.org/wiki/Linear_regression}{Wikipedia{\tt/}linear regression}.
 \end{enumerate}

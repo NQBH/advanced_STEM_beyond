@@ -912,14 +912,81 @@ Giải Tích Hàm Rời Rạc cung cấp các tools \& theorems để chứng mi
 %------------------------------------------------------------------------------%
 
 \section{Inverse Problems -- Bài Toán Ngược}
-\textbf{\textsf{Resources -- Tài nguyên.}}
-\begin{enumerate}
-	\item \cite{Aster_Borchers_Thurber2018}. {\sc Richard Aster, Brian Borchers, Clifford H. Thurber}. {\it Parameter Estimation \& Inverse Problems}.
-	\item \cite{Kirsch2021}. {\sc Andreas Kirsch}. {\it An Introduction to The Mathematical Theory of Inverse Problems}.
-	\item \cite{Ito_Jin2015}. {\sc Kazufumi Ito, Bangti Jin}. {\it Inverse Problems}.
+
+\subsection{\cite{Aster_Borchers_Thurber2018}. {\sc Richard Aster, Brian Borchers, Clifford H. Thurber}. {\it Parameter Estimation \& Inverse Problems}. 3e}
+{\sf[17 Amazon ratings]}
+\begin{itemize}
+	\item {\sf Amazon review.} {\it Parameter Estimation \& Inverse Problems, 3e}, is structured around a course at New Mexico Tech \& is designed to be accessible to typical graduate students in physical sciences who do not have an extensive mathematical background. Book is complemented by a companion website that includes MATLAB codes that correspond to examples that are illustrated with simple, easy to follow problems that illuminate details of particular numerical methods. Updates to new edition include more discussions of Laplacian smoothing, an expansion of basis function exercises, addition of stochastic descent, an improved presentation of Fourier methods \& exercises, \& more.
+	\begin{itemize}
+		\item Features examples that are illustrated with simple, easy to follow problems that illuminate details of a particular numerical method
+		\item Includes an online instructor's guide that helps professors teach \& customize exercises \& select homework problems
+		\item Covers updated information on adjoint methods that are presented in an accessible manner
+	\end{itemize}
+	\item {\sf Editorial Reviews.} Promotes fundamental issues associated with parameter fitting \& inverse problems, including basic theory, statistical issues, computational issues, \& more.
+	\item {\sf Preface to 3e.} This textbook evolved from courses in geophysical inverse methods taught by authors at New Mexico tech (R.A., B.B.), University of Wisconsin--Madison (C.T.), \& Colorado State University (R.A.). Reflecting wide applicability of subject matter, audience for these courses has encompassed a broad range of 1st- or 2nd-year graduate students (\& occasionally advanced undergraduates) from geophysics, hydrology, mathematics, astrophysics, engineering, \& other disciplines.
 	
+	Principal goal for this text continues to be introductory to intermediate level philosophical \& methodological understanding of parameter estimation \& inverse problems, specifically regarding such key issues as uncertainty, ill-posedness, regularization, bias, \& resolution. Accompanying exercises include a mix of applied \& theoretical problems.
 	
-	Due to the pioneering works of many prominent mathematicians, including {\sc A. N. Tikhonov \& M. A. Lavrentiev}, the concept of inverse{\tt/}ill-posed problems has been widely accepted \& received much attention in mathematical sciences as well as applied disciplines, e.g., heat transfer, medical imaging \& geophysics. Inverse theory has played an extremely important role in many scientific developments \& technological innovations.
+	Emphasize key theoretical points \& applications with illustrative examples. MATLAB codes \& associated data that implement these examples are available in a GitHub repository at \url{https://github.com/brianborchers/PEIP}. Welcome questions, comments, \& suggested improvements to code.
+	
+	This book has necessarily had to distill a tremendous body of mathematics going back to (at least) {\sc Newton \& Gauss}. Hope: it will continue to find a broad audience of students \& professionals interested in general problem of estimating physical models from data. Because this is an introductory text surveying a very broad field, have not been able to go into great depth. However, each chap has a ``notes \& further reading'' sect to help guide reader to further exploration of specific topics.
+	
+	Expect: readers of this book will have prior familiarity with calculus, differential equations, linear algebra, probability, \& statistics at undergraduate level. In our experience, many students benefit from a review of these topics, \& commonly spend 1st 2--3 weeks of course reviewing material from Appendices A--C. Some advanced topics have been left out of this book because of space limitations \&{\tt/}or because expect: many readers would not be sufficiently familiar with required mathematics. E.g., some readers with a strong mathematical background may be surprised: primarily consider inverse problems with discrete data \& discretized models. By doing this \fbox{avoid much of technical complexity of functional analysis}. Some of important advanced applications \& topics that have necessarily excluded \& inverse scattering problems, seismic diffraction tomography, data assimilation, simulated annealing, \& expectation maximization (EM) methods.
+	
+	Chaps. 1--4 form heart of book, \& should be covered in sequence. Chaps. 5--8 are somewhat independent of each other. These may be covered in any order, but draw heavily on Chaps. 1--4. Chaps. 9--10 are independent of Chaps. 5--8, but are most appropriately covered in sequence. Chap. 11 is substantially independent of material in Chaps. 5--10, \& provides an introduction to Bayesian perspective on inverse problems \& Bayesian solution methods.
+	
+	If appreciable time is allotted for review of linear algebra, vector calculus, probability, \& statistics topics in appendices, there will probably not be time to cover entire book in 1 (e.g., 16-week) university semester. Regardless, it should be possible for instructors to cover selected material beyond Chap. 4 in most cases.
+	\item {\sf Chap. 1: Introduction.} {\bf Synopsis -- Tóm tắt.} General issues associated with parameter estimation \& inverse problems are introduced through concepts of forward problem \& its inverse solution. Scaling \& superposition properties that characterize linear systems are given, \& common situations leading to linear \& nonlinear mathematical models are discussed. Examples of discrete \& continuous linear \& nonlinear parameter estimation problems to be revisited in later chaps are shown. Mathematical demonstrations highlighting key issues of solution existence, uniqueness, \& instability are presented \& discussed.
+	\begin{itemize}
+		\item {\sf1.1. Classification of parameter estimation \& inverse problems.} Scientists \& engineers frequently wish to relate physical parameters characterizing a {\it model} $m$ to observations making up some set of {\it data} $d$. Common assume: fundamental physics are adequately understood, \& a function $G$ may be specified relating $m$ \& $d$ s.t. (1.1)
+		\begin{equation*}
+			G(m) = d.
+		\end{equation*}
+		In practice, $d$ may be a function or a collection of discrete observations.
+		
+		Importantly, \fbox{real-world data always contain noise}. 2 common ways that noise may arise are unmodeled influences on instruments readings \& numerical roundoff. Can thus envision data as generally consisting of noiseless observations from a ``perfect'' experiment $d_{\rm true}$ plus a noise component $\eta$:
+		\begin{equation*}
+			d = G(m_{\rm true}) + \eta = d_{\rm true} + \eta,
+		\end{equation*}
+		where $d_{\rm true}$ exactly satisfies (1.1) for $m$ equal to true model $m_{\rm true}$ \& assume: forward modeling is exact. Will see: commonly mathematically possible, although practically undesirable, to also fit all or part of $\eta$ by (1.1). It is, remarkably, often case: a solution for $m$ that is influenced by even a proportionally very small amount of noise can have little or no correspondence to $m_{\rm true}$. Another key issue that may seem surprising: there are commonly an infinite number of models aside from $m_{\rm true}$ that fit perfect data $d_{\rm true}$.
+		
+		When $m,d$ are functions, typically refer to $G$ as an {\it operator}. $G$ will be called a function when $m,d$ are vectors. $G$ can take on many forms. In some cases, $G$ is an ODE or PDE. In other cases, $G$ is a linear or nonlinear system of algebraic equations.
+		
+		Note: there is some inconsistency between mathematicians \& other scientists in terminology of modeling. Applied mathematicians usually refer to $G(m) = d$ as ``mathematical model'' \& to $m$ as ``parameters''. On other hand, scientists often refer to $G$ as ``forward operator'' \& to $m$ as ``model''. Adopt scientific parlance (Áp dụng cách nói khoa học) \& refer to $m$ as ``model'' while referring to equation $G(m) = d$ as ``mathematical model''.
+		
+		{\it Forward problem}: find $d$ given $m$. Computing $G(m)$ might involve solving an ODE or PDE, evaluating an integral equation, or applying an algorithm to $m$ for which there is no explicit analytical formulation. Focus in this textbook: {\it inverse problem} of finding $m$ given $d$. A 3rd problem, not addressed here: {\it model identification problem} of determining $G$ given examples of $m,d$.
+		
+		In many cases, want to determine a finite number of parameters $n$ that define a model. Parameters may define a physical entity directly (e.g., density, voltage, seismic velocity -- mật độ, điện áp, vận tốc địa chấn), or may be coefficients or other constants in a functional relationship that describes a physical process. In this case, can express model parameters as an $n$ element vector ${\bf m}$. Similarly, if there are a finite number of data points then can express data as an $m$ element vector ${\bf d}$ (note: frequent use of integer $m$ for number of data points is easily distinguishable from a model $m$ by its context). Such problems are called {\it discrete inverse problems} or {\it parameter estimation problems}. A general parameter estimation problem can be written as a system of equations
+		\begin{equation*}
+			G({\bf m}) = {\bf d}.
+		\end{equation*}
+		Alternatively, where model \& data are functions of continuous variables, e.g. time or space, task of estimating $m$ from $d$ is called a {\it continuous inverse problem}. A central theme of this book: continuous inverse problems can often be well-approximated, \& usefully solved, as discrete inverse problems.
+		
+		Will generally refer to problems with small numbers of parameters as ``parameter estimation problems''. Problems with a larger number of parameters, \& which will often require application of additional stabilizing constraints, will be referred to as ``inverse problems''. Need for stabilizing solution constraints arises because associated systems of equations or operations are ill-conditioned, in a sense that will be discussed later in this chap. In both parameter estimation \& inverse problems solve for a set of parameters that characterize a model, \& a key point of this textbook: treatment of all such problems can be generalized. In practice, what is most important is distinction between ill-conditioned \& well-conditioned parameter estimation problems.
+		
+		A class of mathematical models for which many useful results exist is {\it linear systems}. Linear systems obey superposition
+		\begin{equation*}
+			G(m_1 + m_2) = G(m_1) + G(m_2).
+		\end{equation*}
+		\& scaling
+		\begin{equation*}
+			G(\alpha m) = \alpha G(m).
+		\end{equation*}
+		p. 11 +++
+		\item {\sf1.2. Examples of parameter estimation problems.}
+	\end{itemize}
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsection{\cite{Kirsch2021}. {\sc Andreas Kirsch}. An Introduction to The Mathematical Theory of Inverse Problems}
+
+%------------------------------------------------------------------------------%
+
+\subsection{\cite{Ito_Jin2015}. {\sc Kazufumi Ito, Bangti Jin}. Inverse Problems}
+
+\begin{itemize}
+	\item Due to the pioneering works of many prominent mathematicians, including {\sc A. N. Tikhonov \& M. A. Lavrentiev}, the concept of inverse{\tt/}ill-posed problems has been widely accepted \& received much attention in mathematical sciences as well as applied disciplines, e.g., heat transfer, medical imaging \& geophysics. Inverse theory has played an extremely important role in many scientific developments \& technological innovations.
 	
 	Amongst numerous existing approaches to numerically treat ill-posed inverse problems, Tikhonov regularization is the most powerful \& versatile general-purposed method. Recently, Tikhonov regularization with nonsmooth penalties has demonstrated great potentials in many practical applications. The use of nonsmooth regularization can improve significantly the reconstruction quality. Their Bayesian counterparts also start to attract considerable attention. However, it also brings great challenges to its mathematical analysis \& efficient numerical implementation.
 	
@@ -978,7 +1045,7 @@ Giải Tích Hàm Rời Rạc cung cấp các tools \& theorems để chứng mi
 		\item {\sf Appendix B: Noise Models.}
 		\item {\sf Appendix C: Exponential Families.}
 	\end{itemize}
-\end{enumerate}
+\end{itemize}
 
 %------------------------------------------------------------------------------%
 

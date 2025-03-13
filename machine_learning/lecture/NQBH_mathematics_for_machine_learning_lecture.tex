@@ -41,7 +41,7 @@
 \setlist[itemize]{leftmargin=*}
 \setlist[enumerate]{leftmargin=*}
 
-\title{Lecture Note: Mathematics for Machine Learning}
+\title{Lecture Note: Mathematics for Machine Learning\\Bài Giảng: Toán Học Cho Học Máy}
 \author{Nguyễn Quản Bá Hồng\footnote{A Scientist {\it\&} Creative Artist Wannabe. E-mail: {\tt nguyenquanbahong@gmail.com}. Bến Tre City, Việt Nam.}}
 \date{\today}
 
@@ -80,17 +80,143 @@
 
 %------------------------------------------------------------------------------%
 
+\section{Basic \& Big Pictures}
+
+\subsection{Abbreviation, Notations}
+
+\begin{itemize}
+	\item AI: Artificial Intelligence
+	\item ANN: Artificial Neural Networks
+	\item DL: Deep Learning
+	\item ML: Machine Learning
+\end{itemize}
+
+\subsection{Main components}
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=12cm]{4_ML_pillars}
-	\caption{Foundations \& 4 pillars of ML. Source: \cite[Fig. 1.1, p. 14]{Deisenroth_Faisal_Ong2023}.}
+	\caption{Foundations \& 4 pillars of ML. Source: \cite[Fig. 1.1, p. 14]{Deisenroth_Faisal_Ong2024}.}
 \end{figure}
+
+\begin{itemize}
+	\item 3 major components of a ML system: data, models, \& learning.
+	\item 4 pillars of machine learning -- 4 trụ cột của máy học:
+	\begin{enumerate}
+		\item Regression -- Hồi quy
+		\item Dimensionality reduction -- Giảm kích thước\footnote{I was used to work in project ROMSOC: Reduced Order Modelling, Simulation \& Optimization of Coupled Systems. Maybe ``dimensionality reduction'' is related to ``reduced order modeling'' in some sense of mathematics?}
+		\item Density estimation -- Ước tính mật độ
+		\item Classification -- Phân loại
+	\end{enumerate}
+\end{itemize}
+
+\begin{question}[Main question of ML]
+	What do we mean by ``good'' ``models''?
+\end{question}
+See, e.g., \cite[Chap. 8, Sect. 8.1: Data, Models, \& Learning]{Deisenroth_Faisal_Ong2024}.
+
+\subsection{Data as vectors}
+Input data can be considered as a vector of features of the problem considered.
+
+See, e.g., \cite[Chap. 8, Sect. 8.1.1: Data as Vectors]{Deisenroth_Faisal_Ong2024}.
+
+\subsection{How to describe models}
+2 major approaches:
+\begin{itemize}
+	\item a predictor as a function
+	\item a predictor as a probabilistic model.
+\end{itemize}
+
+\subsubsection{Models as functions -- Mô hình như hàm số}
+See, e.g., \cite[Chap. 8, Sect. 8.1.2: Models as Functions]{Deisenroth_Faisal_Ong2024}.
+
+A predictor is a function that, when given a particular input example produces an output:
+\begin{align*}
+	\mbox{predictor}:\mbox{Input Space}&\to\mbox{Output Space},\\
+	\mbox{input example}&\mapsto\mbox{output}\coloneqq\mbox{predictor}(\mbox{input example}).
+\end{align*}
+Input- \& Output Spaces in this formula are usually vector spaces. If they are, we usually take $\mbox{Input Space}\coloneqq\mathbb{R}^{n_{\rm input}}$, $\mbox{Output Space}\coloneqq\mathbb{R}^{n_{\rm output}}$, or $\mbox{Input Space}\coloneqq\mathbb{C}^{n_{\rm input}}$, $\mbox{Output Space}\coloneqq\mathbb{C}^{n_{\rm output}}$, but each complex number can be decomposed as $z = \Re z + i\Im z$, $\forall z\in\mathbb{C}$, so it is equivalent to consider $\mbox{Input Space}\coloneqq\mathbb{R}^{2n_{\rm input}}$, $\mbox{Output Space}\coloneqq\mathbb{R}^{2n_{\rm output}}$ instead of $\mbox{Input Space}\coloneqq\mathbb{C}^{n_{\rm input}}$, $\mbox{Output Space}\coloneqq\mathbb{C}^{n_{\rm output}}$. Briefly, a pair of Euclidean spaces $(\mathbb{R}^{n_{\rm input}},\mathbb{R}^{n_{\rm output}})$ is good enough to represent input- \& output spaces.
+
+For simplicity, consider the output to be a single real number, i.e., a real-valued scalar output, which can be written as
+\begin{equation*}
+	f:\mathbb{R}^D\to\mathbb{R},
+\end{equation*}
+where the input vector ${\bf x}$ is $D$-dimensional (has $D$ features), \& the function $f$ then applied to it (written as $f({\bf x})$) returns a real number.
+
+\subsubsection{Models as probability distributions -- Mô hình như phân phối xác suất}
+See, e.g., \cite[Chap. 8, Sect. 8.1.3: Models as Probability Distributions]{Deisenroth_Faisal_Ong2024}.
+
+\section{Introduction to Supervised Learning -- Giới Thiệu về Học Có Giám Sát}
+\textbf{\textsf{References -- Tài nguyên.}}
+\begin{enumerate}
+	\item \cite{Bach2024}. {\sc Francis Bach}. {\it Learning Theory from First Principles}. Chap. 2: Introduction to Supervised Learning.
+\end{enumerate}
+{\bf Main goal.} Give some observations $(x_i,y_i)\in{\cal X}\times{\cal Y},i = 1,\ldots,n$, of inputs{\tt/}outputs, features{\tt/}labels, covariates{\tt/}responses (which are referred to as ``training data''), main goal of supervised learning is to predict a new $y\in{\cal Y}$ given a new previously unseen $x\in{\cal X}$. Unobserved data are usually referred to as ``testing data''.
+
+-- Đưa ra 1 số quan sát $(x_i,y_i)\in{\cal X}\times{\cal Y},i = 1,\ldots,n$, của các đầu vào{\tt/}đầu ra, các nhãn{\tt/}tính năng, các phản hồi của biến phụ thuộc{\tt/}(được gọi là ``dữ liệu huấn luyện{\tt/}đào tạo''), mục tiêu chính của học có giám sát là dự đoán 1 $y\in{\cal Y}$ mới khi biết trước 1 $x\in{\cal X}$ mới chưa từng thấy. Dữ liệu chưa quan sát thường được gọi là ``dữ liệu thử nghiệm''.
+
+{\bf Examples.} Supervised learning is used in many areas of science, engineering, \& industry. There are thus many examples where ${\cal X},{\cal Y}$ can be very diverse:
+\begin{itemize}
+	\item {\bf Inputs $x\in{\cal X}$}: They can be images, sounds, videos, text documents, proteins, sequences of DNA bases, web pages, social network activities, sensors from industry, financial time series, etc. Set ${\cal X}$ may thus have a variety of structures that can be leveraged. All learning methods presented in this textbook will use at 1 point a vector space representation of inputs, either by building an explicit mapping from ${\cal X}$ to a vector space, e.g., $\mathbb{R}^d$, or implicitly by using a notion of pairwise dissimilarity or similarity between pairs of inputs. Choice of these representations is highly domain-dependent. However, note:
+	\begin{itemize}
+		\item common topologies are encountered in many diverse areas (e.g. sequences or 2D or 3D objects), \& thus common tools are used, \&
+		\item learning these representations is an active area of research.
+	\end{itemize}
+	In this textbook, will primarily consider that inputs are $d$-dimensional vectors, with $d$ potentially large, up to $10^6$ or $10^9$.
+	\item {\bf Outputs $y\in{\cal Y}$.} Most classical examples are binary labels ${\cal Y} = \{0,1\}$ or ${\cal Y} = \{\pm1\}$, multicategory classification problems with ${\cal Y} = \{1,\ldots,k\}$, \& classical regression with real responses{\tt/}outputs ${\cal Y} = \mathbb{R}$. These will be main examples examined in most of book. Note, however: most of concepts extend to more general \emph{structured prediction} setup, where more general structured outputs (e.g., graph prediction, visual scene analysis, source separation, ranking) can be considered.
+\end{itemize}
+{\bf Why difficult?} Supervised learning is difficult (\& thus interesting) for a variety of reasons:
+\begin{itemize}
+	\item Label $y$ may not be a deterministic function of $x$: Given $x\in{\cal X}$, outputs are noisy, i.e., $y$ is a random function of $x$. When $y\in\mathbb{R}$, will often make simplifying ``additive noise'' assumption: $y = f(x) + \varepsilon$ with some zero-mean noise $\varepsilon$, but in general, only assume: there is a conditional distribution of $y$ given $x$. This stochasticity is typically due to diverging views between labelers or dependence on random external unobserved quantities (i.e., $y = f(x,z)$, with $z$ random \& not observed, which is common, e.g., in medical applications, where need to predict a future occurrence of a disease based on limited information about patients).
+	\item Prediction function $f$ may be quite complex, highly nonlinear when ${\cal X}$ is a vector space, \& even hard to define when ${\cal X}$ is not a vector space.
+	\item Only a few $x$'s are observed: thus need interpolation \& potentially extrapolation ({\sf diagram for an illustration for ${\cal X} = {\cal Y} = \mathbb{R}$}), \& therefore overfitting (predicting well on training data but not as well on testing data) is always a possibility.
+	
+	Moreover, training observations may not be uniformly distributed in ${\cal X}$. In this book, they will be assumed to be random, but some analyzes will rely on deterministically located inputs to simplify some theoretical arguments.
+	\item Input space ${\cal X}$ may be very large (i.e., with high dimension when this is a vector space). This leads to both computational issues (scalability) \& statistical issues (generalization to unseen data). One usually refers to this problem as {\it curse of dimensionality}.
+	\item There may be a weak link between training \& testing distributions. I.e., data at training time can have different characteristics than data at testing time.
+	\item Criterion for performance is not always well defined.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Decision Theory}
+See, e.g., \href{https://en.wikipedia.org/wiki/Decision_theory}{Wikipedia{\tt/}decision theory}.
+
+\begin{question}[Optimal performance]
+	What is optimal performance, regardless of the finiteness of the training data? Or what should be done if we have a perfect knowledge of the underlying probability distribution of the data?
+\end{question}
+
+\subsubsection{Supervised Learning Problems \& Loss Functions}
+We consider a {\it loss function} $l:{\cal Y}\times{\cal Y}\to\mathbb{R}$ (often $\mathbb{R}_+\coloneqq(0,\infty)$), where $l(y,z)$ is the loss of predicting $z$ while the true label is $y$. Some related research communities (e.g., economics) use the concept of ``utility'' which is then maximized.
+
+{\it Meaning of loss function.} Hàm mất mát $l(y,z)$ đóng vai trò như 1 phép đo khoảng cách (a measurement of distances) từ nhãn đúng đến giá trị dự đoán thu được bởi thuật toán học máy.
+
+The loss function only concerns the output space ${\cal Y}$ independent of the input space ${\bf X}$ (check its definition!).
+\begin{example}
+	\item(i) {\bf Binary classification.} ${\cal Y} = \{0,1\}$ (or often ${\cal Y} = \{\pm1\}$, or, less often, when seen as a subcase of multicategory situation ${\cal Y} = \{1,2\}$); the ``0--1 loss'' defined as
+	\begin{equation*}
+		l(y,z) = 1_{y\ne z} = \left\{\begin{split}
+			&0&&\mbox{if } y = z\mbox{ (no mistake)},\\
+			&1&&\mbox{otherwise (mistake)}.
+		\end{split}\right.
+	\end{equation*}
+	is the most commonly used.
+	\item {\bf Multicategory classification.} ${\cal Y} = \{1,\ldots,k\}$, $l(y,z) = 1_{y\ne z}$ ($0$--$1$ loss).
+	\item {\bf Regression.} ${\cal Y} = \mathbb{R}$, $l(y,z) = (y - z)^2$ (square loss). The absolute loss $l(y,z) = |y - z|$ is often used for robust estimation (đánh giá{\tt/}ước tính mạnh mẽ) (since the penalty for large errors is smaller).
+	\item {\bf Structured prediction.} There are many practical problems where ${\cal Y}$ is more complicated, with associated algorithms \& theoretical results. E.g., when ${\cal Y} = \{0,1\}^k$ (leading to \emph{multilabel classification}), the \emph{Hamming loss} $l(y,z) = \sum_{j=1}^k 1_{y_j\ne z_j}$ is commonly used; also, ranking problems involve losses on permutations, see, e.g., \cite[Chap. 13: Structured Prediction]{Bach2024}.
+\end{example}
+
+\begin{assumption}[Loss function $l$]
+	Assume that the loss function is given to us.
+\end{assumption}
+In practice, the final user imposes the loss function, as this is how models will be evaluated. Clearly, a single real number may not be enough to characterize the entire prediction behavior. E.g., in binary classification, there are 2 types of errors, false positives \& false negatives, which can be considered simultaneously. Since we now have 2 performance measures (\& in any case with $\ge2$ performance measures), we typically need a curve to characterize the performance of a prediction function.
+
+%------------------------------------------------------------------------------%
 
 \section{Linear Regression -- Hồi Quy Tuyến Tính}
 \textbf{\textsf{References -- Tài nguyên.}}
 \begin{enumerate}
 	\item \cite{Bach2024}. {\sc Francis Bach}. {\it Learning Theory from First Principles}. Chap. 3: Linear Least-Squares Regression.
-	\item \cite{Deisenroth_Faisal_Ong2023}. {\sc Marc Peter Deisenroth, A. Aldo Faisal, Cheng Soon Ong}. {\it Mathematics for Machine Learning}. Chap. 9: Linear Regression.
+	\item \cite{Deisenroth_Faisal_Ong2024}. {\sc Marc Peter Deisenroth, A. Aldo Faisal, Cheng Soon Ong}. {\it Mathematics for Machine Learning}. Chap. 9: Linear Regression.
 	\item {\sc Andrew Ng}'s Machine Learning Specialization slides: \url{}.
 	\item \cite{Tiep_ML_co_ban}. {\sc Vũ Hữu Tiệp}. {\it Machine Learning Cơ Bản}. Chap. 7: Hồi Quy Tuyến Tính.
 	\item Wikipedia: \href{https://en.wikipedia.org/wiki/Linear_function}{Wikipedia{\tt/}linear function}. \href{https://en.wikipedia.org/wiki/Linear_regression}{Wikipedia{\tt/}linear regression}.

@@ -328,6 +328,11 @@ Topics covered include derivatives \& their generalization to multiple dimension
 	\end{itemize}
 \end{enumerate}
 
+%------------------------------------------------------------------------------%
+
+\section{Dynamic Programming -- Quy Hoạch Động}
+
+
 
 %------------------------------------------------------------------------------%
 
@@ -751,6 +756,83 @@ Let $\Omega\subset D$ be a bounded domain,
 	\item \href{https://en.wikipedia.org/wiki/Axiom_of_adjunction}{Axiom of adjunction} in set theory
 	\item \href{https://en.wikipedia.org/wiki/Adjunction_(rule_of_inference)}{Adjunction (rule of inference)}'' -- \href{https://en.wikipedia.org/wiki/Adjoint}{Wikipedia{\tt/}adjoint}
 \end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Wikipedia{\tt/}dynamic programming}
+``{\sf Finding shortest path in a graph using optimal substructure; a straight line indicates a single edge; a wavy line indicates a shortest path between 2 vertices it connects (among other paths, not shown, sharing same 2 vertices); bold line is overall shortest path from start to goal.} {\it Dynamic programming} is both a mathematical optimization method \& an \href{https://en.wikipedia.org/wiki/Algorithmic_paradigm}{algorithmic paradigm}. Method was developed by \href{https://en.wikipedia.org/wiki/Richard_Bellman}{\sc Richard Bellman} in 1950s \& has found applications in numerous fields, from aerospace engineering to economics.
+
+In both contexts it refers to simplifying a complicated problem by breaking it down into simpler sub-problems in a \href{https://en.wikipedia.org/wiki/Recursion}{recursive} manner. While some decision problems cannot be taken apart this way, decisions that span several points in  time do often break apart recursively. Likewise, in CS, if a problem, if a problem can be solved optimally by breaking it into sub-problems \& then recursively finding optimal solutions to sub-problems, then it is said to have \href{https://en.wikipedia.org/wiki/Optimal_substructure}{optimal substructure}.
+
+If sub-problems can be nested recursively inside larger problems, so that dynamic programming methods are applicable, then there is a relation between value of larger problem \& values of sub-problems. In optimization literature this relationship is called \href{https://en.wikipedia.org/wiki/Bellman_equation}{Bellmann equation}.
+
+\subsubsection{Overview}
+
+\begin{enumerate}
+	\item {\bf Mathematical optimization.} In terms of mathematical optimization, dynamic programming usually refers to simplifying a decision by breaking it down into a sequence of decision steps over time.
+	
+	This is done by defining a sequence of {\it value functions} $V_1,\ldots,V_n$ taking $y$ as an argument representing \href{https://en.wikipedia.org/wiki/State_variable}{state} of system at times $i$ from 1 to $n$.
+	
+	Def of $V_n(y)$ is value obtained in state $y$ at last time $n$.
+	
+	Values $V_i$ at earlier times $i = n - 1,n - 2,\ldots,2,1$ can be found by working backwards, using a \href{https://en.wikipedia.org/wiki/Recursion}{recursive} relationship called \href{https://en.wikipedia.org/wiki/Bellman_equation}{Bellmann equation}.
+	
+	For $i = 2,\ldots,n$, $V_{i-1}$ at any state $y$ is calculated from $V_i$ by maximizing a simple function (usually sum) of gain from a decision at time $i - 1$ \& function $V_i$ at new state of system if this decision is made.
+	
+	Since $V_i$ has already been calculated for needed states, above operation yields $V_{i-1}$ for those states.
+	
+	Finally, $V_1$ at initial state of system is value of optimal solution. Optimal values of decision variables can be recovered, 1 by 1, by tracking back calculations already performed.
+	\item {\bf Control theory.} In \href{https://en.wikipedia.org/wiki/Control_theory}{control theory}, a typical problem: find an admissible control ${\bf u}^*$ which causes system $\dot{\bf x}(t) = {\bf g}({\bf x}(t),{\bf u}(t),t)$ to follow an admissible trajectory ${\bf x}^*$ on a continuous time interval $t_0\le t\le t_1$ that minimizes a \href{https://en.wikipedia.org/wiki/Loss_function}{cost function}
+	\begin{equation*}
+		J = b({\bf x}(t_1),t_1) + \int_{t_0}^{t_1} f({\bf x}(t),{\bf u}(t),t)\,{\rm d}t.
+	\end{equation*}
+	Solution to this problem is an optimal control law or policy ${\bf u}^* = h({\bf x}(t),t)$, which produces an optimal trajectory ${\bf x}^*$ \& a \href{https://en.wikipedia.org/wiki/Cost-to-go_function}{cost-to-go function} $J^*$. Latter obeys fundamental equation of dynamic programming:
+	\begin{equation*}
+		-J_t^* = \min_{\bf u} \{f({\bf x}(t),{\bf u}(t),t) + {J_x^^{*\top}{\bf g}({\bf x}(t),{\bf u}(t),t)\}
+	\end{equation*}
+	a PDE known as \href{https://en.wikipedia.org/wiki/Hamilton%E2%80%93Jacobi%E2%80%93Bellman_equation}{Hamilton--Jacobi--Bellman equation}, in which
+	\begin{equation*}
+		J_x^* = \frac{\partial J^*}{\partial{\bf x}} = [\partial_{x_1}J^*,\ldots,\partial_{x_n}J^*]^\top,\ J_t^* = \partial_tJ^*.
+	\end{equation*}
+	One finds: minimizing ${\bf u}$ in terms of $t,{\bf x}$, \& unknown function $J_x^*$ \& then substitutes result into Hamilton--Jacobi--Bellman equation to get PDE to be solved with boundary condition $J(t_1) = b({\bf x}(t_1),t_1)$. In practice, this generally requires \href{https://en.wikipedia.org/wiki/Numerical_partial_differential_equations}{numerical techniques} for some discrete approximation to exact optimization relationship.
+	
+	Alternatively, continuous process can be approximated by a discrete system, which leads to a following recurrence relation analog to Hamilton--Jacobi--Bellman equation:
+	\begin{equation*}
+		J_k^*({\bf x}_{n-k}) = \min_{{\bf u}_{n-k}} \left\{\hat{f}({\bf x}_{n-k},{\bf u}_{n-k}) + J_{k-1}^*(\hat{\bf g}({\bf x}_{n-k},{\bf u}_{n-k}))\right\}
+	\end{equation*}
+	at $k$th state of $n$ equally spaced discrete time intervals, \& where $\hat{f},\hat{\bf g}$ denote discrete approximations to $f,{\bf g}$. This functional equation is known as Bellman equation, which can be solved for an exact solution of discrete approximation of optimization equation.
+	\begin{itemize}
+		\item {\bf Example from economics: Ramsey's problem of optimal saving.} See also: \href{https://en.wikipedia.org/wiki/Ramsey%E2%80%93Cass%E2%80%93Koopmans_model}{Ramsey--Cass--Koopmans model}. In economics, objective is generally to maximize (rather than minimize) some dynamic \href{https://en.wikipedia.org/wiki/Social_welfare_function}{social welfare function}. In Ramsey's problem, this function relates amounts of consumption to levels of \href{https://en.wikipedia.org/wiki/Utility}{utility}. Loosely speaking, planner faces trade-off between contemporaneous consumption \& future consumption (via investment in \href{https://en.wikipedia.org/wiki/Physical_capital}{capital stock} used in production), known as \href{https://en.wikipedia.org/wiki/Intertemporal_choice}{intertemporal choice}. Future consumption is discounted at a constant rate $\beta\in(0,1)$. A discrete approximation to transition equation of capital is given by
+		\begin{equation*}
+			k_{t+1} = \hat{g}(k_t,c_t) = f(k_t) - c_t,
+		\end{equation*}
+		where $c$ is consumption, $k$ is capital, $f$: a \href{https://en.wikipedia.org/wiki/Production_function}{production function} satisfying \href{https://en.wikipedia.org/wiki/Inada_conditions}{Inada conditions}. An initial capital stock $k_0 > 0$ is assumed.
+		
+		Let $c_t$ be consumption in period $t$, \& assume consumption yields utility $u(c_t) = \ln c_t$ as long as consumer lives. Assume consumer is impatient, so that he \href{https://en.wikipedia.org/wiki/Discounting}{discounts} future utility by a factor $b$ each period, where $0 < b < 1$. Let $k_t$ be \href{https://en.wikipedia.org/wiki/Capital_(economics)}{capital} in period $t$. Assume initial capital is a given amount $k_0 > 0$, \& suppose: this period's capital \& consumption determine next period's capital as $k_{t+1} = Ak_t^a - c_t$, where $A$: a positive constant \& $0 < a < 1$. Assume capital cannot be negative. Then consumer's decision problem can be written as follows:
+		\begin{equation*}
+			\max\sum_{t=0}^T b^t\ln c_t\mbox{ subject to } k_{t+1} = Ak_t^a - c_t\ge0,\ \forall t = 0,1,\ldots,T.
+		\end{equation*}
+	\end{itemize}
+	\item {\bf CS.}
+	\item {\bf Bioinformatics.}
+\end{enumerate}
+
+\subsubsection{Examples: computer algorithms}
+
+\begin{enumerate}
+	\item {\bf Dijkstra's algorithm for shortest path problem.}
+	\item {\bf Fibonacci sequence.}
+	\item {\bf A type of balanced 0--1 matrix.}
+	\item {\bf Checkerboard.}
+	\item {\bf Sequence alignment.}
+	\item {\bf Tower of Hanoi puzzle.}
+	\item {\bf Egg dropping puzzle.}
+	\item {\bf Matrix chain multiplication.}
+\end{enumerate}
+
+\subsubsection{History of name}
+
+'' -- \href{https://en.wikipedia.org/wiki/Dynamic_programming}{Wikipedia{\tt/}dynamic programming}
 
 %------------------------------------------------------------------------------%
 

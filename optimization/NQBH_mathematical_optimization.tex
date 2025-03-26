@@ -812,17 +812,96 @@ If sub-problems can be nested recursively inside larger problems, so that dynami
 		\begin{equation*}
 			\max\sum_{t=0}^T b^t\ln c_t\mbox{ subject to } k_{t+1} = Ak_t^a - c_t\ge0,\ \forall t = 0,1,\ldots,T.
 		\end{equation*}
+		Written this way, problem looks complicated, because it involves solving for all choice variables $c_0,c_1,\ldots,c_T$. (Capital $k_0$ is not a choice variable -- consumer's initial capital is taken as given.)
+		
+		DP approach to solve this problem involves breaking it apart into a sequence of smaller decisions. To do so, define a sequence of {\it value functions} $V_t(k)$, for $t = 0,1,\ldots,T,T+1$ which represent value of having any amount of capital $k$ at each time $t$. There is (by assumption) no utility from having capital after death, $V_{T+1}(k) = 0$.
+		
+		Value of any quantity of capital at any previous time can be calculated by \href{https://en.wikipedia.org/wiki/Backward_induction}{backward induction} using Bellman equation. In this problem, for each $t = 0,1,\ldots,T$, Bellman equation is
+		\begin{equation*}
+			V_t(k_t) = \max(\ln c_t + bV_{t+1}(k_{t+1}))\mbox{ subject to } k_{t+1} = Ak_t^a - c_t\ge0.
+		\end{equation*}
+		This problem is much simpler than the once wrote down before, because it involves only 2 decision variables, $c_t$ \& $k_{t+1}$. Intuitively, instead of choosing his whole lifetime plan at birth, consumer can take things 1 step at a time. At time $t$, his current capital $k_t$ is given, \& he only needs to choose current consumption $c_t$ \& saving $k_{t+1}$.
+		
+		To actually solve this problem, work backwards. For simplicity, current level of capital is denoted as $k$. $V_{T+1}(k)$ is already known, so using Bellman equation once can calculate $V_T(k)$, \& so on until get to $V_0(k)$, which is {\it value} of initial decision problem for whole lifetime. I.e., once know $V_{T-j+1}(k)$, can calculate $V_{T_j}(k)$, which is maximum of $\ln c_{T-j} + bV_{T-j+1}(Ak^a - c_{T-j})$, where $c_{T-j}$ is choice variable \& $Ak^a - c_{T-j}\ge0$.
+		
+		Working backwards, it can be shown: value function at time $t = T - j$ is
+		\begin{equation*}
+			V_{T-j}(k) = a\sum_{i=0}^j a^ib^i\ln k + v_{T-j},
+		\end{equation*}
+		where each $v_{T-j}$ is a constant, \& optimal amount to consume at time $t = T - j$ is
+		\begin{equation*}
+			c_{T-j}(k) = \frac{1}{\sum_{i=0}^j a^ib^i}Ak^a.
+		\end{equation*}
+		See: optimal to consume a larger fraction of current wealth as one gets older, finally consuming all remaining wealth in period $T$, the last period of life.
 	\end{itemize}
-	\item {\bf CS.}
-	\item {\bf Bioinformatics.}
+	\item {\bf CS.} There are 2 key attributes that a problem must have in order for DP to be applicable: optimal substructure \& \href{https://en.wikipedia.org/wiki/Overlapping_subproblem}{overlapping sub-problems}. If a problem can be solved by combining optimal solutions to {\it non-overlapping} sub-problems, strategy is called ``\href{https://en.wikipedia.org/wiki/Divide_and_conquer_algorithm}{divide \& conquer}'' instead. This is why \href{https://en.wikipedia.org/wiki/Mergesort}{merge sort} \& \href{https://en.wikipedia.org/wiki/Quicksort}{quick sort} are not classified as DP problems.
+	
+	{\it Optimal substructure} means: solution to a given optimization problem can be obtained by combination of optimal solutions to its sub-problems. Such optimal substructures are usually described by means of \href{https://en.wikipedia.org/wiki/Recursion}{recursion}. E.g., given a graph $G = (V,E)$, shortest path $p$ from a vertex $u$ to a vertex $v$ exhibits optimal substructure: take any intermediate vertex $w$ on this shortest path $p$. If $p$ is truly shortest path, then it can be split into sub-paths $p_1$ from $u$ to $w$ \& $p_2$ from $w$ to $v$ s.t. these, in turn, are indeed shortest paths between corresponding vertices (by simple cut-\&-paste argument described in \href{https://en.wikipedia.org/wiki/Introduction_to_Algorithms}{\it Introduction to Algorithms}). Hence, one can easily formulate solution for finding shortest paths in a recursive manner, which is what \href{https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm}{Bellman--Ford algorithm} or \href{https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm}{Floyd--Warshall algorithm} does.
+	
+	{\it Overlapping} sub-problems means: space of sub-problems must be small, i.e., any recursive algorithm solving problem should solve same sub-problems over \& over, rather than generating new sub-problems. E.g., consider recursive formulation for generating Fibonacci sequence $F_i = F_{i-1} + F_{i-2}$, with base case $F_1 = F_2 = 1$. Then $F_{43} = F_{42} + F_{41}$, \& $F_{42} = F_{41} + F_{40}$. Now $F_{41}$ is being solved in recursive sub-trees of both $F_{43}$ as well as $F_{42}$. Even though total number of sub-problems is actually small (only 43 of them), end up solving same problems over \& over if adopt a naive recursive solution e.g. this. DP takes account of this fact \& solves each sub-problem only once.
+	
+	{\sf Fig. Subproblem graph for Fibonacci sequence. Fact: it is not a \href{https://en.wikipedia.org/wiki/Tree_structure}{tree} indicates overlapping subproblems.} This can be achieved in either of 2 ways:
+	\begin{itemize}
+		\item \href{https://en.wikipedia.org/wiki/Top-down_and_bottom-up_design}{\it Top-down approach}: This is direct fall-out of recursive formulation of any problem. if solution to any problem can be formulated recursively using solution to its sub-problems, \& if its sub-problems are overlapping, then one can easily \href{https://en.wikipedia.org/wiki/Memoize}{memoize} or store solutions to sub-problems in a table (often an \href{https://en.wikipedia.org/wiki/Array_(data_structure)}{array} or \href{https://en.wikipedia.org/wiki/Hash_table}{hastable} in practice). Whenever attempt to solve a new sub-problem, 1st check table to see if already solved. If a solution has been recorded, can use it directly, otherwise solve sub-problem \& add its solution to table.
+		\item \href{https://en.wikipedia.org/wiki/Top-down_and_bottom-up_design}{\it Bottom-up approach}: Once formulate solution to a problem recursively as in terms of its sub-problems, can try reformulating problem in a bottom-up fashion: try solving sub-problems 1st \& use their solutions to build-on \& arrive at solutions to bigger sub-problems. This is also usually done in a tabular form by iteratively generating solutions to bigger \& bigger sub-problems by using solutions to small sub-problems. E.g., if already know values of $F_{41}$ \& $F_{40}$, can directly calculate value of $F_{42}$.
+	\end{itemize}
+	Some \href{https://en.wikipedia.org/wiki/Programming_language}{programming languagues} can automatically \href{https://en.wikipedia.org/wiki/Memoization}{memoize} result of a function call with a particular set of arguments, in order to speed up \href{https://en.wikipedia.org/wiki/Call-by-name}{call-by-name} evaluation (this mechanism is referred to as \href{https://en.wikipedia.org/wiki/Call-by-need}{\it call-by-need}). Some languages make it possible portably (e.g., \href{https://en.wikipedia.org/wiki/Scheme_(programming_language)}{Scheme}, \href{https://en.wikipedia.org/wiki/Common_Lisp}{Common Lisp}, \href{https://en.wikipedia.org/wiki/Perl}{Perl}, \& \href{https://en.wikipedia.org/wiki/D_(programming_language)}{D}). Some languages have automatic \href{https://en.wikipedia.org/wiki/Memoization}{memoization} built in, e.g. tabled \href{https://en.wikipedia.org/wiki/Prolog}{Prolog} \& \href{https://en.wikipedia.org/wiki/J_(programming_language)}{J}, which supports memoization with {\it M.} adverb. In any case, this is only possible for a \href{https://en.wikipedia.org/wiki/Referentially_transparent}{referentially transparent} function. Memoization is also encountered as an easily accessible design pattern within term-rewrite based languages e.g. \href{https://en.wikipedia.org/wiki/Wolfram_Language}{Wolfram Language}.
+	\item {\bf Bioinformatics.} DP is widely used in bioinformatics for tasks e.g. \href{https://en.wikipedia.org/wiki/Sequence_alignment}{sequence alignment}, \href{https://en.wikipedia.org/wiki/Protein_folding}{protein folding}, RNA structure prediction \& protein-DNA binding. 1st DP algorithms for protein-DNA binding were developed in 1970s independently by \href{https://en.wikipedia.org/wiki/Charles_DeLisi}{\sc Charles DeLisi} in US \& by {\sc Georgii Gurskii \& Alexander Zasedatelev} in Soviet Union. Recently these algorithms have become very popular in bioinformatics \& \href{https://en.wikipedia.org/wiki/Computational_biology}{computational biology}, particularly in studies of \href{https://en.wikipedia.org/wiki/Nucleosome}{nucleosome} positioning \& \href{https://en.wikipedia.org/wiki/Transcription_factor}{transcription factor} binding.
 \end{enumerate}
 
 \subsubsection{Examples: computer algorithms}
 
 \begin{enumerate}
-	\item {\bf Dijkstra's algorithm for shortest path problem.}
-	\item {\bf Fibonacci sequence.}
-	\item {\bf A type of balanced 0--1 matrix.}
+	\item {\bf Dijkstra's algorithm for shortest path problem.} From a DP point of view, \href{https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm}{Dijkstra's algorithm} for \href{https://en.wikipedia.org/wiki/Shortest_path_problem}{shortest path problem} is a successive approximation scheme that solves DP functional equation for shortest path problem by {\it Reaching} method.
+	
+	In fact, Dijkstra's explanation of logic behind algorithm, namely
+	\begin{problem}
+		Find path of minimum total length between 2 given nodes $P,Q$.
+	\end{problem}
+	Use fact: if $R$ is a node on minimal path from $P$ to $Q$, knowledge of latter implies knowledge of minimal path from $P$ to $R$.
+	
+	is a paraphrasing of \href{https://en.wikipedia.org/wiki/Richard_Bellman}{\sc Bellman}'s famous \href{https://en.wikipedia.org/wiki/Principle_of_Optimality}{Principle of Optimality} in context of \href{https://en.wikipedia.org/wiki/Shortest_path_problem}{shortest path problem}.
+	\item {\bf Fibonacci sequence.} Using DP in calculation of $n$th member of \href{https://en.wikipedia.org/wiki/Fibonacci_sequence}{Fibonacci sequence} improves its performance greatly. Here is a naive implementation, based directly on mathematical def:
+	\begin{verbatim}
+		function fib(n)
+		    if n <= 1 return n
+		    return fib(n - 1) + fib(n - 2)
+	\end{verbatim}
+	Notice if call, say, {\tt fib(5)}, produce a call tree that calls function on same value many different times [$\ldots$]. In particular, {\tt fib(2)} was calculated 3 times from scratch. In larger examples, many more values of {\tt fib}, or {\it subproblems}, are recalculated, leading to an exponential time algorithm.
+	
+	Now, suppose have a simple \href{https://en.wikipedia.org/wiki/Associative_array}{map} object $m$ which maps each value of {\tt fib} that has already been calculated to its result, \& modify our function to use it \& update it. Resulting function requires only $O(n)$ time instead of exponential time (but requires $O(n)$ space):
+	\begin{verbatim}
+		var m := map(0 -> 0, 1 -> 1)
+		function fib(n)
+		    if key n is not in map m
+		        m[n] := fib(n - 1) + fib(n - 2)
+		    return m[n]
+	\end{verbatim}
+	This technique of saving values that have already been calculated is called \href{https://en.wikipedia.org/wiki/Memoization}{memoization}; this is top-down approach, since 1st break problem into subproblems \& then calculate \& store values.
+	
+	In {\it bottom-up} approach, calculate smaller values of {\tt fib} 1st, then build larger values from them. This method also uses $O(n)$ time since it contains a loop that repeats $n - 1$ times, but it only takes constant $O(1)$ space, in contrast to top-down approach which requires $O(n)$ space to store map.
+	\begin{verbatim}
+		function fib(n)
+		    if n = 0
+		        return 0
+		    else
+		        var previousFib := 0, currentFib := 1
+		        repeat n - 1 times // loop is skipped if n = 1
+		            var newFib := previousFib + currentFib
+		            previousFib := currentFib
+		            currentFib := newFib
+		        return currentFib
+	\end{verbatim}
+	In both examples, only calculate {\tt fib(2)} 1 time, \& then use it to calculate both {\tt fib(4)} \& {\tt fib(3)}, instead of computing it every time either of them is evaluated.	
+	\item {\bf A type of balanced 0--1 matrix.} Consider problem of assigning values, either 0 or 1, to positions of an $n\times n$ matrix, with $n$ even, so that each row \& each column contains exactly $\frac{n}{2}$ 0s \& $\frac{n}{2}$ 1s. Ask how many different assignments there are for a given $n$. E.g., when $n = 4$, 5 possible solutions are [$\ldots$] There are at least 3 possible approaches: \href{https://en.wikipedia.org/wiki/Brute-force_search}{brute force}, \href{https://en.wikipedia.org/wiki/Backtracking}{backtracking}, \& DP.
+	
+	Brute force consists of checking all assignments of 0s \& 1s \& counting those that have balanced rows \& columns ($\frac{n}{2}$ 0s \& $\frac{n}{2}$ 1s). As there are $2^{n^2}$ possible assignments \& $\binom{n}{\frac{n}{2}}^2$ sensible assignments, this strategy is not practical except maybe up to $n = 6$.
+	
+	Backtracking for this problem consists of choosing some order of matrix elements \& recursively placing 1s or 0s, while checking: in every row \& column number of elements that have not been assigned plus number of 1s or 0s are both at least $\frac{n}{2}$. While more sophisticated than brute force, this approach will visit every solution once, making it impractical for $n > 6$, since number of solutions is already 116,963,796,250 for $n = 8$.
+	
+	DP makes it possible to count number of solutions without visiting them all. Imagine backtracking values for 1st row -- what information would we require about remaining rows, in order to be able to accurately count solutions obtained for each 1st row value? Consider $k\times n$ boards, where $1\le k\le n$, whose $k$ rows contain $\frac{n}{2}$ 0s \& $\frac{n}{2}$ 1s. Function $f$ to which memoization is applied maps vectors of $n$ pairs of integers to number of admissible boards (solutions). There is 1 pair for each column, \& its 2 components indicate respectively number of 0s \& 1s that have yet to be placed in that column. Seek value of $f\left(\left(\frac{n}{2},\frac{n}{2}\right),\left(\frac{n}{2},\frac{n}{2}\right),\ldots,\left(\frac{n}{2},\frac{n}{2}\right)\right)$ ($n$ arguments or 1 vector of $n$ elements). Process of subproblem creation involves iterating over every 1 of $\binom{n}{\frac{n}{2}}$ possible assignments for top row of board, \& going through every column, subtracting 1 from appropriate element of pair for that column, depending on whether assignment for top row contained a 0 or a 1 at that position. If any 1 of results is negative, then assignment is invalid \& does not contribute to set of solutions (recursion stops). Otherwise, have an assignment for top row of $k\times n$ board \& recursively compute number of solutions to remaining $(k - 1)\times n$ board, adding numbers of solutions for every admissible assignment of top row \& returning sum, which is being memoized. Base case is trivial subproblem, which occurs for a $1\times n$ board. Number of solutions for this board is either 0 or 1, depending on whether vector is a permutation of $\frac{n}{2}$ $(0,1)$ \& $\frac{n}{2}$ $(1,0)$ pairs or not.
+	
+	E.g., in 1st 2 boards shown above sequences of vectors would be [$\ldots$] The number of solutions (sequence) A058527 in \href{https://en.wikipedia.org/wiki/On-Line_Encyclopedia_of_Integer_Sequences}{OEIS}) is $1,2,90,297200,116963796250,6736218287430460752,\ldots$ Links to MAPLE implementation of DP approach may be found among external links.
 	\item {\bf Checkerboard.}
 	\item {\bf Sequence alignment.}
 	\item {\bf Tower of Hanoi puzzle.}

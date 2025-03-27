@@ -1096,6 +1096,36 @@ Above explanation of origin of term may be inaccurate: According to {\sc Russell
 
 %------------------------------------------------------------------------------%
 
+\subsection{Wikipedia{\tt/}overlapping subproblems}
+``In CS, a \href{https://en.wikipedia.org/wiki/Computational_problem}{computational problem} is said to have {\it overlapping subproblems} if problem can be broken down into subproblems which are reused several times or a recursive algorithm for problem solves same subproblem over \& over rather than always generating new subproblems.
+
+-- Trong CS, 1 vấn đề tính toán được gọi là có {\it các vấn đề con chồng lấn} nếu vấn đề có thể được chia nhỏ thành các vấn đề con được sử dụng lại nhiều lần hoặc một thuật toán đệ quy để giải quyết cùng 1 vấn đề con nhiều lần thay vì luôn tạo ra các vấn đề con mới.
+
+E.g., problem of computing \href{https://en.wikipedia.org/wiki/Fibonacci_sequence}{Fibonacci sequence} exhibits overlapping subproblems. Problem of computing $n$th \href{https://en.wikipedia.org/wiki/Fibonacci_number}{Fibonacci number} $F(n)$, can be broken down into subproblems of computing $F(n - 1),F(n - 2)$, \& then adding the 2. Subproblem of computing $F(n - 1)$ can itself be broken down into a subproblem that involves computing $F(n - 2)$. Therefore, computation of $F(n - 2)$ is reused, \& Fibonacci sequence thus exhibits overlapping subproblems.
+
+A naive recursive approach to such a problem generally fails due to an \href{https://en.wikipedia.org/wiki/Exponential_time}{exponential complexity}. If problem also shares an \href{https://en.wikipedia.org/wiki/Optimal_substructure}{optimal substructure} property, DP is a good way to work it out.
+
+\subsubsection{Fibonacci sequence example}
+In following 2 implementations for calculating \href{https://en.wikipedia.org/wiki/Fibonacci_sequence}{Fibonacci sequence} {\tt fibonacci} uses regular recursion \& \verb|fibonacci_mem| uses \href{https://en.wikipedia.org/wiki/Memoization}{memoization}. \verb|fibonacci_mem| is much more efficient as value for any particular $n$ is computed only once.
+\begin{verbatim}
+	def fibonacci(n):
+	    if n <= 1:
+	        return n
+	    return fibonacci(n - 1) + fibonacci(n - 2)
+	def fibonacci_mem(n, cache):
+	    if n <= 1:
+	        return n
+	    if n in cache:
+	        return cache[n]
+	    cache[n] = fibonacci_mem(n - 1, cache) + fibonacci_mem(n - 2, cache)
+	    return cache[n]
+	print(fibonacci_mem(5, {}))  # 5
+	print(fibonacci(5))  # 5
+\end{verbatim}
+When executed, {\tt fibonacci} function computes value of some of numbers in sequence many times over, whereas \verb|fibonacci_mem| reuses value of $n$ which was computed previously [Figs.] Difference in performance may appear minimal with an $n$ value of 5; however, as $n$ increases, \href{https://en.wikipedia.org/wiki/Computational_complexity}{computational complexity} of original {\tt fibonacci} function grows exponentially. In contrast, \verb|fibonacci_mem| version exhibits a more linear increase in complexity.'' -- \href{https://en.wikipedia.org/wiki/Overlapping_subproblems}{Wikipedia{\tt/}overlapping subproblems}
+
+%------------------------------------------------------------------------------%
+
 \section{Miscellaneous}
 
 %------------------------------------------------------------------------------%

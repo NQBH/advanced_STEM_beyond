@@ -1096,6 +1096,41 @@ Above explanation of origin of term may be inaccurate: According to {\sc Russell
 
 %------------------------------------------------------------------------------%
 
+\subsection{Wikipedia{\tt/}optimal substructure}
+``In CS, a problem is said to have {\it optimal substructure} if an optimal solution can be constructed from optimal solutions of its subproblems. This property is used to determine usefulness of greedy algorithms for a problem.
+
+Typically, a \href{https://en.wikipedia.org/wiki/Greedy_algorithm}{greedy algorithm} is used to solve a problem with optimal substructure if it can be proven by induction that this is optimal at each step. Otherwise, provided problem exhibits \href{https://en.wikipedia.org/wiki/Overlapping_subproblems}{overlapping subproblems} as well, \href{https://en.wikipedia.org/wiki/Divide_and_conquer_algorithm}{divide-\&-conquer} methods or DP may be used. If there are no appropriate greedy algorithms \& problem fails to exhibit overlapping subproblems, often a lengthy but straightforward search of solution space is best alternative.
+
+In application of DP to mathematical optimization, \href{https://en.wikipedia.org/wiki/Richard_Bellman}{\sc Richard Bellman}'s \href{https://en.wikipedia.org/wiki/Bellman_equation#Bellman's_principle_of_optimality}{Principle of Optimality} is based on idea that in order to solve a dynamic optimization problem from some starting period $t$ to some ending period $T$, one implicitly has to solve subproblems starting from later dates $s$, where $t < s < T$. This is an example of optimal substructure. Principle of Optimality is used to derive \href{https://en.wikipedia.org/wiki/Bellman_equation}{Bellman equation}, which shows how value of problem starting from $t$ is related to value of problem starting from $s$.
+
+\subsubsection{Example}
+Consider finding a \href{https://en.wikipedia.org/wiki/Shortest_path_problem}{shortest path} for traveling between 2 cities by car, as illustrated in Fig. 1. Such an example is likely to exhibit optimal substructure. I.e., if shortest route from Seattle to Los Angeles passes through Portland \& then Sacramento, then shortest route from Portland to Los Angeles must pass through Sacramento too. I.e., problem of how to get from Portland to Los Angeles is nested inside problem of how to get from Seattle to Los Angeles. (Wavy lines in graph represent solutions to subproblems.)
+
+As an example of a problem that is unlikely to exhibit optimal substructure, consider problem of finding cheapest airline ticket from Buenos Aires to Moscow. Even if that ticket involves stops in Miami \& then London, can't conclude: cheapest ticket from Miami to Moscow stops in London, because price at which an airline sells a multi-flight trip is usually not sum of prices at which it would sell individual flights in trip.
+
+\subsubsection{Def}
+A slightly more formal def of optimal substructure can be given. Let a ``problem'' be a collection of ``alternatives'', \& let each alternative have an associated cost $c(a)$. Task: find a set of alternatives that minimizes $c(a)$. Suppose: alternatives can be \href{https://en.wikipedia.org/wiki/Partition_of_a_set}{partitioned} into subsets, i.e., each alternative belongs to only 1 subset. Suppose each subset has its own cost function. Minima of each of these cost functions can be found, as can minima of global cost function, {\it restricted to same subsets}. If these minima match for each subsets, then it's almost obvious that a global minimum can be picked  not out of full set of alternatives, but out of only set that consists of minima of smaller, local cost functions we have defined. If minimizing local functions is a problem of ``lower order'', \& (specifically) if, after a finite number of these reductions, problem becomes trivial, then problem has an optimal substructure.
+
+\subsubsection{Problems with optimal substructure}
+
+\begin{itemize}
+	\item \href{https://en.wikipedia.org/wiki/Longest_common_subsequence_problem}{Longest common subsequence problem}
+	\item \href{https://en.wikipedia.org/wiki/Longest_increasing_subsequence}{Longest increasing subsequence}
+	\item \href{https://en.wikipedia.org/wiki/Longest_palindromic_substring}{Longest palindromic substring}
+	\item \href{https://en.wikipedia.org/wiki/Shortest_path_problem#All-pairs_shortest_paths}{All-Pairs Shortest Path}
+	\item Any problem that can be solved by DP.
+\end{itemize}
+
+\subsubsection{Problems without optimal substructure}
+
+\begin{itemize}
+	\item \href{https://en.wikipedia.org/wiki/Longest_path_problem}{Longest path problem}
+	\item \href{https://en.wikipedia.org/wiki/Addition-chain_exponentiation}{Addition-chain exponentiation}
+	\item {\it Least-cost airline fare.} Using online flight search, will frequently find: cheapest flight from airport A to airport B involves a single connection through airport C, but cheapest flight from airport A to airport C involves a connection through some other airport D. However, if problem takes maximum number of layovers as a parameter, then problem has optimal substructure. Cheapest flight from A to B that involves at most $k$ layovers is either direct flight; or cheapest flight from A to some airport C that involves at most $t$ layovers for some integer $t$ with $0\le t < k$, plus cheapest flight from C to B that involves at most $k - 1 - t$ layovers.'' -- \href{https://en.wikipedia.org/wiki/Optimal_substructure}{Wikipedia{\tt/}optimal substructure}
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
 \subsection{Wikipedia{\tt/}overlapping subproblems}
 ``In CS, a \href{https://en.wikipedia.org/wiki/Computational_problem}{computational problem} is said to have {\it overlapping subproblems} if problem can be broken down into subproblems which are reused several times or a recursive algorithm for problem solves same subproblem over \& over rather than always generating new subproblems.
 

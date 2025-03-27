@@ -902,16 +902,197 @@ If sub-problems can be nested recursively inside larger problems, so that dynami
 	DP makes it possible to count number of solutions without visiting them all. Imagine backtracking values for 1st row -- what information would we require about remaining rows, in order to be able to accurately count solutions obtained for each 1st row value? Consider $k\times n$ boards, where $1\le k\le n$, whose $k$ rows contain $\frac{n}{2}$ 0s \& $\frac{n}{2}$ 1s. Function $f$ to which memoization is applied maps vectors of $n$ pairs of integers to number of admissible boards (solutions). There is 1 pair for each column, \& its 2 components indicate respectively number of 0s \& 1s that have yet to be placed in that column. Seek value of $f\left(\left(\frac{n}{2},\frac{n}{2}\right),\left(\frac{n}{2},\frac{n}{2}\right),\ldots,\left(\frac{n}{2},\frac{n}{2}\right)\right)$ ($n$ arguments or 1 vector of $n$ elements). Process of subproblem creation involves iterating over every 1 of $\binom{n}{\frac{n}{2}}$ possible assignments for top row of board, \& going through every column, subtracting 1 from appropriate element of pair for that column, depending on whether assignment for top row contained a 0 or a 1 at that position. If any 1 of results is negative, then assignment is invalid \& does not contribute to set of solutions (recursion stops). Otherwise, have an assignment for top row of $k\times n$ board \& recursively compute number of solutions to remaining $(k - 1)\times n$ board, adding numbers of solutions for every admissible assignment of top row \& returning sum, which is being memoized. Base case is trivial subproblem, which occurs for a $1\times n$ board. Number of solutions for this board is either 0 or 1, depending on whether vector is a permutation of $\frac{n}{2}$ $(0,1)$ \& $\frac{n}{2}$ $(1,0)$ pairs or not.
 	
 	E.g., in 1st 2 boards shown above sequences of vectors would be [$\ldots$] The number of solutions (sequence) A058527 in \href{https://en.wikipedia.org/wiki/On-Line_Encyclopedia_of_Integer_Sequences}{OEIS}) is $1,2,90,297200,116963796250,6736218287430460752,\ldots$ Links to MAPLE implementation of DP approach may be found among external links.
-	\item {\bf Checkerboard.}
-	\item {\bf Sequence alignment.}
-	\item {\bf Tower of Hanoi puzzle.}
-	\item {\bf Egg dropping puzzle.}
-	\item {\bf Matrix chain multiplication.}
+	\item {\bf Checkerboard.} Consider a \href{https://en.wikipedia.org/wiki/Checkerboard}{checkerboard} with $n\times n$ squares \& a cost function {\tt c(i, j)} which returns a cost associated with square {\tt(i,j)} $i$: row, $j$: column. E.g., on a [$5\times5$ checkerboard]. Say there was a checker that could start at any square on 1st rank (i.e., row) \& wanted to know shortest path (sum of minimum costs at each visited rank) to get to last rank; assuming checker could move only diagonally left forward, diagonally right forward, or straight forward. I.e., a checker on $(1,3)$ can move to $(2,2),(2,3)$, or $(2,4)$. This problem exhibits {\it optimal substructure}. I.e., solution to entire problem relies on solutions to subproblems. Define a function $q(i,j)\coloneqq$ minimum cost to reach square $(i,j)$. Starting at rank $n$ \& descending to rank 1, compute value of this function for all squares at each successive rank. Picking square that holds minimum value at each rank gives shortest path between rank $n$ \& rank 1.
+	
+	Function $q(i,j) =$ minimum cost to get to any of 3 squares below it (since those are the only squares that can reach it) plus $c(i,j)$. E.g.: $q(A) = \min(q(B),q(C),q(D)) + c(A)$. Define $q(i,j)$ in somewhat more general terms:
+	\begin{equation*}
+		q(i,j) = \left\{\begin{split}
+			&\infty&&\mbox{if } j < 1\mbox{ or } j > n,\\
+			&c(i,j)&&\mbox{if } i = 1,\\
+			&\min(q(i - 1,j - 1),q(i - 1,j),q(i - 1,j + 1)) + c(i,j)&&\mbox{otherwise}.
+		\end{split}\right.
+	\end{equation*}
+	1st line of this equation deals with a board modeled as squares indexed on 1 at lowest bound \& $n$ at highest bound. 2nd line specifies what happens at 1st rank; providing a base case. 3rd line, recursion, is important part. It represents $A,B,C,D$ terms in example. From this def can derive straightforward recursive code for $q(i,j)$. In following pseudo code, $n$: size of board, $c(i,j)$: cost function, $\min()$ returns minimum of a number of values.
+	\begin{verbatim}
+		function minCost(i, j)
+		     if j < 1 or j > n
+		          return infinity
+		     else if i = 1
+		          return c(i, j)
+		     else
+		          return min(minCost(i - 1, j - 1), minCost(i - 1, j), minCost(i - 1, j + 1)) + c(i, j)
+	\end{verbatim}
+	This function only computes path cost, not actual path. Discuss actual path. This, like Fibonacci-numbers example, is horribly slow because it too exhibits {\it overlapping subproblems} attribute. I.e., it recomputes same path costs over \& over. However, can compute it much faster in a bottom-up fashion if store path costs in a 2D array {\tt q[i, j]} rather than using a function. This avoids recomputation; all values needed for array {\tt q[i, j]} are computed ahead of time only once. Precomputed values for $(i,j)$ are simply looked up whenever needed.
+	
+	Also need to know what actual shortest path is. To do this, use another array {\tt p[i, j]}; a {\it predecessor array}. This array records path to any square $s$. Predecessor of $s$ is modeled as an offset relative to index (in {\tt q[i, j]}) of precomputed path cost of $s$. To reconstruct complete path, lookup predecessor of $s$, then predecessor of that square, then predecessor of that square, \& so on recursively, until reach starting square. Consider following pseudocode:
+	\begin{verbatim}
+		function computeShortestPathArrays()
+		    for x from 1 to n
+		        q[1, x] := c(1, x)
+		    for y from 1 to n
+		        q[y, 0] := infinity
+		        q[y, n + 1] := infinity
+		    for y from 2 to n
+		        for x from 1 to n
+		            m := min(q[y-1, x-1], q[y-1, x], q[y-1, x+1])
+		            q[y, x] := m + c(y, x)
+		            if m = q[y-1, x-1]
+		                p[y, x] := -1
+		            else if m = q[y-1, x]
+		                p[y, x] :=  0
+		            else
+		                p[y, x] :=  1
+	\end{verbatim}
+	Now the rest is a simple matter of finding minimum \& printing it.
+	\begin{verbatim}
+		function computeShortestPath()
+		    computeShortestPathArrays()
+		    minIndex := 1
+		    min := q[n, 1]
+		    for i from 2 to n
+		        if q[n, i] < min
+		            minIndex := i
+		            min := q[n, i]
+		    printPath(n, minIndex)
+		
+		function printPath(y, x)
+		    print(x)
+		    print("<-")
+		    if y = 2
+		        print(x + p[y, x])
+		    else
+		        printPath(y-1, x + p[y, x])
+	\end{verbatim}
+	\item {\bf Sequence alignment.} In \href{https://en.wikipedia.org/wiki/Genetics}{genetics}, \href{https://en.wikipedia.org/wiki/Sequence_alignment}{sequence alignment} is an important application where DP is essential. Typically, problem consists of transforming 1 sequence into another using edit operations that replace, insert, or remove an element. Each operation has an associated cost, \& goal: find \href{https://en.wikipedia.org/wiki/Edit_distance}{sequence of edits with lowest total cost}.
+	
+	Problem can be stated naturally as a recursion, a sequence $A$ is optimally edited into a sequence $B$ by either:
+	\begin{enumerate}
+		\item inserting 1st character of $B$, \& performing an optimal alignment of $A$ \& tail of $B$
+		\item deleting 1st character of $A$, \& performing optimal alignment of tail of $A$ \& $B$
+		\item replacing 1st character of $A$ with 1st character of $B$, \& performing optimal alignments of tails of $A$ \& $B$.
+	\end{enumerate}
+	Partial alignments can be tabulated in a matrix, where cell(i, j) contains cost of optimal alignment of A[1..i] to B[1..j]. Cost in cell(i, j) can be calculated by adding cost of relevant operations to cost of its neighboring cells, \& selecting optimum.
+	
+	Different variants exist, see \href{https://en.wikipedia.org/wiki/Smith%E2%80%93Waterman_algorithm}{Smith--Waterman algorithm} \& \href{https://en.wikipedia.org/wiki/Needleman%E2%80%93Wunsch_algorithm}{Needleman--Wunsch algorithm}.
+	\item {\bf Tower of Hanoi puzzle.} \href{https://en.wikipedia.org/wiki/Tower_of_Hanoi}{Tower of Hanoi} or Towers of Hanoi is a \href{https://en.wikipedia.org/wiki/Mathematical_game}{mathematical game} or \href{https://en.wikipedia.org/wiki/Puzzle}{puzzle}. It consists of 3 rods, \& a number of disks of different sizes which can slide onto any rod. Puzzle starts with disks in a neat stack in ascending order of size on 1 rod, smallest at top, thus making a conical shape.
+	
+	Objective of puzzle: move entire stack to another rod, obey rules:
+	\begin{enumerate}
+		\item Only 1 disk may be moved at a time.
+		\item Each move consists of taking upper disk from 1 of rods \& sliding it onto another rod, on top of other disks that may already be present on that rod.
+		\item No disk may be placed on top of a smaller disk.
+	\end{enumerate}
+	DP solution consists of solving \href{https://en.wikipedia.org/wiki/Bellman_equation}{functional equation}
+	\begin{equation*}
+		S(n,h,t) = S(n - 1,h,not(h,t));S(1,h,t);S(n - 1,not(h,t),t)
+	\end{equation*}
+	where $n$ denotes number of disks to be moved, $h$ denotes home rod, $t$ denotes target rod, $not(h,t)$ denotes 3rd rod (neither $h$ nor $t$), ``;'' denotes concatenation, \& $S(n,h,t)\coloneqq$ solution to a problem consisting of $n$ disks that are to be moved from rod $h$ to rod $t$. For $n = 1$ problem is trivial, namely $S(1,h,t) =$ ``move a disk from rod $h$ to rod $t$'' (there is only 1 disk left).
+	
+	Number of moves required by this solution is $2^n - 1$. If objective is to {\it maximize} number of moves (without cycling) then DP \href{https://en.wikipedia.org/wiki/Bellman_equation}{functional equation} is slightly more complicated \& $3^n - 1$ moves are required.
+	\item {\bf Egg dropping puzzle.} A description of instance of this famous puzzle involving $N = 2$ eggs \& a building with $H = 36$ floors:
+	\begin{problem}
+		Suppose wish to know which stories in a 36-story building are safe to drop eggs from, \& which will cause eggs to break on landing (using U.S. English terminology, in which 1st floor is at ground level). Make a few assumptions:
+		\begin{itemize}
+			\item An egg that survives a fall can be used again.
+			\item A broken egg must be discarded.
+			\item Effect of a fall is same for all eggs.
+			\item If an egg breaks when dropped, then it would break if dropped from a higher window.
+			\item If an egg survives a fall, then it would survive a shorter fall.
+			\item It is not ruled out: 1st-floor windows break eggs, nor is it ruled out that eggs can survive 36th-floor windows.
+		\end{itemize}
+		If only 1 egg is available \& wish to be sure of obtaining right result, experiment can be carried out in only 1 way. Drop egg from 1st-floor window; if it survives, drop it from 2nd-floor window. Continue upward until it breaks. In worst case, this method may require 36 droppings. Suppose 2 eggs are available. What is lowest number of egg-droppings that is guaranteed to work in all cases?
+	\end{problem}
+	To derive a DP functional equation for this puzzle, let {\it state} of DP model be a pair $s = (n,k)$, where $n =$ number of test eggs available, $n = 0,1,,\ldots,N - 1$, $k =$ number of (consecutive) floors yet to be tested, $k = 0,1,\ldots,H - 1$. E.g., $s = (2,6)$ indicates: 2 test eggs are available \& 6 (consecutive) floors ar yet to be tested. Initial state of process is $s = (N,H)$ where $N$ denotes number of test eggs available at commencement of experiment. Process terminates either when there are no more test eggs $n = 0$ or when $k = 0$, whichever occurs 1st. If termination occurs at state $s = (0,k)$ \& $k > 0$, then test failed. Now let $W(n,k) =$  minimum number of trials required to identify value of critical floor under worst-case scenario given that process is in state $s = (n,k)$. Then it can be shown: $W(n,k) = 1 + \min\{\max(W(n - 1,x - 1), W(n,k - x)):x = 1,\ldots,k\}$ with $W(n,0) = 0$, $\forall n\in\mathbb{N}^\star$ \& $W(1,k) = k$ for all $k$. Easy to solve this equation iteratively by systematically increasing values of $n,k$.
+	\begin{itemize}
+		\item {\bf Faster DP solution using a different parametrization.} Notice above solution takes $O(nk^2)$ time with a DP solution. This can be improved to $O(nk\log k)$ time by binary searching on optiaml $x$ in above recurrence, since $W(n - 1,x - 1)$ is increasing in $x$ while $W(n,k - x)$ is decreasing in $x$, thus a local minimum of $\max(W(n - 1,x - 1),W(n,k - x))$ is a global minimum. Also, by storing optimal $x$ for each cell in DP table \& referring to its value for prev cell, optimal $x$ for each cell can be found in constant time, improving it to $O(nk)$ time. However, there is an even faster solution that involves a different parametrization of problem: Let $k$: total number of floors s.t. eggs break when dropped from $k$th floor (example above is equivalent to taking $k = 37$). Let $m$: minimum floor from which egg must be dropped to be broken. Let $f(t,n)$: maximum number of values of $m$ that are distinguishable using $t$ tries \& $n$ eggs. Then $f(t,0) = f(0,n) = 1$ $\forall t,n\ge0$. Let $a$: floor from which 1st egg is dropped in optimal strategy. If 1st egg broke, $m$ is from 1 to $a$ \& distinguishable using at most $t - 1$ tries \& $n - 1$ eggs. If 1st eggs did not break, $m$ is from $a + 1$ to $k$ \& distinguishable using $t - 1$ tries \& $n$ eggs. Therefore, $f(t,n) = f(t - 1,n - 1) + f(t - 1,n)$. Then problem is equivalent to finding minimum $x$ s.t. $f(x,n)\ge k$. To do so, could compute $\{f(t,i):0\le i\le n\}$ in order of increasing $t$, which would take $O(nx)$ time. Thus, if separately handle case of $n = 1$, algorithm would take $O(n\sqrt{k})$ time. But recurrence relation can in fact be solved, giving $f(t,n) = \sum_{i=0}^n \binom{t}{i}$, which can be computed in $O(n)$ time using identity $\binom{t}{i + 1} = \binom{t}{i}\dfrac{t - i}{i + 1}$, $\forall i\ge0$. Since $f(t,n)\le f(t + 1,n)$, $\forall t\ge0$, can binary search on $t$ to find $x$, giving an $O(n\log k)$ algorithm.
+	\end{itemize}
+	\item {\bf Matrix chain multiplication.} \href{https://en.wikipedia.org/wiki/Matrix_chain_multiplication}{Wikipedia{\tt/}matrix chain multiplication}. Matrix chain multiplication is a well-known example that demonstrates utility of DP. E.g., engineering applications often have to multiply a chain of matrices. It is not surprising to find matrices of large dimensions, e.g. $100\times100$. Therefore, our task: multiply matrices $A_1,\ldots,A_n$. Matrix multiplication is not commutative, but is associative; \& can multiply only 2 matrices at a time. So, can multiply this chain of matrices in many different ways, e.g.: [$\ldots$] There are numerous ways to multiply this chain of matrices. They will all produce same final result, however they will take more or less time to compute, based on which particular matrices are multiplied. If matrix $A$ has dimensions $m\times n$ \& matrix $B$ has dimension $n\times q$, then matrix $A = AB$ will have dimensions $m\times Q$, \& will require $mnq$ scalar multiplications (using a simplistic \href{https://en.wikipedia.org/wiki/Matrix_multiplication_algorithm}{matrix multiplication algorithm} for purposes of illustration).
+	
+	E.g., multiply matrices $A,B,C$. Assume: their dimensions are $m\times n,n\times p,p\times s$, resp. Matrix $ABC$ will be of size $m\times s$ \& can be calculated in 2 ways shown:
+	\begin{enumerate}
+		\item $A(BC)$: this order of matrix multiplication will require $nps + mns$ scalar multiplications.
+		\item $(AB)C$: this order of matrix multiplication will require $mnp + mps$ scalar calculations.
+	\end{enumerate}
+	Assume $m = 10,n = 100,p = 10,s = 1000$. So, 1st way to multiply chain will require $10^6 + 10^6$ calculations. 2nd way will require only $10000 + 100000$ calculations. Obviously, 2nd way is faster, \& should multiply matrices using that arrangement of parenthesis.
+	
+	Therefore, our conclusion: order of parenthesis matters, \& our task: find optimal order of parenthesis.
+	
+	At this point, have several choices, 1 of which: design a DP algorithm that will split problem into overlapping problems \& calculate optimal arrangement of parenthesis. DP solution is presented below.
+	
+	Call $m[i,j]$ minimum number of scalar multiplications needed to multiply a chain of matrices from matrix $i$ to matrix $j$, i.e., $A_i\cdots A_j$, i.e., $i\le j$. Split chain at some matrix $k$, s.t. $i\le k\le j$, \& try to find out which combination produces minimum $m[i,j]$. Formula is:
+	\begin{verbatim}
+		if i = j, m[i,j]= 0
+		if i < j, m[i,j]= min over all possible values of k (m[i,k]+m[k+1,j] + p[i-1]*p[k]*p[j]
+	\end{verbatim}
+	where $k$ ranges from $i$ to $j - 1$, $p_{i - 1}$: row dimension of matrix $i$, $p_k$: column dimension of matrix $k$, $p_j$: column dimension of matrix $j$. This formula can be coded as shown below, where input parameter ``chain'' is chain of matrices, i.e., $A_1,\ldots,A_n$:
+	\begin{verbatim}
+		function OptimalMatrixChainParenthesis(chain)
+		    n = length(chain)
+		    for i = 1, n
+		        m[i,i] = 0    // Since it takes no calculations to multiply one matrix
+		    for len = 2, n
+		        for i = 1, n - len + 1
+		            j = i + len - 1
+		            m[i,j] = infinity      // So that the first calculation updates
+		            for k = i, j - 1
+		                q = m[i, k] + m[k+1, j] + p[i-1]*p[k]*p[j]
+		                if q < m[i, j]     // The new order of parentheses is better than what we had
+		                    m[i, j] = q    // Update
+		                    s[i, j] = k    // Record which k to split on, i.e. where to place the parenthesis
+	\end{verbatim}
+	So far, have calculated values for all possible $m[i,j]$, minimum number of calculations to multiply a chain from matrix $i$ to matrix $j$, \& have recorded corresponding ``split point'' $s[i,j]$. E.g., if multiplying chain $A_1A_2A_3A_4$, \& it turns out $m[1,3] = 100$ \& $s[1,3] = 2$, i.e. optimal placement of parenthesis for matrices 1 to 3 is $(A_1A_2)A_3$ \& to multiply those matrices will require 100 scalar calculations.
+	
+	This algorithm will produce ``tables'' $m[\cdot,\cdot],s[\cdot,\cdot]$ that will have entries for all possible values of $i,j$. Final solution for entire chain is $m[1,n]$, with corresponding split at $s[1,n]$. Unraveling solution will be recursive, starting from top \& continuing until reach base case, i.e., multiplication of single matrices.
+	
+	Therefore, next step: actually split chain, i.e., place parenthesis where they (optimally) belong. For this purpose could use algorithm:
+	\begin{verbatim}
+		function PrintOptimalParenthesis(s, i, j)
+		    if i = j
+		        print "A"i
+		    else
+		        print "(" 
+		        PrintOptimalParenthesis(s, i, s[i, j]) 
+		        PrintOptimalParenthesis(s, s[i, j] + 1, j) 
+		        print ")"
+	\end{verbatim}
+	Of course, this algorithm is not useful for actual multiplication. This algorithm is just a user-friendly way to see what result looks like. To actually multiply matrices using proper splits, need algorithm:
+	\begin{verbatim}
+		function MatrixChainMultiply(chain from 1 to n)       // returns the final matrix, i.e. A1×A2×... ×An
+		    OptimalMatrixChainParenthesis(chain from 1 to n)   // this will produce s[ . ] and m[ . ] "tables"
+		    OptimalMatrixMultiplication(s, chain from 1 to n)  // actually multiply
+		function OptimalMatrixMultiplication(s, i, j)   // returns the result of multiplying a chain of matrices from Ai to Aj in optimal way
+		    if i < j
+		        // keep on splitting the chain and multiplying the matrices in left and right sides
+		        LeftSide = OptimalMatrixMultiplication(s, i, s[i, j])
+		        RightSide = OptimalMatrixMultiplication(s, s[i, j] + 1, j)
+		        return MatrixMultiply(LeftSide, RightSide)
+		    else if i = j
+		        return Ai   // matrix at position i
+		    else
+		        print "error, i <= j must hold"
+	    function MatrixMultiply(A, B)    // function that multiplies two matrices
+	        if columns(A) = rows(B)
+	            for i = 1, rows(A)
+	                for j = 1, columns(B)
+	                    C[i, j] = 0
+	                    for k = 1, columns(A)
+	                        C[i, j] = C[i, j] + A[i, k]*B[k, j]
+	                    return C
+	        else
+	            print "error, incompatible dimensions."
+	\end{verbatim}
 \end{enumerate}
 
 \subsubsection{History of name}
+Term {\it dynamic programming} was originally used in 1940s by {\sc Richard Bellman} to describe process of solving problems where one needs to find best decisions one after another. By 1953, he refined this to modern meaning, referring specifically to nesting smaller decision problems inside larger decisions, \& field was therefore recognized by IEEE as a \href{https://en.wikipedia.org/wiki/Systems_analysis}{system analysis} \& engineering topic. {\sc Bellman}'s contribution is remembered in name of Bellman equation, a central result of DP which restates an optimization problem in recursive form.
 
-'' -- \href{https://en.wikipedia.org/wiki/Dynamic_programming}{Wikipedia{\tt/}dynamic programming}
+{\sc Bellman} explains reasoning behind term DP in his autobiography, {\it Eye of the Hurricane: An Autobiography}:
+\begin{quote}
+	``I spent Fall quarter (of 1950) at \href{https://en.wikipedia.org/wiki/RAND_Corporation}{RAND}. My 1st task was to find a name for multistage decision processes. An interesting question is, ``Where did name, DP, come from?'' 1950s were not good years for mathematical research. We had a very interesting gentleman in Washing named \href{https://en.wikipedia.org/wiki/Charles_Erwin_Wilson}{\sc Wilson}. He was Secretary of Defense, \& actually had a pathological fear \& hatred of word ``research''. I'm not using term lightly; I'm using it precisely. His face would suffuse, he would turn red, \& he would get violent if people used term research in his presence. Can imagine how he felt, then, about term mathematical. RAND Corporation was employed by Air Force, \& Air Force had {\sc Wilsn} as its boss, essentially. Hence, I felt I had to do sth to shield {\sc Wilson} \& Air Force from fact I was really doing mathematics inside RAND Corporation. What title, what name, could I choose? In 1st place I was interested in planning, in decision making, in thinking. But planning, is not a good word for various reasons. I decided therefore to use word ``programming''. I wanted to get across idea that this was dynamic, this was multistage, this was time-varying. I thought, let's kill 2 birds with 1 stone. Let's take a word that has an absolutely precise meaning, namely dynamic, in classical physical sense. It also has a very interesting property as an adjective, \& i.e., impossible to use word dynamic in a pejorative sense (ý nghĩa miệt thị). Try thinking of some combination that will possibly give it a pejorative meaning. Impossible. Thus, I thought dynamic programming was a good name. It was sth not even a Congressman could object to. So I used it as an umbrella for my activities.'' -- {\sc Richard Bellman}, {\it Eye of the Hurricane: An Autobiography} (1984, p. 159)
+\end{quote}
+Word {\it dynamic} was chosen by {\sc Bellman} to capture time-varying aspect of problems, \& because it sounded impressive. Word {\it programming} referred to use of method to find an optimal {\it program}, in sense of a military schedule for training or logistics. This usage is same as that in phrases \href{https://en.wikipedia.org/wiki/Linear_programming}{linear programming} \& mathematical programming, a synonym for mathematical optimization.
+
+Above explanation of origin of term may be inaccurate: According to {\sc Russell \& Norvig}, above story ``cannot be strictly true, because his 1st paper using the term (Bellman1952) appeared before {\sc Wilson} became Secretary of Defense in 1953.'' Also, \href{https://en.wikipedia.org/wiki/Harold_J._Kushner}{\sc Harold J. Kushner} stated in a speech: ``On other hand, when I asked {\sc Bellman} same question, he replied: he was trying to upstage \href{https://en.wikipedia.org/wiki/George_Dantzig}{\sc Dantzig}'s linear programming by adding dynamic. Perhaps both motivations were true.'''' -- \href{https://en.wikipedia.org/wiki/Dynamic_programming}{Wikipedia{\tt/}dynamic programming}
 
 %------------------------------------------------------------------------------%
 

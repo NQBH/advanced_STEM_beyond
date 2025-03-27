@@ -1161,6 +1161,41 @@ When executed, {\tt fibonacci} function computes value of some of numbers in seq
 
 %------------------------------------------------------------------------------%
 
+\subsection{Wikipedia{\tt/}value function}
+``{\it Value function} of an \href{https://en.wikipedia.org/wiki/Optimization_problem}{optimization problem} gives value attained by \href{https://en.wikipedia.org/wiki/Objective_function}{objective function} at a solution, while only depending on \href{https://en.wikipedia.org/wiki/Parameter}{parameters} of problem. In a \href{https://en.wikipedia.org/wiki/Control_theory}{controlled} \href{https://en.wikipedia.org/wiki/Dynamical_system}{dynamical system}, value function represents optimal payoff of system over interval $[t,t_1]$ when started at time-$t$ \href{https://en.wikipedia.org/wiki/State_variable}{state variable} $x(t) = x$. If objective function represents some cost that is to be minimized, value function can be interpreted as cost to finish optimal program, \& is thus referred to as ``cost-to-go function''. In an economic context, where objective function usually represents \href{https://en.wikipedia.org/wiki/Utility}{utility}, value function is conceptually equivalent to \href{https://en.wikipedia.org/wiki/Indirect_utility_function}{indirect utility function}.
+
+In a problem of \href{https://en.wikipedia.org/wiki/Optimal_control}{optimal control}, value function is defined as supremum of objective function taken over set of admissible controls. Given $(t_0,x_0)\in[0,t_1]\times\mathbb{R}^d$, a typical optimal control problem is to
+\begin{equation*}
+	\mbox{maximize } J(t_0,x_0;u) = \int_{t_0}^{t_1} I(t,x(t),u(t))\,{\rm d}t + \phi(x(t_1))\mbox{ subject to }\frac{dx(t)}{dt} = f(t,x(t),u(t))
+\end{equation*}
+with initial state variable $x(t_0) = x_0$. Objective function $J(t_0,x_0;u)$ is to be maximized over all admissible controls $u\in U[t_0,t_1]$, where $u$ is a \href{https://en.wikipedia.org/wiki/Measurable_function}{Lebesgue measurable function} from $[t_0,t_1]$ to some prescribed arbitrary set in $\mathbb{R}^m$. Value function is then defined as
+\begin{equation*}
+	V(t,x(t)) = \max_{u\in U} \int_t^{t_1} I(\tau,x(\tau),u(\tau))\,{\rm d}\tau + \phi(x(t_1)),
+\end{equation*}
+with $V(t_1,x(t_1)) = \phi(x(t_1))$, where $\phi(x(t_1))$ is ``scrap value''. If optimal pair of control \& state trajectories is $(x^*,u^*)$, then $V(t_0,x_0) = J(t_0,x_0;u^*)$. Function $h$ that gives a optimal control $u^*$ based on current state $x$ is called a {\it feedback control policy}, or simply a {\it policy function}.
+
+{\sc Bellman}'s principle of optimality roughly states: any optimal policy at time $t$, $t_0\le t\le t_1$ taking current state $x(t)$ as ``new'' initial condition must be optimal for remaining problem. If value function happens to be continuous differentiable, this gives rise to an important PDE known as \href{https://en.wikipedia.org/wiki/Hamilton%E2%80%93Jacobi%E2%80%93Bellman_equation}{Hamilton--Jacobi--Bellman equation}
+\begin{equation*}
+	-\frac{\partial V(t,x)}{\partial t} = \max_u \left\{I(t,x,u) + \frac{\partial V(t,x)}{\partial x}f(t,xu)\right\},
+\end{equation*}
+where \href{https://en.wiktionary.org/wiki/maximand}{maximand} on RHS can also be rewritten as \href{https://en.wikipedia.org/wiki/Hamiltonian_(control_theory)}{Hamiltonian} $H(t,x,u,\lambda) = I(t,x,u) + \lambda(t)f(t,x,u)$, as
+\begin{equation*}
+	-\frac{\partial V(t,x)}{\partial t} = \max_u H(t,x,u,\lambda)
+\end{equation*}
+with $\partial_xV(t,x) = \lambda(t)$ playing role of \href{https://en.wikipedia.org/wiki/Costate_variable}{costate variables}. Given this def, further have $\frac{d\lambda(t)}{dt} = \frac{\partial^2V(t,x)}{\partial x\partial t} + \frac{\partial^2V(t,x)}{\partial x^2}\cdot f(x)$, \& after differentiating both sides of HJB equation w.r.t. $x$
+\begin{equation*}
+	-\frac{\partial^2V(t,x)}{\partial t\partial x} = \frac{\partial I}{\partial x} + \frac{\partial^2V(t,x)}{\partial x^2}f(x) + \frac{\partial V(t,x)}{\partial x}\frac{\partial f(x)}{\partial x},
+\end{equation*}
+which after replacing appropriate terms recovers \href{https://en.wikipedia.org/wiki/Costate_equation}{costate equation}
+\begin{equation*}
+	-\dot{\lambda}(t) = \partial_xH = \partial_xI + \lambda(t)\partial_xf(x),
+\end{equation*}
+where $\dot{\lambda}(t)$ is \href{https://en.wikipedia.org/wiki/Newton_notation}{Newton notation} for derivative w.r.t. time.
+
+Value function is unique \href{https://en.wikipedia.org/wiki/Viscosity_solution}{viscosity solution} to Hamilton--Jacobi--Bellman equation. In an \href{https://en.wikipedia.org/wiki/Online_algorithm}{online} closed-loop appropriate optimal control, value function is also a \href{https://en.wikipedia.org/wiki/Lyapunov_function}{Lyapunov function} that establishes global asymptotic stability of closed-loop system.'' -- \href{https://en.wikipedia.org/wiki/Value_function}{Wikipedia{\tt/}value function}
+
+%------------------------------------------------------------------------------%
+
 \section{Miscellaneous}
 
 %------------------------------------------------------------------------------%

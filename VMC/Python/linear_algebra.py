@@ -21,8 +21,10 @@ detA = A.det()
 print(detA)
 print(factor(detA))
 
-# ky yeu VMC2024 Prob. 5.1
 # source: https://www.geeksforgeeks.org/python-sympy-matrix-diagonalize-method/
+
+# ky yeu VMC2024 Prob. 5.1
+print('# ky yeu VMC2024 Prob. 5.1')
 from sympy import *
 X = Matrix([[1, 0, 0], [5, 2, 0], [4, 3, 2]])
 print("Matrix : {} ".format(X))
@@ -32,7 +34,11 @@ print(X.eigenvals())
 # print("Diagonal of a matrix : {}".format(P))
 # print("Diagonal of a matrix : {}".format(D))
 
+# ky yeu VMC2024 Prob. 5.2
+
+
 # ky yeu VMC2024 Prob. 5.3
+print('# ky yeu VMC2024 Prob. 5.3')
 A = Matrix([[7, -12, -2], [3, -4, 0], [-2, 0, -2]])
 print("Matrix : {} ".format(A))
 print(A.eigenvals())
@@ -40,3 +46,20 @@ print(A.eigenvals())
 P, D = A.diagonalize()
 print("Diagonal of a matrix : {}".format(P))
 print("Diagonal of a matrix : {}".format(D))
+
+# ky yeu VMC2024 Prob. 5.4
+print('# ky yeu VMC2024 Prob. 5.4')
+A = Matrix([[1, 2, 1], [3, 0, 1], [0, 2, 2]])
+print("Matrix : {} ".format(A))
+print(A.eigenvals())
+# diagonalize A
+P, D = A.diagonalize()
+print("Diagonal of a matrix : {}".format(P))
+print("Diagonal of a matrix : {}".format(D))
+
+# ky yeu VMC2024 Prob. 6.4
+print('# ky yeu VMC2024 Prob. 6.4')
+A = Matrix([[0, 1, 0], [-4, 4, 0], [-2, 1, 2]])
+print("Matrix : {} ".format(A))
+print(A.eigenvals())
+# diagonalize A

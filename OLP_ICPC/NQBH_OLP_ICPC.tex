@@ -9,7 +9,7 @@
 \usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
 \allowdisplaybreaks
 \newtheorem{assumption}{Assumption}
-\newtheorem{baitoan}{}
+\newtheorem{baitoan}{Bài toán}
 \newtheorem{cauhoi}{Câu hỏi}
 \newtheorem{conjecture}{Conjecture}
 \newtheorem{corollary}{Corollary}
@@ -159,6 +159,103 @@ Về mặt toán học, kiểu dữ liệu mảng là dãy số hữu hạn $(a_
 	\item C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C++/find_mid.cpp}.
 	\item Python: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/Python/find_mid.py}.
 \end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\section{Ad Hoc Problems}
+
+\begin{itemize}\sf
+	\item {\bf ad hoc} [a] (from Latin) arranged or happening when necessary \& not planned in advance; [adv] (from Latin) in a way that is arranged or happens when necessary \& is not planned in advance.
+	
+	-- (từ tiếng Latin) được sắp xếp hoặc xảy ra khi cần thiết \& không được lên kế hoạch trước; [adv] (từ tiếng Latin) theo cách được sắp xếp hoặc xảy ra khi cần thiết \& không được lên kế hoạch trước.
+\end{itemize}
+
+\subsection{Solving Ad Hoc Problems by Mechanism Analysis}
+
+\begin{problem}[\cite{Wu_Wang2018}, 1.1.1, p. 1, Factstone Benchmark]
+	{\sc Amtel} has announced that it will release a 128-bit computer chip by 2010, a 256-bit computer by 2020, \& so on, continuing its strategy of doubling the word size every 10 years. ({\sc Amtel} released a 64-bit computer in 2000, a 32-bit computer in 1990, a 16-bit computer in 1980, an 8-bit computer in 1970, \& a 4-bit computer, its 1st, in 1960.) {\sc Amtel} will use a new benchmark -- the {\rm Factstone} -- to advertise the vastly improved capacity of its new chips. The {\rm Factstone} rating is defined to be the largest integer $n$ such that $n!$ can be represented as an unsigned integer in a computer word. Given a year $1960\le y\le2160$, what will be the {\rm Factstone} rating of {\sc Amtel}'s most recently released chip?
+	\item {\sf Input.} There are several test cases. For each test case, there is 1 line of input containing $y$. A line containing $0$ follows that last test case.
+	\item {\sf Output.} For each test case, output a line giving the Factstone rating.
+	\item {\sf Source.} Waterloo local 2005.09.24
+	\item {\sf IDs for Online Judges.} POJ 2661, UVA 10916
+\end{problem}
+
+\begin{baitoan}[\cite{Wu_Wang2018}, 1.1.1, p. 1, Điểm chuẩn Factstone]
+	{\sc Amtel} đã thông báo rằng họ sẽ phát hành một con chip máy tính 128-bit vào năm 2010, một máy tính 256-bit vào năm 2020, \& cứ thế, tiếp tục chiến lược tăng gấp đôi kích thước từ sau mỗi 10 năm. ({\sc Amtel} đã phát hành một máy tính 64-bit vào năm 2000, một máy tính 32-bit vào năm 1990, một máy tính 16-bit vào năm 1980, một máy tính 8-bit vào năm 1970, \& một máy tính 4-bit, máy tính đầu tiên của họ, vào năm 1960.) {\sc Amtel} sẽ sử dụng một chuẩn mực mới -- {\rm Factstone} -- để quảng cáo cho khả năng được cải thiện đáng kể của các con chip mới của mình. Xếp hạng {\rm Factstone} được định nghĩa là số nguyên $n$ lớn nhất sao cho $n!$ có thể được biểu diễn dưới dạng một số nguyên không dấu trong một từ máy tính. Với năm $1960\le y\le2160$, xếp hạng {\rm Factstone} của chip mới nhất được phát hành của {\sc Amtel} sẽ là bao nhiêu?
+	\item {\sf Đầu vào.} Có một số trường hợp thử nghiệm. Đối với mỗi trường hợp thử nghiệm, có 1 dòng đầu vào chứa $y$. Một dòng chứa $0$ theo sau trường hợp thử nghiệm cuối cùng đó.
+	\item {\sf Đầu ra.} Đối với mỗi trường hợp thử nghiệm, đầu ra là một dòng cho biết xếp hạng Factstone.
+\end{baitoan}
+{\sf Analysis.} For a given year $y\in[1960,2160]\cap\mathbb{N}$, 1st the number of bits for the computer in this year is calculated, \& then the largest integer $n$, i.e., the {\it Factstone rating}, that $n!$ can be represented as an unsigned integer in a computer word is calculated. Since the computer was a 4-bit computer in 1960 \& {\sc Amtel} doubles the word size every 10 years, the number of bits for the computer in year $y$ is $b = 2^{2 + \lfloor\frac{y - 1960}{10}\rfloor}\in\mathbb{N}^\star$. The largest unsigned integer for $b$-bit is $2^b - 1\in\mathbb{N}^\star$. If $n!$ is the largest unsigned integer $\le 2^b - 1$, then $n$ is the Factstone rating in year $y$. There are 2 calculation methods:
+\begin{enumerate}
+	\item Calculate $n!$ directly, which is slow \& easily leads to overflow.
+	\item Logarithms are used to calculate $n!$, based on the following inequality
+	\begin{equation*}
+		n!\le 2^b - 1\Rightarrow\log_2 n! = \sum_{i=1}^n \log_2 i = \log_2 1 + \log_2 2 + \cdots + \log_2 n\le\log_2 (2^b - 1) < \log_2 2^b = b,
+	\end{equation*}
+	$n$ can be calculated by a loop: Initially $i\coloneqq1$, repeat $++i$, \& $\log_2 i$ is accumulated until the sum is $> b$. Then $i - 1$ is the Factstone rating.
+\end{enumerate}
+Codes:
+\begin{itemize}
+	\item C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C%2B%2B/Factstone_benchmark.cpp}.
+	\begin{verbatim}
+#include <stdio.h>
+#include <math.h>
+int y;
+
+int main() {
+    while (1 == scanf("%d", &y) && y) { // input test cases
+        double w = log(4);
+        for (int Y = 1960; Y <= y; Y += 10)
+            w *= 2;
+        int i = 1; // accumulation log2 i until > w
+        double f = 0; // f: sum of accumulation for log2 i
+        while (f < w)
+            f += log((double)++i);
+        printf("%d\n", i - 1); // output Factstone rating
+    }
+    if (y) printf("fishy ending %d\n", y);
+}
+	\end{verbatim}
+	\item Python:
+\end{itemize}
+
+\begin{remark}[$\log$: product $\mapsto$ sum]
+	When you encounter a product function of $n$, i.e., $f(n)$, e.g. $n!$ above, use logarithm to transform products into sums.
+\end{remark}
+
+\begin{question}[Sum $\leftrightarrows$ Product]
+	Làm sao để chuyển 1 tổng thành 1 tích? Làm sao chuyển 1 tích thành 1 tổng?
+\end{question}
+
+\begin{proof}[Answer]
+	Chuyển tổng thành tích: $e^{a + b} = e^ae^b$, $\forall a,b\in\mathbb{R}$. Tổng quát:
+	\begin{equation*}
+		e^{\sum_{i=1}^n a_i} = \prod_{i=1}^n e^{a_i},\ \forall a_i\in\mathbb{R},\ \forall n\in\mathbb{N}^\star,\ \forall i = 1,\ldots,n.
+	\end{equation*}
+	Chuyển tích thành tổng: $\ln(ab) = \ln a + \ln b$, $\forall a,b\in(0,\infty)$. Tổng quát:
+	\begin{equation*}
+		\ln\prod_{i=1}^n a_i = \sum_{i=1}^n \ln a_i,\ \forall a_i\in(0,\infty),\ \forall n\in\mathbb{N}^\star,\ \forall i = 1,\ldots,n.
+	\end{equation*}
+	{\it Note}: Có thể thay $\ln x$ bởi $\log x,\log_a x$ với $a\in(0,\infty)$ bất kỳ.
+\end{proof}
+
+\begin{problem}[\cite{Wu_Wang2018}, 1.1.2, p. 3, Bridge]
+	Consider that $n$ people wish to cross a bridge at night. A group of at most 2 people may cross at any time, \& each group must have a flashlight. Only 1 flashlight is available among the $n$ people, so some sort of shuttle arrangement must be arranged in order to return the flashlight so that more people may cross. 
+	
+	Each person has a different crossing speed; the speed of a group is determined by the speed of the slower member. Your job is to determine a strategy that gets all $n$ people across the bridge in the minimum time.
+	\item {\sf Input.} The 1st line of input contains $n$, followed by $n$ lines giving the crossing times for each of the people. There are not more than $1000$ people, \& nobody takes more than $100$ seconds to cross the bridge.
+	\item {\sf Output.} The 1st line of output must contain the total number of seconds required for all $n$ people to cross the bridge. The following lines give a strategy for achieving this time. Each line contains either 1 or 2 integers, indicating which person or people form the next group to cross. (Each person is indicated by the crossing time specified in the input. Although many people may have the same crossing time, the ambiguity is of no consequence.) Note that the crossings alternate directions, as it is necessary to return the flashlight so that more may cross. If more than 1 strategy yields the minimal time, any one will do.
+	\item {\sf Source.} POJ 2573, ZOJ 1877, UVA 10037
+	\item {\sf IDs for Online Judge.} Waterloo local 2000.09.30
+\end{problem}
+
+\begin{baitoan}[\cite{Wu_Wang2018}, 1.1.2, p. 3, ``Đi cầu'']
+	Hãy xem xét $n$ người muốn đi qua cầu vào ban đêm. Một nhóm tối đa 2 người có thể đi qua bất kỳ lúc nào, \& mỗi nhóm phải có một chiếc đèn pin. Chỉ có 1 chiếc đèn pin trong số $n$ người, vì vậy phải sắp xếp một số loại hình sắp xếp đưa đón để trả lại đèn pin để nhiều người hơn có thể đi qua.
+	
+	Mỗi người có tốc độ đi qua khác nhau; tốc độ của một nhóm được xác định bởi tốc độ của thành viên chậm hơn. Nhiệm vụ của bạn là xác định một chiến lược giúp tất cả $n$ người đi qua cầu trong thời gian ngắn nhất.
+	\item {\sf Đầu vào.} Dòng đầu tiên của đầu vào chứa $n$, theo sau là $n$ dòng cho biết thời gian đi qua của mỗi người. Không có quá $1000$ người, \& không ai mất hơn $100$ giây để đi qua cầu.
+	\item {\sf Đầu ra.} Dòng đầu tiên của đầu ra phải chứa tổng số giây cần thiết để tất cả $n$ người đi qua cầu. Các dòng sau đưa ra một chiến lược để đạt được thời gian này. Mỗi dòng chứa 1 hoặc 2 số nguyên, cho biết người hoặc những người nào tạo thành nhóm tiếp theo để vượt sông. (Mỗi người được chỉ định theo thời gian vượt sông được chỉ định trong đầu vào. Mặc dù nhiều người có thể có cùng thời gian vượt sông, nhưng sự mơ hồ không quan trọng.) Lưu ý rằng các lần vượt sông thay đổi hướng, vì cần phải trả lại đèn pin để nhiều người có thể vượt sông. Nếu có nhiều hơn 1 chiến lược tạo ra thời gian tối thiểu, bất kỳ chiến lược nào cũng được.
+\end{baitoan}
 
 %------------------------------------------------------------------------------%
 
@@ -382,7 +479,7 @@ It seems to me that {\sf Jack97} (nickname: \verb|abortion_grandmaster|) propose
 
 Codes:
 \begin{itemize}
-	\item C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C%2B%2B/gcd_Pascal_triangle.cpp}.
+	\item C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C++/gcd_Pascal_triangle.cpp}.
 \end{itemize}
 
 \begin{problem}[CSES{\tt/}Dice Probability, \url{https://cses.fi/problemset/task/1725}]
@@ -424,7 +521,7 @@ Codes:
 	\item {\sf Source.} ACM Mid-Atlantic United States 2001.
 	\item {\sf IDs for online judges.} POJ 1004, ZOJ 1048, UVA 2362.
 \end{problem}
-\textbf{\textsf{Math Analysis.}} Let $(a_i)_{i=1}^{12}\subset[0,\infty)$ be monthly incomes of 12 months. Compute their average by the formula $\overline{a} = \frac{1}{12}\sum_{i=1}^{12} a_i$. This can be generalized to $n\in\mathbb{N}^\star$ months with a sequence of monthly incomes $(a_i)_{i=1}^n\subset[0,\infty)$ with its average value given by the formula $\overline{a}\coloneqq\frac{1}{n}\sum_{i=1}^n a_i$.
+\textbf{\textsf{Math Analysis.}} Let $\{a_i\}_{i=1}^{12}\subset[0,\infty)$ be monthly incomes of 12 months. Compute their average by the formula $\overline{a} = \frac{1}{12}\sum_{i=1}^{12} a_i$. This can be generalized to $n\in\mathbb{N}^\star$ months with a sequence of monthly incomes $\{a_i\}_{i=1}^n\subset[0,\infty)$ with its average value given by the formula $\overline{a}\coloneqq\frac{1}{n}\sum_{i=1}^n a_i$.
 
 \textbf{\textsf{CS Analysis.}} The income of 12 months {\tt a[0..11]} is input by a {\tt for} statement \& the total income ${\tt sum}\coloneqq\sum_{i=0}^{11} a[i]$ is calculated. Then the average monthly income {\tt avg = sum/12} is calculated. Finally, {\tt avg} is output in accordance with the problem's output format by utilizing {\tt printf}'s format functionalities via \verb|printf("$%.2f", avg)|.
 \begin{itemize}

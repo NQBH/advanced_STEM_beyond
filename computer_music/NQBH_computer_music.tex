@@ -455,8 +455,157 @@
 			This line of code was missing a parenthesis symbol, which generated error message ``bad input on line 5''. Notice Python is giving hints about where problems are \& how to fix them, but those hints aren't always that helpful \& can be frustrating for beginners.
 			\item {\sf2.6.2. Flow of control.} A Python program is made up of a list of statements. For most part, each statement goes on its own line in your program. Python will read \& perform each line of code from top to bottom in order that you write them. In programming this is called {\it flow of control}. This is similar to way you would read words in a book or notes on a line of sheet music. Difference: programming languages also have special rules that let you change flow of control. Those rules include {\it loops} (which repeat some part of your code multiple times), {\it conditional logic} (which runs some part of your code only if some condition is met), \& {\it user-defined functions} (which lets you create your own functions that can be called). Talk about these special ``control structures'' later in book.
 		\end{itemize}
-		\item {\sf2.7. Calling functions.} 
-		\item {\sf2.8. playNote functions.} 
+		\item {\sf2.7. Calling functions.} Almost everything you do in Python involves {\it calling} functions. A function (sometimes called a command or an instruction) tells Python to do something or to compute a value. E.g., {\tt playNote} function tells TunePad to make a sound. There are 3 things you have to do to call a function:
+		
+		1st, have to write name of function. Functions have 1-word names (with no spaces) that can consist of letters, numbers, \& underscore \verb|_| character. Multi-word functions will either use underscore character between words as in \verb|my_multi_word_function()| or each new word will be capitalized as in {\tt playNote()}.
+		
+		2nd, after type name of function, have to include parentheses. Parentheses tell Python that you're calling a function.
+		
+		3rd, include any {\it parameters} that you want to {\it pass} to function in between left \& right parentheses. A parameter provides extra information or tells function how to behave. E.g., {\tt playNote} statement needs at least 1 parameter to tell it which note or sound to play. Sometimes functions accept multiple parameters (some of which can be optional). {\tt playNote} function accepts several optional parameters described in next sect. Each additional parameter is separated with a comma ({\sf Fig. 2.10: Calling {\tt playNote} function in TunePad with 2 parameters inside parentheses.})
+		\item {\sf2.8. playNote functions.} {\tt playNote} function tells TunePad to play a percussion sound or a musical note. {\tt playNote} function accepts up to 4 parameters contained within parentheses.
+		\begin{verbatim}
+			playNote(1, beats = 1, velocity = 100, sustain = 0)
+		\end{verbatim}
+		{\sf Name: Description}
+		\begin{itemize}
+			\item {\tt note}: This is a {\it required} parameter that says which note or percussion sound to play. Kind of sound depends on which instrument you have selected in TunePad for this code. Can play more than 1 note at same time by enclosing notes in square brackets.
+			\item {\tt beats}: An {\it optional} parameter that says how long to play note. TunePad {\it playhead} will be moved forward by duration given. This parameter can be a whole number (like 1 or 2), a decimal number (like 1.5 or 0.25), or a fraction (like 1/2).
+			\item {\tt velocity}: An {\it optional} parameter that says how loud to play note or sound. A value of 100 is full volume, \& a value of 0 is no volume (muted). Velocity is a technical term in digital music that means how fast or how hard you hit instrument. You might imagine it as how loud a drum sounds based on how hard it gets hit.
+			\item {\tt sustain}: An {\it optional} parameter that allows a note to ring out for an additional number of beats without advancing playhead.
+		\end{itemize}
+		\begin{itemize}
+			\item {\sf2.8.1. Optional parameters.} Sometimes parameters are {\it optional}, i.e., they have a value that gets provided by default if you don't specify one. For {\tt playNote}, only note parameter is required. If don't pass other parameters, it provides values for you by default. Can also include {\it names} of parameters in a function call. E.g., all 4 of lines below do exactly same thing; they play a note for 1 beat. 1st 2 use parameters without their names. 2nd 2 include names of parameter, followed by equals sign $=$, followed by parameter value.
+			\begin{verbatim}
+				playNote(60) # the beats parameter is optional
+				playNote(60, 1) # with the beats parameter set to 1
+				playNote(60, beats = 1) # with a parameter name for beats
+				playNote(note = 60, beats = 1) # with a parameter name for note and beats
+			\end{verbatim}
+			\item {\sf2.8.2. Comments.} In code above, some of text appears after hashtag \# symbols on each line. This text is called a {\it comment}. A comment is a freedom note that programmers add to make their code easier to understand. Comment text is ignored by Python, so you can write anything you want after hashtag symbol on a line. Can also use a hashtag at beginning of a line to temporarily disable code. This is called ``commenting out'' code.
+		\end{itemize}
+		\item {\sf2.9. {\tt rest} function.} Silence is an important element of music. {\tt rest} function generates silence, or a break in sound. It only takes 1 parameter, which is length of time the rest is held. So {\tt rest(beats = 2)} will trigger a rest for a length of 2 beats. If don't provide a parameter, {\tt rest} uses a value of 1.0 by default.
+		\begin{verbatim}
+			rest() # rest for one beat
+			rest(1.0) # rest for one beat
+			rest(0.25) # rest for one quarter beat
+			rest(beats = 0.25) # rest for one quarter beat
+		\end{verbatim}
+		\item {\sf2.10. Examples of {\tt playNote, rest}.} Try a few examples of {\tt playNote, rest} to get warmed up. This rhythm plays 2 8 notes (beats = 0.5) followed by a quarter note (beats = 1). Pattern then repeats a 2nd time. Here's how would code this in TunePad with a kick drum \& snare:
+		\begin{verbatim}
+			playNote(1, beats = 0.5) # play a kick drum (1) for half a beat
+			playNote(1, beats = 0.5)
+			playNote(2, beats = 1) # play snare (2) for one beat
+			playNote(1, beats = 0.5) # play kick (1) for half a beat
+			playNote(1, beats = 0.5)
+			playNote(2, beats = 1) # play snare (2) for one beat
+		\end{verbatim}
+		Here's another example that plays a quarter note followed by a rest of 0.5 beats followed by an 8 note (beats = 0.5). Pattern is repeated 2 times in a row:
+		\begin{verbatim}
+			playNote(2, beats = 1) # play a snare drum (2) for one beat
+			rest(beats = 0.5) # rest for half a beat
+			playNote(1, beats = 0.5) # play a kick drum (1) for half a beat
+			playNote(2, beats = 1) # play a snare drum (2) for one beat
+			rest(beats = 0.5) # rest for half a beat
+			playNote(1, beats = 0.5)
+		\end{verbatim}
+		A 3rd example that plays 8 notes in a row, each an 8 note (beats = 0.5).
+		\item {\sf2.11. Loops.} All of examples in prev sect included repeated elements. \&, if listen closely, can hear repeated elements at all levels of music. There are repeated rhythmic patterns, recurring melodic motifs, \& storylines defined by song sects that get repeated \& elaborated. It turns out: there are many circumstances in both music \& computer programming where we want to repeat something over \& over again.
+		
+		To show how can take advantage of some of capabilities of Python, start with last example from prev sec where we wanted to tap out a run of 8th notes (0.5 beats) on hi-hat. 1 way to program that rhythm would be to just type in 8 {\tt playNotes} in a row.
+		\begin{verbatim}
+			for i in range(8):
+			    playNote(4, beats = 0.5)
+			    print(i)
+		\end{verbatim}
+		This will get job done, but there are a few problems with this style of code. 1 problem: it violates 1 of most important character traits of a computer programmer -- laziness! A lazy programmer is someone who works smart, not hard. A lazy programmer avoids doing repetitive, error-prone work. A lazy programmer knows that there are some things that computer can do better than a human can.
+		
+		In Python (\& just about any other programming language), when want to do something multiple times, can use a loop. Python has a number of different kinds of loops, but, in this case, our best option is sth called a {\tt for} loop. Version of code on right repeats 8 times in a row. For each iteration of loop, TunePad {\tt playNote} function gets called.
+		
+		With original code on left, had to do a lot of tying (or, more likely, copying \& pasting) to enter our program -- a warning sign that we're not being lazy enough. We generated a lot of repetitive code, which makes program harder to read (not as legible), error prone, \& not as elegant as it could be. Right-side code accomplishes same thing with just 3 lines of code instead of 8.
+		
+		Finally, code on left is harder to change \& reuse. What if wanted to use a different drum sound (like a snare instead of a hat)? Or, what if wanted to tap out a run of 16 16th notes instead of 8 8th notes? Would have to go through code line by line making same change over \& over again. This is a slow, error-prone process that is definitely not lazy or elegant.
+		
+		To see why this is better, try changing code on right so that it plays 16 16th notes instead of 8 8th notes. Or try changing drum sound from a hat to sth else. {\tt print} statement on line 3 is just there to help you see what's going on with your code. If click on {\tt Show Python Output} option, can see how variable called {\tt i} (that gets created on line 1) counts up from 0 to 7 {\sf Fig. 2.11: How to show print output of your code in a TunePad cell.} More detail about anatomy of a {\tt for} loop ({\sf Fig. 2.12: Anatomy of a {\tt for} loop in Python.}) A {\tt for} loop with range function:
+		\begin{itemize}
+			\item begins with {\tt for} keyword
+			\item includes a loop {\it variable} name; this can be anything you want (above it is {\tt i}). Each time loop goes around, loop variable is incremented by 1.
+			\item includes {\tt in} keyword
+			\item includes {\tt range} function that says how many times to repeat
+			\item includes a colon :
+			\item includes a block of code indented by 4 spaces
+		\end{itemize}
+		Python uses {\it indentation} to determine what's {\it inside} loop, meaning it's sect of code that gets repeated multiple times. Intended block of code is repeated total number of times specified by {\tt range}. Try adding a few extras to prev example. In version below, add a run of 16th notes for last beat.
+		\begin{verbatim}
+			for i in range(6):
+			    playNote(4, beats = 0.5)
+			for i in range(4):
+			    playNote(4, beats = 0.25)
+		\end{verbatim}
+		But there are lots of other things we could do as well. If wanted to play an even faster run, could use code like:
+		\begin{verbatim}
+			for i in range(8):
+			    playNote(4, beats = 0.125)
+		\end{verbatim}
+		Or, if wanted to play a triplet that divides a half-beat into 3 equal parts, could do sth like this:
+		\begin{verbatim}
+			for i in range(3):
+			playNote(4, beats = 0.25 / 3) # divide into 3 parts
+		\end{verbatim}
+		If open this example in TunePad, can experiment with different combinations of numbers to get different effects: \url{https://tunepad.com/examples/loops-and-hats}
+		\item {\sf2.12. Variables.} A {\it variable} is a name you give to some piece of information in a Python program. Can think of a variable as a kind of nickname or alias. Similar to loops, variables help make your code more elegant, easier to read, \& easier to change in future. E.g., code on left plays a drum pattern without variables, \& code on right plays same thing with variables. Notice how variables help make code easier to understand because they give us descriptive names for various drum sounds instead of just numbers.
+		\begin{verbatim}
+			playNote(0)
+			playNote(4)
+			playNote(2)
+			playNote(4)
+			
+			kick = 0
+			hat = 4
+			snare = 2
+			
+			playNote(kick)
+			playNote(hat)
+			playNote(snare)
+			playNote(hat)
+		\end{verbatim}
+		In version on right defined a variable called {\tt kick} on line 1, a variable called {\tt hat} on line 2, \& a variable called {\tt snare} on line 3. Each variable is {\it initialized} to a different number for corresponding drum sound. Also possible to change value of a variable later in program by assigning it a different number.
+		\begin{verbatim}
+			kick = 0
+			playNote(kick) # plays sound 0
+			kick = 1       # set kick to a different value
+			playNote(kick) # plays sound 1
+		\end{verbatim}
+		Variable names can be anything you want as long as they're 1 word long (no spaces) \& consist only of letters, numbers, \& underscore character \verb|_|. Variable names cannot start with a number, \& they can't be same as any existing Python keyword.
+		
+		As begin to get comfortable with code \& to exercise your creativity, find yourself wanting to experiment with sounds. Might want to try different sounds for same rhythmic pattern, maybe change a high-hat sound to a shaker to get a more organic feel. Using variables makes it easy to experiment by changing values around.
+		
+		Another example with a hi-hat pattern. Imagine really like this pattern, but wondering how it would sound with a different percussion instrument. Maybe you want to change 4 sound to a shaker sound (like 11). Nice thing about variables: can give them just about any name you want as long as Python is not already using that name for something else. This way you can make name meaningful to you. So, for our shaker example could create a variable with a meaningful name like {\tt shake} \& set it equal to 11. When use variable {\tt shake} you are inserting whatever number is currently assigned to it.
+		\begin{verbatim}
+			for i in range(8):
+			    playNote(4,
+			    beats = 0.5)
+			for i in range(8):
+			    playNote(4,
+			    beats = 0.25)
+			for i in range(4):
+			    playNote(4,
+			    beats = 0.5)
+			    
+			shake = 11
+			for i in range(8):
+			    playNote(shake,
+			    beats = 0.5)
+			for i in range(8):
+			    playNote(shake,
+			    beats = 0.25)
+			for i in range(4):
+			    playNote(shake,
+			    beats = 0.5)
+		\end{verbatim}
+		As progress with coding, find that loops \& variables help create a smoother workflow that gives you more flexibility, freedom, \& creative power. Try out using variables with exercise \url{https://tunepad.com/examples/variables}.		
+		\item {\sf2.13. More on syntax errors.} Python code is like a language with strict grammatical rules called syntax. When make a mistake in coding -- \& everyone makes coding mistakes all time -- Python will give feedback about what error is \& approximately what line it's on. E.g., if been trying to code exercises in this chap, may have seen a message like {\sf Fig. 2.13: Example of a Python syntax error. Command `ployNote' should instead say `playNote'.}
+		
+		[p. 38 +++]
 	\end{itemize}
 	\item {\sf3. Pitch, harmony, \& dissonance.}
 	\item {\sf4. Chords.}

@@ -41,7 +41,7 @@
 \setlist[itemize]{leftmargin=*}
 \setlist[enumerate]{leftmargin=*}
 
-\title{Large Language Models -- Mô Hình Ngôn Ngữ Lớn}
+\title{Large Language Models (LLMs) -- Mô Hình Ngôn Ngữ Lớn}
 \author{Nguyễn Quản Bá Hồng\footnote{A Scientist {\it\&} Creative Artist Wannabe. E-mail: {\tt nguyenquanbahong@gmail.com}. Bến Tre City, Việt Nam.}}
 \date{\today}
 
@@ -144,17 +144,110 @@
 			\item Chap. 6 introduces different LLM fine-tuning approaches. It covers preparing a dataset for text classification, modifying a pretrained LLM for fine-tuning, fine-tuning an LLM to identify spam messages, \& evaluating accuracy of a fine-tuned LLM classifier.
 			\item Chap. 7 explores instruction fine-tuning process of LLMs. It covers preparing a dataset for supervised instruction fine-tuning, organizing instruction data in training batches, loading a pretrained LLM \& fine-tuning it to follow human instructions, extracting LLM-generated instruction responses for evaluation, \& evaluating an instruction-fine-tuned LLM.
 		\end{itemize}
-		\item {\sf About code.}
+		\item {\sf About code.} To make it as easy as possible to follow along, all code examples in this book are conveniently available on Manning website at \url{https://www.manning.com/books/build-a-large-language-model-from-scratch}, as well as in Jupyter notebook format on GitHub at \url{https://github.com/rasbt/LLMs-from-scratch}. Solutions to all code exercises can be found in appendix C.
+		
+		This book contains many examples of source code both in numbered listings \& in line with normal text.
+		
+		In many cases, original source code has been reformatted; added line breaks \& reworked indentation to accommodate available page space in book. In rare cases, even this was not enough, \& listings include line-continuation markers. Additionally, comments in source code have often been removed from listings when code is described in text. Code annotations accompany many of listings, highlighting important concepts.
+		
+		1 of key goals of this book is accessibility, so code examples have been carefully designed to run efficiently on a regular laptop, without need for any special hardware. But if do have access to a GPU, certain sects provide helpful tips on scaling up datasets \& models to take advantage of that extra power.
+		
+		Throughout book, use PyTorch as our go-to tensor \& a DL library to implement LLMs from ground up. If PyTorch is new to you, I recommend you start with appendix A, which provides an in-depth introduction, complete with setup recommendations.
+		\item {\sf Other online resources.} Interested in latest AI \& LLM research trends? $\to$ Check out blog at \url{https://magazine.sebastianraschka.com/}, where regularly discuss latest AI research with a focus on LLMs.
+		
+		Need help getting up to speed with DL \& PyTorch? $\to$ Offer several free courses on website at \url{https://sebastianraschka.com/teaching/}. These resources can help you quickly get up to speed with latest techniques.
+		
+		Looking for bonus materials related to book? $\to$ Visit book's GitHub repo at \url{https://github.com/rasbt/LLMs-from-scratch} to find additional resources \& examples to supplement your learning.		
 	\end{itemize}
-	\item {\sf1. Understanding LLMs.}
+	\item {\sf1. Understanding LLMs.} Cover:
 	\begin{itemize}
-		\item {\sf1.1. What is an LLM?}
-		\item {\sf1.2. Applications of LLMs.}
-		\item {\sf1.3. Stages of building \& using LLMs.}
-		\item {\sf1.4. Introducing transformer architecture.}
+		\item High-level explanations of fundamental concepts behind LLMs
+		\item Insights into transformer architecture from which LLMs are derived
+		\item A plan for building an LLM from scratch
+	\end{itemize}
+	LLMs, e.g. those offered in OpenAI's ChatGPT, are deep neural network models that have been developed over the past few years. They ushered in a new era for NLP. Before advent of LLMs, traditional methods excelled at categorization tasks e.g. email spam classification \& straightforward pattern recognition that could be captured with handcrafted rules or simpler models. However, they typically underperformed in language tasks that demanded complex understanding \& generation abilities, e.g. parsing detailed instructions, conducting contextual analysis, \& creating coherent \& contextually appropriate original text. E.g., previous generations of language models could not write an email from a list of keywords -- a task that is trivial for contemporary LLMs.
+	
+	-- LLM, ví dụ như những LLM được cung cấp trong ChatGPT của OpenAI, là các mô hình mạng nơ-ron sâu đã được phát triển trong vài năm qua. Chúng mở ra một kỷ nguyên mới cho NLP. Trước khi LLM ra đời, các phương pháp truyền thống đã xuất sắc trong các nhiệm vụ phân loại, ví dụ như phân loại thư rác email \& nhận dạng mẫu đơn giản có thể được nắm bắt bằng các quy tắc thủ công hoặc các mô hình đơn giản hơn. Tuy nhiên, chúng thường hoạt động kém trong các nhiệm vụ ngôn ngữ đòi hỏi khả năng hiểu phức tạp \& tạo ra, ví dụ như phân tích các hướng dẫn chi tiết, tiến hành phân tích theo ngữ cảnh, \& tạo ra văn bản gốc mạch lạc \& phù hợp với ngữ cảnh. Ví dụ, các thế hệ mô hình ngôn ngữ trước đây không thể viết email từ danh sách các từ khóa -- một nhiệm vụ tầm thường đối với LLM đương đại.
+	
+	LLMs have remarkable capabilities to understand, generate, \& interpret human language. However, important to clarify that when we say language models ``understand,'' i.e., they can process \& generate text in ways that appear coherent \& contextually relevant, not that they possess human-like consciousness or comprehension.
+	
+	Enabled by advancements in DL, which is a subset of ML \& AI focused on neural networks, LLMs are trained on vast quantities of text data. This large-scale training allows LLMs to capture deeper contextual information \& subtleties of human language compared to previous approaches. As a result, LLMs have significantly improved performance in a wide range of NLP tasks, including text translation, sentiment analysis, question answering, \& many more.
+	
+	Another important distinction between contemporary LLMs \& earlier NLP models is that earlier NLP models were typically designed for specific tasks, e.g. text categorization, language translation, etc. While those earlier NLP models excelled in their narrow applications, LLMs demonstrate a broader proficiency across a wide range of NLP tasks.
+	
+	Success behind LLMs can be attribute to transformer architecture that underpins many LLMs \& vast amounts of data on which LLMs are trained, allowing them to capture a wide variety of linguistic nuances, contexts, \& patterns that would be challenging to encode manually.
+	
+	This shift toward implementing models based on transformer architecture \& using large training datasets to train LLMs has fundamentally transformed NLP, providing more capable tools for understanding \& interacting with human language.
+	
+	Following discussion sets a foundation to accomplish primary objective of this book: understanding LLMs by implementing a ChatGPT-like LLM based on transformer architecture step by step in code.
+	\begin{itemize}
+		\item {\sf1.1. What is an LLM?} An LLM is a neural network designed to understand, generate, \& respond to human-like text. These models are deep neural networks trained on massive amounts of text data, sometimes encompassing large portions of entire publicly available text on internet.
+		
+		``Large'' in ``LLM'' refers to both model's size in terms of parameters \& immense dataset on which it's trained. Models like this often have 10s or even hundreds of billions of parameters, which are adjustable weights in network that are optimized during training to predict next word in a sequence. Next-word prediction is sensible because it harnesses inherent sequential nature of language to train models on understanding context, structure, \& relationships within text. Yet, it is a very simple task, \& so it is surprising to many researchers that it can produce such capable models. In later chaps, discuss \& implement next-word training procedure step by step.
+		
+		LLMs utilize an architecture called {\it transformers}, which allows them to pay selective attention to different parts of input when making predictions, making them especially adept at handling nuances \& complexities of human language.
+		
+		Since LLMs are capable of {\it generating} text, LLMs are also often referred to as a form of generative AI, often abbreviated as {\it generative AI} or {\it GenAI}. As illustrated in {\sf Fig. 1.1: As this hierarchical depiction of relationship between different fields suggests, LLMs represent a specific application of DL techniques, using their ability to process \& generate human-like text. DL is a specialized branch of ML that focuses on using multilayer neural networks. ML \& DL are fields aimed at implementing algorithms that enable computers to learn from data \& perform tasks that typically require human intelligence.}, AI encompasses broader field of creating machines that can perform tasks requiring human-like intelligence, including understanding language, recognizing patterns, \& making decisions, \& includes subfields like ML \& DL.
+		\begin{itemize}
+			\item AI: Systems with human-like intelligence
+			\item ML: Algorithms that learn rules automatically from data
+			\item DL: ML with neural networks consisting of many layers
+			\item LLM: Deep neural network for parsing \& generating human-like text
+			\item GenAI: GenAI involves use of deep neural networks to create new content, e.g., text, images, or various forms of media
+		\end{itemize}
+		Algorithms used to implement AI are focus of field of ML. Specifically, ML involves development of algorithms that can learn from \& make predictions or decisions based on data without being explicitly programmed. To illustrate this, imagine a spam filter as a practical application of ML. Instead of manually writing rules to identify spam emails, a ML algorithm is fed examples of emails labeled as spam \& legitimate emails. By minimizing error in its predictions on a training dataset, model then learns to recognize patterns \& characteristics indicative of spam, enabling it to classify new emails as either spam or not spam.
+		
+		DL is a subset of ML that focuses on utilizing neural networks with 3 or more layers (also called deep neural networks) to model complex patterns \& abstractions in data. In contrast to DL, traditional ML requires manual feature extraction. I.e., human experts need to identify \& select most relevant features for model.
+		
+		While field of AI is now dominated by ML \& DL, it also includes other approaches -- e.g., using rule-based systems, genetic algorithms, expert systems, fuzzy logic, or symbolic reasoning.
+		
+		Returning to spam classification example, in traditional ML, human experts might manually extract features from email text e.g. frequency of certain trigger words (e.g., ``prize'', ``win'', ``free''), number of exclamation marks, use of all uppercase words, or presence of suspicious links. This dataset, created based on these expert-defined features, would then be used to train model. In contrast to traditional ML, \fbox{DL does not require manual feature extraction}. I.e., human experts do not need to identify \& select most relevant features for a DL model. (However, both traditional ML \& DL for spam classification still require collection of labels, e.g. spam or non-spam, which need to be gathered either by an expert or users.)
+		
+		Look at some of problems LLMs can solve today, challenges that LLMs address, \& general LLM architecture we will implement later.		
+		\item {\sf1.2. Applications of LLMs.} Owing to their advanced capabilities to parse \& understand unstructured text data, LLMs have a broad range of applications across various domains. Today, LLms are employed for machine translation, generation of novel texts (see {\sf Fig. 1.2: LLM interfaces enable natural language communication between users \& AI systems. This screenshot shows ChatGPT writing a poem according to a user's specifications.}), sentiment analysis, text summarization, \& many other tasks. LLMs have recently been used for content creation, e.g. writing fiction, articles, \& even computer code.
+		
+		LLMs can also power sophisticated chatbots \& virtual assistants, e.g. OpenAI's ChatGPT or Google's Gemini (formerly called Bard), which can answer user queries \& augment traditional search engines e.g. Google Search or Microsoft Bing.
+		
+		Moreover, LLMs may be used for effective knowledge retrieval from vast volumes of text in specialized areas e.g. medicine or law. This includes sifting through document, summarizing lengthy passages, \& answering technical questions.
+		
+		In short, LLMs are invaluable for automating almost any task that involves parsing \& generating text. Their applications are virtually endless, \& as we continue to innovate \& explore new ways to use these models, clear: LLMs have potential to redefine our relationship with technology, making it more conversational, intuitive, \& accessible.
+		
+		Will focus on understanding how LLMs work from ground up, coding an LLM that can generate texts. Will also learn about techniques that allow LLMs to carry out queries, ranging from answering questions to summarizing text, translating text into different languages, \& more. I.e., will learn how complex LLM assistants e.g. ChatGPT work by building 1 step by step.
+		\item {\sf1.3. Stages of building \& using LLMs.} Why should we build our own LLMs? Coding an LLM from ground up is an excellent exercise to understand its mechanics \& limitations. Also, it equips us with required knowledge for pretraining or fine-tuning existing open source LLM architectures to our own domain-specific datasets or tasks.
+		
+		-- Tại sao chúng ta nên xây dựng LLM của riêng mình? Việc mã hóa LLM từ đầu là một bài tập tuyệt vời để hiểu cơ chế \& hạn chế của nó. Ngoài ra, nó trang bị cho chúng ta kiến thức cần thiết để đào tạo trước hoặc tinh chỉnh các kiến trúc LLM nguồn mở hiện có cho các tập dữ liệu hoặc tác vụ cụ thể theo miền của riêng chúng ta.
+		\begin{note}
+			Most LLMs today are implemented using PyTorch DL library, which is what we will use. Readers can find a comprehensive introduction to PyTorch in appendix A.
+		\end{note}
+		Research has shown: when it comes to modeling performance, customs-built LLMs -- those tailored for specific tasks or domains -- can outperform general-purpose LLMs, e.g. those provided by ChatGPT, which are designed for a wide array of applications. Examples of these include BloombergGPT (specialized for finance) \& LLMs tailored for medical question answering (see appendix B for more details).
+		
+		Using custom-built LLMs offers several advantages, particularly regarding data privacy. E.g., companies may prefer not to share sensitive data with 3rd-party LLM providers like OpenAI due to confidentiality concerns. Additionally, developing smaller custom LLMs enables deployment directly on customer devices, e.g. laptops \& smartphones, which is something companies like Apple are currently exploring. This local implementation can significantly decrease latency \& reduce server-related costs. Furthermore, custom LLMs grant developers complete autonomy, allowing them to control updates \& modifications to model as needed.
+		
+		-- Sử dụng LLM tùy chỉnh mang lại một số lợi thế, đặc biệt là về quyền riêng tư dữ liệu. Ví dụ, các công ty có thể không muốn chia sẻ dữ liệu nhạy cảm với các nhà cung cấp LLM bên thứ 3 như OpenAI do lo ngại về tính bảo mật. Ngoài ra, việc phát triển các LLM tùy chỉnh nhỏ hơn cho phép triển khai trực tiếp trên các thiết bị của khách hàng, ví dụ như máy tính xách tay \& điện thoại thông minh, đây là điều mà các công ty như Apple hiện đang khám phá. Việc triển khai cục bộ này có thể giảm đáng kể độ trễ \& giảm chi phí liên quan đến máy chủ. Hơn nữa, các LLM tùy chỉnh cấp cho các nhà phát triển quyền tự chủ hoàn toàn, cho phép họ kiểm soát các bản cập nhật \& sửa đổi mô hình khi cần.
+		
+		General process of creating an LLM includes pretraining \& fine-tuning. ``Pre'' in ``preparing'' refers to initial phase where a model like an LLM is trained on a large, diverse dataset to develop a broad understanding of language. This pre-trained model then serves as a foundational resource that can be further refined through fine-tuning, a process where model is specifically trained on a narrower dataset that is more specific to particular tasks or domains. This 2-stage training approach consisting of pretraining \& fine-tuning is depicted in {\sf Fig. 1.3: Pretraining an LLM involves next-word prediction on large text datasets. A pretrained LLM can then be fine-tuned using a smaller labeled dataset.}
+		
+		1st step in creating an LLM: train it on a large corpus of text data, sometimes referred to as {\it raw} text. Here, ``raw'' refers to fact that this data is just regular text without any labeling information. (Filtering may be applied, e.g. removing formatting characters or documents in unknown languages.)
+		\begin{note}
+			Readers with a background in ML may note: labeling information is typically required for traditional ML models \& deep neural networks trained via conventional supervised learning paradigm. However, this is not case for pretraining stage of LLMs. In this phase, LLMs use self-supervised learning, where model generates its own labels from input data.
+		\end{note}
+		This 1st training stage of an LLM is also known as {\it pretraining}, creating an initial pretrained LLM, often called a {\it base} or {\it foundation model}. A typical example of such a model is GPT-3 model (precursor of original model offered in ChatGPT). This model is capable of text completion -- i.e., finishing a half-written sentence provided by a user. It also has limited few-shot capabilities, i.e., it can learn to perform new tasks based on only a few examples instead of needing extensive training data.
+		
+		After obtaining a pretrained LLM from training on large text datasets, where LLM is trained to predict next word in text, we can further train LLM on labeled data, also known as {\it fine-tuning}.
+		
+		2 most popular categories of fine-tuning LLMs are {\it instruction fine-tuning} \& {\it classification fine-tuning}. In instruction fine-tuning, labeled dataset consists of instruction \& answer pairs, e.g. a query to translate a text accompanied by correctly translated text. In classification fine-tuning, labeled dataset consists of texts \& associated class labels -- e.g., emails associated with ``spam'' \& ``hot spam'' labels.
+		
+		-- 2 loại LLM tinh chỉnh phổ biến nhất là {\it tinh chỉnh hướng dẫn} \& {\it tinh chỉnh phân loại}. Trong tinh chỉnh hướng dẫn, tập dữ liệu được gắn nhãn bao gồm các cặp hướng dẫn \& câu trả lời, ví dụ: truy vấn để dịch văn bản đi kèm với văn bản được dịch chính xác. Trong tinh chỉnh phân loại, tập dữ liệu được gắn nhãn bao gồm các văn bản \& nhãn lớp liên quan -- ví dụ: email liên quan đến nhãn ``spam'' \& ``hot spam''.
+		
+		Cover code implementations for pretraining \& fine-tuning an LLM, \& delve deeper into specifics of both instruction \& classification fine-tuning after pretraining a base LLM.
+		\item {\sf1.4. Introducing transformer architecture.} Most modern LLMs rely on {\it transformer} architecture, which is a deep neural network architecture introduced in 2017 paper ``Attention Is All You Need''. To understand LLMs, must understand original transformer, which was developed for machine translation, translating English texts to German \& French. A simplified version of transformer architecture is depicted in {\sf Fig. 1.4: A simplified depiction of original transformer architecture, which is a DL model for language translation. Transformer consists of 2 parts: (a) an encoder that processes input text \& produces an embedding representation (a numerical representation that captures many different factors in different dimensions) of text that (b) decoder can use to generate translated text 1 word at a time. This figure shows final stage of translation process where decoder has to generate only final word (``Beispiel''), given original input text (``This is an example'') \& a partially translated sentence (``Das ist ein''), to complete translation.}
+		
+		Transformer architecture consists of 2 submodules: an encoder \& a decoder. Encoder module processes input text \& encodes it into a series of numerical representations or vectors that capture contextual information of input. Then, decoder module takes these encoded vectors \& generates output text. In a translation task, e.g., encoder would encode text from source language into vectors, \& decoder would decode these vectors to generate text in target language. Both encoder \& decoder consist of many layers connected by a so-called self-attention mechanism. You may have many questions regarding how inputs are preprocessed \& encoded. These will be addressed in a step-by-step implementation in subsequent chaps.
+		
+		-- Kiến trúc máy biến áp bao gồm 2 mô-đun con: một bộ mã hóa \& một bộ giải mã. Mô-đun mã hóa xử lý văn bản đầu vào \& mã hóa nó thành một chuỗi các biểu diễn số hoặc vectơ nắm bắt thông tin ngữ cảnh của đầu vào. Sau đó, mô-đun giải mã lấy các vectơ được mã hóa này \& tạo văn bản đầu ra. Trong một tác vụ dịch, ví dụ, bộ mã hóa sẽ mã hóa văn bản từ ngôn ngữ nguồn thành các vectơ, \& bộ giải mã sẽ giải mã các vectơ này để tạo văn bản ở ngôn ngữ đích. Cả bộ mã hóa \& bộ giải mã đều bao gồm nhiều lớp được kết nối bởi cái gọi là cơ chế tự chú ý. Bạn có thể có nhiều câu hỏi liên quan đến cách đầu vào được xử lý trước \& mã hóa. Những câu hỏi này sẽ được giải quyết trong phần triển khai từng bước trong các chương tiếp theo.
 		\item {\sf1.5. utilizing large datasets.}
 		\item {\sf1.6. A closer look at GPT architecture.}
-		\item {\sf1.7. Building a large language model.}
+		\item {\sf1.7. Building a LLM.}
 	\end{itemize}
 	\item {\sf2. Working with text data.}
 	\begin{itemize}

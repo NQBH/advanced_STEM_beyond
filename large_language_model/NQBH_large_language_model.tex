@@ -315,10 +315,44 @@
 			\item LLMs fine-tuned on custom datasets can outperform general LLMs on specific tasks.
 		\end{itemize}
 	\end{itemize}
-	\item {\sf2. Working with text data.}
+	\item {\sf2. Working with text data.} Covers:
 	\begin{itemize}
-		\item {\sf2.1. Understanding word embeddings.}
-		\item {\sf2.2. Tokenizing text.}
+		\item Preparing text for LLM training
+		\item Splitting text into word \& subword tokens
+		\item Byte pair encoding as a more advanced way of tokenizing text.
+		\item Sampling training examples with a sliding window approach
+		\item Converting tokens into vectors that feed into a LLM
+	\end{itemize}
+	So far, have covered general structure of LLMs \& learned that they are pretrained on vast amounts of text. Specifically, our focus was on decoder-only LLMs based on transformer architecture, which underlies models used in ChatGPT \& other popular GPT-like LLMs.
+	
+	During pretraining stage, LLMs process text 1 word at a time. Training LLMs with millions to billions of parameters using a next-word prediction tasks yields models with impressive capabilities. These models can then be further fine-tuned to follow general instructions or perform specific target tasks. But before we can implement \& train LLMs, need to prepare training dataset, as illustration in {\sf Fig. 2.1: 3 main stages of coding an LLM. This chap focuses on step 1 of Stage 1: implementing data sample pipeline.}
+	
+	Learn how to prepare input text for training LLMs. This involves splitting text into individual word \& subword tokens, which can then be encoded into vector representations for LLM. Also learn about advanced tokenization schemes like byte pair encoding, which is utilized in popular LLMs like GPT. Lastly, implement a sampling \& data-loading strategy to produce input-output pairs necessary for training LLMs.
+	\begin{itemize}
+		\item {\sf2.1. Understanding word embeddings.} Deep neural network models, including LLMs, cannot process raw text directly. Since text is categorical, it isn't compatible with mathematical operations used to implement \& train neural networks. Therefore, need a way to represent words as continuous-valued vectors.
+		\begin{note}
+			Readers unfamiliar with vectors \& tensors in a computational context can learn more in Appendix A, Sect. A.2.2.
+		\end{note}
+		Concept of converting data into a vector format is often referred to as {\it embedding}. Using a specific neural network layer or another pretrained neural network model, can embed different data types -- e.g., video, audio, \& text, as illustrated in {\sf Fig. 2.2: DL models cannot process data formats like video, audio, \& text in their raw form. Thus, use an embedding model to transform this raw data into a dense vector representation that DL architectures can easily understand \& process. Specifically, this figure illustrates process of converting raw data into a 3D numerical vector.} However, important to note: different data formats require distinct embedding models. E.g., an embedding model designed for text would not be suitable for embedding audio or video data.
+		
+		At its core, an embedding is a mapping from discrete objects, e.g. words, images, or even entire documents, to points in a continuous vector space -- primary purpose of embeddings: convert nonnumeric data into a format that neural networks can process.
+		
+		While word embeddings are most common form of text embedding, there are also embeddings for sentences, paragraphs, or whole documents. Sentence or paragraph embeddings are popular choices for {\it retrieval-augmented generation}. Retrieval-augmented generation combines generation (like producing text) with retrieval (like searching an external knowledge base) to pull relevant information when generation text, which is a technique that is beyond scope of this book. Since goal: train GPT-like LLms, which learn to generate text 1 word at a time, focus on word embeddings.
+		
+		Several algorithms \& frameworks have been developed to generate word embeddings. 1 of earlier \& most popular examples is {\it Word2Vec} approach. {\it Word2Vec} trained neural network architecture to generate word embeddings by predicting context of a word given target word or vice versa. Main idea behind Word2Vec: words that appear in similar contexts tend to have similar meanings. Consequently, when projected into 2D word embeddings for visualization purposes, similar terms are clustered together, as shown in {\sf Fig. 2.3: If word embeddings are 2D, can plot them in a 2D scatterplot for visualization purposes as shown here. When using word embedding techniques, e.g. Word2Vec, words corresponding to similar concepts often appear close to each other in embedding space. E.g., different types of birds appear closer to each other in embedding space than in countries \& cities.}
+		
+		Word embeddings can have varying dimensions, from 1 to thousands. A higher dimensionality might capture more nuanced relationships but at cost of computational efficiency.
+		
+		-- Nhúng từ có thể có nhiều kích thước khác nhau, từ 1 đến hàng nghìn. Kích thước cao hơn có thể nắm bắt được nhiều mối quan hệ sắc thái hơn nhưng phải đánh đổi bằng hiệu quả tính toán.
+		
+		While can use pretrained models e.g. Word2Vec to generate embeddings for ML models, LLMs commonly produce their own embeddings that are part of input layer \& are updated during training. Advantage of optimizing embeddings as part of LLM training instead of using Word2Vec: embeddings are optimized to specific task \& data at hand. Will implement such embedding layers later in this chap. (LLMs can also create contextualized output embeddings, as discussed in Chap. 3.)
+		
+		Unfortunately, high-dimensional embeddings present a challenge for visualization because our sensory perception \& common graphical representations are inherently limited to 3D or fewer, which is why Fig. 2.3 shows 2D embeddings in a 2D scatterplot. However, when working with LLMs, typically use embeddings with a much higher dimensionality. For both GPT-2 \& GPT-3, embedding size (often referred to as dimensionality of model's hidden states) varies based on specific model variant \& size. It is a tradeoff between performance \& efficiency. Smallest GPT-2 models (117M \& 125M parameters) use an embedding size of 768 dimensions to provide concrete examples. Largest GPt-3 model (175B parameters) uses an embedding size of 12288 dimensions.
+		
+		Next, walk through required steps for preparing embeddings used by an LLM, which include splitting text into words, converting words into tokens, \& turning tokens into embedding vectors.
+		\item {\sf2.2. Tokenizing text.} Discuss how split input text into individual tokens, a required preprocessing step for creating embeddings for an LLM. These tokens are either individual words or special characters, including punctuation characters, as shown in {\sf Fig. 2.4: A view of text processing steps in context of an LLM. Here, split an input text into individual tokens, which are either words or special characters, e.g. punctuation characters.}
+		
+		[p. 21 +++]
 		\item {\sf2.3. Converting tokens into token IDs.}
 		\item {\sf2.4. Adding special context tokens.}
 		\item {\sf2.5. Byte pair encoding.}

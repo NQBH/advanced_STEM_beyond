@@ -605,8 +605,254 @@
 		As progress with coding, find that loops \& variables help create a smoother workflow that gives you more flexibility, freedom, \& creative power. Try out using variables with exercise \url{https://tunepad.com/examples/variables}.		
 		\item {\sf2.13. More on syntax errors.} Python code is like a language with strict grammatical rules called syntax. When make a mistake in coding -- \& everyone makes coding mistakes all time -- Python will give feedback about what error is \& approximately what line it's on. E.g., if been trying to code exercises in this chap, may have seen a message like {\sf Fig. 2.13: Example of a Python syntax error. Command `ployNote' should instead say `playNote'.}
 		
-		[p. 38 +++]
+		This is telling us: there is an error on line 6 that can be fixed by changing text, ``ployNote''. When using a variable or function in your code, Python is expecting you to type it {\it exactly} the same as it was defined. A simple typo can stop your program from running, but it's also easily fixed. Here just need to update line to say {\tt playNote} instead of {\tt ployNote}.
+		
+		Other syntax errors are trickier. Message in {\sf Fig. 2.14: Example of a Python syntax error. Here problem is actually on line 1, not line 2.} Message in Fig. 2.14 is confusing because problem is actually on line 1 even though syntax error says line 2. Problem is a missing right parenthesis on line 1.
+		
+		1 technique coders use to find source of errors like this: comment out lines of code before \& after an error. E.g., to comment out1st line of code above, could change it to look like this:
+		\begin{verbatim}
+			# playNote(60
+			rest(1)
+		\end{verbatim}
+		Adding hashtag at beginning of 1st line means Python ignores it, in this case fixing syntax error \& giving us another clue about source of problem.
+		
+		Another surprisingly helpful trick: just paste your error message verbatim into your favorite search engine. There are huge communities of Python coders out there who have figured out how to solve almost every problem with code imaginable. You can often find a quick fix to your problem just by browsing through a few of top search results.
+		
+		If want practice fixing syntax errors in your code, can try 1 of mystery-melody challenges on TunePad: \url{https://tunepad.com/examples/mystery-melody}.
+		\item {\sf2.14. {\tt playhead}.} Timing of notes in TunePad is determined by position of an object called {\tt playhead}. In early days of music production, recordings were made using analog tape. Sound wave signals coming from a microphone or some other source were physically stored on magnetic tape using a mechanism called a {\it record head}. As tape moved by, record head would inscribe patterns of magnetic material inside of tape, thus creating a recording of music. To play recording back, a {\tt playhead} would pick up fluctuations in tape's magnetic material \& convert it back into sound waves for listeners to hear. Fast forward to digital realm. No longer have playheads or record heads, but maintain that metaphor when referring to notion of sound moving in time. Concept of a playhead is common across audio production software as point in time where audio is playing.
+		
+		-- Thời gian của các nốt nhạc trong TunePad được xác định bởi vị trí của một đối tượng được gọi là {\tt playhead}. Vào những ngày đầu của quá trình sản xuất âm nhạc, các bản ghi âm được thực hiện bằng băng analog. Tín hiệu sóng âm phát ra từ micrô hoặc một số nguồn khác được lưu trữ vật lý trên băng từ bằng một cơ chế được gọi là {\it record head}. Khi băng di chuyển qua, đầu ghi sẽ khắc các mẫu vật liệu từ tính bên trong băng, do đó tạo ra bản ghi âm nhạc. Để phát lại bản ghi âm, {\tt playhead} sẽ thu các dao động trong vật liệu từ tính của băng \& chuyển đổi nó trở lại thành sóng âm để người nghe có thể nghe. Chuyển nhanh đến thế giới kỹ thuật số. Không còn đầu phát hoặc đầu ghi nữa, nhưng vẫn duy trì phép ẩn dụ đó khi đề cập đến khái niệm âm thanh chuyển động theo thời gian. Khái niệm về đầu phát phổ biến trong các phần mềm sản xuất âm thanh như một điểm thời gian mà âm thanh đang phát.
+		
+		In TunePad, when place a note with {\tt playNote} function, it advances playhead forward in time by duration of note specified by {\tt beats} parameter. There are several functions available to get information about position of playhead \& move it forward or backward in time.
+		
+		{\sf Function: Description}
+		\begin{itemize}
+			\item {\tt getPlayhead()}: Returns current position of playhead in beats. Note: {\tt getPlayhead} returns elapsed number of beats, i.e. if playhead is at beginning of track function will return 0. If 1.5 beats have elapsed, {\tt getPlayhead} will return 1.5. If 40 beats have elapsed, it will return 40, \& so on.
+			\item {\tt getMeasure()}: Returns current measure as an integer value. Note: {\tt getMeasure} returns an elapsed number of measures. So, if playhead is at beginning of track or anywhere before end of 1st measure, function will return 0. If playhead $\ge$ start of 2nd measure, {\tt getMeasure} will return 1, \& so on.
+			\item {\tt getBeat()}: Returns an elapsed number of beats {\it within current measure} as a decimal number. E.g., if playhead has advanced by a quarter beat within a measure, {\tt getBeat} will return 0.25. Value returned by {\tt getBeat} will always $<$ total number of beats in a measure.
+			\item {\tt fastForward(beats)}: Advance playhead forward by given number of beats relative to current position. Note: this is identical to {\tt rest} function. Negative beat values move playhead backward.
+			\item {\tt rewind(beats)}: Move playhead back in time by given number of beats. This can be a useful way to play multiple notes at same time. Beats parameter specifies number of {\it beats} to move playhead. Negative values of beats move playhead forward.
+			\item {\tt rest(beats)}: Advance playhead forward by given number of beats without playing a sound. This is identical to {\tt fastForward} function.
+			\item {\tt moveTo(beats)}: Move playhead to an arbitrary position. {\tt beats} parameter specifies point that playhead will be placed as an elapsed number of beats. E.g., {\tt moveTo(0)} will move playhead to beginning of a track (zero elapsed beats). {\tt moveTo(1)} will place playhead at end of 1st beat \& right before start of 2nd beat.
+		\end{itemize}
+		Can control where playhead is relative to music we make by using {\tt moveTo, fastForward, rewind} commands. {\tt rewind} \& {\tt fastForward} functions move playhead backward or forward relative to current point in time. {\tt moveTo} function takes playhead \& moves it to an arbitrary point in time. In TunePad, playhead represents an {\it elapsed} number of beats. So, to move to beginning of a track, would use {\tt moveTo(0)}, i.e. 0 elapsed beats. To move to beginning of 2nd beat, would use {\tt moveTo(1)}, i.e. 1 elapsed beat. These commands are useful for adding multiple overlapping rhythms to a single TunePad cell. See more on how these commands can be used in Chap. 8.
+		\item {\sf2.15. Basic drum patterns.} Code some foundational drum patterns. There is also a link to code in TunePad so that you can play around with beat \& make it your own.
+		\begin{itemize}
+			\item {\sf2.15.1. 4-on-the-floor.} 4-on-the-floor pattern is a staple of House, EDM, disco, \& pop music. It has a driving dance beat defined by 4 kick drum hits on each beat (thus 4 beats on floor). This beat is simple but versatile. Can spice it up by moving hi-hats around \& adding kicks, snares, \& other drums in unexpected places. Can make basic pattern with just 3 instruments: kick, snare, \& hats.
+			
+			Kick drums are lowest drum sound in a drum kit. Start by laying down kick drums on each beat of measure. These low sounds give this pattern a driving rhythmic structure that sounds great at higher tempos. Then add snare hits on even beats (2 \& 4). Snare adds energy \& texture to beat. Finally, add hi-hats. These are highest pitch instruments in most drum beats, \& they help outline groove to emphasize beat. Can find this example at \url{https://tunepad.com/examples/four-on-the-foor}.
+			\begin{verbatim}
+				# define instrument variables
+				kick = 0
+				snare = 2
+				hat = 4
+				
+				# lay down four kicks (on the floor)
+				playNote(kick)
+				playNote(kick)
+				playNote(kick)
+				playNote(kick)
+				
+				moveTo(0) # reset playhead to the beginning
+				
+				# add snares on the even beats
+				rest(1)
+				playNote(snare)
+				rest(1)
+				playNote(snare)
+				
+				moveTo(0) # reset playhead to the beginning
+				
+				# hi-hat pattern with a loop!
+				for i in range(8):
+				    playNote(hat, 0.5)
+			\end{verbatim}
+			\item {\sf2.15.2. Blues.} Blues is a genre of music that evolved from African American experience, starting as field songs, evolving into spirituals, \& eventually became Blues. This beat is in 3/4 time, i.e. there are 3 beats in each measure. Can find this example at \url{https://tunepad.com/examples/blues-beat}.
+			\begin{verbatim}
+				# define instrument variables
+				kick = 0
+				snare = 2
+				hat = 4
+				
+				# lay down kick and snare pattern
+				playNote(kick, beats = 0.5)
+				playNote(kick, beats = 0.25)
+				playNote(snare, beats = 0.25)
+				rest(.25)
+				playNote(kick, beats = 0.25)
+				playNote(kick, beats = 0.25)
+				rest(.25)
+				playNote(kick, beats = 0.25)
+				playNote(snare, beats = 0.25)
+				playNote(kick, beats = 0.25)
+				playNote(kick, beats = 0.25)
+				
+				moveTo(0) # reset playhead to beginning
+				
+				# add hi-hats
+				playNote (4, beats = 0.25)
+				for i in range(3):
+				    rest(0.25)
+				    playNote (hat, beats = 0.25)
+				    playNote (hat, beats = 0.25)
+				rest(0.25)
+				playNote(hat, beats = 0.25)
+			\end{verbatim}
+			\item {\sf2.15.3. Latin.} Latin beats are known for their syncopated rhythms that emphasize so-called ``weak beats'' in a measure. This drum pattern is 2 measures long. Our kick pattern sounds much like a heartbeat \& solidly grounds our entire beat. Our snare is playing a {\it clave} pattern, which is common in many forms of Afro-Cuban music e.g. salsa, mambo, reggae, reggaeton, \& dancehall. In 2nd measure, have hits on 1st beat \& 2nd half of 2nd beat (counts 1 \& 2.5). Finally, add a hi-hat on every 8th note. Can find this example at \url{https://tunepad.com/examples/latin-beat}.
+			\begin{verbatim}
+				# define instrument variables
+				kick = 0
+				snare = 3
+				hat = 4
+				
+				# lay down kicks for the heartbeat
+				for i in range(2):
+				    playNote(kick, beats = 1.5)
+				    playNote(kick, beats = 0.5)
+				    playNote(kick, beats = 1.5)
+				    playNote(kick, beats = 0.5)
+				    
+				moveTo(0) # reset playhead
+				
+				# add snare
+				rest(1.0)
+				playNote(snare)
+				playNote(snare)
+				rest(1.0)
+				playNote(snare, beats = 1.5)
+				playNote(snare, beats = 1.5)
+				playNote(snare)
+				
+				moveTo(0) # reset playhead
+				
+				# lay down hi-hats
+				for i in range(16):
+				    playNote(hat, beats = 0.5)
+			\end{verbatim}
+			\item {\sf2.15.4. Reggae.} A common reggae beat is {\it1-drop beat}, which gets its name due to fact there's no hit on 1st beat. Rather, accent is on 3rd beat which contributes to strong backbeat \& laid back feel in reggae. Using swung 8th notes for our hi-hats, \& adding an open hi-hat hit on very last note to add texture. 1st hit is held for $\frac{2}{3}$ of beat \& 2nd for $\frac{1}{3}$. Both our kick \& snare hit on 3rd beat. Can find this example at \url{https://tunepad.com/examples/reggae-beat}.
+			\begin{verbatim}
+				# define instrument variables
+				kick = 0
+				snare = 2
+				hat = 4
+				open_hat = 5
+				
+				# lay down kick and snare together
+				rest(2)
+				playNote([kick, snare])
+				
+				moveTo(0) # reset playhead
+				
+				# lay down swung hi-hat pattern
+				for i in range(3):
+				    playNote(hat, 2.0 / 3) # two-thirds
+				    playNote(hat, 1.0 / 3) # one-third
+				
+				playNote(hat, 2.0 / 3)
+				playNote(open_hat, 1.0 / 3)
+			\end{verbatim}
+			\item {\sf2.15.5. Other common patterns.} Here are a few other drum patterns in different genres that you can try coding for yourself. Hip-hop (late-1990s) 90 bpm, Hip-hop (mid-2000s) 85 bpm, basic pop{\tt/}rock 130 bpm, Trap (mid-2010s) 130 bpm (double dots mean stuttered hi-hats), pop{\tt/}hip-hop 70 bpm, West coast beat (late 2010s) 100 bpm, Dance{\tt/}EDM{\tt/}Hip-hop (circa 1982) 130 bpm, Hip-hop (mid-1990s) 85 bpm.
+		\end{itemize}
+		\item {\sf2.16. Drum sequencers.} A drum sequencer is a tool for creating drum patterns. Early sequencers like Roland 808 were physical pieces of hardward. Now most people use software-based sequencers, although basic principles are the same: Sequencers look like a grid with rows for different drum sounds \& columns for short time slices (usually 16th notes or 32nd notes).
+		
+		TunePad includes a drum sequencer ({\sf Fig. 2.15: TunePad composer interface provides drum \& bass sequencers.}) that can be helpful for playing around with different rhythmic ideas \url{tunepad.com/composer}. Can add drum sounds at different time slices by clicking on gray squares of grid, \& once have a pattern you like you can convert it into Python code. When converting a drum sequencer pattern to code, it can be helpful to code column by column instead row by row. What that means: we work left to right across drum pattern. For each column, look at all sounds that hit at that time slice. Can then cue up each of those sounds using a simple {\tt playNote} statement. {\sf A quick example pattern.}
+		
+		Look at 1st column \& see there's a single kick drum.
+		\begin{verbatim}
+			playNote(0, beats = 0.25)
+		\end{verbatim}
+		Look at 2nd column \& see that it's empty, so rest:
+		\begin{verbatim}
+			rest(0.25)
+		\end{verbatim}
+		3rd column includes both a hat (note 4) \& a kick (note 0). To play these together, can use a single {\tt playNote} command with both sounds enclosed in square brackets like this:
+		\begin{verbatim}
+			playNote([ 0, 4 ], beats = 0.25)
+		\end{verbatim}
+		A special Python structure: list -- a convenient way to play more than 1 sound at same time. If keep going with this column-by-column strategy, complete code:
+		\begin{verbatim}
+			playNote(0, beats = 0.25)
+			rest(0.25)
+			playNote([ 0, 4 ], beats = 0.25)
+			rest(0.25) # kick + hat
+			playNote(2, beats = 0.25)
+			rest(0.25)
+			playNote(4, beats = 0.25)
+			playNote(10, beats = 0.25)
+			rest(0.25)
+			playNote(10, beats = 0.25)
+			playNote([ 0, 4 ], beats = 0.25) # kick + hat
+			playNote(0, beats = 0.25)
+			playNote(2, beats = 0.25)
+			rest(0.25)
+			playNote(4, beats = 0.25)
+			rest(0.25)
+		\end{verbatim}
+		Coding column by column can be a little quicker \& produces more compact code.
+		\begin{note}
+			Term beat can also refer to main groove in a dance track (``drop beat'') or instrumental music that accompanies vocals in a hip-hop track (``she produced a beat for a new artist'') in addition to other meanings.
+		\end{note}
 	\end{itemize}
+	\item {\sf Interlude 2: Custom Trap Beat.} In this interlude, run with skills you picked up in preceding chap to create a custom Trap beat. This beat will use kick drum, snare, \& hi-hats. Can follow along online by visiting \url{https://tunepad.com/interlude/trap-beat}.
+	\begin{enumerate}
+		\item {\bf Step 1: Defining variables.} Start by logging into TunePad \& creating a new project called ``Custom Trap Beat''. Add a new {\it Drums} instrument to your project. In this call, declare {\it variables} for your drum sounds.
+		\begin{verbatim}
+			# variables for drums
+			kick = 1
+			snare = 2
+			hat = 4
+		\end{verbatim}
+		\item {\bf Step 2: Basic drum pattern.} Code for a basic drum pattern. Add this code to your Drum call after variables:
+		\begin{verbatim}
+			# kick and snare
+			playNote(kick, beats = 0.75)
+			playNote(kick, beats = 0.25)
+			playNote(snare, beats = 1.5)
+			playNote(kick, beats = 0.75)
+			playNote(kick, beats = 0.75)
+			playNote(kick, beats = 2)
+			playNote(snare, beats = 1)
+		\end{verbatim}
+		Break down each of these lines 1 by 1 {\sf[Table]} When done, pattern should look sth like {\sf Fig. 2.16: Basic drum pattern}.
+		\item {\bf Step 3: Add hi-hat rolls \& stutters.} Now add a new {\tt Drum Cell} to your project for hi-hat rolls \& stutters. To add our hi-hat runs, 1st review {\tt for loops} in Python {\sf Fig. 2.17: Declaring a for loop for hi-hat runs in Python.}
+		
+		Indented block of code is run total number of times specified by {\it range} of loop. Try this example pattern in your project:
+		\begin{verbatim}
+			for i in range(4):
+			    playNote(hat, beats = 0.25)
+			    
+			for i in range(4):
+			    playNote(hat, beats = 0.25 / 2)
+			    
+			for i in range(8):
+			    playNote(hat, beats = 0.25)
+			    
+			for i in range(5):
+			    playNote(hat, beats = 0.25 / 5)
+			
+			playNote(hat, beats = 0.25)
+		\end{verbatim}
+		Your cell should now have a pattern like {\sf Fig. 2.18: Hi-hat stutter patterns.}
+		\item {\bf Step 4: Customize.} After trying example in Step 3, make up your own stutter pattern to go with your kick \& snare drums. Can use any combination of beats, but make sure it adds up to a multiple of 4 beats so that your beat loops correctly! Here are a few for loops that play stutters at different speeds:
+		\begin{verbatim}
+			# couplet
+			for i in range(2):
+			    playNote(hat, beats = 0.25 / 2) # divide in half
+			    
+			# triplet
+			for i in range(3):
+			    playNote(hat, beats = 0.25 / 3) # divide into 3 parts
+			    
+			# quad
+			for i in range(4):
+			    playNote(hat, beats = 0.25 / 4) # divide into 4 parts
+			    
+			# fifthlet?
+			for i in range(5):
+			    playNote(hat, beats = 0.25 / 5) # divide into 5 parts
+		\end{verbatim}
+		Try out different instrument sounds by changing values of variables \& switching to a different drum kit. Can also experiment with changing tempo. For more inspiration, this TunePad project has several popular hip-hop beat patterns that you can experiment with \url{https://tunepad.com/interlude/drum-examples}.
+	\end{enumerate}
 	\item {\sf3. Pitch, harmony, \& dissonance.} Chap. 2 introduced basics of rhythm \& how to use Python programming language to code beats with percussion sounds. In this chap, explore topics of pitch, harmony, \& dissonance -- or what happens when you bring tonal instruments \& human voice into music. Start with physical properties of sound (including frequency, amplitude, \& wavelength) \& why different musical notes sound harmonious or dissonant when played together. Also talk about different ways to represent pitch, including frequency value, musical note names, \& MIDI (Musical Instrument Digital Interface) note numbers that we can use with Python code \& TunePad.
 	
 	-- Chương 2 giới thiệu những điều cơ bản về nhịp điệu \& cách sử dụng ngôn ngữ lập trình Python để mã hóa nhịp điệu với âm thanh bộ gõ. Trong chương này, hãy khám phá các chủ đề về cao độ, sự hòa hợp, \& sự bất hòa -- hoặc điều gì xảy ra khi bạn đưa nhạc cụ có âm \& giọng nói của con người vào âm nhạc. Bắt đầu với các đặc tính vật lý của âm thanh (bao gồm tần số, biên độ, \& bước sóng) \& lý do tại sao các nốt nhạc khác nhau nghe có vẻ hòa hợp hay bất hòa khi chơi cùng nhau. Ngoài ra, hãy nói về các cách khác nhau để biểu diễn cao độ, bao gồm giá trị tần số, tên nốt nhạc, \& số nốt MIDI (Giao diện kỹ thuật số nhạc cụ) mà chúng ta có thể sử dụng với mã Python \& TunePad.
@@ -793,8 +1039,194 @@
 		
 		-- Điều quan trọng cần nhớ là quyết định lên dây A440 \& chia quãng tám thành 12 nửa cung bằng nhau chỉ là 1 khả năng để đáp lại các cuộc tranh luận về cách lên dây nhạc có từ hàng ngàn năm trước, \& đó chỉ là 1 trong vô số cách để lên dây nhạc. Có nhiều hệ thống lên dây thay thế, cả lịch sử \& đương đại từ cả nền văn hóa phương Tây \& không phải phương Tây, vẫn được sử dụng cho đến ngày nay.
 	\end{itemize}
-	\item {\sf Interlude 3: Melodies \& Lists.} [p. 68 +++] 
-	\item {\sf4. Chords.}
+	\item {\sf Interlude 3: Melodies \& Lists.} For this interlude, code a short sect of a remix of {\sc Beethoven}'s {\it Für Elise} created by artist \& YouTuber {\sc Kyle Exum} (Bassthoven, 2020). Because this song has a more intricate melody, learn how to play sequences of notes written out as Python {\it lists}. Talk more about lists in next chap, but for now, can think of them as a way to hold $> 1$ note in a single variable.
+	\begin{enumerate}
+		\item {\bf Step 1: Variables.} Create a new Keyboard instrument \& add some variables for our different note names.
+		\begin{verbatim}
+			A = 69 # set variable A equal to 69
+			B = 71
+			C = 72
+			D = 74
+			E = 76
+			Eb = 75 # E flat
+			Gs = 68 # G sharp
+			_ = None			
+		\end{verbatim}
+		Last line is a little strange. It defines a variable called \verb|_|
+		\begin{itemize}
+			\item In Python, underscore \verb|_| character is a valid variable name.
+			\item Set this variable to have a special value called {\tt None}.
+			\item Calling {\tt playNote} with this value is same thing as a rest. It plays nothing.
+		\end{itemize}
+		\item {\bf Step 2: Phrases.}
+		\begin{itemize}
+			\item For this song, going to define 4 musical phrases that get repeated to make melody.
+			\item Each phrase gets its own variable.
+			\item Each variable will hold lists of notes in order they should be played.
+			\item You create a Python list by enclosing variables inside of square brackets.
+			\item Use underscore character \verb|_| mean play nothing.
+			\item Sometimes subtract 12 from a note, i.e., to play note on octave lower.
+		\end{itemize}
+		\begin{verbatim}
+			# four basic phrases that repeat throughout
+			p1 = [ E, Eb, E, Eb, E, B, D, C, A, _, _, _ ]
+			p2 = [ A, C - 12, E - 12, A, B, _, _, _ ]
+			p3 = [ B, E - 12, Gs, B, C, _, _, _, C, _, _, _ ]
+			p4 = [ B, E - 12, C, B, A, _, _, _, A, _, _, _ ]
+		\end{verbatim}
+		\item {\bf Step 3: Playing Phrases.} Now have defined our variables, can start to play melody. 1 way to do this: use a Python {\it for loop} to iterate through every note. 1 cool thing about Python: can join lists together using plus sign $+$. Here's what everything looks like together.
+		\begin{verbatim}
+			_ = None
+			A = 69
+			B = 71
+			C = 72
+			D = 74
+			E = 76
+			Eb = E - 1 # E flat
+			Gs = A - 1 # G sharp
+			
+			# 4 basic phrases that repeat throughout
+			p1 = [ E, Eb, E, Eb, E, B, D, C, A, _, _, _ ]
+			p2 = [ A, C - 12, E - 12, A, B, _, _, _ ]
+			p3 = [ B, E - 12, Gs, B, C, _, _, _, C, _, _, _ ]
+			p4 = [ B, E - 12, C, B, A, _, _, _, A, _, _, _ ]
+			p5 = [ A,_,_,_,A,_,_,_,A,_, _, _, A, _, _, _ ]
+			
+			for note in p1 + p5 + p2 + p3 + p1 + p2 + p4:
+			    playNote(note, beats = 0.5)
+			    
+			for note in p1 + p2 + p3 + p1 + p2 + p4:
+			    playNote(note, beats = 0.5)
+		\end{verbatim}
+		\item {\bf Step 4: Bass!} Add a Bass to your project \& change voice to {\tt808 Bass}. Can copy code below for bass pattern {\sf Fig. 3.8: Select 808 Bass voice.}
+		\item {\bf Step 5: Drums.} To finish up, layer in a simple drum pattern that works well with melody. Create a new {\tt Drum instrument} \& add this code.
+		\begin{verbatim}
+			rest(12)
+			for i in range(4):
+			    playNote(21)
+			    rest(2)
+			    playNote(21)
+			    rest(1)
+			    playNote(16, beats = 0.5)
+			    rest(1)
+			    playNote(16, beats = 0.5)
+			    rest(1)
+			    playNote(21)
+			    rest(2)
+			    playNote(21)
+			    rest(1)
+			    playNote(28, beats = 0.5)
+			    rest(1)
+			    playNote
+			
+			for i in range(16):
+			    playNote(0)
+			    playNote(2, beats = 0.5)
+			    playNote(2, beats = 0.5)
+			    playNote(10)
+			    playNote(0)
+		\end{verbatim}
+		Can try this project online \url{https://tunepad.com/interlude/bassthoven}.
+	\end{enumerate}
+	\item {\sf4. Chords -- Hợp âm.} Chords are an essential building block of musical compositions. Skillful use of chords can set foundation of a song \& create a sense of emotional movement. However, even though basic ideas behind chords are easy to understand, there's an overwhelming amount of terminology \& technical detail that can take years to learn. Using code helps us cut through layers of complicated terminology to reveal elegant structures beneath. With code, chords are nothing more than lists of numbers that follow consistent patterns. Work through chords using Python {\it lists \& functions}. Learn some of traditional music terminology \& what it means, but also build your own toolkit of computer code to use for new compositions.
+	\begin{itemize}
+		\item {\sf4.1. Chords.} Can follow along with interactive online examples at \url{https://tunepad.com/examples/chord-basics}. In Chap. 3, introduced idea of harmony \& dissonance. $\ge2$ notes have a harmonic relationship if their frequencies have integer ratios. E.g., when 2 notes are 1 octave apart, higher note vibrates exactly 2 complete cycles for every 1 cycle of lower note (a 2:1 ratio). When 2 notes are a 5th apart, their frequencies have a 3:2 ratio. Higher note vibrates exactly 3 times for every 2 complete cycles of lower note.
+		
+		Building on this idea of harmonic relationships between notes, a {\it chord} is more than 1 note played together at same time. In Python can think of a chord as a {\it list} of numbers representing MIDI (Musical Instrument Digital Interface) note values. E.g., this code plays a C major chord in TunePad.
+		\begin{verbatim}
+			Cmaj = [ 48, 52, 55 ] # notes C, E, G
+			playNote(Cmaj)
+		\end{verbatim}
+		Here {\tt Cmaj} is a variable. Instead of assigning that variable to a single number, we're assigning it a {\it list} of numbers. In Python, a list is a set of values enclosed in square brackets \& separated by commas. Then on 2nd line we play all 3 notes together using {\tt Cmaj} variable {\sf Fig. 4.1: C major chord with MIDI note numbers}.
+		
+		Can also play same chord using just a single line of code where pass list of numbers directly to {\tt playNote} function.
+		\begin{verbatim}
+			playNote([ 48, 52, 55 ])
+		\end{verbatim}
+		But, using variable is nice because it helps make our code easier to read \& understand. Here are a few other chord examples:
+		\begin{verbatim}
+			Cmaj = [ 48, 52, 55 ] # C major chord
+			Fmaj = [ 53, 57, 60 ] # F major chord
+			Gmaj = [ 55, 59, 62 ] # G major chord
+		\end{verbatim}
+		A chord's name comes from 2 parts. 1st part is {\it root} note of chord -- usually 1st note in list. E.g., a F major chord starts with note 53 (or an F on piano keyboard). \& G major chord starts with note 55, a G on keyboard.
+		
+		2nd part of a chord's name is its type or {\it quality}. In our examples, {\tt Cmaj, Fmaj, Gmaj} are all {\it major} chords. Later in this chap review several common chord types \& how to create them in code. Each chord type has a consistent pattern. E.g., all major chords follow exact same pattern: take root note, add 4 to get 2nd note, \& then add 7 to get last note. Can build a major chord up from any base note you want as long as it follows this same pattern {\sf Fig. 4.2: Creating chords as lists of numbers in Python. Each major chord follows same pattern.}
+		
+		Another way to write this in code: define a single root note variable \& then create chord based on root:
+		\begin{verbatim}
+			root = 48
+			playNote([ root, root + 4, root + 7 ]) # C major
+			root = 52
+			playNote([ root, root + 4, root + 7 ]) # F major
+		\end{verbatim}
+		1 thing to notice about this code: 1st 2 lines \& last 2 lines are almost identical. Just changing root note value. In fact, all we need to make any chord we want is its root note \& pattern that defines its quality. Once we know patterns, rest is easy.
+		
+		But, it would be tedious \& error prone to write out {\tt[root, root + 4, root + 7]} every time we wanted to use a major chord. Fortunately, Python gives us a powerful tool for exactly this kind of situation: {\it user-defined functions}.
+		\item {\sf4.2. User-defined functions.} In 1st few chaps of this book, using functions to play music: {\tt playNote, rest, moveTo} are all functions provided to TunePad. When want to use a function, just type its name \& list parameters to send it inside parentheses. With Python, can also create our own functions to build up a musical toolkit. Creating functions also helps make code shorter \& easier to understand because we'll be able to use same segments of code over \& over again without having to copy \& paste. A quick example that creates a major chord based on a root note.
+		\begin{verbatim}
+			def majorChord(root):
+			    chord = [ root, root + 4, root + 7 ]
+			    return chord
+		\end{verbatim}
+		Now that have defined function, can use it as a shortcut in TunePad.
+		\begin{verbatim}
+			Cmaj = majorChord(48)
+			Fmaj = majorChord(53)
+			playNote(Cmaj, beats = 2)
+			playNote(Fmaj, beats = 2)
+		\end{verbatim}
+		There's a lot going on with these few lines of code. Break it down line by line.
+		\begin{itemize}
+			\item Line 1 starts with {\tt def} keyword. This is short for ``define'', \& it tells Python that we're about to define a function.
+			\item Next is name of function we're defining. In this case, calling it {\tt majorChord}, but we could use any name want as long as it follows Python's naming rules.
+			\item After function name, need to list out all of function's {\it parameters} enclosed inside parentheses. In this case, there's only 1 parameter called {\it root}. If need $> 1$ parameter, separate each parameter with commas. Can think of parameters as special kinds of variables that are only usable inside of a function.
+			\item After parameter list, need colon character :. This tells Python: {\it body} of function is coming next {\sf Fig. 4.3: How to declare a user-defined function in Python}.
+			\item Line 2 starts body of function. Here just creating a variable called {\it chord} \& assigning it to a list of numbers that define a major chord. Numbers are root note, root note $+4$, \& root note $+7$. An important thing to notice: this line of code is intended by 4 spaces. Just like with loops, indentation tells Python: these lines are part of function body. They're considered to be inside function, not outside.
+			\item Line 3 is also indented by 4 spaces because it's also part of function body. This line uses special {\tt return} keyword to say what value function produces. In this case, returning {\tt chord} variable, list of 3 numbers that make up our major chord. When Python gets to {\tt return} keyword, it immediately exits function \& returns value given on that line.
+			\item Also possible to define a function with no return value. In this case, Python provides a special return value called {\tt None}.
+		\end{itemize}
+		That's it for our function def. Now can see how it's used on lines 4--7. Notice can call our new function multiple times to generate different chords, letting us reuse code to create more readable \& elegant programs. In rest of chap, use this same template to begin to build up a library of chord types, each with its own function.
+		
+		Can define variables inside a function just like you might otherwise. A variable's {\it scope} refers to where we can use this variable or function. Can think of this as level of indentation for a function. Variables defined within def of a function can only be used in that function; their scope is within that function. Following code will result in an error on line 4.
+		\begin{verbatim}
+			def majorChord(root):
+			    chord = [ root, root + 4, root + 7 ]
+			majorChord(60)
+			playNote(chord) # ERROR
+		\end{verbatim}
+		{\tt chord} variable lives only in our {\tt majorChord} function. Can refer to this as a local variable. Alternatively, there are global variables which can be used anywhere after they've been defined. In code below, {\tt root, chord} are global variables, \& therefore can be freely used in body of any functions:
+		\begin{verbatim}
+			root = 60
+			chord = [ root, root + 4, root + 7 ]
+			def songPar1():
+			    playNote(chord)
+			    playNote(root)
+			songPart1()
+		\end{verbatim}
+		Before move on, let's define 1 more function that shows how we can use our new functions inside of other functions:
+		\begin{verbatim}
+			def playMajorChord(root, duration):
+			    chord = majorChord(root)
+			    playNote(chord, beats = duration)
+		\end{verbatim}
+		This function uses our {\tt majorChord} function to both build a chord from a root note \& then calls {\tt playNote} to play chord. This new {\tt playMajorChord} function takes 2 parameters, {\tt root} note \& a {\tt duration} that says how long to play note.
+		\begin{note}
+			By convention, Python function \& variable names use lowercase letters, with different words separated by underscore character, e.g., \verb|play_major_chord|. This style is referred to as ``\verb|snake_case|''. However, this book uses a different style called ``camelCase'' where names start with a lowercase letter \& uppercase letters are used to start new words (as in {\tt playMajorChord}). Use camelCase in this book to be consistent with other programming language conventions e.g. JavaScript, but should feel free to use \verb|snake_case| for your own Python programs if want to.
+		\end{note}
+		\item {\sf4.3. Common chord types.} This sect reviews some of most commonly used chord types in modern musical genres. For each chord, provide pattern of numbers that defines its quality, an example of a chord of that type on piano keyboard, \& a TunePad function that generates chords from a root note. Also describe chord in terms of musical intervals. Names for intervals can be a little confusing, especially when combined with note names or MIDI note values.
+		
+		{\bf Common chord types{\tt/}qualities.}
+		\begin{itemize}
+			\item Major triad: Major 7th: Suspended 2
+			\item Minor: Minor 7th: Suspended 4
+			\item Diminished: Dominant 7th: Augmented
+		\end{itemize}
+		To hear these chords in action, go to \url{https://tunepad.com/examples/chord-functions}.
+		\begin{itemize}
+			\item {\sf4.3.1. Major triad.} p. 76+++
+		\end{itemize}
+	\end{itemize}
 	\item {\sf5. Scales, keys, \& melody.}
 	\item {\sf6. Diatonic chords \& chord progressions.}
 	\item {\sf7. Frequency, fourier, \& filters.}

@@ -2686,6 +2686,175 @@
 
 %------------------------------------------------------------------------------%
 
+\section{Librosa}
+{\tt librosa} is a Python package for music \& audio analysis. In provides building blocks necessary to create music information retrieval systems.
+
+For a quick introduction to using librosa, see \href{https://librosa.org/doc/latest/tutorial.html}{Tutorial}. For a more advanced introduction which describes package design principles, refer to \href{https://doi.org/10.25080/Majora-7b98e3ed-003}{librosa paper} at \href{https://scipy2015.scipy.org/}{SciPy 2015}.
+
+\subsection{{\sc Brian McFee, Colin Raffel, Dawen Liang, Daniel P. W. Ellis, Matt McVicar, Eric Battenberg, Oriol Nieto}. librosa: Audio \& Music Signal Analysis in Python}
+{\sf[3562 citations]}
+\begin{itemize}
+	\item {\sf Abstract.} This document describes version 0.4.0 of {\tt librosa}: a Python package for audio \& music signal processing. At a high level, {\tt librosa} provides implementations of a variety of common functions used throughout field of music information retrieval. In this document, a brief overview of library's functionality is provided, along with explanations of design goals, software development practices, \& notational conventions.
+	\item {\sf Index terms.} audio, music, signal processing.
+	\item {\sf Introduction.} Emerging research field of music information retrieval (MIR) broadly covers topics at intersection of musicology, digital signal processing, ML, information retrieval, \& library science. Although field is relatively young -- 1st international symposium on music information retrieval (ISMIR) \url{http://ismir.net} was held in Oct of 2000 -- it is rapidly developing, thanks in part to proliferation \& practical scientific needs of digital music services, e.g. iTunes, Pandora, \& Spotify. While preponderance of MIR research has been conducted with custom tools \& scripts developed by researchers in a variety of languages e.g. MATLAB or C++, stability, scalability, \& ease of use these tools has often left much to be desired.
+	
+	-- Lĩnh vực nghiên cứu mới nổi về truy xuất thông tin âm nhạc (MIR) bao gồm rộng rãi các chủ đề giao thoa giữa âm nhạc học, xử lý tín hiệu số, ML, truy xuất thông tin, \& khoa học thư viện. Mặc dù lĩnh vực này còn khá mới mẻ -- hội nghị chuyên đề quốc tế đầu tiên về truy xuất thông tin âm nhạc (ISMIR) \url{http://ismir.net} đã được tổ chức vào tháng 10 năm 2000 -- nhưng nó đang phát triển nhanh chóng, một phần là nhờ sự gia tăng \& nhu cầu khoa học thực tế của các dịch vụ âm nhạc số, ví dụ như iTunes, Pandora, \& Spotify. Trong khi phần lớn nghiên cứu MIR được tiến hành bằng các công cụ tùy chỉnh \& tập lệnh do các nhà nghiên cứu phát triển bằng nhiều ngôn ngữ khác nhau, ví dụ như MATLAB hoặc C++, tính ổn định, khả năng mở rộng, \& dễ sử dụng của các công cụ này thường không được như mong đợi.
+	
+	In recent years, interest has grown within MIR community in using (scientific) Python as a viable alternative. This has been driven by a confluence of several factors, including availability of high-quality ML libraries e.g. {\tt scikit-learn} [Pedregosa11] \& tools based on {\tt Theano} [Bergstra11], as well as Python's vast catalog of packages for dealing with text data \& web services. However, adoption of Python has been slowed by absence of a stable core library that provides basic routines upon which many MIR applications are built. To remedy this situation, have developed librosa: \url{https://github.com/bmcfee/librosa} a Python package for audio \& music signal processing. [Name {\tt librosa} is borrowed from {\it LabROSA}: LABoratory for Recognition \& Organization of Speech \& Audio at Columbia University, where initial development of librosa took place.] In doing so, hope to both ease transition of MIR researchers into Python (\& modern software development practices), \& also to make core MIR techniques readily available to broader community of scientists \& Python programmers.
+	\begin{itemize}
+		\item {\sf Design principles.} In designing librosa, have prioritized a few key concepts. 1st, strive for a low barrier to entry for researchers familiar with MATLAB. In particular, opted for a relatively flat package layout, \& following {\tt scipy} [Jones01] rely upon {\tt numpy} data types \& functions [VanDerWalt11], rather than abstract class hierarchies.
+		
+		2nd, expended considerable effort in standardizing interfaces, variable names, \& (default) parameter settings across various analysis functions. This task was complicated by fact: reference implementations from which our implementations are derived come from various authors, \& are often designed as 1-off scripts rather than proper library functions with well-defined interfaces.
+		
+		-- Thứ 2, dành nhiều công sức để chuẩn hóa giao diện, tên biến, cài đặt tham số \& (mặc định) trên nhiều hàm phân tích khác nhau. Nhiệm vụ này phức tạp hơn vì thực tế: các triển khai tham chiếu mà các triển khai của chúng tôi bắt nguồn từ nhiều tác giả khác nhau, \& thường được thiết kế dưới dạng tập lệnh 1 lần thay vì các hàm thư viện phù hợp với giao diện được xác định rõ ràng.
+		
+		3rd, wherever possible, retain backwards compatibility against existing reference implementations. This is achieved via regression testing for numerical equivalence of outputs. All tests are implemented in {\tt nose} framework \url{https://nose.readthedocs.org/en/latest/}.
+		
+		-- Thứ 3, bất cứ khi nào có thể, hãy duy trì khả năng tương thích ngược với các triển khai tham chiếu hiện có. Điều này đạt được thông qua thử nghiệm hồi quy để có sự tương đương về mặt số của đầu ra. Tất cả các thử nghiệm đều được triển khai trong {\tt nose}.
+		
+		4th, because MIR is a rapidly evolving field, recognize: exact implementations provided by librosa may not represent state of art for any particular task. Consequently, functions are designed to be {\it modular}, allowing practitioners to provide their own functions when appropriate, e.g., a custom onset strength estimate may be provided to beat tracker as a function argument. This allows researchers to leverage existing library functions while experimenting with improvements to specific components. Although this seems simple \& obvious, from a practical standpoint monolithic designs \& lack of interoperability between different research codebases have historically made this difficult.
+		
+		-- Thứ 4, vì MIR là một lĩnh vực phát triển nhanh chóng, hãy nhận ra: các triển khai chính xác do librosa cung cấp có thể không đại diện cho trạng thái nghệ thuật cho bất kỳ nhiệm vụ cụ thể nào. Do đó, các hàm được thiết kế theo dạng {\it mô-đun}, cho phép các học viên cung cấp các hàm của riêng họ khi thích hợp, ví dụ, có thể cung cấp ước tính cường độ khởi phát tùy chỉnh cho beat tracker dưới dạng đối số hàm. Điều này cho phép các nhà nghiên cứu tận dụng các hàm thư viện hiện có trong khi thử nghiệm các cải tiến đối với các thành phần cụ thể. Mặc dù điều này có vẻ đơn giản \& hiển nhiên, nhưng theo quan điểm thực tế, các thiết kế nguyên khối \& thiếu khả năng tương tác giữa các cơ sở mã nghiên cứu khác nhau trong lịch sử đã khiến điều này trở nên khó khăn.
+		
+		Finally, strive for readable code, thorough documentation \& exhaustive testing. All development is conducted on GitHub. Apply modern software development practices, e.g. continuous integration testing (via Travis \url{https://travis-ci.org}) \& coverage(via Coveralls \url{https://coveralls.io}). All functions are implemented in pure Python, thoroughly documented using Sphinx, \& include example code demonstrating usage. Implementation mostly complies with PEP-8 recommendations, with a small set of exceptions for variable names that make code more concise without sacrificing clarity: e.g., {\tt y, sr} are preferred over more verbose names e.g. \verb|audio_buffer, sampling_rate|.
+		
+		-- Cuối cùng, hãy cố gắng tạo ra mã dễ đọc, tài liệu hướng dẫn đầy đủ \& thử nghiệm toàn diện. Mọi hoạt động phát triển đều được thực hiện trên GitHub. Áp dụng các phương pháp phát triển phần mềm hiện đại, ví dụ như thử nghiệm tích hợp liên tục (qua Travis \url{https://travis-ci.org}) \& phạm vi phủ sóng (qua Coveralls \url{https://coveralls.io}). Tất cả các chức năng đều được triển khai bằng Python thuần túy, được ghi chép đầy đủ bằng Sphinx, \& bao gồm mã ví dụ minh họa cách sử dụng. Việc triển khai phần lớn tuân thủ các khuyến nghị của PEP-8, với một tập hợp nhỏ các ngoại lệ cho tên biến giúp mã ngắn gọn hơn mà không làm mất đi tính rõ ràng: ví dụ: {\tt y, sr} được ưu tiên hơn các tên dài dòng hơn, ví dụ: \verb|audio_buffer, sampling_rate|.
+		\item {\sf Conventions.} In general, librosa's functions tend to expose all relevant parameters to caller. While this provides a great deal of flexibility to expert users, it can be overwhelming to novice users who simply need a consistent interface to process audio files. To satisfy both needs, define a set of general conventions \& standardized default parameter values shared across many functions.
+		
+		An audio signal is represented as a 1D {\tt numpy} array, denoted as {\tt y} throughout librosa. Typically signal {\tt y} is accompanied by {\it sampling rate} (denoted {\tt sr}) which denotes frequency (in Hz) at which values of {\tt y} are sampled. Duration of a signal can then be computed by dividing number of samples by sampling rate:
+		\begin{verbatim}
+			>>> duration_seconds = float(len(y)) / sr
+			>>> duration_seconds = float(len(audio_buffer)) / sampling_rate
+		\end{verbatim}
+		By default, when loading stereo audio files, {\tt librosa.load()} function downmixes to mono by averaging left- \& right-channels, \& then resamples monophonic signal to default rate {\tt sr = 22050} Hz.
+		
+		Most audio analysis methods operate not at native sampling rate of signal, but over small {\it frames} of signal which are spaced by a {\it hop length} (in samples). Default frame \& hop lengths are set to 2048 \& 512 samples, resp. At default sampling rate of 22050 Hz, this corresponds to overlapping frames of $\approx93$ ms spaced by 23 ms. Frames are centered by default, so frame index {\tt t} corresponds to slice:
+		\begin{verbatim}
+			y[(t * hop_length - frame_length / 2):
+			(t * hop_length + frame_length / 2)],
+		\end{verbatim}
+		where boundary conditions are handled by reflection-padding input signal $y$. Unless otherwise specified, all sliding-window analyses use Hann windows by default. For analyses that do not use fixed-width frames (e.g. constant-Q transform), default hop length of 512 is retained to facilitate alignment of results.
+		
+		Majority of feature analyses implemented by librosa produce 2D outputs stored as {\tt numpy.ndarray}, e.g., {\tt S[f, t]} might contain energy within a particular frequency band {\tt f} at frame index {\tt t}. Follow convention: final dimension provides index over time, e.g., {\tt S[:, 0], S[:, 1]} access features at 1st \& 2nd frames. Feature arrays are organized column-major (Fortran style) in memory, so that common access patterns benefit from cache locality.
+		
+		By default, all pitch-based analyses are assumed to be relative to a 12-bin equal-tempered chromatic scale with a reference tuning of {\tt A440 = 440.0 Hz}. Pitch \& pitch-class analyses are arranged s.t. 0th bin corresponds to {\tt C} for pitch class or {\tt C1} (32.7 Hz) for absolute pitch measurements.
+	\end{itemize}
+	\item {\sf Package organization.} In this sect, give a brief overview of structure of librosa software package. This overview is intended to be superficial \& cover only most commonly used functionality. A complete API reference can be found.
+	\begin{itemize}
+		\item {\it Core functionality.} {\tt librosa.core} submodule includes a range of commonly used functions. Broadly, {\tt core} functionality falls into 4 categories: audio \& time-series operations, spectrogram calculation, time \& frequency conversion, \& pitch operations. For convenience, all functions within {\tt core} submodule are aliased at top level of package hierarchy, e.g., {\tt librosa.core.load} is aliased to {\tt librosa.load}.
+		
+		Audio \& time-series operations include functions e.g.: reading audio from disk via {\tt audioread} package \url{https://github.com/sampsyo/audioread} {\tt core.load}, resampling a signal at a desired rate {\tt core.resample}, stereo to mono conversion \verb|core.to_mono|, time-domain bounded auto-correlation {\tt core.autocorrelate}, \& 0-crossing detection \verb|core.zero_crossings|.
+		
+		Spectrogram operations include short-time Fourier transform {\tt stft}, inverse STFT {\tt istft}, \& instantaneous frequency spectrogram {\tt ifgram} [Abe95], which provide much of core functionality for down-stream feature analysis. Additionally, an efficient constant-Q transform {\tt cqt} implementation based upon recursive down-sampling method of 
+		{\sc Schokerkhuber \& Klapuri} [Schoerkhuber10] is provided, which provides logarithmically-spaced frequency representations suitable for pitch-based signal analysis. Finally, {\tt logamplitude} provides a flexible \& robust implementation of log-amplitude scaling, which can be used to avoid numerical underflow \& set an adaptive noise floor when converting from linear amplitude.
+		
+		-- Các hoạt động phổ đồ bao gồm biến đổi Fourier thời gian ngắn {\tt stft}, STFT nghịch đảo {\tt istft}, phổ đồ tần số tức thời {\tt ifgram} [Abe95], cung cấp nhiều chức năng cốt lõi cho phân tích tính năng hạ lưu. Ngoài ra, một triển khai biến đổi Q hằng số {\tt cqt} hiệu quả dựa trên phương pháp lấy mẫu xuống đệ quy của
+		{\sc Schokerkhuber \& Klapuri} [Schoerkhuber10] được cung cấp, cung cấp các biểu diễn tần số cách đều theo logarit phù hợp cho phân tích tín hiệu dựa trên cao độ. Cuối cùng, {\tt logamplitude} cung cấp một triển khai linh hoạt \& mạnh mẽ của tỷ lệ biên độ logarit, có thể được sử dụng để tránh tràn số \& thiết lập sàn nhiễu thích ứng khi chuyển đổi từ biên độ tuyến tính.
+		
+		Because data may be represented in a variety of time or frequency units, provide a comprehensive set of convenience functions to map between different time representations: secs, frames, or samples; \& frequency representations: hertz, constant-Q basis index, Fourier basis index, Mel basis index, MIDI note number, or note in scientific pitch notation.
+		
+		Finally, core submodule provides functionality to estimate dominant frequency of STFT bins via parabolic interpolation {\tt piptrack} [Smith11], \& estimation of tuning deviation (in cents) from reference {\tt A440}. These functions allow pitch-based analyses (e.g., {\tt cqt}) to dynamically adapt filter banks to match global tuning offset of a particular audio signal.
+		\item {\sf Spectral features.} Spectral representations -- distributions of energy over a set of frequencies -- form basis of many analysis techniques in MIR \& digital signal processing in general. {\tt librosa.feature} module implements a variety of spectral representations, most of which are based upon short-time Fourier transform.
+		
+		Mel frequency scale is commonly used to represent audio signals, as it provides a rough model of human frequency perception [Stevens37]. Both a Mel-scale spectrogram {\tt librosa.feature.melspectrogram} \& commonly used Mel-frequency Cepstral Coefficients (MFCC) {\tt librosa.feature.mfcc} are provided. By default, Mel scales are defined to match implementation provided by {\sc Slaney}'s auditory toolbox [Slaney98], but they can be made to match Hidden Markov Model Toolkit (HTK) by setting flag {\tt htk = True} [Young97].
+		
+		While Mel-scaled representations are commonly used to capture timbral aspects of music, they provide poor resolution of pitches \& pitch classes. Pitch class (or {\it chroma}) representations are often used to encode harmony while suppressing variations in octave height, loudness, or timbre. 2 flexible chroma implementations are provided: one uses a fixed-window STFT analysis \verb|chroma_stft| [\verb|chroma_stft| is based upon reference implementation provided at \url{http://labrosa.ee.columbia.edu/matlab/chroma-ansyn/}] (dead link) \& other uses variable-window constant-Q transform analysis \verb|chroma_cqt|. An alternative representation of pitch \& harmony can be obtained by {\tt tonnetz} function, which estimates tonal centroids as coordinates in a 6D interval space using method of Harte et al. [Harte06]. {\sf Fig. 1: 1st: short-time Fourier transform of a 20-sec audio clip {\tt librosa.stft}. 2nd: corresponding Mel spectrogram, using 128 Mel bands {\tt librosa.feature.melspectrogram}. 3rd: corresponding chromagram \verb|librosa.feature.chroma_cqt|. 4: Tonnetz features {\tt librosa.feature.tonnetz}} illustrates difference between STFT, Mel spectrogram, chromagram, \& Tonnetz representations, as constructed by following code fragment: [For display purposes, spectrograms are scaled by {\tt librosa.logamplitude}. Refer readers to accompanying IPython notebook for full source code to reconstruct figures.]
+		\begin{verbatim}
+			>>> filename = librosa.util.example_audio_file()
+			>>> y, sr = librosa.load(filename, offset=25.0, duration=20.0)
+			>>> spectrogram = np.abs(librosa.stft(y))
+			>>> melspec = librosa.feature.melspectrogram(y=y, sr=sr)
+			>>> chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
+			>>> tonnetz = librosa.feature.tonnetz(y=y, sr=sr)
+		\end{verbatim}
+		In addition to Mel \& chroma features, {\tt feature} submodule provides a number of spectral statistic representations, including \verb|spectral_centroid, spectral_bandwidth, spectral_rolloff| [Klapuri07], \& \verb|spectral_contrast| [Jiang02]. [\verb|spectral_*| functions are derived from MATLAB reference implementations provided by METLab at Drexel University \url{http://music.ece.drexel.edu/}.]
+		
+		Finally, {\tt feature} submodule provides a new functions to implement common transformations of time-series features in MIR. This includes {\tt delta}, which provides a smoothed estimate of time derivative; \verb|stack_memory|, which concatenates an input feature array with time-lagged copies of itself (effectively simulating feature $n$-grams); \& {\tt sync}, which applies a user-supplied aggregation function, e.g., {\tt numpy.mean} or {\tt median}, across specified column intervals.
+		\item {\sf Display.} {\tt display} module provides simple interfaces to visually render audio data through {\tt matplotlib} [Hunter07]. 1st function, {\tt display.waveplot} simply renders amplitude envelope of an audio signal {\tt y} using matplotlib's \verb|fill_between| function. For efficiency purposes, signal is dynamically down-sampled. Mono signals are rendered symmetrically about horizontal axis; stereo signals are rendered with left-channel's amplitude above axis \& right-channel's below. An example of {\tt waveplot} is depicted in {\sf Fig. 2: Top: a waveform plot for a 20-sec audio clip {\tt y}, generated by {\tt librosa.display.waveplot}. Middle: log-power short-time Fourier transform (STFT) spectrum for {\tt y} plotted on a logarithmic frequency scale, generated by {\tt librosa.display.specshow}. Bottom: onset strength function \verb|librosa.onset.onset_strength|, detected onset events \verb|librosa.onset.onset_detect|, \& detected beat events \verb|librosa.beat.beat_track| for {\tt y}.}
+		
+		2nd function, {\tt display.specshow} wraps matplotlib's {\tt imshow} function with default settings ({\tt origin, aspect}) adapted to expected defaults for visualizing spectrograms. Additionally, {\tt specshow} dynamically selects appropriate colormaps (binary, sequential, or diverging) from data type \& range. [If {\tt seaborn} package [Waskom14] is available, its version of {\it cubehelix} is used for sequential data.] Finally, {\tt specshow} provides a variety of acoustically relevant axis labeling \& scaling parameters. Examples of {\tt specshow} output are displayed in {\sf Figs. 1--2 (middle)}.
+		\item {\sf Onsets, tempo, \& beats.} While spectral feature representations described above capture frequency information, time information is equally important for many applications in MIR. E.g., it can be beneficial to analyze signals indexed by note or beat events, rather than absolute time. {\tt onset, beat} submodules implement functions to estimate various aspects of timing in music.
+		
+		More specially, {\tt onset} module provides 2 functions: \verb|onset_strength, onset_detect|. \verb|onset_strength| function calculates a thresholded spectral flux operation over a spectrogram, \& returns a 1D array representing amount of increasing spectral energy at each frame. This is illustrated as blue curve in bottom panel of {\sf Fig. 2}. \verb|onset_detect| function, on other hand, selects peak positions from onset strength curve following heuristic described by Boeck et al. [Boeck12]. Output of \verb|onset_detect| is depicted as red circles in bottom panel of {\sf Fig. 2}.
+		
+		-- Cụ thể hơn, mô-đun {\tt starts} cung cấp 2 hàm: \verb|onset_strength, starts_detect|. Hàm \verb|onset_strength| tính toán một phép toán thông lượng phổ ngưỡng trên một phổ đồ, \& trả về một mảng 1D biểu diễn lượng năng lượng phổ tăng dần tại mỗi khung. Điều này được minh họa bằng đường cong màu xanh lam ở bảng dưới cùng của {\sf Hình 2}. Mặt khác, hàm \verb|onset_detect| chọn các vị trí đỉnh từ đường cong cường độ khởi đầu theo phương pháp tìm kiếm được mô tả bởi Boeck et al. [Boeck12]. Đầu ra của \verb|onset_detect| được mô tả bằng các vòng tròn màu đỏ ở bảng dưới cùng của {\sf Hình 2}.
+		
+		{\tt beat} module provides functions to estimate global tempo \& positions of beat events from onset strength function, using method of Ellis [Ellis07]. More specifically, beat tracker 1st estimates tempo, which is then used to set target spacing between peaks in an onset strength function. Output of beat tracker is displayed as dashed green lines in {\sf Fig. 2 (bottom)}.
+		
+		Typing this all together, tempo \& beat positions for an input signal can be easily calculated by following code fragment:
+		\begin{verbatim}
+			>>> y, sr = librosa.load(FILENAME)
+			>>> tempo, frames = librosa.beat.beat_track(y=y, sr=sr)
+			>>> beat_times = librosa.frames_to_time(frames, sr=sr)
+		\end{verbatim}
+		Any of default parameters \& analyzes may be overridden. E.g., if user has calculated an onset strength envelope by some other means, it can be provided to beat tracker as follows:
+		\begin{verbatim}
+			>>> oenv = some_other_onset_function(y, sr)
+			>>> librosa.beat.beat_track(onset_envelope=oenv)
+		\end{verbatim}
+		All detection functions (beat \& onset) return events as frame indices, rather than absolute timing. Downside of this: left to user to convert frame indices back to absolute time. However, in our opinion, this is outweighed by 2 practical benefits: it simplifies implementations, \& it makes results directly accessible to frame-indexed functions e.g. {\tt librosa.feature.sync}.
+		\item {\sf Structural analysis.} Onsets \& beats provide relatively low-level timing cues for music signal processing. Higher-level analyses attempt to detect larger structure in music, e.g., at level of bars or functional components e.g. {\it verse, chorus}. While this is an active area of research that has seen rapid progress in recent years, there are some useful features common to many approaches. {\tt segment} submodule contains a few useful functions to facilitate structural analysis in music, falling broadly into 2 categories.
+		
+		-- {\sf Phân tích cấu trúc.} Các nhịp khởi đầu \& cung cấp tín hiệu thời gian ở mức tương đối thấp để xử lý tín hiệu âm nhạc. Các phân tích ở mức cao hơn cố gắng phát hiện cấu trúc lớn hơn trong âm nhạc, ví dụ, ở mức ô nhịp hoặc các thành phần chức năng ví dụ {\it verse, chorus}. Mặc dù đây là một lĩnh vực nghiên cứu tích cực đã chứng kiến sự tiến bộ nhanh chóng trong những năm gần đây, nhưng có một số tính năng hữu ích chung cho nhiều phương pháp tiếp cận. Mô-đun con {\tt segment} chứa một số hàm hữu ích để tạo điều kiện thuận lợi cho phân tích cấu trúc trong âm nhạc, về cơ bản được chia thành 2 loại.
+		
+		1st, there are functions to calculate \& manipulate {\it recurrence} or {\it self-similarity} plots. \verb|segment.recurrence_matrix| constructs a binary $k$-nearest-neighbor similarity matrix from a given feature array \& a user-specified distance function. As displayed in {\sf Fig. 3: left: recurrence plot derived from chroma features displayed in Fig. 1.}, repeating sequences often appear as diagonal bands in recurrence plot, which can be used to detect musical structure. Sometimes more convenient to operate in {\it time-lag} coordinates, rather than {\it time-time}, which transforms diagonal structures into more easily detectable horizontal structure {\sf Fig. 3: right: corresponding time-lag plot.} [Serra12]. This is facilitated by \verb|recurrence_to_lag| (\& \verb|lag_to_recurrence|) functions.
+		
+		2nd, temporally constrained clustering can be used to detect feature change-points without relying upon repetition. This is implemented in librosa by {\tt segment.agglomerative} function, which uses {\tt scikit-learn}'s implementation of {\sc Ward}'s agglomerative clustering method [Ward63] to partition input into a user-defined number of contiguous components. In practice, a user can override default clustering parameters by providing an existing {\tt sklearn.cluster.AgglomerativeClustering} object as an argument to {\tt segment.agglomerative()}.
+		\item {\sf Decompositions.} Many applications in MIR operate upon latent factor representations, or other decompositions of spectrograms. E.g., common to apply nonnegative matrix factorization (NMF) [Lee99] to magnitude spectra, \& analyze statistics of resulting time-varying activation functions, rather than raw observations.
+		
+		{\tt decompose} module provides a simple interface to factor spectrograms (or general feature arrays) into {\it components \& activations}:
+		\begin{verbatim}
+			>>> comps, acts = librosa.decompose.decompose(S)
+		\end{verbatim}
+		By default, {\tt decompose()} function constructs a {\tt scikit-learn} NMF object, \& applies its \verb|fit_transform()| method to transpose of $S$. Resulting basis components \& activations are accordingly transposed, so that {\tt comps.dot(acts)} approximates $S$. If user wishes to apply some other decomposition technique, any object fitting {\tt sklearn.decomposition} interface may be substituted:
+		\begin{verbatim}
+			>>> T = SomeDecomposer()
+			>>> librosa.decompose.decompose(S, transformer=T)
+		\end{verbatim}
+		In addition to general-purpose matrix decomposition techniques, librosa also implements harmonic-percussion source separation (HPSS) method of {\sc Fitzgerald} [Fitzgerald10] as {\tt decompose.hpss}. This technique is commonly used in MIR to suppress transients when analyzing pitch content, or suppress stationary signals when detecting onsets or other rhythmic elements. An example application of HPSS is illustrated in {\sf Fig. 4: Top: separated harmonic \& percussive waveforms. Middle: Mel spectrogram of harmonic component. Bottom: Mel spectrogram of percussive component.}
+		\item {\sf Effects.} {\tt effects} module provides convenience functions to applying spectrogram-based transformations to time-domain signals. E.g., rather than writing
+		\begin{verbatim}
+			>>> D = librosa.stft(y)
+			>>> Dh, Dp = librosa.decompose.hpss(D)
+			>>> y_harmonic = librosa.istft(Dh)
+		\end{verbatim}
+		one may simply write
+		\begin{verbatim}
+			>>> y_harmonic = librosa.effects.harmonic(y)
+		\end{verbatim}
+		Convenience functions are provided for HPSS (retaining harmonic, percussive, or both components), time-stretching \& pitch shifting. Although these functions provide no additional functionality, their inclusion results in simpler, more readable application code.
+		\item {\sf Output.} {\tt output} module includes utility functions to save results of audio analysis to disk. Most often, this takes form of annotated instantaneous event timings or time intervals, which are saved in plain text (comma- or tab-separated values) via \verb|output.times_csv, output.annotation|, resp. These functions are somewhat redundant with alternative functions for text output (e.g., {\tt numpy.savetxt}), but provide sanity checks for length agreement \& semantic validation of time intervals. Resulting outputs are designed to work with other common MIR tools, e.g. \verb|mir_eval| [Raffel14] \& {\tt sonic-visualiser} [Cannam10].
+		
+		{\tt output} module also provides \verb|wirte_wav| function for saving audio in {\tt.wave} format. \verb|write_wav| simply wraps built-in {\tt scipy} wave-file writer {\tt scipy.io.wavfile.write} with validation \& optional normalization, thus ensuring: resulting audio files are well-formed.
+	\end{itemize}
+	\item {\sf Caching.} MIR applications typically require computing a variety of features (e.g., MFCCs, chroma, beat timings, etc.) from each audio signal in a collection. Assuming application programmer is content with default parameters, simplest way to achieve this: call each function using audio time-series input, e.g.:
+	\begin{verbatim}
+		>>> mfcc = librosa.feature.mfcc(y=y, sr=sr)
+		>>> tempo, beats = librosa.beat.beat_track(y=y, sr=sr)
+	\end{verbatim}
+	However, because there are shared computations between different functions -- {\tt mfcc} \& \verb|beat_track| both compute log-scaled Mel spectrograms, e.g. -- this results in redundant (\& inefficient) computation. A more efficient implementation of above example would factor out redundant features:
+	\begin{verbatim}
+		>>> lms = librosa.logamplitude(librosa.feature.melspectrogram(y=y, sr=sr))
+		>>> mfcc = librosa.feature.mfcc(S=lms)
+		>>> tempo, beats = librosa.beat.beat_track(S=lms, sr=sr)
+	\end{verbatim}
+	Although it is more computationally efficient, above example is less concise, \& it requires more knowledge of implementations on behalf of application programmer. More generally, nearly all functions in librosa eventually depend upon STFT calculation, but rare: application programmer will need STFT matrix as an end-result.
+	
+	1 approach to eliminate redundant computation: decompose various functions into blocks which can be arranged in a computation graph, as is done in Essentia [Bogdanov13]. However, this approach necessarily constrains function interfaces, \& may become unwieldy for common, simple applications.
+	
+	Instead, librosa takes a lazy approach to eliminating redundancy via {\it output caching}. Caching is implemented through an extension of {\tt Memory} class from {\tt joblib} package \url{https://github.com/joblib/joblib}, which provides disk-backed memoization of function outputs. Cache object {\tt librosa.cache} operates as a decorator on all non-trivial computations. This way, a user can write simple application code (i.e., 1st example above) while transparently eliminating redundancies \& achieving speed comparable to more advanced implementation (2nd example).
+	
+	Cache object is disabled by default, but can be activated by setting environment variable \verb|LIBROSA_CACHE_DIR| prior to importing package. Because {\tt Memory} object does not implement a cache eviction policy (as of version 0.8.4), recommended: users purge cache after processing each audio file to prevent cache from filling all available disk space [Cache can be purged by calling {\tt librosa.cache.clear()}.] Note: this can potentially introduce race conditions in multi-processing environments (i.e., parallel batch processing of a corpus), so care must be taken when scheduling cache purges.
+	
+	-- Đối tượng bộ nhớ đệm bị vô hiệu hóa theo mặc định, nhưng có thể được kích hoạt bằng cách thiết lập biến môi trường \verb|LIBROSA_CACHE_DIR| trước khi nhập gói. Vì đối tượng {\tt Memory} không triển khai chính sách xóa bộ nhớ đệm (kể từ phiên bản 0.8.4), nên khuyến nghị: người dùng xóa bộ nhớ đệm sau khi xử lý từng tệp âm thanh để ngăn bộ nhớ đệm lấp đầy toàn bộ dung lượng đĩa khả dụng [Bộ nhớ đệm có thể được xóa bằng cách gọi {\tt librosa.cache.clear()}.] Lưu ý: điều này có khả năng gây ra tình trạng chạy đua trong môi trường đa xử lý (tức là xử lý hàng loạt song song của một ngữ liệu), do đó phải cẩn thận khi lên lịch xóa bộ nhớ đệm.
+	\item {\sf Parameter tuning.} Some of librosa's functions have parameters that require some degree of tuning to optimize performance. In particular, performance of beat tracker \& onset detection functions can vary substantially with small changes in certain key parameters.
+	
+	After standardizing certain default parameters -- sampling rate, frame length, \& hop length -- across all functions, optimized beat tracker settings using parameter grid given in {\sf Table 1: Parameter grid for beat tracking optimization. Best configuration is indicated in bold.}
+\end{itemize}
+
+
+%------------------------------------------------------------------------------%
+
 \section{Wikipedia}
 
 \subsection{Wikipedia{\tt/}computer music}

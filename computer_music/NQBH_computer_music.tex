@@ -2849,9 +2849,13 @@ For a quick introduction to using librosa, see \href{https://librosa.org/doc/lat
 	-- Đối tượng bộ nhớ đệm bị vô hiệu hóa theo mặc định, nhưng có thể được kích hoạt bằng cách thiết lập biến môi trường \verb|LIBROSA_CACHE_DIR| trước khi nhập gói. Vì đối tượng {\tt Memory} không triển khai chính sách xóa bộ nhớ đệm (kể từ phiên bản 0.8.4), nên khuyến nghị: người dùng xóa bộ nhớ đệm sau khi xử lý từng tệp âm thanh để ngăn bộ nhớ đệm lấp đầy toàn bộ dung lượng đĩa khả dụng [Bộ nhớ đệm có thể được xóa bằng cách gọi {\tt librosa.cache.clear()}.] Lưu ý: điều này có khả năng gây ra tình trạng chạy đua trong môi trường đa xử lý (tức là xử lý hàng loạt song song của một ngữ liệu), do đó phải cẩn thận khi lên lịch xóa bộ nhớ đệm.
 	\item {\sf Parameter tuning.} Some of librosa's functions have parameters that require some degree of tuning to optimize performance. In particular, performance of beat tracker \& onset detection functions can vary substantially with small changes in certain key parameters.
 	
-	After standardizing certain default parameters -- sampling rate, frame length, \& hop length -- across all functions, optimized beat tracker settings using parameter grid given in {\sf Table 1: Parameter grid for beat tracking optimization. Best configuration is indicated in bold.}
+	After standardizing certain default parameters -- sampling rate, frame length, \& hop length -- across all functions, optimized beat tracker settings using parameter grid given in {\sf Table 1: Parameter grid for beat tracking optimization. Best configuration is indicated in bold.} To select best-performing configuration, evaluated performance on a data set comprised of Isophonics Beatles corpus \url{http://isophonics.net/content/reference-annotations} \& SMC Dataset 2 [Holzapfel12] beat annotations. Each configuration was evaluated using \verb|mir_eval| [Raffel14], \& configuration was chosen to maximize Correct Metric Level (Total) metric [Davies14].
+	
+	Similarly, onset detection parameters (listed in {\sf Table 2: Parameter grid for onest detection optimization. Best configuration is indicated in bold.}) were selected to optimize F1-score on Johannes Kepler University onset database \url{https://github.com/CPJKU/onset_db}.
+	
+	Note: ``optimal'' default parameter settings are merely estimates, \& depend upon datasets over which they are selected. Parameter settings are therefore subject to change in future as larger reference collections become available. Optimization framework has been factored out into a separate repository, which may in subsequent versions grow to include additional parameters. \url{https://github.com/bmcfee/librosa_parameters}
+	\item {\sf Conclusion.} This document provides a brief summary of design considerations \& functionality of librosa. More detailed examples, notebooks, \& documentation can be found in development repository \& project website. Project is under active development, \& roadmap for future work includes efficiency improvements \& enhanced functionality of audio coding \& file system interactions.
 \end{itemize}
-
 
 %------------------------------------------------------------------------------%
 

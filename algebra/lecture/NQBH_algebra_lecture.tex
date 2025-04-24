@@ -56,14 +56,17 @@
 	\begin{itemize}
 		\item {\it Lecture Note: Algebra -- Bài Giảng: Đại Số}.
 		
-		PDF: {\sc url}: \url{.pdf}.
+		PDF: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/algebra/lecture/NQBH_algebra_lecture.pdf}.
 		
-		\TeX: {\sc url}: \url{.tex}.
-		\item {\it }.
-		
-		PDF: {\sc url}: \url{.pdf}.
-		
-		\TeX: {\sc url}: \url{.tex}.
+		\TeX: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/algebra/lecture/NQBH_algebra_lecture.tex}.
+		\item Codes:
+		\begin{itemize}
+			\item C++: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/VMC/C++}.
+			\item Python: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/algebra/Python}.
+			
+			Also: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/VMC/Python}.
+		\end{itemize}
+		\item Resource: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/VMC/resource}.
 	\end{itemize}
 \end{abstract}
 \tableofcontents
@@ -71,6 +74,735 @@
 %------------------------------------------------------------------------------%
 
 \section{Linear Algebra -- Đại Số Tuyến Tính}
+\label{sect: linear algebra}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item {\sc Bùi Xuân Hải, Trần Ngọc Hội, Trịnh Thanh Đèo, Lê Văn Luyện}. {\it Đại Số Tuyến Tính \& Ứng Dụng. Tập 1}. HCMUS.
+	\item \cite{Hoa_linear_algebra}. {\sc Lê Tuấn Hoa}. {\it Đại Số Tuyến Tính Qua Các Ví Dụ \& Bài Tập}.
+	\item \cite{Hung_linear_algebra}. {\sc Nguyễn Hữu Việt Hưng}. {\it Đại Số Tuyến Tính}. HNUS.
+	\item \cite{Trefethen_Bau1997,Trefethen_Bau2022}. {\sc Lloyd N. Trefethen, David Bau III}. {\it Numerical Linear Algebra}.
+	\item \cite{Trung_linear_algebra}. {\sc Ngô Việt Trung}. {\it Giáo Trình Đại Số Tuyến Tính}.
+	\item \cite{Tsukada_Kobayashi_Kaneko_Takahasi_Shirayanagi_Noguchi2023}. {\sc Makoto Tsukada, Yuji Kobayashi, Hiroshi Kaneko, Sin-Ei Takahasi, Kiyoshi Shirayanagi, Masato Noguchi}. {\it Linear Algebra with Python: Theory \& Applications}.
+\end{enumerate}
+
+\begin{baitoan}[Symbolic computation software{\tt/}languages{\tt/}libraries for Linear Algebra]
+	Tương tự như phần mềm {\sf MATLAB} \url{https://www.mathworks.com/products/matlab.html}, tìm các phần mềm, ngôn ngữ, hoặc thư viện của các ngôn ngữ quen thuộc như {\sf Python} (thư viện {\sf SymPy} \url{https://www.sympy.org/en/index.html}), {\sf C{\tt/}C++} để thực hành symbolic computation.
+\end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Matrix -- Ma trận}
+
+\subsubsection{Determinant of a matrix -- Định thức của ma trận}
+\begin{dinhnghia}
+	{\rm Định thức} của 1 ma trận $A = (a_{ij})_{n\times n}$ với các yếu tố trong trường $\mathbb{F}$, được ký hiệu bởi $\det A$ hoặc $|A|$, là phần tử $\det A\coloneqq\sum_{\sigma\in S_n} {\rm sgn}(\sigma)a_{\sigma(1)1}\cdots a_{\sigma(n)n}$ của trường $\mathbb{F}$. Nếu $A$ là 1 ma trận vuông cỡ $n$ thì $\det A$ được gọi là 1 {\rm định thức cỡ $n$}. Tổng ở vế phải của đẳng thức này có tất cả $|S_n| = n!$ số hạng.
+\end{dinhnghia}
+
+\begin{vidu}
+	(a) Định thức cỡ 1: $\det(a) = a$, $\forall a\in\mathbb{F}$. (b) Định thức cỡ 2:
+	\begin{equation*}
+		\det\begin{pmatrix}
+			a_{11} & a_{12}\\a_{21} & a_{22}
+		\end{pmatrix} = \begin{vmatrix}
+			a_{11} & a_{12}\\a_{21} & a_{22}
+		\end{vmatrix} = a_{11}a_{22} - a_{21}a_{12}.
+	\end{equation*}
+	(c) Định thức cỡ 3:
+	\begin{equation*}
+		\det\begin{pmatrix}
+			a_{11} & a_{12} & a_{13}\\a_{21} & a_{22} & a_{23}\\a_{31} & a_{32} & a_{33}
+		\end{pmatrix} = \begin{vmatrix}
+			a_{11} & a_{12} & a_{13}\\a_{21} & a_{22} & a_{23}\\a_{31} & a_{32} & a_{33}
+		\end{vmatrix} = a_{11}a_{22}a_{33} + a_{21}a_{32}a_{13} + a_{31}a_{12}a_{23} - a_{11}a_{32}a_{23} - a_{21}a_{12}a_{33} - a_{31}a_{22}a_{13}.
+	\end{equation*}
+\end{vidu}
+Trên thực tế, không trực tiếp dùng định nghĩa để tính các định thức cỡ $n > 3$ vì việc này quá phức tạp.
+
+Gọi ${\bf a}_j\in\mathbb{F}^n$ là vector cột thứ $j$ của ma trận $A$, \& coi $\det A$ là 1 hàm của $n$ vector ${\bf a}_1,\ldots,{\bf a}_n$. Viết $\det A = \det({\bf a}_1,\ldots,{\bf a}_n)$.
+
+\begin{dinhly}[3 tính chất cơ bản của định thức]
+	(i) {\rm(Multilinear -- Đa tuyến tính)} Định thức của ma trận là 1 hàm tuyến tính với mỗi cột (resp., hàng) của nó, khi cố định các cột (resp., hàng) khác, i.e.:
+	\begin{equation*}
+		\det({\bf a}_1,\ldots,a{\bf a}_j + b{\bf b}_j,\ldots,{\bf a}_n) = a\det({\bf a}_1,\ldots,{\bf a}_j,\ldots,{\bf a}_n) + b\det({\bf a}_1,\ldots,{\bf b}_j,\ldots,{\bf a}_n),\ \forall a,b\in\mathbb{F},\ {\bf a}_1,\ldots,{\bf a}_j,{\bf b}_j,\ldots,{\bf a}_n\in\mathbb{F}^n,\ j = 1,\ldots,n.
+	\end{equation*}
+	(ii) {\rm(Thay phiên)} Nếu ma trận vuông $A$ có 2 cột (resp., hàng) bằng nhau thì $\det A = 0$. (iii) {\rm(Chuẩn hóa)} Định thức của ma trận đơn vị bằng $1$: $\det I_n = 1$. (iv) Định thức là hàm duy nhất trên các ma trận vuông có 3 tính chất (i)--(iii).
+\end{dinhly}
+
+\begin{hequa}[\cite{Hung_linear_algebra}, Hệ quả 2.3, p. 137]
+	(i) {\rm(Tính phản đối xứng của định thức)} Nếu đổi chỗ 2 cột (resp., hàng) của 1 ma trận thì định thức của nó đổi dấu:
+	\begin{equation*}
+		\det(\ldots,{\bf a}_i,\ldots,{\bf a}_j,\ldots) = -\det(\ldots,{\bf a}_j,\ldots,{\bf a}_i,\ldots).
+	\end{equation*}
+	(ii) Nếu các vector cột (resp., vector hàng) của 1 ma trận phụ thuộc tuyến tính thì định thức của ma trận bằng $0$. Nói riêng, nếu ma trận có 1 cột (resp., hàng) bằng $0$ thì định thức của nó bằng $0$. (iii) Nếu thêm vào 1 cột (resp., hàng) của ma trận 1 tổ hợp tuyến tính của các cột (resp., hàng) khác thì định thức của nó không thay đổi.
+\end{hequa}
+Các tính chất của định thức đối với các hàng cũng tương tự các tính chất của định thức đối với các cột. 1 phương pháp tính định thúc có hiệu quả là ứng dụng các tính chất đó để biến đổi ma trận thành 1 ma trận tam giác có cùng định thức.
+
+\begin{dinhnghia}[Ma trận tam giác]
+	Ma trận $A$ được gọi là 1 {\rm ma trận tam giác trên} nếu nó có dạng
+	\begin{equation*}
+		A = \begin{pmatrix}
+			a_{11} & a_{12} & \cdots & a_{1n}\\0 & a_{22} & \cdots & a_{2n}\\
+			\vdots & \vdots & \ddots & \vdots\\0 & 0 & \cdots & a_{nn}
+		\end{pmatrix},
+	\end{equation*}
+	trong đó $a_{ij} = 0$ với $i > j$. Tương tự, $A$ được gọi là 1 {\rm ma trận tam giác dưới} nếu $a_{ij} = 0$ với $i < j$. Ma trận tam giác trên \& ma trận tam giác dưới được gọi chung là {\rm ma trận tam giác}.
+\end{dinhnghia}
+
+\begin{dinhly}[Định thức của ma trận tam giác]
+	Nếu $A$ là 1 ma trận tam giác cỡ $n$ thì $\det A = \prod_{i=1}^n a_{ii} = a_{11}a_{22}\cdots a_{nn}$.
+\end{dinhly}
+
+\begin{dinhly}[\cite{Hung_linear_algebra}, Định lý 5.1, p. 147]
+	Giả sử $A,B\in M(n\times n,\mathbb{F})$. Khi đó: (i) $\det(AB) = \det A\det B$. (ii) $A$ khả nghịch $\Leftrightarrow\det A\ne0$. Hơn nữa, $\det(A^{-1}) = (\det A)^{-1} = \dfrac{1}{\det A}$, hay $\det A\det(A^{-1}) = 1$. (iii) Định thức của ma trận chuyển vị: $\det(A^\top) = \det A$, $\forall A\in M(n\times n,\mathbb{F})$.
+\end{dinhly}
+Theo định lý này, tất cả các tính chất của định thức đối với các cột của nó vẫn đúng đối với các hàng của nó. E.g., định thức là 1 hàm đa tuyến tính, thay phiên, \& chuẩn hóa đối với các hàng của nó, $\ldots$
+
+\begin{baitoan}[Tính $\det A$ bằng cách hạ cấp]
+	Tính định thức cỡ $n$ thông qua các định thức nhỏ hơn.
+\end{baitoan}
+Cho $A = (a_{ij})\in M(n\times n,\mathbb{F})$ \& $k\in\mathbb{N}$ thỏa $1\le k < n$. Xét 2 bộ chỉ số $1\le i_1 < i_2 < \cdots < i_k\le n$, $1\le j_1 < j_2 < \cdots < j_k\le n$. Các phần tử nằm trên giao của $k$ hàng $i_1,\ldots,i_k$ \& $k$ cột $j_1,\ldots,j_k$ của ma trận $A$ lập nên 1 ma trận cỡ $k$, được gọi là 1 {\it ma trận con cỡ $k$} của $A$, \& định thức của ma trận con đó, được ký hiệu là $D_{i_1,\ldots,i_k}^{j_1,\ldots,j_k}$, được gọi là 1 {\it định thức con cỡ $k$} của $A$.
+
+Nếu xóa tất cả các hàng $i_1,\ldots,i_k$ \& các cột $j_1,\ldots,j_k$ thì phần còn lại của ma trận $A$ lập nên 1 ma trận vuông cỡ $n - k$, mà định thức của nó được ký hiệu là $\overline{D}_{i_1,\ldots,i_k}^{j_1,\ldots,j_k}$ \& được gọi là {\it định t hức con bù} của $D_{i_1,\ldots,i_k}^{j_1,\ldots,j_k}$. Gọi $(-1)^{s(I,J)}\overline{D}_{i_1,\ldots,i_k}^{j_1,\ldots,j_k}$ là {\it phần bù đại số} của $D_{i_1,\ldots,i_k}^{j_1,\ldots,j_k}$ (trong định thức của $A$), với $s(I,J)\coloneqq\sum_{n=1}^k i_n + j_n = (i_1 + \cdots + i_k) + (j_1 + \cdots + j_k)$.
+
+\begin{dinhly}[Khai triển Laplace, \cite{Hung_linear_algebra}, Định lý 5.3, pp. 148--149]
+	Giả sử đã chọn ra $k$ cột (resp., $k$ hàng) trong 1 định thức cỡ $n$ ($1\le k < n$). Khi đó, định thức đã cho bằng tổng của tất cả các tích của các định thức con cỡ $k$ lấy ra từ $k$ cột (resp., $k$ hàng) đã chọn với phần bù đại số của chúng. Nói rõ hơn: (i) Công thức khai triển định thức theo $k$ cột $j_1 < \cdots < j_k$:
+	\begin{equation*}
+		\det A = \sum_{i_1 < \cdots < i_k} (-1)^{(s(I,J))}D_{i_1,\ldots,i_k}^{j_1,\ldots,j_k}\overline{D}_{i_1,\ldots,i_k}^{j_1,\ldots,j_k}.
+	\end{equation*}
+	(ii) Công thức khai triển định thức theo $k$ hàng $i_1 < \cdots < i_k$:
+	\begin{equation*}
+		\det A = \sum_{j_1 < \cdots < j_k} (-1)^{(s(I,J))}D_{i_1,\ldots,i_k}^{j_1,\ldots,j_k}\overline{D}_{i_1,\ldots,i_k}^{j_1,\ldots,j_k}.
+	\end{equation*}
+\end{dinhly}
+
+\begin{baitoan}[Định thức Vandermonde]
+	Tính định thức Vandermonde
+	\begin{equation*}
+		D_n\coloneqq\begin{vmatrix}
+			1 & x_1 & x_1^2 & \cdots & x_1^{n-1}\\
+			1 & x_2 & x_2^2 & \cdots & x_2^{n-1}\\
+			\vdots & \vdots & \vdots & \ddots & \vdots\\
+			1 & x_n & x_n^2 & \cdots & x_n^{n-1}\\
+		\end{vmatrix}.
+	\end{equation*}
+\end{baitoan}
+{\sf Hint.} Làm cho hầu hết các phần tử của hàng cuối của $D_n$ trở thành 0 bằng cách lấy cột thứ $n - 1$ nhân với $-x_n$ rồi cột vào cột $n$, rồi lấy cột thứ $n - 2$ nhân với $-x_n$ rồi cộng vào cột $n - 1$, $\ldots$, cuối cùng lấy cột thứ nhất nhân với $-x_n$ rồi cộng vào cột 2, i.e., ${\bf c}_i = {\bf c}_i + (-x_n){\bf c}_{i-1} = {\bf c}_i - x_n{\bf c}_{i-1}$ với $i = n,n - 1,\ldots,2$ (chạy lui). Khai triển Laplace theo hàng thứ $n$, đưa các thừa số chung của mỗi hàng ra ngoài dấu định thức, được công thức truy toán{\tt/}hồi: $D_n = (x_n - x_1)(x_n - x_2)\cdots(x_n - x_{n-1})D_{n-1} = \prod_{i=1}^{n-1} (x_n - x_i)D_{n-1}$. Quy nạp với $D_1 = 1$ được
+\begin{equation}
+	\label{Vandermonde det}
+	\tag{Vandermonde}
+	D_n = \prod_{1\le j < i\le n} (x_i - x_j),\ \forall n\in\mathbb{N}^\star.
+\end{equation}
+1 ứng dụng quan trọng của khai triển Laplace là công thức tính ma trận nghịch đảo:
+
+\begin{dinhly}[Công thức tính ma trận nghịch đảo, \cite{Hung_linear_algebra}, Định lý 5.4, p. 152]
+	(i) Nếu ma trận vuông $A = (a_{ij})\in M(n\times n,\mathbb{F})$ có định thức khác $0$ thì $A$ khả nghịch \&
+	\begin{equation*}
+		A^{-1} = \frac{1}{\det A}\begin{pmatrix}
+			\tilde{a}_{11} & \cdots & \tilde{a}_{n1}\\\vdots & \ddots & \vdots\\\tilde{a}_{1n} & \cdots & \tilde{a}_{nn}
+		\end{pmatrix},
+	\end{equation*}
+	với $\tilde{a}_{ij}$ là phần bù đại số của $a_{ij}$ trong định thức của $A$. (ii) {\rm Ma trận phụ hợp} (adjugate matrix) của $A$ được định nghĩa bởi:
+	\begin{equation*}
+		{\rm adj}(A) = \begin{pmatrix}
+			\tilde{a}_{11} & \cdots & \tilde{a}_{n1}\\\vdots & \ddots & \vdots\\\tilde{a}_{1n} & \cdots & \tilde{a}_{nn}
+		\end{pmatrix},
+	\end{equation*}
+	thì $A{\rm adj}(A) = {\rm adj}(A)A = \det A I_n$, (i) viết lại thành $A^{-1} = \dfrac{1}{\det A}{\rm adj}(A)$.
+\end{dinhly}
+For more properties of adjugate matrix, see, e.g., \href{https://en.wikipedia.org/wiki/Adjugate_matrix}{Wikipedia{\tt/}adjugate matrix}.
+
+\begin{baitoan}[\cite{VMS_VMC2024}, 2.6, p. 26, ĐH Trà Vinh]
+	Cho $A\in M_n(\mathbb{K})$. Chứng minh: (a) Nếu $A^{-1} = A$ thì $|\det(I - A)|(|\det(I - A)| - 2^n) = 0$. (b) Nếu $A^{-1} = 4A$ thì $|\det(A^{2k+1} - A)| = \left(\dfrac{4^k - 1}{2^{2k + 1}}\right)^n$, $\forall k\in\mathbb{N}^\star$. (c) Mở rộng bài toán cho các ma trận $A\in M_n(\mathbb{K})$ thỏa mãn $A^{-1} = aA$ với $a\in\mathbb{R}$ \& $a\in\mathbb{C}$.
+\end{baitoan}
+
+\begin{baitoan}[\cite{VMS_VMC2024}, 2.7, p. 27, ĐH Trà Vinh]
+	Giả sử có cac số tự nhiên mà mỗi số gồm 3 chữ số dạng $\overline{a_1a_2a_3}\divby13,\overline{b_1b_2b_3}\divby13,\overline{c_1c_2c_3}\divby13$. Chứng minh
+	\begin{equation*}
+		\begin{vmatrix}
+			a_1 & a_2 & a_3\\b_1 & b_2 & b_3\\c_1 & c_2 & c_3
+		\end{vmatrix}\divby13.
+	\end{equation*}
+\end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Rank of a matrix -- Hạng của ma trận}
+Hạng của 1 ma trận là hạng của hệ vector cột (hoặc hệ vector hàng) của nó. Định lý sau cho phép tính hạng của ma trận thông qua định thức:
+
+\begin{dinhly}[Công thức tính hạng của ma trận, \cite{Hung_linear_algebra}, Định lý 6.1, p. 153, Hệ quả 6.2, p. 154]
+	(i) Giả sử $A$ là 1 ma trận $m$ hàng $n$ cột, với các yếu tố trong trường $\mathbb{F}$. Khi đó, hạng của ma trận $A$ bằng cỡ lớn nhất của các định thức con khác $0$ của $A$. Nói rõ hơn, $\operatorname{rank}A = r$ nếu có 1 định thức con cỡ $r$ của $A$ khác $0$, \& mọi định thức con cỡ $> r$ (nếu có) của $A$ đều bằng $0$. (ii) Hạng của 1 ma trận bằng hạng của hệ các vector hàng của nó.
+\end{dinhly}
+{\it Quan hệ giữa định thức \& hạng}:
+\begin{equation*}
+	\forall A\in M(\mathbb{F},n\times n),\ \det A\ne0\Leftrightarrow\operatorname{rank}A = n,\ \det A = 0\Leftrightarrow\operatorname{rank}A < n.
+\end{equation*}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{System of linear equations \& Cramer rule -- Hệ phương trình tuyến tính \& quy tắc Cramer}
+
+\begin{dinhnghia}
+	1 hệ thống có dạng
+	\begin{equation}
+		\label{linear system: explicit form}
+		\left\{\begin{split}
+			a_{11}x_1 + a_{12}x_2 + \cdots + a_{1n}x_n &= b_1,\\
+			a_{21}x_1 + a_{22}x_2 + \cdots + a_{2n}x_n &= b_2,\\
+			&\cdots\\
+			a_{m1}x_1 + a_{m2}x_2 + \cdots + a_{mn}x_n &= b_m,\\
+		\end{split}\right.
+	\end{equation}
+	trong đó $a_{ij},b_i\in\mathbb{F}$ là các phần tử cho trước, được gọi là 1 {\rm hệ phương trình tuyến tính} gồm $m\in\mathbb{N}^\star$ phương trình với $n\in\mathbb{N}^\star$ ẩn $x_1,\ldots,x_n$. Ký hiệu
+	\begin{equation*}
+		A = (a_{ij})_{m\times n},\ {\bf x} = \begin{pmatrix}
+			x_1\\\vdots\\x_n
+		\end{pmatrix},\ {\bf b} = \begin{pmatrix}
+			b_1\\\vdots\\b_m
+		\end{pmatrix}.
+	\end{equation*}
+	Khi đó, hệ phương trình \eqref{linear system: explicit form} có thể được viết dưới dạng phương trình vector:
+	\begin{equation}
+		\label{linear system: vector form}
+		A{\bf x} = {\bf b}.
+	\end{equation}
+	1 {\rm nghiệm} của hệ này là 1 vector ${\bf x}^0\in\mathbb{F}^n$ để $A{\bf x}^0 = {\bf b}$. 1 hệ phương trình có ít nhất 1 nghiệm được gọi là 1 {\rm hệ phương trình tương thích}. Hệ phương trình $A{\bf x} = {\bf0}$ được gọi là {\rm hệ phương trình tuyến tính thuần nhất} liên kết với hệ $A{\bf x} = {\bf b}$.
+\end{dinhnghia}
+Cảm nhận: Hệ phương trình tuyến tính \eqref{linear system: vector form} có nghiệm duy nhất nếu số phương trình của hệ bằng số ẩn, \& không có phương trình nào của hệ là ``hệ quả'' của các phương trình khác (i.e., tổ hợp tuyến tính của các phương trình khác).
+
+\begin{dinhnghia}[Hệ không suy biến{\tt/}Cramer, \cite{Hung_linear_algebra}, Định nghĩa 7.1, p. 156]
+	Hệ phương trình tuyến tính \eqref{linear system: vector form} được gọi là 1 {\rm hệ không suy biến} (hay 1 {\rm hệ Cramer}) nếu nó có số phương trình bằng số ẩn (i.e., nếu $A$ là 1 ma trận vuông) \& nếu $\det A\ne 0$.
+\end{dinhnghia}
+
+\begin{dinhly}[Tính giải được duy nhất của hệ Cramer, \cite{Hung_linear_algebra}, Định lý 7.2, p. 156]
+	Hệ phương trình tuyến tính không suy biến \eqref{linear system: vector form} có 1 nghiệm duy nhất, được tính bằng công thức
+	\begin{equation*}
+		x_j = \frac{\det A_j}{\det A},\ j = 1,\ldots,n,
+	\end{equation*}
+	với $A_j$ là ma trận nhận được từ ma trận $A$ bằng cách thay cột thứ $j$ bởi cột hệ số tự do ${\bf b}$.
+\end{dinhly}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{System of linear equations \& Gauss elimination method -- Hệ phương trình tuyến tính \& phương pháp khử Gauss}
+Phương pháp Cramer chỉ áp dụng cho được (range of applicability) cho các hệ phương trình tuyến tính không suy biến (nói riêng, các hệ này có số phương trình bằng số ẩn) (why? vì nếu hệ suy biến, tức hoặc ma trận $A$ không vuông, khi đó $\det A$ không có nghĩa, hoặc $\det A = 0$, khi đó công thức nghiệm cho bởi quy tắc Cramer không xác định vì mẫu số bằng 0). Nhưng rất nhiề hệ phương trình tuyến tính ta gặp, đặc biệt là trong thực tế, lại suy biến. Phương pháp khử Gauss (Gauss elimination method) có ưu điểm là có thể áp dụng cho hệ phương trình tuyến tính tùy ý. Nhược điểm của phương pháp khử Gauss là không đưa ra đuọc thông tin nào về nghiệm của hệ phương trình trước khi giải xong hệ đó.
+
+Về mặt trực giác, phương pháp Cramer mang tính chất toán học để xác định được cấu trúc nghiệm của hệ phương trình tuyến tính không suy biến hơn, còn phương pháp khử Gauss mang tính chất của 1 thuật toán, 1 quy trình hơn là 1 phương pháp toán dùng để xác định cấu trúc nghiệm của hệ phương trình tuyến tính.
+
+\begin{dinhnghia}
+	2 hệ phương trình được gọi là {\rm tương đương} nếu nghiệm của hệ này cũng là nghiệm của hệ kia \& ngược lại, i.e., 2 hệ phương trình có cùng tập nghiệm.
+\end{dinhnghia}
+
+\begin{dinhly}[3 phép biến đổi sơ cấp]
+	Nếu ta áp dụng các phép biến đổi sau:
+	\item(i) Đổi chỗ 2 phương trình của hệ.
+	\item(ii) Nhân 1 phương trình của hệ với 1 vô hướng khác $0$ thuộc trường $\mathbb{F}$.
+	\item(iii) Cộng vào 1 phương trình 1 tổ hợp tuyến tính của các phương trình khác trong hệ.
+	
+	((i)--(iii) được gọi là các {\rm phép biến đổi sơ cấp}), trên 1 hệ phương trình tuyến tính, thì ta nhận được 1 hệ phương trình tuyến tính tương đương với hệ ban đầu.
+\end{dinhly}
+Xét 1 hệ phương trình tuyến tính tổng quát \eqref{linear system: explicit form}. Gọi $A = (a_{ij})_{m\times n}$ là {\it ma trận các hệ số} \&
+\begin{equation*}
+	\overline{A} = \begin{pmatrix}
+		a_{11} & a_{12} & \cdots & a_{1n} & b_1\\
+		a_{21} & a_{22} & \cdots & a_{2n} & b_2\\
+		\vdots & \vdots & \ddots & \vdots & \cdot\\
+		a_{m1} & a_{m2} & \cdots & a_{mn} & b_m
+	\end{pmatrix}
+\end{equation*}
+là {\it ma trận các hệ số mở rộng} của hệ phương trình \eqref{linear system: explicit form}. Giả sử có 1 hê số nào đó $a_{ij}\ne0$. W.l.o.g. (nếu cần, đổi chỗ các phương trình \& đánh số lại các ẩn) có thể coi $a_{11}\ne0$. Khi đó, nhân phương trình thứ nhất với $-\frac{a_{i1}}{a_{11}}$ rồi cộng vào phương trình thứ $i$ ($i = 2,\ldots,m$), nhận được hệ phương trình tương đương. Lặp lại lập luận trên đối với hệ còn gồm $n - 1$ phương trình cuối với các ẩn $x_2,\ldots,x_n$. Sau 1 số bước hữu hạn, nhận được 1 hệ tương đương với ma trận mở rộng có dạng $(\overline{A}|\overline{b})$ với $\overline{A}$ là 1 ma trận dạng bậc thang.
+
+Tương ứng với các phép biến đổi sơ cấp trên hệ phương trình tuyến tính là các phép {\it biến đổi sơ cấp} trên ma trận:
+\begin{enumerate}
+	\item Đổi chỗ 2 hàng (hoặc 2 cột) của ma trận.
+	\item Nhân 1 hàng (hoặc 1 cột) của ma trận với 1 vô hướng khác $0$.
+	\item Cộng vào 1 hàng (hoặc 1 cột) 1 tổ hợp tuyến tính của các hàng (resp., các cột) khác.
+\end{enumerate}
+Vì các phép biến đổi sơ cấp không làm thay đổi hạng của ma trận (why?) nên dẫn tới 1 cách tính hạng của ma trận giàu tính thực hành: Mỗi ma trận $A = (a_{ij})_{m\times n}$ sau 1 số hữu hạn phép biến đổi sơ cấp đều có thể đưa về 1 ma trận dạng tam giác trên, số dòng có chứa phần tử $\ne0$ bằng $\operatorname{rank}A$.
+
+\begin{remark}[Ứng dụng của phương pháp khử Gauss để tìm ma trận nghịch đảo]
+	Để tìm nghịch đảo (nếu có) của ma trận $A = (a_{ij})_{n\times n}$, lập ma trận $n\times2n$: $(A,I_n)$. Dùng 2 loại phép biến đổi hàng:
+	\item(r1) Nhân 1 hàng với 1 vô hướng khác $0$,
+	\item(r2) Cộng vào 1 hàng 1 tổ hợp tuyến tính của các hàng khác,
+	
+	\noindent để đưa ma trận $(A,I_n)$ về dạng $(I_n,B)$. Khi đó, $B = A^{-1}$. Ma trận $A$ không có nghịch đảo $\Leftrightarrow$ ma trận $(A,I_n)$ không thể đưa về ma trận dạng $(I_n,B)$ bằng 2 loại phép biến đổi hàng (r1) \& (r2).
+\end{remark}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Cấu trúc nghiệm của hệ phương trình tuyến tính}
+See, e.g., \cite[Chap. 3, \S9: Cấu trúc nghiệm của hệ phương trình tuyến tính, pp. 163--165]{Hung_linear_algebra}.
+
+Xét các hệ phương trình tuyến tính thuần nhất \& không thuần nhất liên kết với nhau $A{\bf x} = {\bf0}$ \& $A{\bf x} = {\bf b}$ \eqref{linear system: vector form}, với $A = (a_{ij})_{m\times n}\in M(m\times n,\mathbb{F}),{\bf b}\in\mathbb{F}^m$ (cả 2 hệ phương trình đều gồm $m$ phương trình \& $n$ ẩn).
+
+\begin{dinhly}[\cite{Hung_linear_algebra}, Định lý 9.1, p. 163]
+	Tập hợp $L$ tất cả các nghiệm của hệ phương trình tuyến tính thuần nhất $Ax = 0$ là 1 không gian vector con của $\mathbb{F}^n$, có số chiều thỏa mãn hệ thức $\dim L = n - \operatorname{rank}A$.
+\end{dinhly}
+$L\coloneqq\operatorname{Ker}\tilde{A}$ với $\tilde{A}:\mathbb{F}^n\to\mathbb{F}^m$, ${\bf x}\mapsto A{\bf x}$, i.e., $L$ là hạt nhân{\tt/}hạch của ánh xạ tuyến tính $\tilde{A}$.
+
+\begin{dinhly}[\cite{Hung_linear_algebra}, Định lý 9.2, p. 164]
+	Giả sử $L$ là không gian vector con gồm các nghiệm của hệ phương trình tuyến tính thuần nhất $A{\bf x} = {\bf0}$, \& ${\bf x}^0$ là 1 nghiệm của hệ $A{\bf x} = {\bf b}$. Khi đó tập hợp các nghiệm của hệ $A{\bf x} = {\bf b}$ là ${\bf x}^0 + L = \{{\bf x}^0 + {\bf a}|{\bf a}\in L\}$.
+\end{dinhly}
+
+\begin{dinhnghia}[Nghiệm riêng \& nghiệm tổng quát của hệ phương trình tuyến tính không thuần nhất]
+	Với các giả thiết của định lý trên, ${\bf x}^0$ được gọi là 1 \emph{nghiệm riêng} của hệ phương trình tuyến tính không thuần nhất $A{\bf x} = {\bf b}$. Còn ${\bf x}^0 + {\bf a}$ với ${\bf a}\in L$, được gọi là \emph{nghiệm tổng quát} của hệ phương trình đó.
+\end{dinhnghia}
+
+\begin{dinhly}[\cite{Hung_linear_algebra}, Định lý 9.4: Tiêu chuẩn Kronecker--Capelli, p. 164]
+	Hệ phương trình tuyến tính $A{\bf x} = {\bf b}$ có nghiệm $\Leftrightarrow\operatorname{rank}A = \operatorname{rank}\overline{A}$ với $\overline{A} = (A|{\bf b})$ là ma trận các hệ số mở rộng của hệ.
+\end{dinhly}
+
+\begin{baitoan}[VMC2023B1]
+	(a) Cho $x\in\mathbb{R}$. Tính $\det A$ theo $x$ với
+	\begin{equation*}
+		A = \begin{pmatrix}
+			x & 2022 & 2023\\2022 & 2023 & x\\2023 & x & 2022
+		\end{pmatrix}.
+	\end{equation*}
+	(b) Tìm $x\in\mathbb{R}$ để $\operatorname{rank}A < 3$. Tính $\operatorname{rank}A$ với $x$ vừa tìm được.
+\end{baitoan}
+{\sf Hint.} Tổng mỗi dòng \& mỗi cột của ma trận $A$ đều bằng $x + 2022 + 2023$.
+
+\begin{proof}[Giải]
+	(a) Đặt $a\coloneqq2022$. Cộng hàng 2 \& hàng 3 vào hàng 1 được:
+	\begin{align*}
+		&\begin{vmatrix}
+			x & a & a + 1\\a & a + 1 & x\\a + 1 & x & a
+		\end{vmatrix} = (x + 2a + 1)\begin{vmatrix}
+			1 & 1 & 1\\a & a + 1 & x\\a + 1 & x & a
+		\end{vmatrix} = (x + 2a + 1)\begin{vmatrix}
+			1 & 0 & 0\\a & 1 & x - a\\a + 1 & x - a - 1 & -1
+		\end{vmatrix} = (x + 2a + 1)\begin{vmatrix}
+			1 & x - a\\x - a - 1 & -1
+		\end{vmatrix}\\
+		&= (x + 2a + 1)[-1 - (x - a)(x - a - 1)] = -(x + 2a + 1)(x^2 - (2a + 1)x + a^2 + a + 1) = -(x + 4045)(x^2 - 4045x + 4090507).
+	\end{align*}
+	(b) $\operatorname{rank}A < 3\Leftrightarrow\det A = 0\Leftrightarrow(x + 4045)(x^2 - 4045x + 4090507)\Leftrightarrow x = -4045$ vì $\Delta = (2a + 1)^2 - 4(a^2 + a + 1) = -3 < 0$ nên vô nghiệm thực. Khi $x = -4045$, $\operatorname{rank}A$ bằng hạng của ma trận
+	\begin{equation*}
+		\begin{pmatrix}
+			0 & 0 & 0\\2022 & 2023 & -4045\\2023 & -4045 & 2022
+		\end{pmatrix}
+	\end{equation*}
+	Vậy $\operatorname{rank}A = 2$ khi $x = -4045$.
+\end{proof}
+
+\begin{nhanxet}
+	(i) Việc đặt $a\coloneqq2022$ giúp thấy được cấu trúc chung của ma trận, không bị ảnh hưởng bởi các tính toán số cụ thể, đặc biêt giúp đơn giản hóa việc tính biệt thức $\Delta$ để chứng minh nhân tử phương trình bậc 2 trong $\det A$ vô nghiệm thực. (ii) Có thể tính $\det A$ bằng thư viện {\tt SymPy} của Python bằng cách chạy:
+	\begin{verbatim}
+		from sympy.matrices import Matrix, eye, zeros, ones, diag, GramSchmidt
+		from sympy import factor
+		
+		# VMC2023B1
+		from sympy.abc import x, a
+		A = Matrix([[x, a, a + 1], [a, a + 1, x], [a + 1, x, a]])
+		detA = A.det()
+		print(detA)
+		print(factor(detA))
+	\end{verbatim}
+	để thu được:
+	\begin{verbatim}
+		-2*a**3 + 3*a**2*x - 3*a**2 + 3*a*x - 3*a - x**3 - 1
+		-(2*a + x + 1)*(a**2 - 2*a*x + a + x**2 - x + 1)
+	\end{verbatim}
+	i.e., $\det A = -(x + 2a + 1)(x^2 - (2a + 1)x + a^2 + a + 1)$ như đã tính.
+\end{nhanxet}
+
+\begin{baitoan}[VMC2023B2]
+	Giả sử $f:\mathbb{R}^4\to\mathbb{R}^3$ là ánh xạ tuyến tính cho bởi:
+	\begin{equation*}
+		(x_1,x_2,x_3,x_4)\mapsto(x_1 + \lambda x_2 - x_3 + 2x_4,2x_1 - x_2 + \lambda x_3 + 5x_4,x_1 + 10x_2 - 6x_3 + x_4),
+	\end{equation*}
+	với $\lambda\in\mathbb{R}$: tham số. (a) Với $\lambda = 3$, tìm: (a1) 1 cơ sở \& số chiều của không gian hạt nhân $\operatorname{Ker}$. (a2) 1 cơ sở \& số chiều của không gian ảnh ${\rm Im}(f)$. (b) Tìm $\dim\operatorname{Im}f$ theo $\lambda$.
+\end{baitoan}
+
+\begin{proof}[Giải]
+	Ánh xạ tuyến tính $f$ có ma trận trong cặp cơ sở chính tắc của $\mathbb{R}^4$ \& $\mathbb{R}^3$ là:
+	\begin{equation*}
+		A(\lambda) = \begin{pmatrix}
+			1 & \lambda & -1 & 2\\2 & -1 & \lambda & 5\\1 & 10 & -6 & 1
+		\end{pmatrix}
+	\end{equation*}
+	(a) Với $\lambda = 3$, hạt nhân $\operatorname{Ker}f$ là không gian nghiệm của phương trình thuần nhất với ma trận hệ số:
+	\begin{equation*}
+		A(3) = \begin{pmatrix}
+			1 & 3 & -1 & 2\\2 & -1 & 3 & 5\\1 & 10 & -6 & 1
+		\end{pmatrix},
+	\end{equation*}
+	Dùng phép biến đổi sơ cấp trên dùng suy ra $\dim\operatorname{Ker}f = 2$ với 1 cơ sở $(-8,5,7,0),(-17,1,0,7)$. Suy ra $\dim\operatorname{Im}f = n - \dim\operatorname{Ker}f = 4 - 2 = 2$. Vì mỗi vector thuộc $\operatorname{Im}f$ là 1 tổ hợp tuyến tính của các vector cột của $A(3)$ nên ảnh của ánh xạ $f$ là không gian cong sinh bởi các vector cột. Dùng các phép biến đổi sơ cấp trên dòng cho $A^\top$ suy ra 1 cơ sở của $operatorname{Im}f$ là $(1,2,1),(0,1,-1)$. (b) $ \dim\operatorname{Im}f = \operatorname{rank}A(\lambda)$. Dùng phép biến đổi sơ cấp dòng thu được:
+	\begin{equation*}
+		\operatorname{rank}A = \operatorname{rank}\begin{pmatrix}
+			1 & 10 & -6 & 1\\0 & -21 & \lambda + 12 & 3\\0 & 0 & \dfrac{(\lambda + 5)(\lambda - 3)}{21} & \dfrac{\lambda - 3}{7}
+		\end{pmatrix}.
+	\end{equation*}
+	Suy ra $\operatorname{rank}A = 2$ nếu $\lambda = 3$ \& $\operatorname{rank}A = 3$ nếu $\lambda\ne3$. Vậy
+	\begin{equation*}
+		\dim\operatorname{Im}f = \left\{\begin{split}
+			&2&&\mbox{if }\lambda = 3,\\
+			&3&&\mbox{if }\lambda\ne3.
+		\end{split}\right.
+	\end{equation*}
+\end{proof}
+
+\begin{remark}
+	Câu (b) có thể dùng phép biến đổi sơ cấp trên dòng cho $A^\top$ vì $\operatorname{rank}A = \operatorname{rank}A^\top$.
+\end{remark}
+
+\begin{baitoan}[VMC2024A1B1]
+	Cho $a\in\mathbb{R}$, $A$ là 1 ma trận phụ thuộc vào $a$:
+	\begin{equation}
+		A = \begin{pmatrix}
+			1 & a + 1 & a + 2 & 0\\a + 3 & 1 & 0 & a + 2\\a + 2 & 0 & 1 & a + 1\\0 & a + 2 & a + 3 & 1
+		\end{pmatrix}
+	\end{equation}
+	(a) Tìm $\operatorname{rank}A$ khi $a = -1$. (b) Tìm tất cả $a\in\mathbb{R}$ để $\det A > 0$. (c) Biện luận số chiều của không gian nghiệm của hệ phương trình tuyến tính $AX = 0 $ theo $a$ với $X = [x,y,z,t]^\top$.
+\end{baitoan}
+
+\begin{proof}
+	(a) Khi $a = -1$:
+	\begin{equation}
+		A = \begin{pmatrix}
+			1 & 0 & 1 & 0\\2 & 1 & 0 & 1\\1 & 0 & 1 & 0\\0 &1 & 2 & 1
+		\end{pmatrix}
+	\end{equation}
+	Biến đổi sơ cấp trên dòng, đươc $\operatorname{rank}A = 3$. (b) Dùng công thức tính định thức ma trận để thu được $\det A = -4a^2 - 16a - 12 = -4(a + 1)(a + 3)$, nên $\det A > 0\Leftrightarrow-4(a + 1)(a + 3) > 0\Leftrightarrow a\in(-3,-1)$. (c) Nếu $a = -1$, $\operatorname{rank}A = 3\Rightarrow\dim L = 4 - \operatorname{rank}A = 4 - 3 = 1$. Nếu $a = -3$, tính được $\operatorname{rank}A = 3$, nên $\dim L = 4 - \operatorname{rank}A = 4 - 3 = 1$. Nếu $a\notin\{-1,-3\}$ thì $\det A = -4(a + 1)(a + 3)\ne0\Rightarrow\operatorname{rank}A = 4\Rightarrow\dim L = 4 - \operatorname{rank}A = 4 - 4 = 0$.	
+\end{proof}
+
+\begin{nhanxet}
+	Run
+	\begin{verbatim}
+		# VMC2024A1B1
+		Aa = np.matrix([[1,0,1,0], [2,1,0,1], [1,0,1,0], [0,1,2,1]])
+		print(np.linalg.matrix_rank(Aa))
+		A = Matrix([[1,a + 1,a + 2,0],[a + 3,1,0,a + 2],[a + 2,0,1,a + 1],[0,a + 2,a + 3,1]])
+		detA = A.det()
+		print(detA)
+		print(factor(detA))
+	\end{verbatim}
+	to obtain
+	\begin{verbatim}
+		3
+		-4*a**2 - 16*a - 12
+		-4*(a + 1)*(a + 3)
+	\end{verbatim}
+\end{nhanxet}
+
+\begin{baitoan}[VMC2023B4]
+	Với mỗi ma trận vuông $A$ có phần tử là các số phức, định nghĩa:
+	\begin{equation*}
+		e^A\coloneqq\lim_{k\to\infty} \sum_{n=0}^k \frac{A^n}{n!}.
+	\end{equation*}
+	Quy ước $0! = 1,A^0 = I$, ma trận giới hạn ở vế phải có phần tử là giới hạn của phần tử tương ứng của các ma trận tổng $S_k = \sum_{n=0}^k \frac{A^n}{n!}$. Ma trận giới hạn này luôn tồn tại. (a) Với
+	\begin{equation*}
+		A = \begin{pmatrix}
+			1 & -1\\0 & 2
+		\end{pmatrix},
+	\end{equation*}
+	tìm 1 ma trận khả nghịch $C$ để $C^{-1}AC$ là ma trận đường chéo. (b) Tìm các phần tử của ma trận $e^A$ với $A$ là ma trận cho ở (a).
+\end{baitoan}
+
+\begin{baitoan}[VMC2023A4]
+	Với mỗi ma trận vuông $A$ có phần tử là các số phức, định nghĩa
+	\begin{equation}
+		\sin A = \lim_{k\to\infty} \sum_{n=0}^k \frac{(-1)^n}{(2n + 1)!}A^{2n + 1}.
+	\end{equation}
+	(Ở đây ma trận giới hạn có phần tử là giới hạn của phần tử tương ứng của các ma trận tổng $S_k = \sum_{n=0}^k \frac{(-1)^n}{(2n + 1)!}A^{2n + 1}$ . Ma trận giới hạn này luôn tồn tại.) (a) Tìm các phần tử của ma trận $\sin A$ với
+	\begin{equation}
+		A = \begin{pmatrix}
+			1 & -1\\0 & 2
+		\end{pmatrix}
+	\end{equation}
+	(b) Cho $x,y\in\mathbb{R}$ bất kỳ, tìm các phần tử của ma trận $\sin A$ với
+	\begin{equation}
+		A = \begin{pmatrix}
+			x & y\\0 & x
+		\end{pmatrix}
+	\end{equation}
+	theo $x,y$. (c) Tồn tại hay không 1 ma trận vuông $A$ cấp 2 với phần tử là các số thực sao cho
+	\begin{equation}
+		\sin A = \begin{pmatrix}
+			1 & 2023\\0 & 1
+		\end{pmatrix}?
+	\end{equation}
+\end{baitoan}
+
+\begin{baitoan}[VMC2023A5]
+	Ký hiệu $P_n$ là tập hợp tất cả các ma trận khả nghịch $A$ cấp $n$ sao cho các phần tử của $A$ \& $A^{-1}$ đều bằng $0$ hoặc $1$. (a) Với $n = 3$, tìm tất cả các ma trận thuộc $P_3$. (b) Tính số phần tử của $P_n$ với $n\in\mathbb{N}^\star$ tùy ý.
+\end{baitoan}
+
+\begin{proof}
+	(a) Đặt $A = (a_{ij})_{3\times3},A^{-1} = (b_{ij})_{3\times3}$, kết hợp với $A,A_{-1}$ đều khả nghịch, có mỗi hàng \& mỗi cột đều có ít nhất 1 số 1. Có $1 = a_{k1}b_{1k} + a_{k2}b_{2k} + a_{k3}b_{3k}$ với $k = 1,2,3$, nên tồn tại duy nhất $m\in\{1,2,3\}$ để $a_{km} = b_{mk} = 1$.
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Vector space -- Không gian vector}
+Giả sử $V,W$: 2 không gian vector trên trường $\mathbb{F}$ (see, e.g., \cite[Chap. 2, \S2: Ánh xạ tuyến tính, pp. 100--110]{Hung_linear_algebra}).
+
+\begin{dinhnghia}[Ánh xạ tuyến tính]
+	Ánh xạ $f:V\to W$ được gọi là 1 \emph{ánh xạ tuyến tính} (hoặc rõ hơn là 1 \emph{ánh xạ $\mathbb{F}$-tuyến tính}), nếu
+	\begin{align}
+		f(\alpha + \beta) &= f(\alpha) + f(\beta),\ \forall\alpha,\beta\in V,\\
+		f(a\alpha) &= af(\alpha),\ \forall a\in\mathbb{F}.
+	\end{align}
+	Ánh xạ tuyến tính cũng được gọi là \emph{đồng cấu tuyến tính}, hay \emph{đồng cấu} cho đơn giản.
+\end{dinhnghia}
+2 điều kiện trong định nghĩa ánh xạ tuyến tính $\Leftrightarrow$ điều kiện:
+\begin{equation}
+	f(\alpha a + \beta b) = af(\alpha) + bf(\beta),\ \forall\alpha,\beta\in V,\ \forall a,b\in\mathbb{R}.
+\end{equation}
+
+\begin{dinhly}[Tính chất cơ bản của ánh xạ tuyến tính]
+	Giả sử $f:V\to W$ là 1 ánh xạ tuyến tính. Khi đó: (i) $f(0) = 0$. (ii) $f(-\alpha) = -f(\alpha)$, $\forall\alpha\in V$. (iii)
+	\begin{equation}
+		f\left(\sum_{i=1}^n a_i\alpha_i\right) = \sum_{i=1}^n a_if(\alpha_i),\ \forall a_i\in\mathbb{F},\ \forall\alpha_i\in V,\,\forall i = 1,\ldots,n.
+	\end{equation}
+\end{dinhly}
+
+\begin{vidu}[Ánh xạ tuyến tính cơ bản]
+	\item(i) Ánh xạ không $0:V\to W$, $0(\alpha) = 0$, $\forall\alpha\in V$. Thế còn ánh xạ hằng $C:V\to W$, $C(\alpha) = C$, $\forall\alpha\in V$ với $C\in\mathbb{F}$ cho trước?
+	\item(ii) Ánh xạ đồng nhất (identity mapping) ${\rm id}_V:V\to V$, ${\rm id}_V(\alpha) = \alpha$, $\forall\alpha\in V$.
+	\item(iii) Đạo hàm hình thức
+	\begin{equation}
+		\frac{d}{dX}:\mathbb{F}[X]\to\mathbb{F}[X],\ \frac{d}{dX}\sum_{i=0}^n a_iX^i = \sum_{i=1}^n ia_iX^{i-1} = \sum_{i=0}^{n-1} (i + 1)a_{i + 1}X^i.
+	\end{equation}
+	\item(iv) Tích phân hình thức
+	\begin{equation}
+		\int {\rm d}X:\mathbb{F}[X]\to\mathbb{F}[X],\ \int \sum_{i=0}^n a_iX^i\,{\rm d}X = \sum_{i=0}^n \frac{a_i}{i + 1}X^{i+1}.
+	\end{equation}
+	\item(v) Giả sử $A = (a_{ij})\in M(m\times n,\mathbb{F})$,
+	\begin{equation}
+		\widetilde{A}:\mathbb{F}^n\to\mathbb{F}^m,\begin{pmatrix}
+			x_1\\\vdots\\x_n
+		\end{pmatrix}\mapsto A\begin{pmatrix}
+			x_1\\\vdots\\x_n
+		\end{pmatrix}.
+	\end{equation}.
+	\item(vi) Các phép chiếu
+	\begin{equation}
+		{\rm pr}_i:V_1\times V_2\to V_i,\ {\rm pr}_i(v_1,v_2) = v_i,\ \forall i = 1,2,
+	\end{equation}
+	hay tổng quát hơn với $n\in\mathbb{N}$, $n\ge2$:
+	\begin{equation}
+		{\rm pr}_i:\bigtimes_{i=1}^n V_i = V_1\times V_2\times\cdots\times V_n,\ {\rm pr}_i(v_1,\ldots,v_n) = v_i,\ \forall i = 1,\ldots,n.
+	\end{equation}
+\end{vidu}
+See also, e.g., \href{https://en.wikipedia.org/wiki/Linear_map}{Wikipedia{\tt/}linear map}.
+
+Hạt nhân \& ảnh của 1 đồng cấu là 2 không gian vector đặc biệt quan trọng với việc khảo sát đồng cấu đó, see, e.g., \cite[Chap. 2, \S3: Hạt nhân \& ảnh của đồng cấu, pp. 110--116]{Hung_linear_algebra}.
+
+\begin{dinhnghia}[Hạt nhân{\tt/}hạch \& ảnh của đồng cấu]
+	Giả sử $f:V\to W$ là 1 đồng cấu.
+	\item(a) $\operatorname{Ker}(f)\coloneqq f^{-1}(0) = \{x\in V|f(x) = 0\}\subset V$ được gọi là \emph{hạt nhân} (hay \emph{hạch}) của $f$. Số chiều của $\operatorname{Ker}(f)$ được gọi là \emph{số khuyết} của $f$.
+	\item(b) $\operatorname{Im}(f)\coloneqq f(V) = \{f(x)|x\in V\}\subset W$ được gọi là \emph{ảnh} của $f$. Số chiều của $\operatorname{Im}(f)$ được gọi là \emph{hạng} của $f$ \& được ký hiệu là $\operatorname{rank}(f)$.
+\end{dinhnghia}
+
+\begin{dinhly}[Điều kiện cần \& đủ để 1 đồng cấu là 1 toàn cấu]
+	Đồng cấu $f:V\to W$ là 1 toàn cấu $\Leftrightarrow$ $\operatorname{rank}(f) = \dim W$.
+\end{dinhly}
+
+\begin{dinhly}[Điều kiện cần \& đủ để 1 đồng cấu là 1 đơn cấu]
+	Đối với đồng cấu $f:V\to W$ các điều kiện sau là tương đương:
+	\item(i) $f$ là 1 đơn cấu.
+	\item(ii) $\operatorname{Ker}(f) = \{0\}$.
+	\item(iii) Ảnh bởi $f$ của mỗi hệ vector độc lập tuyến tính là 1 hệ vector độc lập tuyến tính.
+	\item(iv) Ảnh bởi $f$ của mỗi cơ sở của $V$ là 1 hệ vector độc lập tuyến tính.
+	\item(v) Ảnh bởi $f$ của 1 cơ sở nào đó của $V$ là 1 hệ vector độc lập tuyến tính.
+	\item(vi) $\operatorname{rank}(f) = \dim V$.
+\end{dinhly}
+
+\begin{baitoan}[VMC2023A1]
+	Ký hiệu $\mathbb{R}[X]_{2023}$ là $\mathbb{R}$-không gian vector các đa thức 1 biến với bậc $\le2023$. Cho $f$ là ánh xạ đặt tương ứng mỗi đa thức với đạo hàm cấp 2 của nó: $f:\mathbb{R}[X]_{2023}\to\mathbb{R}[X]_{2023}$, $p(X)\mapsto p''(X)$. Đặt $g = f\circ f\circ\cdots\circ f$ (870 lần) là ánh xạ hợp của $870$ lần ánh xạ $f$. (a) Chứng minh $g$ là 1 ánh xạ tuyến tính từ $\mathbb{R}[X]_{2023}$ vào chính nó. (b) Tìm số chiều \& 1 cơ sở của không gian ảnh $\operatorname{Im}g$ \& của không gian hạt nhân $\operatorname{Ker}g$.
+\end{baitoan}
+
+\begin{proof}
+	(a) Có $f(\alpha p(X) + \beta q(X)) = (\alpha p(X) + \beta q(X))'' = \alpha p''(X) + \beta q''(X) = \alpha f(p(X)) + \beta f(q(X))$, $\forall\alpha,\beta\in\mathbb{R}$, $\forall p(X),q(X)\in\mathbb{R}[X]_{2023}$, nên ánh xạ $f$ là ánh xạ tuyến tính, nên hợp thành của $n\in\mathbb{N}^\star$ lần của ánh xạ $f$, i.e., $f\circ f\circ\cdots\circ f$ ($n$ lần) cũng là 1 ánh xạ tuyến tính từ $\mathbb{R}[X]_{2023}$ vào chính nó. Nói riêng, $g$ là 1 ánh xạ tuyến tính từ $\mathbb{R}[X]_{2023}$ vào chính nó. (b) Ánh của $g$ được sinh bởi các vector $g(1),g(X),\ldots,g(X^{2023})$ (vì $(1,X,X^2,\ldots,X^{2023})$ là 1 cơ sở của khong gian vector $\mathbb{R}[X]_{2023}$ các đa thức $p(X)$ có $\deg p\le2023$. Nhận thấy
+	\begin{equation*}
+		g(X^k) = \left\{\begin{split}
+			&0&&\mbox{if } k < 1740,\\
+			&k(k - 1)\cdots(k - 1739)X^{k - 1740}&&\mbox{if } k\ge1740,
+		\end{split}\right.
+	\end{equation*}
+	nên 1 cơ sở của $\operatorname{Im}g$ là $(1,X,X^2,\ldots,X^{283})$, nên $\dim\operatorname{Im}g = 284$.
+	
+	Với $p(X)\in\mathbb{R}[X]_{2023}$ bất kỳ, $p(X)$ sẽ có dạng $p(X) = \sum_{i=1}^{2023} a_iX^i = a_0 + a_1X + a_2X^2 + \cdots + a_{2023}X^{2023}$, thì $g(p)$ có dạng
+	\begin{equation*}
+		g(p)(X) = \sum_{i=1}^{283} b_iX^i = b_0 + b_1X + \cdots + b_{283}X^{283}.
+	\end{equation*}
+	Đa thức $p(X)\in\operatorname{ker}g\Leftrightarrow \sum_{i=1}^{283} b_iX^i = 0\Leftrightarrow a_i = 0,\forall i = 1740,\ldots,2023$, nên 1 cơ sở của $\operatorname{ker}g$ là $(1,X,X^2,\ldots,X^{1739})$ \& $\dim\operatorname{ker}g = 1740$.
+\end{proof}
+
+\begin{baitoan}[Mở rộng VMC2023A1]
+	Liệu thay các giả thiết trong VMC2023A1 thì bài toán còn đúng{\tt/}giải được không? (a) Thay $2023,870$ bởi $n,m\in\mathbb{N}^\star$. (b) Thay ánh xạ đạo hàm cấp 2 bởi ánh xạ đạo hàm cấp $k\in\mathbb{N}^\star$ hoặc tích phân $\int {\rm d}x$, tích phân bội $k\in\mathbb{N}^\star$ $\int\int\cdots\int {\rm d}x$ ($k$ dấu tích phân).
+\end{baitoan}
+
+\begin{baitoan}
+	Cho $n\in\mathbb{N}^\star$, $V$ là 1 không gian vector, $f:V\to V$ là 1 ánh xạ tuyến tính. Chứng minh $g_n\coloneqq f\circ f\circ\cdots f$ ($n$ lần) cũng là 1 ánh xạ tuyến tính từ $V$ vào chính nó.
+\end{baitoan}
+
+\begin{baitoan}[VMC2023A2]
+	(a) 1 thành phố có 2 nhà máy: nhà máy điện (E) \& nhà máy nước (W). Để nhà máy (E) sản xuất điện thì nó cần nguyên liệu đầu vào là điện do chính nó sản xuất trước đó \& nước của nhà máy (W). Tương tự, để nhà máy (W) sản xuất nước thì nó cần đến nước do chính nó sản xuất cũng như điện của nhà máy (E). Cụ thể:
+	\begin{itemize}
+		\item Để sản xuất được lượng điện tương đương $1$ đồng, nhà máy (E) cần lượng điện tương đương $0.3$ đồng mà nó sản xuất được trước đó \& lượng nước tương đương $0.1$ đồng từ nhà máy (W);
+		\item Để sản xuất được lượng nước tương đương $1$ đồng, nhà máy (W) cần lượng điện tương đương $0.2$ đồng từ nhà máy (E) \& lượng nước tương đương $0.4$ đồng do chính nó sản xuất trước đó.
+	\end{itemize}
+	Chính quyền thành phố yêu cầu 2 nhà máy trên cung cấp đến được với người dân lượng điện tương đương $12$ tỷ đồng \& lương nước tương đương $8$ tỷ đồng. Hỏi thực tế mỗi nhà máy cần sản xuất tổng cộng lượng điện \& lượng nước tương đương với bao nhiêu tỷ đồng để cung cấp đủ nhu cầu của người dân?
+	
+	(b) Cho $A = (a_{ij})_{2\times2}$ là ma trận thỏa mãn các phần tử đều là số thực không âm \& tổng các phần tử trên mỗi cột của $A$ đều $< 1$. Với ${\bf d} = (d_1,d_2)^\top$ là 1 vector tùy ý, chứng minh tồn tại duy nhất 1 vector cột ${\bf x} = (x_1,x_2)^\top$ sao cho ${\bf x} = A{\bf x} + {\bf d}$.
+\end{baitoan}
+
+\begin{baitoan}[VMC2023A3]
+	Cho $\alpha,\beta,\gamma,\delta\in\mathbb{C}$ thỏa $x^4 - 2x^3 - 1 = (x - \alpha)(x - \beta)(x - \gamma)(x - \delta)$. (a) Chứng minh $\alpha,\beta,\gamma,\delta$ đôi một khác nhau. (b) Chứng minh $\alpha^3,\beta^3,\gamma^3,\delta^3$ đôi một khác nhau. (c) Tính $\alpha^3 + \beta^3 + \gamma^3 +\delta^3$. (d)${}^\star$ Mở rộng bài toán cho các đa thức khác.
+\end{baitoan}
+
+\begin{lemma}[Điều kiện cần \& đủ của nghiệm bội của đa thức]
+	Cho $m,n\in\mathbb{R},m\le n$, $P(x)\in\mathbb{R}[x],\deg P = n$. $x = x_0\in\mathbb{R}$ là 1 nghiệm bội $m$ của $P(x)$ khi \& chỉ khi $P(x_0) = P'(x_0) = P''(x_0) = \cdots = P^{(m)}(x_0) = 0$.
+\end{lemma}
+
+\begin{proof}
+	Giả sử $x = x_0\in\mathbb{R}$ là 1 nghiệm bội $m$ của $P(x)$, thì $P(x)$ sẽ có dạng $P(x) = (x - x_0)^mg(x)$ với $g(x)\in\mathbb{R}[x],\deg g = \deg P - m = n - m\ge0$. Tính các đạo hàm $P'(x),P''(x),\ldots,P^{(m)}(x)$ (có thể sử dụng quy tắc Leibniz tổng quát để tính đạo hàm, see, e.g., \href{https://en.wikipedia.org/wiki/General_Leibniz_rule}{Wikipedia{\tt/}general Leibniz rule}) để suy ra kết luận.
+\end{proof}
+
+\begin{proof}[Hint]
+	(a) Đặt $P(x) = x^4 - 2x^3 - 1$, có $P'(x) = 4x^3 - 6x^2 = 2x^2(2x - 3$ chỉ có 2 nghiệm $x = 0$ (bội 2) \& $x = \frac{3}{2}$ (bội 1), mà $P(0) = -1\ne0,P(\frac{3}{2}) = -\frac{43}{16}\ne0$ nên $0,\frac{3}{2}$ đều không phải là nghiệm của $P(x)$, suy ra các nghiệm $\alpha,\beta,\gamma,\delta$ của $P(x)$ là phân biệt. (b) 
+\end{proof}
+
+\begin{baitoan}[Đại học Đồng Tháp]
+	Cho dãy các không gian vector hữu hạn chiều trên trường $\mathbb{K}$ \& các ánh xạ tuyến tính $0\xrightarrow{f_0}V_1\xrightarrow{f_1}V_2\xrightarrow{f_2}\cdots\xrightarrow{f_{n-1}}V_n\xrightarrow{f_n}0$ thỏa $\operatorname{Im}f_i = \operatorname{Ker}f_{i+1}$, $\forall i = 0,1,\ldots,n-1$. Chứng minh $\sum_{i=1}^n (-1)^{i-1}\dim V_i = \dim V_1 - \dim V_2 + \dim V_3 - \cdots + (-1)^{n-1}\dim V_n = 0$.
+\end{baitoan}
+
+\begin{dinhnghia}[Tổng đan dấu của dãy số]
+	Cho dãy số $(a_n)_{n=1}^\infty$, tổng đan dấu thứ $n$ của $(a_n)$ được định nghĩa bởi công thức $S_{\pm,n}\coloneqq\sum_{i=1}^n (-1)^{i-1}a_i$, $\forall n\in\mathbb{N}^\star$.
+\end{dinhnghia}
+
+\subsection{Miscellaneous Linear Algebra Problems}
+
+\begin{baitoan}[\cite{VMS_VMC2024}, 1.1., p. 25, ĐH CNTT]
+	Cho $A,B\in M_n(\mathbb{C})$ thỏa mãn $A^{2024} = B^{2023} = I$, $AB = BA$. Chứng minh $A + B + I$ khả nghịch.
+\end{baitoan}
+{\sf Hint.} Sử dụng kết quả ``Nếu hệ phương trình tuyến tính $AX = 0$ chỉ có nghiệm tầm thường $X = 0$ thì ma trận $A$ khả nghịch''.
+
+\begin{proof}
+	Xét hệ phương trình tuyến tính $(A + B + I)X = 0$ hay $(B + I)X = -AX$, thì $-A^2X = A(B + I)X = (AB + A)X = (BA + A)X = (B + I)AX = -(B + I)^2X$, quy nạp được $(B + I)^nX = (-1)^nA^nX$, $\forall n\in\mathbb{N}^\star$. Vì $A^{2024} = I$ nên $(B + I)^{2024}X = (-1)^{2024}A^{2024}X = X$, i.e., $((B + I)^{2024} - I)X = 0$. Vì $B^{2023} = I$ nên $(B^{2023} - I)X = 0$. 2 đa thức $P(x) = (x + 1)^{2024} - 1,Q(x) = x^{2023} - 1$ lần lượt có 2 tập nghiệm $\left\{-1 + \cos\dfrac{2k\pi}{2024} + i\sin\dfrac{2k\pi}{2024};k = 0,1,\ldots,2023\right\} = \left\{-1 + \cos\dfrac{k\pi}{1012} + i\sin\dfrac{k\pi}{1012};k = 0,1,\ldots,2023\right\}$ \& $\left\{\cos\dfrac{2k\pi}{2023} + i\sin\dfrac{2k\pi}{2023};k = 0,1,\ldots,2022\right\}$, nên $P(x),Q(x)$ không có nghiệm chung, suy ra $P(x),Q(x)$ là 2 đa thức nguyên tố cùng nhau, nên tồn tại 2 đa thức $R,S\in\mathbb{R}[x]$ thỏa $R(x)P(x) + S(x)Q(x) = 1$. Khi đó $X = (R(B)P(B) + S(B)Q(B))X = R(B)P(B)X + S(B)Q(B)X = R(B)(P(B)X) + S(B)(Q(B)X) = 0$, nên hệ phương trình tuyến tính thuần nhất $(A + B + I)X = 0$ chỉ có nghiệm tầm thường $X = 0$, suy ra $A + B + I$ khả nghịch.
+\end{proof}
+
+\begin{baitoan}[Mở rộng \cite{VMS_VMC2024}, 1.1., p. 25, ĐH CNTT]
+	Cho $A,B\in M_n(\mathbb{C})$ thỏa mãn $A^a = B^b = I$, với $a,b\in\mathbb{N}^\star$, $AB = BA$. (a) Với điều kiện nào của $a,b$ thì $A + B + I$ khả nghịch. (b) Mở rộng cho việc xét tính khả nghịch của ma trận $\alpha A + \beta B + \gamma$ khả nghịch với $\alpha,\beta,\gamma\in\mathbb{R}$ hoặc $\alpha,\beta,\gamma\in\mathbb{C}$.
+\end{baitoan}
+
+\begin{proof}
+	(a) Xét hệ phương trình tuyến tính $(A + B + I)X = 0$, có $(B + I)X = -AX$ \& $(A + I)X = -BX$, thì $-A^2X = A(B + I)X = (AB + A)X = (BA + A)X = (B + I)AX = -(B + I)^2X$ \& $-B^2X = B(A + I)X = (BA + B)X = (AB + B)X = (A + I)BX = -(A + I)^2X$, quy nạp được $(B + I)^nX = (-1)^nA^nX$ \& $(A + I)^nX = (-1)^nB^nX$, $\forall n\in\mathbb{N}^\star$. Vì $A^a = I$ nên ***
+\end{proof}
+
+\begin{dinhnghia}[Ma trận đồng dạng]
+	2 ma trận vuông $A,B$ cùng cỡ $n\times n$ được gọi là {\rm đồng dạng} nếu \& chỉ nếu tồn tại 1 ma trận khả nghịch $P$ cỡ $n\times n$ thỏa $B = P^{-1}AP$.
+\end{dinhnghia}
+{\it Ý nghĩa của sự đồng dạng của các ma trận.} Các ma trận đồng dạng biểu diễn cùng 1 ánh xạ tuyến tính dưới 2 cơ sở (có thể) khác nhau, với $P$ là ma trận chuyển cơ sở, see, e.g., \href{https://vi.wikipedia.org/wiki/Ma_tr%E1%BA%ADn_%C4%91%E1%BB%93ng_d%E1%BA%A1ng}{Wikipedia{\tt/}ma trận đồng dạng}.
+
+\begin{baitoan}[\cite{VMS_VMC2024}, 1.2., p. 25, ĐH CNTT]
+	Cho $A,B\in M_n(\mathbb{C})$ \& đặt các ma trận khối
+	\begin{equation*}
+		M = \begin{bmatrix}
+			A & B\\B & A
+		\end{bmatrix},\ N = \begin{bmatrix}
+			A + B & 0_n\\0_n & A - B
+		\end{bmatrix},\ P = \begin{bmatrix}
+			A & -B\\B & A
+		\end{bmatrix},\ Q = \begin{bmatrix}
+			A + iB & 0_n\\0_n & A - iB
+		\end{bmatrix},
+	\end{equation*}
+	với $i^2 = -1$. Chứng minh $M$ đồng dạng với $N$ \& $P$ đồng dạng với $Q$.
+\end{baitoan}
+
+\begin{baitoan}[\cite{VMS_VMC2024}, 1.3., p. 25, ĐH CNTT]
+	Tìm tất cả $a,b\in\mathbb{R}$ thỏa
+	\begin{equation*}
+		\begin{bmatrix}
+			a & -b\\b & a
+		\end{bmatrix}^4 = \begin{bmatrix}
+			\sqrt{3} & -1\\1 & \sqrt{3}
+		\end{bmatrix}.
+	\end{equation*}
+\end{baitoan}
+
+\begin{baitoan}[\cite{VMS_VMC2024}, 5.3., p. 29, ĐH CNTT]
+	Cho ánh xạ $\varphi:P_2[x]\to P_2[x]$ xác định bởi
+	\begin{equation*}
+		\varphi(p(x)) = (7a_0 - 12a_1 - 2a_2) + (3a_0 - 4a_1)x - (2a_0 + 2a_2)x^2,\ \forall p(x) = a_0 + a_1x + a_2x^2.
+	\end{equation*}
+	(a) Chứng minh $\varphi$ là 1 toán tử tuyến tính, xác định ma trận $A$ tương ứng của $\varphi$ đối với cơ sở $\{1,x,x^2\}$ của $P_2[x]$. (b) Tìm giá trị riêng, vector riêng của $A$ \& xét xem $A$ có chéo hóa được hay không. Nếu được, chéo hóa $A$ \& tìm ma trận chuyển $T$ cùng với ma trận $T^{-1}$ tương ứng, sao cho $T^{-1}AT$ là ma trận đường chéo. (c) Cho $p(x) = -1 - 2x + 3x^2$. Tính $\varphi^{2024}(p(x))$.
+\end{baitoan}
+
+\begin{baitoan}[\cite{VMS_VMC2024}, 5.4., p. 29, ĐH Ngoại Thương]
+	Cho ma trận
+	\begin{equation*}
+		A = \begin{pmatrix}
+			1 & 2 & 1\\3 & 0 & 1\\0 & 2 & 2
+		\end{pmatrix}.
+	\end{equation*}
+	(a) Tìm các giá trị riêng của ma trận $A$. (b) Tìm các giá trị riêng của ma trận $20A^5 - 2A^2 + 4I$.
+\end{baitoan}
+
+\begin{baitoan}[\cite{VMS_VMC2024}, 6.5., p. 30, ĐH Trà Vinh]
+	Cho ánh xạ tuyến tính $f:P_2(x)\to P_2(x)$ xác định bởi
+	\begin{equation*}
+		f(1 + x^2) = 4 + x + 5x^2,\ f(1 + 2x + 3x^2) = 10 + 13x + 23x^2,\ f(-x + x^2) = -1 - 2x - 3x^2.
+	\end{equation*}
+	(a) Tìm ma trận của $f$ đối với cơ sở chính tắc của $P_2(x)$. (b) Tìm $m\in\mathbb{R}$ để $v = 1 + mx - 5x^2\notin\operatorname{Im}f$.
+\end{baitoan}
+
+\begin{problem}[\cite{Gelca_Andreescu2017}, p. 71]
+	Prove $F_{m+n+1} = F_{m+1}F_{n+1} + F_mF_n,\ \forall m,n\in\mathbb{N}$.
+\end{problem}
+
+\begin{definition}[Hermitian matrix]
+	A matrix $A$ is called {\it Hermitian} iff $\overline{A^\top} = A$.
+\end{definition}
+
+\begin{problem}[\cite{Gelca_Andreescu2017}, 250., p. 71]
+	Let $M\in M_n(\mathbb{C})$. Prove that there exist Hermitian matrices $A,B$ s.t. $M = A + iB$.
+\end{problem}
+
+\begin{problem}[\cite{Gelca_Andreescu2017}, 251., p. 72]
+	Do there exist $n\times n$ matrices $A,B$ s.t. $AB - BA = I_n$?
+\end{problem}
+
+\begin{problem}[\cite{Gelca_Andreescu2017}, 252., p. 72]
+	Let $A,B\in M_2(\mathbb{R})$ s.t. $(AB - BA)^n = I_2$ for some $n\in\mathbb{N}^\star$. Prove that $n\divby2$ \& $(AB - BA)^4 = I_2$.
+\end{problem}
+
+\begin{problem}[\cite{Gelca_Andreescu2017}, 253., p. 72]
+	Let $A,B$ be 2 $n\times n$ matrices that do not commute \& for which there exist $a,b,c\in\mathbb{R}^\star$ s.t. $aAB + bBA = I_n,A^2 = cB^2$. Prove that $a = b$.
+\end{problem}
+
+\begin{problem}[\cite{Gelca_Andreescu2017}, 254., p. 72]
+	Let $a,b,c,d\in\mathbb{R}$ s.t. $c\ne0$, $ad - bc = 1$. Prove that there exist $u,v\in\mathbb{R}$ s.t.
+	\begin{equation*}
+		\begin{pmatrix}
+			a & b\\c & d
+		\end{pmatrix} = \begin{pmatrix}
+			1 & -u\\0 & 1
+		\end{pmatrix}\begin{pmatrix}
+			1 & 0\\c & 1
+		\end{pmatrix}\begin{pmatrix}
+			1 & -v\\0 & 1
+		\end{pmatrix}
+	\end{equation*}
+\end{problem}
+
+\begin{problem}[\cite{Gelca_Andreescu2017}, 255., p. 72]
+	Compute the $n$th power of the $m\times m$ matrix
+	\begin{equation*}
+		J_m(\lambda) = \begin{pmatrix}
+			\lambda & 1 & 0 & \cdots & 0\\0 & \lambda & 1 & \cdots & 0\\0 & 0 & \lambda & \cdots & 0\\\vdots & \ddots & \ddots & \ddots & \vdots\\0 & 0 & 0 & \cdots & 1\\0 & 0 & 0 & \cdots & \lambda
+		\end{pmatrix},\ \lambda\in\mathbb{C}.
+	\end{equation*}
+\end{problem}
+
+\begin{problem}[\cite{Gelca_Andreescu2017}, 256., p. 72]
+	Let $A,B\in M_n(\mathbb{R})$ s.t. ${\rm tr}(AA^\top + BB^\top) = {\rm tr}(AB + A^\top B^\top)$. Prove that $A = B^\top$.
+\end{problem}
+
+%------------------------------------------------------------------------------%
 
 %------------------------------------------------------------------------------%
 

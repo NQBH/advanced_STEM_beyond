@@ -19,9 +19,9 @@ while (number_student):
 	midterm_exam_grade = float(input()) # last column in 3 columns 45%
 	total_early_attendence_point = early_attendence_point * number_early_attendence
 	print(total_early_attendence_point)
-	
+
 	# study grade 30%
-	study_grade = total_plus_point + total_early_attendence_point - number_absence_day * absence_point - total_late_time * late_point / 30
+	study_grade = total_plus_point + total_early_attendence_point + number_absence_day * absence_point + total_late_time * late_point / 30
 
 	# final exam grade 55%
 	final_exam_grade = float(input())

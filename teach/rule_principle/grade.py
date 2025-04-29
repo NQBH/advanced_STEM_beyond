@@ -1,6 +1,6 @@
 # default parameters
-absence_point = -1
-late_point = -0.25 # -0.25/30 mins
+absence_point = 1
+late_point = 0.25 # -0.25/30 mins
 
 # parameters depending on each subject
 number_student = int(input())
@@ -21,7 +21,7 @@ while (number_student):
 	print(total_early_attendence_point)
 
 	# study grade 30%
-	study_grade = total_plus_point + total_early_attendence_point + number_absence_day * absence_point + total_late_time * late_point / 30
+	study_grade = total_plus_point + total_early_attendence_point - number_absence_day * absence_point - total_late_time * late_point / 30
 
 	# final exam grade 55%
 	final_exam_grade = float(input())

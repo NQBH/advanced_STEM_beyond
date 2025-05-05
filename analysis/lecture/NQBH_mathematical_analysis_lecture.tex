@@ -267,9 +267,71 @@ For sequences in Euclidean spaces $\mathbb{R}^d$, we can study the relation betw
 	\item(b) Every bounded sequence in $\mathbb{R}^d$ contains a convergent subsequence.
 \end{theorem}
 
+\begin{theorem}[\cite{Rudin1976}, Thm. 3.7, p. 52]
+	The subsequential limits of a sequence $\{p_n\}_{n=1}^\infty$ in a metric space $X$ form a closed subset of $X$.
+\end{theorem}
+
+\subsection{Cauchy sequences -- Dãy Cauchy}
+
+\begin{definition}[\cite{Rudin1976}, Def. 3.8, p. 52]
+	A sequence $\{p_n\}$ in a metric space $X$ is said to be a {\rm Cauchy sequence} if for every $\epsilon > 0$ there is an integer $N$ s.t. $d_X(p_n,p_m) < \epsilon$ if $n\ge N$ \& $m\ge N$.
+\end{definition}
+Briefly:
+\begin{equation*}
+	\{p_n\}\mbox{ is a Cauchy sequence in a metric space } X\Leftrightarrow\forall\varepsilon > 0,\exists N_\varepsilon\mbox{ s.t. }\min\{m,n\}\ge N_\varepsilon\Rightarrow d_X(p_n,p_m) < \varepsilon, 
+\end{equation*}
+or equivalently,
+\begin{equation*}
+	\{p_n\}\mbox{ is a Cauchy sequence in a metric space } X\Leftrightarrow\forall\varepsilon > 0,\exists N_\varepsilon\mbox{ s.t. }d_X(p_n,p_m) < \varepsilon,\ \forall m\ge N_\varepsilon,\,\forall n\ge N_\varepsilon.
+\end{equation*}
+
+\begin{definition}
+	Let $E$ be a subset of a metric space $X$, \& let $S$ be the set of all real numbers of the form $d(p,q)$, with $p\in E,q\in E$. The sup of $S$ is called the {\rm diameter} of $E$.
+\end{definition}
+
 \begin{problem}[\cite{Rudin1976}, p. 48, +1]
 	(a) Prove that the sequence $\{\frac{1}{n}\}$ converges in $\mathbb{R} = \mathbb{R}^1$ (to $0$), but fails to converge in the set of all positive real numbers, with $d(x,y)\coloneqq|x - y|$, $\forall x,y\in X$. (b) Find similar or more advanced examples.
 \end{problem}
+
+%-----------------------------------------------------------------------------%
+
+\subsection{Sequences with {\tt SymPy}}
+A sequence is a finite or infinite lazily evaluated list.
+\begin{verbatim}
+	sympy.series.sequences.sequence(seq, limits=None)
+\end{verbatim}
+returns appropriate {\tt sequence object}.
+
+{\it Explanation}: If {\tt seq} is a SymPy sequence, returns {\tt SeqPer} object otherwise returns {\tt SeqFormula} object. E.g.:
+\begin{verbatim}
+	from sympy import sequence
+	from sympy.abc import n
+	sequence(n**2, (n, 0, 5))
+	# output: SeqFormula(n**2, (n, 0, 5))
+	sequence((1, 2, 3), (n, 0, 5))
+	# output: SeqPer((1, 2, 3), (n, 0, 5))
+\end{verbatim}
+
+%-----------------------------------------------------------------------------%
+
+\subsubsection{Sequence Base}
+{\tt class sympy.series.sequences.SeqBase(*args)}: Base class for sequences.
+\begin{itemize}
+	\item {\tt coeff(pt)}: returns the coefficient at point {\tt pt}.
+	\item \verb|coeff_mul(other)|: should be used when {\tt other} is not a sequence. Should be defined to define custom behavior.
+	\begin{verbatim}
+		from sympy import SeqFormula			
+		from sympy.abc import n			
+		SeqFormula(n**2).coeff_mul(2)
+		# output: SeqFormula(2*n**2, (n, 0, oo))
+	\end{verbatim}
+	{\tt*} defines multiplication of sequences with sequences only.
+	\item \verb|find_linear_recurrence(n, d = None, gfvar = None, )|: Finds the shortest linear recurrence that satisfies the 1st $n$ terms of sequence of order $\le\frac{n}{2}$ if possible. If {\tt d} is specified, find shortest linear recurrence of order $\le\min\{d,\frac{n}{2}\}$ if possible. Returns list of coefficients {\tt[b(1), b(2), ...]} corresponding to recurrence relation {\tt x(n) = b(1)*x(n - 1) + b(2)*x(n - 2) + ...}. Return {\tt[]} if no recurrence is found. If {\tt gfvar} is specified, also returns ordinary generating function as a function of {\tt gfvar}.
+\end{itemize}
+
+%-----------------------------------------------------------------------------%
+
+\subsection{Problems: Sequences}
 
 \begin{baitoan}
 	Tính $\lim_{n\to+\infty} \dfrac{an + b}{cn + d}$ theo $a,b,c,d\in\mathbb{R}$, $(c,d)\ne(0,0)$.

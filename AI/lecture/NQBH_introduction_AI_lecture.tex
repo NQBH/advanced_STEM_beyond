@@ -203,6 +203,105 @@ print("grad f(x,y) = ", grad_f(x,y))
 
 %------------------------------------------------------------------------------%
 
+\section{Giải Bài Toán Phức Tạp Với Các Thuật Giải Heuristic}
+
+\subsection{Roster problem -- Bài toán phân công}
+
+\begin{dangtoan}
+	Cài đặt \& đánh giá thực nghiệm 1 thuật giải heuristic cho bài toán phân công công việc (đơn giản), \& thuật giải cải tiến.
+\end{dangtoan}
+
+\begin{baitoan}[Roster -- Bài toán phân công đơn giản]
+	1 đề án gồm $n\in\mathbb{N}^\star$ công việc \& các việc sẽ được thực hiện bởi $m\in\mathbb{N}^\star$ máy như nhau. Giả sử biết thời gian để 1 máy thực hiện việc thứ $i$  là $t_i$. Yêu cầu: Tìm phương án phân công sao cho thời gian hoàn thành toàn bộ công việc là thấp nhất.
+	\item {\sf Input.} $m$: số máy, $n$: số việc, dãy $t[0],\ldots,t[n-1]$, $t[i]$: thời gian để 1 máy thực hiện việc $i$.
+	\item {\sf Output.} Bảng phân công tối ưu.
+	\item {\sf Sample.}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			{\tt roster.inp} & {\tt roster.out} \\
+			\hline
+			3 10 &  \\
+			4 9 5 2 7 6 10 8 7 5 &  \\
+			\hline
+		\end{tabular}
+	\end{table}
+\end{baitoan}
+{\sf Thuật giải cho bài toán phân công đơn giản.}
+\begin{verbatim}
+for (i = 0; i < n; i++) {
+    chọn việc i chưa phân công có thời gian thực hiện cao nhất;
+    chọn máy m có thời gian làm việc thấp nhất;
+    bố trí việc i cho máy m;
+}
+\end{verbatim}
+
+\begin{baitoan}[Extended roster -- Bài toán phân công mở rộng]
+	Có $n\in\mathbb{N}^\star$ công việc \& $m\in\mathbb{N}^\star$ máy không đồng nhất. Biết thời gian máy $i$ làm việc $j$ là $t_{ij} = t[i][j]$. Yêu cầu: Lập bảng phân công tối ưu.
+	\item {\sf Input.} $m$: số máy, $n$: số việc, array 2 chiều $t[i][j]$: thời gian để máy $i$ thực hiện việc $j$.
+	\item {\sf Output.} Bảng phân công tối ưu.
+	\item {\sf Sample.}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			\verb|extended_roster.inp| & \verb|extended_roster.out| \\
+			\hline
+			3 8 &  \\
+			4 5 4 10 8 6 12 8 &  \\
+			7 5 7 3 9 7 9 5 &  \\
+			10 6 7 12 10 6 5 7 &  \\
+			\hline
+		\end{tabular}
+	\end{table}
+\end{baitoan}
+{\sf Cách phát biểu khác của bài toán phân công mở rộng.} Có $n\in\mathbb{N}^\star$ công việc sẽ được phân công cho $m\in\mathbb{N}^\star$ người thực hiện, mỗi việc được phân công cho 1 người. Giả sử ta biết thời gian $t_{ij} = t[i][j]$ cần để người thứ $i$ thực hiện công việc thứ $j$, $\forall i = 1,\ldots,m$, $\forall j = 1,\ldots,n$. Tìm 1 phương pháp phân công sao cho thời gian hoàn thành tất cả các công việc là thấp nhất.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Bài toán tô màu đồ thị -- Graph coloring problem}
+
+\begin{baitoan}[Bài toán tô màu các đỉnh đồ thị -- Graph coloring problem]
+	Có 1 đồ thị vô hướng đơn giản. Ta muốn tìm cách tô màu cho các đỉnh của đồ thị sao cho 2 đỉnh cạnh nhau phải có màu khác nhau. Yêu cầu: Tìm phương án tô sao cho số màu sử dụng là ít nhất.
+	\item {\sf Input.} Đồ thị vô hướng đơn giản.
+	\item {\sf Output.} Mỗi đỉnh tô màu gì.
+\end{baitoan}
+{\sf 1 thuật giải heuristic.} Sử dụng nguyên lý thứ tự:
+\begin{verbatim}
+for (i = 0; i < n; i++) {
+    chọn đỉnh s chưa tô có d[s] lớn nhất;
+    chọn màu: ưu tiên tô đỉnh s bằng 1 trong các màu đã sử dụng, nếu không được thì sử dụng màu mới;
+    sau khi tô màu cho đỉnh s: với mỗi đỉnh x cạnh, giảm d[x]; ???
+}
+\end{verbatim}
+$d[x]$: số đỉnh cạnh $x$ mà chưa tô màu. ???
+
+%------------------------------------------------------------------------------%
+
+\subsection{Shortest path problem -- Bài toán đường đi ngắn nhất}
+
+\begin{baitoan}
+	Cài đặt \& thử nghiệm $\rm A^*$. So sánh với Dijkstra nếu được.
+	\item {\sf Input.} $G = (V,E)$ có trọng số dương, đỉnh xuất phát $a$, đỉnh mục tiêu $z$. Thông tin bổ sung: $h(x)$: ước lượng khoảng cách từ $a$ đến mục tiêu $z$.
+	\item {\sf Output.} Đường đi ngắn nhất shortest path SP từ $a$ đến $z$.
+\end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Traveling salesman problem (TSP) -- Bài toán người bán hàng du lịch}
+
+\begin{problem}[Traveling Salesman Problem (TSP)]
+	The traveling salesman must visit every city in this territory exactly once \& then return to the starting point; given the cost of travel between all cities, how should he plan his itinerary for minimum total cost of the entire tour?
+\end{problem}
+TSP $\in$ NP-Complete.
+
+\begin{remark}[Approximate TSP by GAs]
+	We shall discuss a single possible approach to approximate the TSP by genetic algorithms (GAs).
+\end{remark}
+
+%------------------------------------------------------------------------------%
+
 \section{Miscellaneous}
 
 %------------------------------------------------------------------------------%

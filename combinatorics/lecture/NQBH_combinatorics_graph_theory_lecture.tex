@@ -890,8 +890,12 @@ The notion of graph which is most often found in mathematics is that of an undir
 \subsubsection{Graphic sequences}
 
 \begin{problem}[\cite{Shahriari2022}, Warm-Up 10.5, p. 363]
-	Is there a simple graph with 4 vertices s.t. the degrees of the vertices are $3,2,1,1$/ What if the degrees were $2,2,1,1$?
+	Is there a simple graph with 4 vertices s.t. the degrees of the vertices are $3,2,1,1$. What if the degrees were $2,2,1,1$?
 \end{problem}
+
+\begin{proof}
+	
+\end{proof}
 
 \begin{definition}[Degree sequence of a graph; graphic sequences, \cite{Shahriari2022}, Def. 10.6, p. 363]
 	The {\rm degree sequence} of a graph is the list of the degrees of its vertices in non-increasing order.
@@ -910,6 +914,7 @@ The notion of graph which is most often found in mathematics is that of an undir
 \end{problem}
 
 \begin{theorem}[\cite{Shahriari2022}, Thm. 10.9, p. 363]
+	\label{thm: Euler}
 	Let $G = (V,E)$ be a general graph. Let $\{d_i\}_{i=1}^{|V|}$ be the degrees of the vertices. Then
 	\begin{equation*}
 		\sum_{i=1}^{|V|} d_i = 2|E|.
@@ -924,6 +929,66 @@ The notion of graph which is most often found in mathematics is that of an undir
 Because of this theorem, if you are given a sequence of nonnegative integers \& want to know if it is graphic or not, you repeatedly use Thm. \ref{thm: Havel--Hakimi algorithm} to reduce your sequence to simpler sequences. If, at any point, the simpler sequence is graphic (or not graphic), then so is the original sequence.
 
 -- Vì định lý này, nếu bạn được cung cấp một chuỗi các số nguyên không âm \& muốn biết nó có đồ họa hay không, bạn sử dụng Thm. \ref{thm: Havel--Hakimi algorithm} nhiều lần để rút gọn chuỗi của bạn thành các chuỗi đơn giản hơn. Nếu, tại bất kỳ thời điểm nào, chuỗi đơn giản hơn là đồ họa (hoặc không đồ họa), thì chuỗi ban đầu cũng vậy.
+
+\begin{goal}[Tính khả dĩ của dãy bậc của đồ thị]
+	Tìm vài dấu hiệu hoặc vài điều kiện cần \& đủ để có thể quyết định liệu 1 dãy số nguyên dương $(a_i)_{i=1}^n\subset\mathbb{N}$ cho trươc có  thể thể là dãy bậc của đồ thị mà không phải vẽ biểu đồ.
+\end{goal}
+
+\begin{dinhnghia}[\cite{Ha_Thanh_to_hop}, Def. 7.6, p. 249, Dãy bậc của đồ thị, chuỗi đồ thị]
+	{\rm Chuỗi bậc} của đồ thị là dãy bậc của các đỉnh của nó theo thứ tự không tăng. 1 dãy số nguyên không âm không tăng được gọi là {\rm đồ thị} nếu tồn tại 1 đồ thị có chuỗi bậc chính xác là dãy số nguyên không âm đó.
+\end{dinhnghia}
+
+\begin{vidu}[Sequence $1,1,\ldots,1$]
+	$1,1,1$ không phải là 1 dãy đồ thị vì không thể xây dựng 1 đồ thị có 3 đỉnh sao cho tất cả 3 bậc là $1$. Nhưng $1,1$ \& $1,1,1,1$, hay nói chung các dãy chỉ toàn số $1$ với độ dài là 1 số chẵn, i.e., $\{1\}_{i=1}^{2n}$, $\forall n\in\mathbb{N}^\star$, là các dãy đồ thị, nhưng bất kỳ dãy chỉ toàn số $1$ với độ dài là 1 số lẻ, i.e., $\{1\}_{i=1}^{2n+1}$, $\forall n\in\mathbb{N}^\star$, thì không phải là 1 dãy đồ thị (why?)
+\end{vidu}
+
+\begin{dinhly}[Euler's, \cite{Ha_Thanh_to_hop}, Thm. 7.9, p. 250]
+	Cho $G = (V,E)$ là đồ thị tổng quát với $d_1,\ldots,d_{|V|}\in\mathbb{N}$ là bậc của các đỉnh. Khi đó $\sum_{i=1}^{|V|} d_i = d_1 + d_2 + \cdots + d_{|V|} = 2|E|$. Nói riêng, số đỉnh của $G$ có bậc lẻ là số chẵn.
+\end{dinhly}
+Briefly:
+\begin{equation*}
+	d_1,\ldots,d_{|V|}\mbox{ are degrees of vertices of a graph } G = (V,E)\Rightarrow\sum_{i=1}^{|V|} d_i = 2|E|\Rightarrow|\{i;d_i\not{\divby}\ 2\}|\divby2.
+\end{equation*}
+Chú ý chiều ngược lại chưa chắc đúng:
+\begin{vidu}
+	Dãy số $7,5,5,4,3,2,2,0$ không mâu thuẫn với Định lý \ref{thm: Euler} nhưng nó không phải là đồ thị (why?).
+\end{vidu}
+
+\begin{question}
+	Có thể suy ra được những hệ quả nào từ đẳng thức $\sum_{i=1}^{|V|} d_i = 2|E|$?
+\end{question}
+
+\begin{baitoan}
+	Cho $G = (V,E)$ là đồ thị tổng quát với $d_1,\ldots,d_p\in\mathbb{N}$ là bậc của các đỉnh. Chứng minh: Bậc cao nhất $d_{\max}\coloneqq\max_{1\le i\le p} d_i$ thỏa $d_{\max}\ge\dfrac{2|E|}{|V|}$.
+\end{baitoan}
+
+\begin{baitoan}
+	Viết chương trình {\sf C{\tt/}C++, Python} sử dụng định lý Euler \ref{thm: Euler} \& thuật toán Havel--Hakimi \ref{thm: Havel--Hakimi algorithm} để kiểm tra 1 dãy số nguyên không âm được nhập có phải là 1 graphical sequence hay không.
+	\item {\sf Input.} Dòng 1 chứa số bộ test $t\in\mathbb{N}^\star$. Tiếp theo, mỗi bộ test gồm 2 dòng: Dòng 1 chứa $n\coloneqq|V|\in\mathbb{N}^\star$: số đỉnh của đồ thị $G = (V,E)$. Dòng 2 chứa dãy $d_1,\ldots,d_n\in \mathbb{N}$.
+	\item {\sf Output.} Xuất ra {\tt1} nếu dãy đó là dãy graphical sequence, {\tt0} nếu dãy đó không phải là dãy graphical sequence, nếu chưa quyết định được thì xuất ra dãy không thể giảm được nữa thu được từ thuật toán Havel--Hakimi \ref{thm: Havel--Hakimi algorithm}.
+	\item {\sf Sample.}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			\verb|graphical_sequence.inp| & \verb|graphical_sequence.out| \\
+			\hline
+			3 &  \\
+			4 &  \\
+			3 2 1 1 & \\
+			4 &  \\
+			2 2 1 1 &  \\
+			10 &  \\
+			7 7 6 6 6 5 5 4 3 1 &  \\
+			9 &  \\
+			7 7 6 5 4 4 4 3 2 &  \\
+			10 &  \\
+			7 5 5 4 3 3 3 3 3 2 &  \\
+			
+			\hline
+		\end{tabular}
+	\end{table}
+\end{baitoan}
 
 \subsubsection{Miscellaneous: Graph theory}
 Denote by $d(V),C(V)$ the number, \& the set of vertices adjacent to a vertex $V$, respectively. A graph is said to have a {\it complete $k$-subgraph} if there are $k$ vertices any 2 of which are connected. A graph is said to be {\it $k$-free} if it does not contain a complete $k$-subgraph.
@@ -949,42 +1014,9 @@ Zarankiewicz's lemma is the main step in the proof of Turan's theorem -- a famou
 	1 đồ thị được gọi là {\rm chính quy bậc $d$} hoặc {\rm$d$-chính quy} nếu mỗi đỉnh có bậc bằng $d\in\mathbb{N}$.
 \end{dinhnghia}
 
-\begin{dinhnghia}[\cite{Ha_Thanh_to_hop}, Def. 7.3, p. 249, Đỉnh thị khối]
+\begin{dinhnghia}[\cite{Ha_Thanh_to_hop}, Def. 7.3, p. 249, Đồ thị khối]
 	1 đồ thị được gọi là {\rm đồ thị bậc $3$} nếu nó chính quy bậc $3$, i.e., mỗi đỉnh đồ thị có bậc bằng $3$.
 \end{dinhnghia}
-
-\begin{goal}[Tính khả dĩ của dãy bậc của đồ thị]
-	Tìm vài dấu hiệu hoặc vài điều kiện cần \& đủ để có thể quyết định liệu 1 dãy số nguyên dương $(a_i)_{i=1}^n\subset\mathbb{N}$ cho trươc có  thể thể là dãy bậc của đồ thị mà không phải vẽ biểu đồ.
-\end{goal}
-
-\begin{dinhnghia}[\cite{Ha_Thanh_to_hop}, Def. 7.6, p. 249, Dãy bậc của đồ thị, chuỗi đồ thị]
-	{\rm Chuỗi bậc} của đồ thị là dãy bậc của các đỉnh của nó theo thứ tự không tăng. 1 dãy số nguyên không âm không tăng được gọi là {\rm đồ thị} nếu tồn tại 1 đồ thị có chuỗi bậc chính xác là dãy số nguyên không âm đó.
-\end{dinhnghia}
-
-\begin{vidu}[Sequence $1,1,\ldots,1$]
-	$1,1,1$ không phải là 1 dãy đồ thị vì không thể xây dựng 1 đồ thị có 3 đỉnh sao cho tất cả 3 bậc là $1$. Nhưng $1,1$ \& $1,1,1,1$, hay nói chung các dãy chỉ toàn số $1$ với độ dài là 1 số chẵn, i.e., $\{1\}_{i=1}^{2n}$, $\forall n\in\mathbb{N}^\star$, là các dãy đồ thị, nhưng bất kỳ dãy chỉ toàn số $1$ với độ dài là 1 số lẻ, i.e., $\{1\}_{i=1}^{2n+1}$, $\forall n\in\mathbb{N}^\star$, thì không phải là 1 dãy đồ thị (why?)
-\end{vidu}
-
-\begin{dinhly}[Euler's, \cite{Ha_Thanh_to_hop}, Thm. 7.9, p. 250]
-	\label{thm: Euler}
-	Cho $G = (V,E)$ là đồ thị tổng quát với $d_1,\ldots,d_{|V|}\in\mathbb{N}$ là bậc của các đỉnh. Khi đó $\sum_{i=1}^{|V|} d_i = d_1 + d_2 + \cdots + d_{|V|} = 2|E|$. Nói riêng, số đỉnh của $G$ có bậc lẻ là số chẵn.
-\end{dinhly}
-Briefly:
-\begin{equation*}
-	d_1,\ldots,d_{|V|}\mbox{ are degrees of vertices of a graph } G = (V,E)\Rightarrow\sum_{i=1}^{|V|} d_i = 2|E|\Rightarrow|\{i;d_i\not{\divby}\ 2\}|\divby2.
-\end{equation*}
-Chú ý chiều ngược lại chưa chắc đúng:
-\begin{vidu}
-	Dãy số $7,5,5,4,3,2,2,0$ không mâu thuẫn với Định lý \ref{thm: Euler} nhưng nó không phải là đồ thị (why?).
-\end{vidu}
-
-\begin{question}
-	Có thể suy ra được những hệ quả nào từ đẳng thức $\sum_{i=1}^{|V|} d_i = 2|E|$?
-\end{question}
-
-\begin{baitoan}
-	Cho $G = (V,E)$ là đồ thị tổng quát với $d_1,\ldots,d_p\in\mathbb{N}$ là bậc của các đỉnh. Chứng minh: Bậc cao nhất $d_{\max}\coloneqq\max_{1\le i\le p} d_i$ thỏa $d_{\max}\ge\dfrac{2|E|}{|V|}$.
-\end{baitoan}
 
 %------------------------------------------------------------------------------%
 

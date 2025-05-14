@@ -42,7 +42,7 @@
 \setlist[enumerate]{leftmargin=*}
 
 \title{Lecture Note: Mathematics for Machine Learning\\Bài Giảng: Toán Học Cho Học Máy}
-\author{Nguyễn Quản Bá Hồng\footnote{A Scientist {\it\&} Creative Artist Wannabe. E-mail: {\tt nguyenquanbahong@gmail.com}. Bến Tre City, Việt Nam.}}
+\author{Nguyễn Quản Bá Hồng\footnote{A Scientist {\it\&} Creative Artist Wannabe. Website: \url{https://nqbh.github.io}. GitHub: \url{https://github.com/NQBH}.\\E-mail: {\sf nguyenquanbahong@gmail.com, hong.nguyenquanba@umt.edu.vn}. Bến Tre \& Hồ Chí Minh Cities, Việt Nam.}}
 \date{\today}
 
 \begin{document}
@@ -54,17 +54,17 @@
 	
 	Latest version:
 	\begin{itemize}
-		\item {\it Lecture Note: Mathematics for Machine Learning}.
+		\item {\it Lecture Note: Mathematics for Machine Learning -- Bài Giảng: Toán Học Cho Học Máy}.
 		
 		PDF: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/machine_learning/lecture/NQBH_mathematics_for_machine_learning_lecture.pdf}.
 		
 		\TeX: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/machine_learning/lecture/NQBH_mathematics_for_machine_learning_lecture.tex}.
-		\item {\it Slide: Mathematics for Machine Learning -- Toán Học cho Học Máy}.
+		\item {\it Slide: Mathematics for Machine Learning -- Slide Bài Giảng: Toán Học cho Học Máy}.
 		
 		PDF: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/machine_learning/slide/NQBH_mathematics_for_machine_learning_slide.pdf}.
 		
 		\TeX: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/machine_learning/slide/NQBH_mathematics_for_machine_learning_slide.tex}.
-		\item {\it Personal Expository Notes on Machine Learning}.
+		\item {\it Survey: Machine Learning -- Khảo Sát: Học Máy}.
 		
 		PDF: {\sc url}: \url{https://github.com/NQBH/draft/blob/master/machine_learning/NQBH_machine_learning.pdf}.
 		
@@ -82,16 +82,20 @@
 
 \section{Basic \& Big Pictures}
 
-\subsection{Abbreviation, Notations}
+\subsection{Abbreviation, Conventions, \& Notations}
 
 \begin{itemize}
 	\item AI: Artificial Intelligence
-	\item ANN: Artificial Neural Networks
+	\item ANN: Artificial Neural Network
 	\item DL: Deep Learning
+	\item LLM: Large Language Model
 	\item ML: Machine Learning
 \end{itemize}
 
+%------------------------------------------------------------------------------%
+
 \subsection{Main components}
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=12cm]{4_ML_pillars}
@@ -114,10 +118,98 @@
 \end{question}
 See, e.g., \cite[Chap. 8, Sect. 8.1: Data, Models, \& Learning]{Deisenroth_Faisal_Ong2024}.
 
+%------------------------------------------------------------------------------%
+
+\subsection{Energy functions -- Các hàm năng lượng}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \cite{Cho_ML_lecture}. {\sc Kyunghyun Cho}. {\it Machine Learning: a Lecture Note}. Chap. 1: An Energy Function.
+\end{enumerate}
+
+\begin{definition}[Energy function, \cite{Cho_ML_lecture}, pp. 1--2]
+	An {\rm energy function}, or a {\rm negative compatibility score} $e$ assigns a real value to a pair of an observed instance \& a latent instance $(x,z)$ \& is parameterized by a multidimensional vector $\boldsymbol{\theta}$: $e:{\cal X}\times{\cal Z}\times\Theta\to\mathbb{R}$, where ${\cal X}$ is a set of all possible observed instances, ${\cal Z}$ is a set of all possible latent instances, \& $\Theta$ is a set of all possible parameter configurations.
+	
+	When the energy function is low (i.e., the compatibility is high), we say that a given pair $(x,z)$ is {\rm highly preferred} given $\boldsymbol{\theta}$. When the energy function is high, unsurprising we say that the given pair is {\rm not as preferred}.
+\end{definition}
+
+\begin{dinhnghia}[Hàm năng lượng]
+	Một {\rm hàm năng lượng}, hoặc {\rm điểm tương thích âm} $e$ gán một giá trị thực cho một cặp trường hợp quan sát được \& một trường hợp tiềm ẩn $(x,z)$ \& được tham số hóa bởi một vectơ đa chiều $\boldsymbol{\theta}$: $e:{\cal X}\times{\cal Z}\times\Theta\to\mathbb{R}$, trong đó ${\cal X}$ là tập hợp tất cả các trường hợp quan sát được có thể, ${\cal Z}$ là tập hợp tất cả các trường hợp tiềm ẩn có thể, \& $\Theta$ là tập hợp tất cả các cấu hình tham số có thể.
+	
+	Khi hàm năng lượng thấp (tức là khả năng tương thích cao), chúng ta nói rằng một cặp $(x,z)$ cho trước là {\rm được ưa thích cao} với $\boldsymbol{\theta}$. Khi hàm năng lượng cao, không có gì ngạc nhiên khi chúng ta nói rằng cặp cho trước là {\rm không được ưa thích}.
+\end{dinhnghia}
+The latent observation $z$ is, as the name suggests, not observed directly. It nevertheless plays an important role in capturing uncertainty. When we only observe $x$, but not $z$, we cannot fully determine how preferable $x$ is. With a certain set of values of $z$, the energy may be low, while it may be high with other values of $z$. This gives us a sense of the uncertainty. E.g., we can compute both the mean \& variance of the energy of an observed instance by
+\begin{align}
+	e_\mu(x,\boldsymbol{\theta})&\coloneqq\mathbb{E}[e(x,z,\boldsymbol{\theta})] = \sum_{z\in{\cal Z}} p(z)e(x,z,\boldsymbol{\theta}),\label{mean of energy of an observed instance x}\\
+	e_{\rm v}(x,\boldsymbol{\theta})&\coloneqq\mathbb{E}[(e(x,z,\boldsymbol{\theta}) - e_\mu(x,\boldsymbol{\theta}))^2].\label{varianceof energy of an observed instance x}
+\end{align}
+-- Quan sát tiềm ẩn $z$, như tên gọi của nó, không được quan sát trực tiếp. Tuy nhiên, nó đóng vai trò quan trọng trong việc nắm bắt sự không chắc chắn. Khi chúng ta chỉ quan sát $x$, nhưng không quan sát $z$, chúng ta không thể xác định đầy đủ mức độ ưu tiên của $x$. Với một tập hợp các giá trị $z$ nhất định, năng lượng có thể thấp, trong khi nó có thể cao với các giá trị $z$ khác. Điều này giúp chúng ta có cảm giác về sự không chắc chắn. Ví dụ, chúng ta có thể tính toán cả giá trị trung bình \& phương sai của năng lượng của một trường hợp quan sát được bằng \eqref{mean of energy of an observed instance x} \& \eqref{varianceof energy of an observed instance x}, resp.
+
+Given an energy function $e$ \& the parameter $\boldsymbol{\theta}$, we can derive a variety of paradigms in ML by minimizing the energy function w.r.t. different variables. E.g., let observation be partitioned into 2 parts; input \& output \& assume that there is no latent variable, i.e., $e([x,y],\emptyset,\boldsymbol{\theta})$. Given a new input $x'$, we can solve the problem of {\it supervised learning} by
+\begin{equation*}
+	\hat{y} = \arg\min_{y\in{\cal Y}} e([x',y],\emptyset,\boldsymbol{\theta}),
+\end{equation*}
+where ${\cal Y}$ is the set of all possible outcomes $y$. When ${\cal Y}$ consists of discrete items, we call it {\it classification}. If $y$ is a continuous variable, we call it {\it regression}.
+
+-- Với một hàm năng lượng $e$ \& tham số $\boldsymbol{\theta}$, chúng ta có thể suy ra nhiều mô hình khác nhau trong ML bằng cách giảm thiểu hàm năng lượng theo các biến khác nhau. Ví dụ, hãy phân vùng quan sát thành 2 phần; đầu vào \& đầu ra \& giả sử rằng không có biến tiềm ẩn, tức là $e([x,y],\emptyset,\boldsymbol{\theta})$. Với một đầu vào mới $x'$, chúng ta có thể giải quyết vấn đề {\it học có giám sát} bằng
+\begin{equation*}
+	\hat{y} = \arg\min_{y\in{\cal Y}} e([x',y],\emptyset,\boldsymbol{\theta}),
+\end{equation*}
+trong đó ${\cal Y}$ là tập hợp tất cả các kết quả có thể $y$. Khi ${\cal Y}$ bao gồm các mục rời rạc, chúng ta gọi đó là {\it phân loại}. Nếu $y$ là biến liên tục, chúng ta gọi nó là {\it hồi quy}.
+
+When ${\cal Z}$ is a finite set of discrete items, a given energy function $e$ defines the cluster assignment of an observation $x$, resulting in {\it clustering}:
+\begin{equation*}
+	\hat{z} = \arg\min_{z\in{\cal Z}} e(x,z,\boldsymbol{\theta}).
+\end{equation*}
+If $z$ is a continuous variable, we would solve the same problem but call it {\it representation learning}.
+
+-- Khi ${\cal Z}$ là một tập hợp hữu hạn các mục rời rạc, một hàm năng lượng $e$ cho trước sẽ xác định phép gán cụm của một quan sát $x$, dẫn đến {\it clustering}:
+\begin{equation*}
+	\hat{z} = \arg\min_{z\in{\cal Z}} e(x,z,\boldsymbol{\theta}).
+\end{equation*}
+Nếu $z$ là một biến liên tục, chúng ta sẽ giải quyết cùng một bài toán nhưng gọi nó là {\it học biểu diễn}.
+
+All these different paradigms effectively correspond to solving a minimization problem w.r.t. some subset of the inputs to the energy function $e$. I.e., given a partially-observed input, we infer the unobserved part that minimizes the energy function. This is often why people refer to using any ML model after training as {\it inference}.
+
+-- Tất cả các mô hình khác nhau này thực sự tương ứng với việc giải quyết một vấn đề tối thiểu hóa w.r.t. một số tập hợp con của các đầu vào cho hàm năng lượng $e$. Tức là, với một đầu vào được quan sát một phần, chúng ta suy ra phần không được quan sát làm tối thiểu hóa hàm năng lượng. Đây thường là lý do tại sao mọi người gọi việc sử dụng bất kỳ mô hình ML nào sau khi đào tạo là {\it suy luận}.
+
+It is nontrivial to solve such a minimization problem. The level of difficulty depends on a variety of factors, including how the energy function is defined, the dimensionalities of the observed as well as latent variables as well sa the parameters themselves. We will consider different setups in which efficient \& effective optimization algorithms are known \& used for inference.
+
+-- Không dễ để giải quyết một bài toán tối thiểu hóa như vậy. Mức độ khó phụ thuộc vào nhiều yếu tố, bao gồm cách định nghĩa hàm năng lượng, chiều của các biến quan sát cũng như các biến tiềm ẩn cũng như các tham số. Chúng ta sẽ xem xét các thiết lập khác nhau trong đó các thuật toán tối ưu hóa hiệu quả \& hiệu quả được biết \& sử dụng để suy luận.
+
+As the name `ML' suggests, a bulk of ML is on estimating $\boldsymbol{\theta}$. Learning is not just $\min_{\boldsymbol{\theta}\in\Theta} \mathbb{E}_{x\sim p_{\rm data}}[e(x,\emptyset,\boldsymbol{\theta})]$ when there is no latent variable, but, unfortunately, learning is not as easy, since we must ensure that the energy assigned to undesirable observation, i.e., $p_{\rm data}(x)\downarrow$, must be relatively high. I.e., we must introduce an extra term that regularizes learning:
+\begin{equation*}
+	\min_{\boldsymbol{\theta}\in\Theta} \mathbb{E}_{x\sim p_{\rm data}}[e(x,\emptyset,\boldsymbol{\theta}) - R(\boldsymbol{\theta})].
+\end{equation*}
+The choice of $R$ must be made appropriately for each problem we solve, \& we will learn how to design appropriate regularizers to ensure proper learning.
+
+-- Như tên gọi `ML' gợi ý, phần lớn ML nằm ở việc ước tính $\boldsymbol{\theta}$. Học không chỉ là $\min_{\boldsymbol{\theta}\in\Theta} \mathbb{E}_{x\sim p_{\rm data}}[e(x,\emptyset,\boldsymbol{\theta})]$ khi không có biến tiềm ẩn, nhưng thật không may, việc học không dễ dàng như vậy, vì chúng ta phải đảm bảo rằng năng lượng được gán cho quan sát không mong muốn, tức là $p_{\rm data}(x)\downarrow$, phải tương đối cao. Tức là, chúng ta phải giới thiệu một thuật ngữ bổ sung để chính quy hóa việc học:
+\begin{equation*}
+	\min_{\boldsymbol{\theta}\in\Theta} \mathbb{E}_{x\sim p_{\rm data}}[e(x,\emptyset,\boldsymbol{\theta}) - R(\boldsymbol{\theta})].
+\end{equation*}
+Việc lựa chọn $R$ phải được thực hiện một cách phù hợp cho từng bài toán mà chúng ta giải quyết, \& chúng ta sẽ học cách thiết kế các bộ chính quy hóa phù hợp để đảm bảo việc học tập phù hợp.
+
+Of course it becomes even more involved when there are latent (unobserved) variables $z$, since it require us to solve the problem of inference simultaneously as well. This happens for problems e.g. clustering where the cluster assignment of each observation is unknown \& factor analysis where latent factors are unknown in advance. We will learn how to interpret such latent variables \& algorithms that allow us to estimate $\boldsymbol{\theta}$ in the absence of latent variables.
+
+-- Tất nhiên, nó trở nên phức tạp hơn khi có các biến tiềm ẩn (không quan sát được) $z$, vì nó đòi hỏi chúng ta phải giải quyết vấn đề suy luận đồng thời. Điều này xảy ra đối với các vấn đề ví dụ như phân cụm trong đó việc gán cụm cho mỗi quan sát là không xác định \& phân tích nhân tố trong đó các nhân tố tiềm ẩn không xác định trước. Chúng ta sẽ học cách diễn giải các biến tiềm ẩn như vậy \& các thuật toán cho phép chúng ta ước tính $\boldsymbol{\theta}$ khi không có các biến tiềm ẩn.
+
+In summary, there are 3 aspects to every ML problem:
+\begin{enumerate}
+	\item defining an energy function $e$ (parametrization)
+	\item estimating the parameters $\boldsymbol{\theta}$ from data (learning)
+	\item inferring a missing part given an partial observation (inference).
+\end{enumerate}
+Across these 3 steps sits 1 energy function, \& once we obtain an energy function $e$, we can easily mix \& match these steps from different paradigms of ML.
+
+-- Trong 3 bước này có 1 hàm năng lượng, \& khi chúng ta thu được hàm năng lượng $e$, chúng ta có thể dễ dàng kết hợp \& khớp các bước này từ các mô hình ML khác nhau.
+
+%------------------------------------------------------------------------------%
+
 \subsection{Data as vectors}
 Input data can be considered as a vector of features of the problem considered.
 
 See, e.g., \cite[Chap. 8, Sect. 8.1.1: Data as Vectors]{Deisenroth_Faisal_Ong2024}.
+
+%------------------------------------------------------------------------------%
 
 \subsection{How to describe models}
 2 major approaches to describe models in ML:
@@ -129,6 +221,8 @@ See, e.g., \cite[Chap. 8, Sect. 8.1.1: Data as Vectors]{Deisenroth_Faisal_Ong202
 \begin{remark}[Cf. Deterministic world vs. Stochastic world]
 	
 \end{remark}
+
+%------------------------------------------------------------------------------%
 
 \subsubsection{Models as functions -- Mô hình như hàm số}
 See, e.g., \cite[Chap. 8, Sect. 8.1.2: Models as Functions]{Deisenroth_Faisal_Ong2024}.
@@ -156,6 +250,8 @@ for unknown $\boldsymbol{\theta},\theta_0$ (or more precisely, unknown but adjus
 \end{remark}
 Philosophically \& mathematically speaking, in any case, some compromises that are good enough are needed to be established for particular goals.
 
+%------------------------------------------------------------------------------%
+
 \subsubsection{Models as probability distributions -- Mô hình như phân phối xác suất}
 See, e.g., \cite[Chap. 8, Sect. 8.1.3: Models as Probability Distributions]{Deisenroth_Faisal_Ong2024}.
 
@@ -169,6 +265,8 @@ We often consider data to be noisy observations of some true underlying effect, 
 	\item predictors being able to express some sort of uncertainty, e.g., to quantify the confidence we have about the value of the prediction for a particular test data point.
 \end{itemize}
 {\sf Idea.} Instead of considering a predictor as a single function, we could consider predictors to be probabilistic models, i.e., models describing the distribution of possible functions. In \cite{Deisenroth_Faisal_Ong2024}, the authors limited themselves to the special case of distributions with finite-dimensional parameters, which allows them to describe probabilistic models without needing stochastic processes \& random measures. For this special case, we can think about probabilistic models as multivariate probability distributions, which already allow for a rich class of models.
+
+%------------------------------------------------------------------------------%
 
 \subsubsection{Learning is finding parameters}
 See, e.g., \cite[Chap. 8, Sect. 8.1.4: Learning is Finding Parameters]{Deisenroth_Faisal_Ong2024}.
@@ -243,6 +341,8 @@ See, e.g., \href{https://en.wikipedia.org/wiki/Decision_theory}{Wikipedia{\tt/}d
 	What is optimal performance, regardless of the finiteness of the training data? Or what should be done if we have a perfect knowledge of the underlying probability distribution of the data?
 \end{question}
 
+%------------------------------------------------------------------------------%
+
 \subsubsection{Supervised Learning Problems \& Loss Functions}
 We consider a {\it loss function} $l:{\cal Y}\times{\cal Y}\to\mathbb{R}$ (often $\mathbb{R}_+\coloneqq(0,\infty)$), where $l(y,z)$ is the loss of predicting $z$ while the true label is $y$. Some related research communities (e.g., economics) use the concept of ``utility'' which is then maximized.
 
@@ -268,8 +368,12 @@ The loss function only concerns the output space ${\cal Y}$ independent of the i
 \end{assumption}
 In practice, the final user imposes the loss function, as this is how models will be evaluated. Clearly, a single real number may not be enough to characterize the entire prediction behavior. E.g., in binary classification, there are 2 types of errors, false positives \& false negatives, which can be considered simultaneously. Since we now have 2 performance measures (\& in any case with $\ge2$ performance measures), we typically need a curve to characterize the performance of a prediction function.
 
+%------------------------------------------------------------------------------%
+
 \subsection{Empirical risk minimization -- Giảm thiểu rủi ro thực nghiệm}
-See, e.g., \cite[Sect. 8.2: Empirical Risk Minimization]{Deisenroth_Faisal_Ong2024}. In this subsection, we consider the case of a predictor that is a function. 
+See, e.g., \cite[Sect. 8.2: Empirical Risk Minimization]{Deisenroth_Faisal_Ong2024}. In this subsection, we consider the case of a predictor that is a function.
+
+%------------------------------------------------------------------------------%
 
 \subsection{Parameter estimation -- Ước tính{\tt/}lượng tham số}
 See, e.g., \cite[Sect. 8.3: Parameter Estimation]{Deisenroth_Faisal_Ong2024}, \cite{Aster_Borchers_Thurber2018}. In the previous framework of empirical risk minimization, we did not explicitly model our problem using probability distributions. In this subsection, we learn how to use probability distributions to model our uncertainty due to the observation process \& our uncertainty in the parameters of our predictors. 
@@ -277,6 +381,8 @@ See, e.g., \cite[Sect. 8.3: Parameter Estimation]{Deisenroth_Faisal_Ong2024}, \c
 \begin{remark}[Relation with Bayesian inverse problem?]
 	See, e.g., \cite{Ito_Jin2015}.
 \end{remark}
+
+%------------------------------------------------------------------------------%
 
 \subsubsection{Maximum Likelihood Estimation (MLE)}
 \ldots For data represented by a random variable ${\bf x}$ \& for a family of probability densities $p({\bf x}|\boldsymbol{\theta})$ parametrized by $\boldsymbol{\theta}$, the {\it negative log-likelihood} is given by
@@ -319,6 +425,8 @@ For $d\in\mathbb{N}^\star$ pairs $({\bf x}_i,y_i)_{i=1}^d$ of input-output, we r
 	\item(v) {\rm(Elementary function -- Hàm sơ cấp)} We can assume $h_{\boldsymbol{\theta}}({\bf x})$ to be an elementary function of the variable ${\bf x}$. For elementary functions, see, e.g., \href{https://en.wikipedia.org/wiki/Elementary_function}{Wikipedia{\tt/}elementary function}.
 \end{example}
 A typical learning algorithm finds the best hypothesis $h_{\boldsymbol{\theta}}$ for the training set $({\bf x}_i,y_i)_{i=1}^N$. We can then estimate the values of $y$ for the test set $({\bf x}_i,y_i)_{i=N+1}^d$ using the ``optimal'' hypothesis $h_{\boldsymbol{\theta}}({\bf x})$ obtained from our learning algorithm. In particular, if $h_{\boldsymbol{\theta}}$ is a linear function of $x\in\mathbb{R}$, this procedure is called {\it linear regression}.
+
+%------------------------------------------------------------------------------%
 
 \subsection{Introduction to linear regression -- Giới thiệu về hồi quy tuyến tính}
 {\it1st impression.} Hồi quy tuyến tính (linear regression) là:
@@ -373,6 +481,8 @@ với ${\bf w} = [w_1,w_2,w_2]^\top$ là {\it vector trọng số} (weight vecto
 	
 	-- Làm thế nào để chọn tham số $\boldsymbol{\theta}$ ``tối ưu''? ``Tối ưu'' theo nghĩa nào?
 \end{question}
+
+%------------------------------------------------------------------------------%
 
 \subsection{A general mathematical setting}
 Tổng quát, nếu mỗi điểm dữ liệu được mô tả bởi 1 vector đặc trưng $d$ chiều $x\in\mathbb{R}^d$, hàm dự đoán đầu ra được viết dưới dạng

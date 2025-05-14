@@ -645,18 +645,44 @@ int main() {
 \end{verbatim}
 
 \begin{baitoan}[\cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, p. 446, tính $C_n^k$]
-	Viết chương trình {\sf C{\tt/}C++, Python} để tính $C_n^k$ -- số tổ hợp chập $k$ của $n$ phần tử bằng công thức truy hồi nhờ đẳng thức Pascal:
+	(a) Viết chương trình {\sf C{\tt/}C++, Python} để tính $C_n^k$ -- số tổ hợp chập $k$ của $n$ phần tử bằng công thức truy hồi nhờ đẳng thức Pascal:
 	\begin{equation*}
 		C_n^k = \left\{\begin{split}
 			&1&&\mbox{if } k = 0\lor k = n,\\
 			&C_{n-1}^k + C_{n-1}^{k-1}&&\mbox{if } 0 < k < n,
 		\end{split}\right.
 	\end{equation*}
-	với $n,k\in\mathbb{N}$ được nhập vào, $0\le k\le n$.
+	với $n,k\in\mathbb{N}$, $0\le k\le n$, được nhập vào. (b) Có thể sử dụng mảng 1 chiều để lưu lại dòng trước đó mà không cần phải lưu lại tất cả.
+\end{baitoan}
+
+\begin{baitoan}[\cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, II.1, p. 447, tìm dãy con đơn điệu tăng dài nhất]
+	Cho dãy số nguyên $a = \{a_i\}_{i=1}^n = a_1,\ldots,a_n$ gồm $n\in\mathbb{N}^\star$ phần tử. 1 dãy con của $a$ là 1 cách chọn trong $a$ 1 số phần tử giữ nguyên thứ tự (có tất cả $2^n$ dãy con của 1 dãy có $n$ phần tử). Tìm dãy con đơn điệu tăng (resp., giảm, không tăng, không giảm) của $a$ có độ dài lớn nhất.
+\end{baitoan}
+
+\begin{proof}[CS solution]
+	Giả sử dãy ban đầu gồm $a[1],a[2],\ldots,a[n]$. Bổ sung vào $a$ 2 phần tử $a[0] = -\infty$ \& $a[n + 1] = \infty$ (khi viết chương trình $\pm\infty$ sẽ được cài đặt các giá trị thích hợp). Khi đó dãy con đơn điệu tăng dài nhất sẽ bắt đầu từ $a[0]$ \& kết thúc ở $a[n + 1]$. Đặt $l(i)$ là độ dài dãy con đơn điệu tăng dài nhất bắt đầu từ $a[i]$, $\forall i = 0,1,\ldots,n + 1$. Cần tính tất cả $l(i)$ này. Đáp số bài toán sẽ là dãy ứng với $l(i_0)$ có GTLN.
+	
+	{\sf Cơ sở quy hoạch động (bài toán nhỏ nhất).} Trường hợp đặc biệt, $l(n + 1)$ là độ dài dãy con đơn điệu tăng dài nhất bắt đầu tại $a[n + 1] = \infty$. Do dãy con này chỉ gồm 1 phần tử $\infty$ nên $l(n + 1) = 1$.
+	
+	{\sf Công thức truy hồi.} Cần tính $l(i)$ với $i = n,\ldots,1,0$. Giá trị $l(i)$ sẽ được tính trong điều kiện $l(i + 1),\ldots,l(n + 1)$ đã biết. Dãy con đơn điệu tăng dài nhất bắt đầu từ $a[i]$ sẽ được thành lập bằng cách lấy $a[i]$ ghép vào đầu 1 trong số các dãy con đơn điệu tăng dài nhất bắt đầu từ vị trí $a[j] > a[i]$ (để đảm bảo tính tăng) nào đó đứng sau $a[i]$ \& chọn dãy dài nhất trong số đó để ghép $a[i]$ vào đầu để đảm bảo tính dài nhất. Nên $l(i)$ được tính bằng cách xét tất cả các chỉ số $j = i + 1,\ldots,n + 1$ mà $a[j] > a[i]$, chọn ra chỉ số $j_{\max}$ có $l(j_{\max})$ lớn nhất:
+	\begin{equation*}
+		l(i) = l(j_{\max}) + 1 = \max\{l(j);i < j \le n + 1,\ a[i] < a[j]\} + 1.
+	\end{equation*}
+\end{proof}
+
+\begin{baitoan}[\cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, II.1.4.1., p. 451, bố trí phòng họp]
+	Có $n\in\mathbb{N}^\star$ cuộc họp, cuộc họp thứ $i$ bắt đầu vào thời điểm $s_i$ (start) \& kết thúc vào thời điểm $f_i$ (final). Do chỉ có 1 phòng hội thảo nên 2 cuộc họp bất kỳ sẽ được cùng bố trí phục vụ nếu khoảng thời gian làm việc của chúng chỉ giao nhau tại 1 đầu mút. Bố trí phòng họp để phục vụ được nhiều cuộc họp nhất.
+\end{baitoan}
+
+\begin{baitoan}[\cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, II.1.4.2., p. 451, cho thuê máy]
+	Trung tâm tính toán hiệu năng cao nhận được đơn đặt hàng của $n\in\mathbb{N}^\star$ khách hàng. Khách hàng $i$ muốn sử dụng máy trong khoảng thời gian từ $s_i$ (start) đến $f_i$ (final) \& thả tiền thuê là $c_i$. Bố trí lịch thuê máy để tổng số tiền thu được là lớn nhất mà thời gian sử dụng máy của 2 khách bất kỳ được phục vụ đều không giao nhau.
+\end{baitoan}
+
+\begin{baitoan}[\cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, II.1.4.3., p. 451, dãy tam giác bao nhau]
+	Cho $n\in\mathbb{N}^\star$ tam giác trên mặt phẳng. Tam giác $i$ bao tam giác $j$ nếu 3 đỉnh của tam giác $j$ đều nằm trong tam giác $i$ (có thể nằm trên cạnh). Tìm dãy tam giác bao nhau có nhiều tam giác nhất.
 \end{baitoan}
 
 %------------------------------------------------------------------------------%
-
 
 \section{CSES Problem Set}
 Link: \url{https://cses.fi/problemset/}.

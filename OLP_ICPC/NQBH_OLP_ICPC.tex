@@ -592,7 +592,7 @@ Phát biểu bài toán tối ưu{\tt/}bài toán quy hoạch:
 \end{definition}
 
 \begin{baitoan}[Fibonacci numbers -- Số Fibonacci]
-	(a) Tính dãy số Fibonacci \& dãy Lucas bằng: (i) Truy hồi $O(a^n)$ với $a\approx1.61803$. (ii) Quy hoạch động $O(n)$. (iii) Quy hoạch động cải tiến. (b) Trong mỗi thuật toán, tính cụ thể số lần gọi hàm tính $F(i)$, với $i = 0,1,\ldots,n$, số phép cộng đã thực hiện. Tính time- \& space complexities. (c) Mở rộng bài toán cho dãy số truy hồi cấp 2 với hệ số hằng $\{u_n\}_{n=1}^\infty$ được xác định bởi:
+	(a) Tính dãy số Fibonacci \& dãy Lucas bằng: (i) Truy hồi $O(a^n)$ với $a\approx1.61803$. (ii) Quy hoạch động $O(n)$. (iii) Quy hoạch động cải tiến. (b) Trong mỗi thuật toán, tính cụ thể số lần gọi hàm tính $F_i,L_i$, với $i = 0,1,\ldots,n$, số phép cộng đã thực hiện. Tính time- \& space complexities. (c) Mở rộng bài toán cho dãy số truy hồi cấp 2 với hệ số hằng $\{u_n\}_{n=1}^\infty$ được xác định bởi:
 	\begin{equation*}
 		\left\{\begin{split}
 			u_0 &= \alpha,\ u_1 = \beta,\\
@@ -608,6 +608,15 @@ Phát biểu bài toán tối ưu{\tt/}bài toán quy hoạch:
 	\end{equation*}
 	với $\alpha,\beta\in\mathbb{C}$, $a,b:\mathbb{N}_{\ge2}\to\mathbb{C}$ là 2 hàm giá trị phức cho trước.
 \end{baitoan}
+
+\begin{proof}
+	Cho $n\in\mathbb{N}$. Đặt $f(n,i)$ là số lần xuất hiện (frequency) của $F_i$ khi tính $F_n$ bằng công thức truy hồi. Dễ chứng minh bằng phương pháp quy nạp Toán học: $f(n,n - i) = F_{i + 1}$, $\forall i = 0,1,\ldots,n$.
+	\begin{itemize}
+		\item Số lần call hàm truy hồi $= \sum_{i=0}^n f_{n-i} = \sum_{i=0}^n F_{i+1} = \sum_{i=1}^{n+1} F_i = F_{n+3} - 1$.
+		\item Số lần thực hiện phép cộng $= F_{n+1} - 1$.
+		\item Tốn $n + 1$ ô nhớ để chứa $F_0,F_1,\ldots,F_n$.
+	\end{itemize}
+\end{proof}
 C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C++/Fibonacci.cpp}.
 \begin{verbatim}
 #include <iostream>
@@ -701,16 +710,26 @@ int main() {
 			\hline
 			{\tt flashback.inp} & {\tt flashback.out} \\
 			\hline
-			1 & 65 \\
-			5 3 &  \\
+			5 & 65 \\
+			5 3 & 130 \\
+			10 3 & 170 \\
+			5 4 & 2563 \\
+			11 6 & 232767 \\
+			999 6 & \\
 			\hline
 		\end{tabular}
 	\end{table}
 	\noindent(a) Mô tả thành mô hình toán học. (b) Viết chương trình {\sf C{\tt/}C++, Pascal, Python} để giải.
 \end{baitoan}
 
+\begin{proof}
+	Gọi $a(d,l)$ là số cá cá thể ở mức $l$ vào ngày $d$ ($d$: day, $l$: level). Thiết lập công thức truy hồi:
+	
+	$n(F_1 + \sum_{i=1}^k F_{2i}) = n\sum_{i=1}^k F_{2i} = nF_{2k+1}$.
+\end{proof}
+
 \begin{baitoan}[\cite{Trung_THCS_Tin}, Hà Nội HSG9 2021--2022, 5: cổ phiếu VNI, p. 37]
-	Bình mua bán cổ phiếu VNI trên thị trường chứng khoán. Giả sử giá của 1 cổ phiếu VNI trong $n\in\mathbb{N}^\star$ ngày lần lượt là $a_1,a_2,\ldots,a_n$. Biết mỗi ngày Bình chỉ thực hiện 1 trong các hoạt động:
+	Bình mua bán cổ phiếu VNI trên thị trường chứng khoán. Giả sử giá của 1 cổ phiếu VNI trong $n\in\mathbb{N}^\star$ ngày lần lượt là $a_1,a_2,\ldots,a_n$. Biết mỗi ngày Bình chỉ thực hiện 1 trong 3 hoạt động:
 	\begin{enumerate}
 		\item Mua 1 cổ phiếu VNI
 		\item Bán số lượng cổ phiếu bất kỳ mà Bình đang sở hữu
@@ -729,7 +748,7 @@ int main() {
 	\begin{itemize}
 		\item Subtask 1: có 50\% số test tương ứng $n\in[10^3],q = 1$.
 		\item Subtask 2: có 30\% số test tương ứng $n\in[10^5],q = 1$.
-		\item Subtask 3: có 20\% số test còn lạ không có ràng buộc gì thêm.
+		\item Subtask 3: có 20\% số test còn lại không có ràng buộc gì thêm.
 	\end{itemize}
 	\item {\sf Sample.}
 	\begin{table}[H]
@@ -772,9 +791,15 @@ int main() {
 			\hline
 			{\tt gift.inp} & {\tt gift.out} \\
 			\hline
-			1 & 3 \\
-			5 2 &  \\
-			4 5 6 4 8 & \\
+			4 & 3 \\
+			5 2 & 5 \\
+			4 5 6 4 8 & 4 \\
+			10 2 & 3 \\
+			4 3 6 5 7 6 9 10 8 12 & \\
+			10 3 & \\
+			4 3 6 5 7 6 9 10 8 12 & \\
+			10 4 & \\
+			4 3 6 5 7 6 9 10 8 12 & \\
 			\hline
 		\end{tabular}
 	\end{table}
@@ -816,9 +841,93 @@ int main() {
 \begin{baitoan}[\cite{Trung_THCS_Tin}, Lâm Đồng HSG9 2022--2023, 4: biểu diễn văn nghệ, p. 82]
 	Trong 1 chương trình nghệ thuật diễn ra liên tục trong $n\in\mathbb{N}^\star$ giờ, công ty X có danh sách $m\in\mathbb{N}^\star$ nghệ sĩ khác nhau có thể thuê để biểu diễn. Thời điểm bắt đầu biểu diễn được tính bằng $0$. Để đơn giản trong quản lý \& sắp xếp, các nghệ sĩ được đánh số thứ tự từ $1$ đến $m$, nghệ sĩ thứ $i\in[n]$ biểu diễn trong thời điểm $s_i$ đến thời điểm $t_i$, $0\le s_i < t_i\le n$, với tiền công là $c_i$, $0\le c_i\le10^6$.
 	\item {\sf Requirement.} Viết chương trình thuê các nghệ sĩ để bất cứ thời điểm nào cũng luôn có ít nhất 1 nghệ sĩ biểu diễn đồng thời tổng chi phí thuê là nhỏ nhất.
-	\item {\sf Input.} Vào từ file {\tt }
+	\item {\sf Input.} Vào từ file \verb|art_performance.inp| gồm:
+	\begin{itemize}
+		\item Dòng 1 chứa số bộ test $t\in\mathbb{N}^\star$.
+		\item Với mỗi bộ test:
+		\begin{itemize}
+			\item Dòng đầu tiên chứa $m,n\in[400]$.
+			\item $m$ dòng tiếp theo, mỗi dòng chứa 3 số nguyên không âm $s_i,t_i,c_i$.
+		\end{itemize}
+	\end{itemize}
+	\item {\sf Output.} Ghi ra file \verb|art_performance.out| 1 số nguyên là chi phí thuê nhỏ nhất.
+	\item {\sf Sample.}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			\verb|art_performance.inp| & \verb|art_performance.out| \\
+			\hline
+			1 & 20 \\
+			9 5 &  \\
+			0 5 25 & \\
+			1 3 18 & \\
+			3 7 21 & \\
+			4 6 38 & \\
+			7 9 20 & \\
+			\hline
+		\end{tabular}
+	\end{table}
 \end{baitoan}
 
+\begin{baitoan}[\cite{Trung_THCS_Tin}, TS10 chuyên Tin Bình Dương 2023--2024, 2: ghép tranh, p. 93]
+	Trò chơi thứ 2 của lớp 9A là trò chơi ghép tranh. Cô chủ nhiệm cho 1 bức tranh có $n\in\mathbb{N}^\star$ mảnh ghép \& $k\in\mathbb{N}^\star$, $1\le k\le n\le50$. Lần lượt từng tổ sẽ thay phiên nhau lên ghép tranh với số mảnh ghép sử dụng không vượt quá $k$. An nhận thấy phải tìm được tất cả các cách ghép tranh mới có thể chiến thắng trò chơi. Có thể có nhiều cách ghép tranh, 2 cách ghép khác nhau nếu tồn tại 1 cách ghép giúp hoàn thành được bức tranh \& bị bỏ qua ở cách kia.
+	\item {\sf Requirement.} Giúp An xác định số cách ghép tranh khác nhau để tổ của An có thể ghép hoàn thành bức tranh.
+	\item {\sf Input.} Vào từ file {\tt picture.inp} gồm:
+	\begin{itemize}
+		\item Dòng 1 chứa số bộ test $t\in\mathbb{N}^\star$.
+		\item Mỗi bộ test gồm 1 dòng chứa $n,k\in\mathbb{N}^\star$.
+	\end{itemize}
+	\item {\sf Output.} Với mỗi bộ test, ghi ra file {\tt picture.out} 1 số nguyên duy nhất là số cách ghép tranh khác nhau.
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			{\tt picture.inp} & {\tt picture.out} \\
+			\hline
+			1 & 7 \\
+			4 3 & \\
+			\hline
+		\end{tabular}
+	\end{table}
+\end{baitoan}
+
+\begin{baitoan}[\cite{Trung_THCS_Tin}, Vĩnh Phúc HSG9 2022--2023, 2: lật ký tự, p. 210]
+	Cho xâu $S$ gồm $n\in\mathbb{N}^\star$ ký tự \verb|. #| được đánh số từ $1$ đến $n$. Thao tác lật ký tự của xâu được định nghĩa như sau:
+	\begin{itemize}
+		\item Chọn $i\in[n]$.
+		\item Nếu ký tự thứ $i$ của xâu $S$ là \verb|.| thì nó sẽ được thay thế bằng \verb|#|. Ngược lại, nếu là \verb|#| thì sẽ được thay thế bằng \verb|.|.
+	\end{itemize}
+	\item {\sf Requirement.} Lập trình tính xem cần thực hiện ít nhất bao nhiêu thao tác để trong xâu không có ký tự \verb|.| nào ở ngay bên phải ký tự \verb|#|.
+	\item {\sf Input.} Vào từ file {\tt pchar.inp}: Dòng 1 chứa số bộ test $t\in\mathbb{N}^\star$. Với mỗi bộ test:
+	\begin{itemize}
+		\item Dòng 1 ghi $n\in[200000]$ là số lượng ký tự xâu trong $S$.
+		\item Dòng 2 ghi xâu $S$ gồm $n$ ký tự \verb|. #|.
+	\end{itemize}
+	\item {\sf Subtask.}
+	\begin{itemize}
+		\item Subtask 1: Ràng buộc $1\le n\le2000$
+		\item Subtask 2: Không có ràng buộc bổ sung.
+	\end{itemize}
+	\item {\sf Output.} Ghi ra file {\tt pchar.out} 1 số nguyên duy nhất là số thao tác ít nhất cần thực hiện để xâu $S$ không có bất kỳ thứ tự \verb|.| nào ở ngay bên phải ký tự \verb|#|.
+	\item {\sf Sample.}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			{\tt pchar.inp} & {\tt pchar.out} \\
+			\hline
+			3 & 1 \\
+			3 & 2 \\
+			\verb|#.#| & 0 \\
+			5 & \\
+			\verb|#.##.| & \\
+			9 & \\
+			\verb|.........| & \\
+			\hline
+		\end{tabular}
+	\end{table}
+\end{baitoan}
 
 \begin{baitoan}[\cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, p. 446, tính $C_n^k$]
 	(a) Viết chương trình {\sf C{\tt/}C++, Python} để tính $C_n^k$ -- số tổ hợp chập $k$ của $n$ phần tử bằng công thức truy hồi nhờ đẳng thức Pascal:

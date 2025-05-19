@@ -571,8 +571,42 @@ Phát biểu bài toán tối ưu{\tt/}bài toán quy hoạch:
 	&\min_{x^2 + y^2\le R^2} x + y = -\sqrt{2},\ {\arg\min}_{x^2 + y^2\le R^2} x + y = \left(-\frac{1}{\sqrt{2}},-\frac{1}{\sqrt{2}}\right),
 \end{align*}
 
+\begin{definition}[Fibonacci sequences]
+	{\sf Fibonacci sequences} are defined by
+	\begin{equation*}
+		\left\{\begin{split}
+			F_0 &= 0,\ F_1 = 1,\\
+			F_n &= F_{n - 1} + F_{n - 2},\ \forall n\in\mathbb{N},\,n\ge2.
+		\end{split}\right.
+	\end{equation*}
+\end{definition}
+
+\begin{definition}[Lucas sequences]
+	The sequence of {\sf Lucas numbers} are defined by
+	\begin{equation*}
+		\left\{\begin{split}
+			L_0 &= 2,\ L_1 = 1,\\
+			L_n &= L_{n - 1} + L_{n - 2},\ \forall n\in\mathbb{N},\,n\ge2.
+		\end{split}\right.
+	\end{equation*}
+\end{definition}
+
 \begin{baitoan}[Fibonacci numbers -- Số Fibonacci]
-	Tính dãy số Fibonacci bằng: (a) Truy hồi $O(a^n)$ với $a\approx1.61803$. (b) Quy hoạch động $O(n)$. (c) Quy hoạch động cải tiến.
+	(a) Tính dãy số Fibonacci \& dãy Lucas bằng: (i) Truy hồi $O(a^n)$ với $a\approx1.61803$. (ii) Quy hoạch động $O(n)$. (iii) Quy hoạch động cải tiến. (b) Trong mỗi thuật toán, tính cụ thể số lần gọi hàm tính $F(i)$, với $i = 0,1,\ldots,n$, số phép cộng đã thực hiện. Tính time- \& space complexities. (c) Mở rộng bài toán cho dãy số truy hồi cấp 2 với hệ số hằng $\{u_n\}_{n=1}^\infty$ được xác định bởi:
+	\begin{equation*}
+		\left\{\begin{split}
+			u_0 &= \alpha,\ u_1 = \beta,\\
+			u_{n+2} &= au_{n+1} + bu_n,\ \forall n\in\mathbb{N},
+		\end{split}\right.
+	\end{equation*}
+	với $a,b,\alpha,\beta\in\mathbb{C}$ cho trước. (d) Mở rộng bài toán cho dãy số truy hồi cấp 2 với hệ số thay đổi $\{u_n\}_{n=1}^\infty$ được xác định bởi:
+	\begin{equation*}
+		\left\{\begin{split}
+			u_0 &= \alpha,\ u_1 = \beta,\\
+			u_n &= a(n)u_{n-1} + b(n)u_{n-2},\ \forall n\in\mathbb{N},\,n\ge2.
+		\end{split}\right.
+	\end{equation*}
+	với $\alpha,\beta\in\mathbb{C}$, $a,b:\mathbb{N}_{\ge2}\to\mathbb{C}$ là 2 hàm giá trị phức cho trước.
 \end{baitoan}
 C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C++/Fibonacci.cpp}.
 \begin{verbatim}
@@ -581,7 +615,7 @@ using namespace std;
 const long nMAX = 10000;
 
 long fib(long i) {
-    if (i == 0 || i == 1)
+    if (i == 1 || i == 2)
         return 1;
     else
         return fib(i - 1) + fib(i - 2);
@@ -590,7 +624,7 @@ long fib(long i) {
 // \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, p. 443
 long fib_recurrence(long n) {
     long ans, Fn_1, Fn_2;
-    if (n <= 1)
+    if (n <= 2)
         ans = 1;
     else {
         Fn_1 = fib_recurrence(n - 1);
@@ -603,7 +637,8 @@ long fib_recurrence(long n) {
 // \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, p. 443
 long fib_dynamic(long n) {
     long F[nMAX + 1];
-    F[0] = F[1] = 1;
+    F[0] = 0;
+    F[1] = F[2] = 1;
     for (int i = 2; i <=n; ++i)
         F[i] = F[i - 1] + F[i - 2];
     return F[n];
@@ -643,6 +678,82 @@ int main() {
     cout << "\n";
 }
 \end{verbatim}
+
+\begin{baitoan}[\cite{Trung_THCS_Tin}, Đăk Nông THCS 2022--2023, 4., virus]
+	Flashback là 1 loại virus máy tính sinh sản rất nhanh khi gặp môi trường thuận lợi \& là 1 loại virus nguy hiểm, có tốc độ lây lan nhanh trong môi trường mạng. Flashback lần đầu được phát hiện vào năm 2011 bởi công ty diệt virus Intego dưới dạng 1 bản cài đặt flash giả \& chúng sinh sản theo quy luật:
+	\begin{itemize}
+		\item Ngày đầu tiên (ngày thứ $0$) có $n$ cá thể ở mức $1$.
+		\item Ở mỗi ngày tiếp theo, mỗi cá thể mức $i$ sinh ra $i$ cá thể mức $1$, các cá thể mới sẽ sinh sôi, phát triển từ ngày hôm sau.
+		\item Bản thân cá thể thứ $i$ sẽ phát triển thành mức $i + 1$ \& chu kỳ phát triển trong ngày chấm dứt.
+	\end{itemize}
+	\item {\sf Requirement.} Xác định sau $k$ ngày trong môi trường có bao nhiêu cá thể.
+	\item {\sf Input.} Vào từ file {\tt flashback.inp} gồm: Dòng 1 chứa số bộ test $t\in\mathbb{N}^\star$. $t$ dòng tiếp theo, mỗi dòng chứa $n,k\in\mathbb{N}^\star$, ràng buộc $n\in[1000],k\le[10^5]$.
+	\item {\sf Output.} Ghi ra file {\tt flashback.out} 1 số nguyên duy nhất là số dư của kết quả tìm được chia cho $10^9 + 7$.
+	\item {\sf Limit.}
+	\begin{itemize}
+		\item Subtask 1: có 40\% số test ứng với $n\le100,k\le1000$.
+		\item Subtask 2: có 60\% số test ứng với $n\le1000,k\le10^5$.
+	\end{itemize}
+	\item {\sf Sample.}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			{\tt flashback.inp} & {\tt flashback.out} \\
+			\hline
+			1 & 65 \\
+			5 3 &  \\
+			\hline
+		\end{tabular}
+	\end{table}
+	\noindent(a) Mô tả thành mô hình toán học. (b) Viết chương trình {\sf C{\tt/}C++, Pascal, Python} để giải.
+\end{baitoan}
+
+\begin{baitoan}[\cite{Trung_THCS_Tin}, p. 37, Hà Nội HSG9 2021--2022]
+	Bình mua bán cổ phiếu VNI trên thị trường chứng khoán. Giả sử giá của 1 cổ phiếu VNI trong $n\in\mathbb{N}^\star$ ngày lần lượt là $a_1,a_2,\ldots,a_n$. Biết mỗi ngày Bình chỉ thực hiện 1 trong các hoạt động:
+	\begin{enumerate}
+		\item Mua 1 cổ phiếu VNI
+		\item Bán số lượng cổ phiếu bất kỳ mà Bình đang sở hữu
+		\item Không thực hiện bất kỳ giao dịch nào.
+	\end{enumerate}
+	\item {\sf Requirement.} Bình thực hiện mua bán cổ phiếu VNI như thế nào để thu được lợi nhuận lớn nhất nếu Bình tham gia mua bán bắt đầu từ ngày thứ $t\in\mathbb{N}^\star$ cho trước?
+	\item {\sf Input.} Đọc từ file {\tt vni.inp} gồm:
+	\begin{itemize}
+		\item Dòng 1: $n\in[10^5]$ là số ngày biết giá cổ phiếu.
+		\item Dòng 2: gồm $n$ số nguyên dương $a_1,a_2,\ldots,a_n$ tương ứng là giá cổ phiếu VNI trong từng ngày $a_i\in[10^9]$, $1\le i\le n$.
+		\item Dòng 3: $q\in[10^5]$ là số lượng truy vấn.
+		\item $q$ dòng tiếp theo, mỗi dòng gồm $t\in[n]$ thể hiện cho ngày đầu tiên mà Bình tham gia mua bán cổ phiếu VNI.
+	\end{itemize}
+	\item {\sf Output.} Ghi ra file {\tt vni.out} gồm $q$ dòng, mỗi dòng 1 số nguyên duy nhất là lợi nhuận lớn nhất mà Bình thu được ở mỗi truy vấn tương ứng.
+	\item {\sf Limit.}
+	\begin{itemize}
+		\item Subtask 1: có 50\% số test tương ứng $n\in[10^3],q = 1$.
+		\item Subtask 2: có 30\% số test tương ứng $n\in[10^5],q = 1$.
+		\item Subtask 3: có 20\% số test còn lạ không có ràng buộc gì thêm.
+	\end{itemize}
+	\item {\sf Sample.}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			{\tt flashback.inp} & {\tt flashback.out} \\
+			\hline
+			4 & 7 \\
+			1 2 5 4 & 0 \\
+			2 & \\
+			1 & \\
+			3 & \\
+			\hline
+		\end{tabular}
+	\end{table}
+\end{baitoan}
+
+\begin{baitoan}[\cite{Trung_THCS_Tin}, BRVT HSG9 2022--2023, p. 57, đố vui tin học]
+	Để tổng kết phát thưởng cho cuộc thi Đố vui Tin học. Ban tổ chức có $n\in\mathbb{N}^\star$ phần quà được đánh số thứ tự từ $1$ đến $n$, phần quà thứ $i$ có giá trị là $a_i$. Ban tổ chức yêu cầu học sinh chọn các phần quà theo quy tắc:
+	\begin{itemize}
+		\item Phần quà 
+	\end{itemize}
+\end{baitoan}
 
 \begin{baitoan}[\cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, p. 446, tính $C_n^k$]
 	(a) Viết chương trình {\sf C{\tt/}C++, Python} để tính $C_n^k$ -- số tổ hợp chập $k$ của $n$ phần tử bằng công thức truy hồi nhờ đẳng thức Pascal:

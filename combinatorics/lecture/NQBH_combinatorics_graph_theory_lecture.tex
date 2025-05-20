@@ -427,7 +427,6 @@ The combinatorial version Thm. \ref{thm: inclusion-exclusion: combinatorial vers
 
 %------------------------------------------------------------------------------%
 
-
 \subsection{Problems on inclusion--exclusion principle}
 
 \begin{problem}[Counting derangements -- đếm số quân bài đánh tráo]
@@ -456,9 +455,37 @@ The combinatorial version Thm. \ref{thm: inclusion-exclusion: combinatorial vers
 \end{baitoan}
 
 \begin{baitoan}[+0.5]
-	Cho $n\in\mathbb{N}^\star$, $k\in\mathbb{N}$, $0\le k\le n$. Viết chương trình {\sf C{\tt/}C++, Pascal, Python} để tính \& cho biết giá trị nhỏ nhất của $n$ gặp lỗi overflow: (a) $P_n = n!$. (b) $A_n^k$. (c) $C_n^k$. (d) Số Catalan thứ $n$.
-	
+	Cho $n\in\mathbb{N}^\star$, $k\in\mathbb{N}$, $0\le k\le n$. Viết chương trình {\sf C{\tt/}C++, Pascal, Python} để tính \& cho biết giá trị nhỏ nhất của $n$ gặp lỗi overflow: (a) $P_n = n!$. (b) $A_n^k$. (c) $C_n^k$. (d) Số Catalan thứ $n$.	
 \end{baitoan}
+
+\subsection{Euler candy problem -- Bài toán chia kẹo Euler}
+
+\begin{baitoan}[Euler candy problem -- Bài toán chia kẹo Euler]
+	Cho $m,n\in\mathbb{N}^\star$. Xét phương trình nghiệm nguyên
+	\begin{equation}
+		\label{Euler candy}
+		\sum_{i=1}^n x_i = m.
+	\end{equation}
+	(a) Đếm số nghiệm nguyên dương của phương trình \eqref{Euler candy}. (b) Đếm số nghiệm nguyên không âm của phương trình \eqref{Euler candy}. (c) Đếm số nghiệm nguyên của phương trình
+	\begin{equation*}
+		\sum_{i=1}^m x_i + \sum_{i=1}^n y_i = p\mbox{ s.t. }\left\{\begin{split}
+			x_i&\ge1,\ \forall i\in[m],\\
+			y_i&\ge0,\ \forall i\in[n],
+		\end{split}\right.
+	\end{equation*}
+	(d) Đếm số nghiệm nguyên của phương trình
+	\begin{equation*}
+		\sum_{i=1}^n x_i = m\mbox{ s.t. } x_i\ge m_i,\ \forall i\in[n].
+	\end{equation*}
+	(e) Đếm số nghiệm nguyên của phương trình
+	\begin{equation*}
+		\sum_{i=1}^n x_i = m\mbox{ s.t. } m_i\le x_i\le M_i,\ \forall i\in[n].
+	\end{equation*}
+\end{baitoan}
+
+\begin{proof}
+	(a) $C_{m-1}^{n-1}$. (b) $C_{p + n - 1}^{m + n - 1}$. (d) $C_{m + n - 1 - \sum_{i=1}^n m_i}$.
+\end{proof}
 
 %------------------------------------------------------------------------------%
 
@@ -551,6 +578,80 @@ Given an infinite sequence of propositions $\{P_n\}_{n=1}^\infty = P_1,P_2,\ldot
 	\end{equation*}
 \end{definition}
 
+\begin{baitoan}[Fibonacci numbers -- Số Fibonacci]
+	Tính dãy số Fibonacci bằng: (a) Truy hồi $O(a^n)$ với $a\approx1.61803$. (b) Quy hoạch động $O(n)$. (c) Quy hoạch động cải tiến. Trong mỗi thuật toán, tính cụ thể số lần gọi hàm tính $F(i)$, với $i = 0,1,\ldots,n$, số phép cộng đã thực hiện. Tính time- \& space complexities.
+\end{baitoan}
+C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C++/Fibonacci.cpp}.
+\begin{verbatim}
+	#include <iostream>
+	using namespace std;
+	const long nMAX = 10000;
+	
+	long fib(long i) {
+		if (i == 1 || i == 2)
+		return 1;
+		else
+		return fib(i - 1) + fib(i - 2);
+	}
+	
+	// \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, p. 443
+	long fib_recurrence(long n) {
+		long ans, Fn_1, Fn_2;
+		if (n <= 2)
+		ans = 1;
+		else {
+			Fn_1 = fib_recurrence(n - 1);
+			Fn_2 = fib_recurrence(n - 2);
+			ans = Fn_1 + Fn_2;
+		}
+		return ans;
+	}
+	
+	// \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, p. 443
+	long fib_dynamic(long n) {
+		long F[nMAX + 1];
+		F[0] = 0;
+		F[1] = F[2] = 1;
+		for (int i = 2; i <=n; ++i)
+		F[i] = F[i - 1] + F[i - 2];
+		return F[n];
+	}
+	
+	// \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, p. 443
+	long fib_dynamic_improved(long n) {
+		long lastF = 1, F = 1;
+		int i = 1;
+		while (i < n) {
+			F += lastF;
+			lastF = F - lastF;
+			++i;
+		}
+		return F;
+	}
+	
+	int main() {
+		long n, i;
+		cin >> n;
+		cout << "Fibonacci sequence of length " << n << ":\n";
+		
+		for (i = 0; i <= n; ++i)
+		cout << fib(i) << " ";
+		cout << "\n";
+		
+		for (i = 0; i <= n; ++i)
+		cout << fib_recurrence(i) << " ";
+		cout << "\n";
+		
+		for (i = 0; i <= n; ++i)
+		cout << fib_dynamic(i) << " ";
+		cout << "\n";
+		
+		for (i = 0; i <= n; ++i)
+		cout << fib_dynamic_improved(i) << " ";
+		cout << "\n";
+	}
+\end{verbatim}
+
 \begin{definition}[Lucas sequences]
 	The sequence of {\sf Lucas numbers} are defined by
 	\begin{equation*}
@@ -580,7 +681,58 @@ Given an infinite sequence of propositions $\{P_n\}_{n=1}^\infty = P_1,P_2,\ldot
 \end{problem}
 
 \begin{proof}
+	$C_{n - m + 1}^m$.
 	
+	C++:
+\begin{verbatim}
+#include<bits/stdc++.h>
+using namespace std;
+
+long long total = 0;
+
+long long nCk(int n, int k) {
+    if (k>n||k<0) return 0;
+    long long res=1;
+    for(int i=1; i<=k; i++) {
+        res*=(n-i+1);
+        res/=i;
+    }
+    return res;
+}
+
+void generateSeq(int n, int m, int pos, int last, vector<int>& seq, int cnt0, int cnt1) {
+    if (cnt0>m || cnt1>n-m) return;
+    if (pos==n) {
+        if(cnt0==m && cnt1==n-m) {
+            for(int x:seq) cout<<x<<" ";
+            cout<<"\n";
+            total++;
+        }
+    }
+	
+    seq.push_back(1);
+    generateSeq(n, m, pos+1, 1, seq, cnt0, cnt1+1);
+    seq.pop_back();
+	
+    if(last!=0) {
+        seq.push_back(0);
+        generateSeq(n, m, pos+1, 0, seq, cnt0+1, cnt1);
+        seq.pop_back();
+    }
+}
+
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n, m;
+    cin>>n>>m;
+    vector<int> seq;
+    generateSeq(n, m, 0, -1, seq, 0, 0);
+    cout<<"Tong so day hop le: "<<total<<"\n";
+    cout<<"(n-m+1)Cm = "<<nCk(n-m+1, m);
+}
+\end{verbatim}
 \end{proof}
 
 \begin{problem}[\cite{Shahriari2022}, p. 3]
@@ -833,6 +985,10 @@ Here we are concerned with formal power series, \& questions of convergence do n
 ``In mathematics \& computer science, {\it graph theory} is the study of \href{https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)}{\it graphs}, which are \href{https://en.wikipedia.org/wiki/Mathematical_structures}{mathematical structures} used to model pairwise relations between objects. A graph in this context is made up of \href{https://en.wikipedia.org/wiki/Vertex_(graph_theory)}{\it vertices} (also called {\it nodes} or {\it points}) which are connected by \href{https://en.wikipedia.org/wiki/Glossary_of_graph_theory_terms#edge}{\it edges} (also called {\it arcs, links} or {\it lines}). A distinction is made between {\it undirected graphs}, where edges link 2 vertices symmetrically, \& {\it directed graphs}, where edges link 2 vertices asymmetrically. Graphs are 1 of the principal objects of study in \href{https://en.wikipedia.org/wiki/Discrete_mathematics}{discrete mathematics}.'' -- \href{https://en.wikipedia.org/wiki/Graph_theory}{Wikipedia{\tt/}graph theory}.
 
 Graphs are such a good way of organizing certain kinds of information \& formulating problems in discrete mathematics in general \& combinatorics \& related fields of mathematics in particular. Intuitively, a graph is a set of dots -- called {\it vertices} -- where some of the dots are connected to some of the other dots. The connections are called {\it edges}. Each edge of a graph connects just 2 vertices \& so it can be represented as a pair of vertices.
+
+-- Đồ thị là 1 cách rất hay để sắp xếp một số loại thông tin \& xây dựng các bài toán trong toán học rời rạc nói chung \& tổ hợp \& các lĩnh vực toán học liên quan nói riêng. Theo trực giác, đồ thị là một tập hợp các chấm -- được gọi là các {\it đỉnh} -- trong đó một số chấm được kết nối với một số chấm khác. Các kết nối được gọi là các {\it cạnh}. Mỗi cạnh của đồ thị chỉ kết nối 2 đỉnh \& do đó nó có thể được biểu diễn dưới dạng một cặp đỉnh.
+
+``Đồ thị là 1 mô hình toán học diễn tả 1 cách rất tường minh những mối quan hệ 2 ngôi (1 chiều cũng như 2 chiều) giữa các đối tượng cần được xem xét. Chính vì vậy, đồ thị được sử dụng rộng rãi trong rất nhiều lĩnh vực khác nhau; e.g., khoa học, kỹ thuật, kinh tế, xã hội, etc.'' -- \cite[Sect. 0.1.5, p. 13]{Thanh_computational_complexity_theory}
 
 \subsection{Trees \& graphs: Some basic concepts -- Cây \& đồ thị: Vài khái niệm cơ bản}
 Definitions in graph theory vary. For a comprehensive list of concepts in graph theory, see, e.g., \href{https://en.wikipedia.org/wiki/Glossary_of_graph_theory}{Wikipedia{\tt/}glossary of graph theory}. A graph consists of a set of vertices and
@@ -1177,7 +1333,6 @@ Chú ý chiều ngược lại chưa chắc đúng:
 			7 7 6 5 4 4 4 3 2 &  \\
 			10 &  \\
 			7 5 5 4 3 3 3 3 3 2 &  \\
-			
 			\hline
 		\end{tabular}
 	\end{table}
@@ -1185,8 +1340,8 @@ Chú ý chiều ngược lại chưa chắc đúng:
 
 \begin{proof}
 	\begin{itemize}
-		\item Input: 
-		\item Output:
+		\item Input: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/combinatorics/input}.
+		\item Output: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/combinatorics/output}.
 		\item Python code:
 		\begin{itemize}
 			\item LDL's Havel--Hakimi algorithm Python code: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/Python/LDL_Havel_Hakimi_alg.py}.

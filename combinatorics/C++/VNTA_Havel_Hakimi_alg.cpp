@@ -27,7 +27,8 @@ bool check(vector<int>&d) {
         for (int i=0; i<cur; i++) d[i]--;
         if (allZero(d)) {
             print(d);
-            return true;}
+            return true;
+        }
     }
 }
 

@@ -754,6 +754,10 @@ In the presence of a precedence relation one might in addition assume {\it time 
 \begin{itemize}
 	\item {\tt rcrc}: Also known as Recirculation or flexible job shop. The promise on $\mu$ is lifted \& for some pairs $k\ne k'$ we might have $\mu_{kj} = \mu_{k'j}$. I.e., it is possible for different operations of the same job to be assigned to the same machine.
 	\item {\tt no-wait}: The operation $O_{k+1,i}$ must start exactly  when operation $O_{k,i}$ completes. I.e., once 1 operation of a job finishes, the next operation must begin immediately. Sometimes also denoted as {\tt nwt}.
+	\item {\tt no-idle}: No machine may ever be idle between the start of its 1st execution to the end of its last execution.
+	\item ${\rm size}_j$: Multiprocessor tasks on identical parallel machines. The execution of job $j$ is done simultaneously on ${\rm size}_j$ parallel machines.
+	\item ${\rm fix}_j$: Multiprocessor tasks. Every job $j$ is given with a set of machines ${\rm fix}_j\subset[m]$, \& needs simultaneously all these machines for execution. Sometimes also denoted by `MPT'.
+	\item $M_j$: Multipurpose machines. Every job $j$ needs to be scheduled on 1 machine out of a given set $M_j\subset[m]$. Sometimes also denoted by $M_j$.
 \end{itemize}
 
 %------------------------------------------------------------------------------%
@@ -770,6 +774,20 @@ Usually the goal is to minimize some objective value. 1 difference is the notati
 	\item $E_j$: \href{https://en.wikipedia.org/wiki/Earliness_(scheduling)}{Earliness}. Every job $j$ is given a due date $d_j$. The earliness of job $j$ is defined as $E_j = \max\{0,d_j - C_j\} = (d_j - C_j)_+$. This objective is important for {\it just-in-time scheduling}.
 \end{itemize}
 There are also variants with \href{https://en.wikipedia.org/wiki/Multi-objective_optimization}{multiple objectives}, but they are much less studied.
+
+Here are some examples for problems defined using the above notation.
+\begin{itemize}
+	\item $P_2\parallel C_{\max}$: assigning each of $n$ given jobs to 1 of the 2 identical machines so to minimize the maximum total processing time over the machines. This is an optimization version of the \href{https://en.wikipedia.org/wiki/Partition_problem}{partition problem}.
+	\item $1|{\rm prec}|L_{\max}$: assigning to a single machine, processes with general precedence constraint, minimizing maximum lateness.
+	\item ${\rm R}|{\rm pmtn}|\sum C_i$: assigning tasks to a variable number of unrelated parallel machines, allowing preemption, minimizing total completion time.
+	\item ${\rm J}3|p_{ij} = 1|C_{\max}$: a 3-machine job shop problem with unit processing times, where the goal is to minimize the maximum completion time.
+	\item $P|{\rm size}_j|C_{\max}$: assigning jobs to $m$ parallel identical machines, where each job comes with a number of machines on which it must be scheduled at the same time, minimizing maximum completion time. See \href{https://en.wikipedia.org/wiki/Parallel_task_scheduling}{parallel task scheduling}.
+\end{itemize}
+Other variants of optimal job scheduling:
+\begin{itemize}
+	\item All variants surveyed above are {\it deterministic} in that all data is known to the planner. There are also {\it stochastic} variants, in which the data is not known in advance, or can perturb randomly.
+	\item In a {\it load balancing game}, each job belongs to a strategic agent, who can decide where to schedule his job. The \href{https://en.wikipedia.org/wiki/Nash_equilibrium}{Nash equilibrium} in this game may not be optimal. {\sc Aumann \& Dombb} assess the inefficiency of equilibrium in several load-balancing games.
+\end{itemize}
 
 %------------------------------------------------------------------------------%
 

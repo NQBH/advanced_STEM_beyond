@@ -17,16 +17,16 @@ void fib(long n, long k) {
     }
     ans *= n;
     ans %= mod;
-    cout << "TA: " << ans << endl;
+    cout << ans << endl;
 }
 
 int main(){
     KhangGPT40_TramAnhGrok3;
     int t; cin >> t;
     while(t--) {
-        int n, k; cin >> n >> k;
+        int n, k;
+        cin >> n >> k;
         fib(n, k);
     }
-
     return 0;
 }

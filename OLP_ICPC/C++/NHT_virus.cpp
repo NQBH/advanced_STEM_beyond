@@ -15,13 +15,12 @@ int main() {
         fib[i] = (fib[i - 1] + fib[i - 2]) % MOD;
     }
 
-    int T;
-    cin >> T;
-    while(T--) {
+    int t;
+    cin >> t;
+    while(t--) {
         int n, k;
         cin >> n >> k;
-        cout << n*fib[2*k+1] << '\n';
+        cout << n * fib[2*k + 1] << '\n';
     }
-
     return 0;
 }

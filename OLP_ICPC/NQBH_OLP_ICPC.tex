@@ -557,18 +557,19 @@ Difference equations are used in a variety of contexts, e.g. in \href{https://en
 \section{Dynamic Programming -- Quy Hoạch Động}
 \textbf{\textsf{Resource -- Tài nguyên.}}
 \begin{enumerate}
+	\item \href{https://en.wikipedia.org/wiki/Dynamic_programming}{Wikipedia{\tt/}dynamic programming}.
 	\item \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}. {\sc Trần Đan Thư, Nguyễn Thanh Phương, Đinh Bá Tiến, Trần Minh Triết, Đặng Bình Phương}. {\it Kỹ Thuật Lập Trình}. Chap. 9: Kỹ Thuật Quy Hoạch Động.
 	\item \cite{Bertsekas2005,Bertsekas2017}. {\sc Dimitri P. Bertsekas}. {\it Dynamic Programming \& Optimal Control. Vol. I}. 3e. 4e (can't download yet).
 	\item \cite{Bertsekas2007,Bertsekas2012} {\sc Dimitri P. Bertsekas}. {\it Dynamic Programming \& Optimal Control. Vol. II}. 3e. 4e (can't download yet).
 \end{enumerate}
 
 \begin{baitoan}[\cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, p. 441]
-	(a) Tìm $(x,y)\in\mathbb{R}^2$ thỏa $x^2 + y^2\le1$ để $x + y$ đạt {\rm GTNN, GTLN}. (b) Tìm $(x,y)\in\mathbb{R}^2$ thỏa $x^2 + y^2\le R^2$ để $x + y$ đạt {\rm GTNN, GTLN} với $R\in(0,\infty)$. (c) Phát biểu ý nghĩa hình học của bài toán.
+	(a) Tìm $(x,y)\in\mathbb{R}^2$ thỏa $x^2 + y^2\le1$ để $x + y$ đạt {\rm GTNN, GTLN}. (b) Tìm $(x,y)\in\mathbb{R}^2$ thỏa $x^2 + y^2\le r^2$ để $x + y$ đạt {\rm GTNN, GTLN} với $r\in(0,\infty)$. (c) Phát biểu ý nghĩa hình học của bài toán.
 \end{baitoan}
 Phát biểu bài toán tối ưu{\tt/}bài toán quy hoạch:
 \begin{align*}
-	&\max_{x^2 + y^2\le R^2} x + y = \sqrt{2},\ {\arg\max}_{x^2 + y^2\le R^2} x + y = \left(\frac{1}{\sqrt{2}},\frac{1}{\sqrt{2}}\right),\\
-	&\min_{x^2 + y^2\le R^2} x + y = -\sqrt{2},\ {\arg\min}_{x^2 + y^2\le R^2} x + y = \left(-\frac{1}{\sqrt{2}},-\frac{1}{\sqrt{2}}\right),
+	&\max_{x^2 + y^2\le r^2} x + y = \sqrt{2},\ {\arg\max}_{x^2 + y^2\le r^2} x + y = \left(\frac{1}{\sqrt{2}},\frac{1}{\sqrt{2}}\right),\\
+	&\min_{x^2 + y^2\le r^2} x + y = -\sqrt{2},\ {\arg\min}_{x^2 + y^2\le r^2} x + y = \left(-\frac{1}{\sqrt{2}},-\frac{1}{\sqrt{2}}\right),
 \end{align*}
 
 \begin{definition}[Fibonacci sequences]
@@ -725,8 +726,46 @@ int main() {
 \begin{proof}
 	Gọi $a(d,l)$ là số cá cá thể ở mức $l$ vào ngày $d$ ($d$: day, $l$: level). Thiết lập công thức truy hồi:
 	
-	$n(F_1 + \sum_{i=1}^k F_{2i}) = n\sum_{i=1}^k F_{2i} = nF_{2k+1}$.
+	Kết quả cuối cùng: $n(F_1 + \sum_{i=1}^k F_{2i}) = n\sum_{i=1}^k F_{2i} = nF_{2k+1}$.
+	
+	C++ codes:
+	\begin{itemize}
+		\item DAK's C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C%2B%2B/DAK_virus.cpp}.
+\begin{verbatim}
+
+\end{verbatim}
+		\item NHT's C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C%2B%2B/NHT_virus.cpp}.
+\begin{verbatim}
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+
+const int MOD = 1e9 + 7;
+int fib[2000009];   
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+	
+    fib[0] = 0;
+    fib[1] = 1; 
+    for(int i = 2; i <= 200005; i++) {
+        fib[i] = (fib[i - 1] + fib[i - 2]) % MOD;
+    }
+	
+    int T;
+    cin >> T;
+    while(T--) {
+        int n, k;
+        cin >> n >> k;
+        cout << n*fib[2*k+1] << '\n';
+    }
+    return 0;
+}
+\end{verbatim}
+	\end{itemize}
 \end{proof}
+
 
 \begin{baitoan}[\cite{Trung_THCS_Tin}, Hà Nội HSG9 2021--2022, 5: cổ phiếu VNI, p. 37]
 	Bình mua bán cổ phiếu VNI trên thị trường chứng khoán. Giả sử giá của 1 cổ phiếu VNI trong $n\in\mathbb{N}^\star$ ngày lần lượt là $a_1,a_2,\ldots,a_n$. Biết mỗi ngày Bình chỉ thực hiện 1 trong 3 hoạt động:
@@ -846,7 +885,7 @@ int main() {
 		\item Dòng 1 chứa số bộ test $t\in\mathbb{N}^\star$.
 		\item Với mỗi bộ test:
 		\begin{itemize}
-			\item Dòng đầu tiên chứa $m,n\in[400]$.
+			\item Dòng đầu tiên chứa $n,m\in[400]$.
 			\item $m$ dòng tiếp theo, mỗi dòng chứa 3 số nguyên không âm $s_i,t_i,c_i$.
 		\end{itemize}
 	\end{itemize}
@@ -927,6 +966,21 @@ int main() {
 			\hline
 		\end{tabular}
 	\end{table}
+\end{baitoan}
+
+\begin{dinhnghia}[Dãy phần tử cực trị của 1 dãy số thực cho trước]
+	Cho dãy số thực $\{a_i\}_{i=1}^n$. {\rm Dãy phần tử lớn nhất} của dãy số thực $\{a_i\}_{i=1}^n$ được định nghĩa bởi:
+	\begin{equation*}
+		a_i^{\max}\coloneqq\max_{i\le j\le n} a_j.
+	\end{equation*}
+	Tương tự, {\rm dãy phần tử nhỏ nhất} của dãy số thực $\{a_i\}_{i=1}^n$ được định nghĩa bởi:
+	\begin{equation*}
+		a_i^{\min}\coloneqq\min_{i\le j\le n} a_j.
+	\end{equation*}
+\end{dinhnghia}
+
+\begin{baitoan}[\cite{Trung_HSG_THPT_Tin}, HSG12 Nam Định 2020--2021, 4: work, pp. 21--2]
+	Trong 1 dây chuyền làm việc của công ty có $n$ công nhân làm $n$ việc. Người ta đánh số cho công nhân từ $1$ đến $n$ theo thứ tự đứng trong dây chuyền. Thời gian hoàn thành 1 công việc của người thứ $i$ là $t_i$ phút. Mỗi người cần làm xong công việc của mình nhưng được quyền làm tối đa $2$ việc. Vì thế họ có thể phối hợp với người đứng ngay trước mình cùng làm, nếu người thứ $i$ \& người thứ $i + 1$ phối hợp thì thời gian làm xong việc cho $2$ người là $p_i$.
 \end{baitoan}
 
 \begin{baitoan}[\cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, p. 446, tính $C_n^k$]

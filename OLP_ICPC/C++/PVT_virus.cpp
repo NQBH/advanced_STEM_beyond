@@ -7,8 +7,8 @@
 using namespace std;
 
 void solve() {
-    int T; cin >> T;
-    while(T--) {
+    int t; cin >> t;
+    while(t--) {
         int n, k; cin >> n >> k;
         int a[100005];
         for(int i = 0; i <= k+1; ++i) a[i] = 0;
@@ -23,13 +23,12 @@ void solve() {
         }
         int sum = 0;
         for(int i = 1; i <= k+1; ++i) sum += a[i];
-        cout << sum;
+        cout << sum << "\n";
     }
 }
 
 int main() {
     ios::sync_with_stdio(0); cin.tie(NULL);
-    // freopen("input.txt", "r", stdin);
     solve();
     return 0;
 }

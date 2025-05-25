@@ -24,6 +24,7 @@
 \newtheorem{goal}{Goal}
 \newtheorem{hequa}{Hệ quả}
 \newtheorem{hypothesis}{Hypothesis}
+\newtheorem{intuition}{Intuition}
 \newtheorem{lemma}{Lemma}
 \newtheorem{luuy}{Lưu ý}
 \newtheorem{nhanxet}{Nhận xét}
@@ -1862,6 +1863,144 @@ Zarankiewicz's lemma is the main step in the proof of Turan's theorem -- a famou
 %------------------------------------------------------------------------------%
 
 \section{Breadth-first Search (BFS) -- Tìm Kiếm Theo Chiều Rộng}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \href{https://en.wikipedia.org/wiki/Breadth-first_search}{Wikipedia{\tt/}breadth-1st search}.
+	\item \href{https://wiki.vnoi.info/algo/graph-theory/breadth-first-search.md}{VNOI Wiki{\tt/} BFS (breadth-1st search)}.
+\end{enumerate}
+{\it Breadth-first search (BFS)} is an algorithm for searching a tree data structure for a node that satisfies a given property. It starts at the \href{https://en.wikipedia.org/wiki/Tree_(data_structure)#Terminology}{tree root} \& explores all nodes at the present \href{https://en.wikipedia.org/wiki/Tree_(data_structure)#Terminology}{depth} prior to moving on to the nodes at the next depth level. Extra memory, usually a \href{https://en.wikipedia.org/wiki/Queue_(data_structure)}{queue}, is needed to keep track of the child nodes that were encountered but not yet explored.
+
+E.g., in a \href{https://en.wikipedia.org/wiki/Chess_endgame}{chess endgame}, a \href{https://en.wikipedia.org/wiki/Chess_engine}{chess engine} may build the \href{https://en.wikipedia.org/wiki/Game_tree}{game tree} from the current position by applying all possible moves \& use BFS to find a win position for White. Implicit trees (e.g. game trees or other problem-solving trees) may be of infinite size; BFS is guaranteed to find a solution node (i.e., a node satisfying the specified property) if one exists.
+
+-- {\it Tìm kiếm theo chiều rộng (BFS)} là một thuật toán tìm kiếm một cấu trúc dữ liệu cây cho một nút thỏa mãn một thuộc tính nhất định. Thuật toán này bắt đầu từ gốc cây \& khám phá tất cả các nút ở độ sâu hiện tại trước khi chuyển sang các nút ở mức độ sâu tiếp theo. Cần thêm bộ nhớ, thường là hàng đợi, để theo dõi các nút con đã gặp nhưng chưa được khám phá.
+
+In contrast, (plain) DFS, which explores the node branch as far as possible before backtracking \& expanding other nodes, may get lost in an infinite branch \& never make it to the solution node. \href{https://en.wikipedia.org/wiki/Iterative_deepening_depth-first_search}{Iterative deepening DFS} avoids the latter drawback at the price of exploring the tree's t op parts over \& over again. On the other hand, both depth-1st algorithms typically require far less extra memory than BFS.
+
+BFS can be generalized to both \href{https://en.wikipedia.org/wiki/Undirected_graph}{undirected graphs} \& \href{https://en.wikipedia.org/wiki/Directed_graph}{directed graphs} with a given start node (sometimes referred to as a `search key'). In \href{https://en.wikipedia.org/wiki/State_space_search}{state space search} in AI, repeated searches of vertices are often allowed, while in theoretical analysis of algorithms based on BFS, precautions are typically taken to prevent repetitions.
+
+-- BFS có thể được khái quát hóa thành cả đồ thị vô hướng \& đồ thị có hướng với một nút bắt đầu nhất định (đôi khi được gọi là `khóa tìm kiếm'). Trong tìm kiếm không gian trạng thái trong AI, việc tìm kiếm lặp lại các đỉnh thường được phép, trong khi trong phân tích lý thuyết các thuật toán dựa trên BFS, các biện pháp phòng ngừa thường được thực hiện để ngăn ngừa sự lặp lại.
+
+BFS \& its application in finding \href{https://en.wikipedia.org/wiki/Connected_component_(graph_theory)}{connected components} of graphs were invented in 1945 by \href{https://en.wikipedia.org/wiki/Konrad_Zuse}{\sc Konrad Zuse}, in this (rejected) PhD thesis on the \href{https://en.wikipedia.org/wiki/Plankalk%C3%BCl}{Plankalk\"ul} programming language, but this was not published until 1972. It was reinvented in 1959 by \href{https://en.wikipedia.org/wiki/Edward_F._Moore}{\sc Edward F. Moore}, who used it to find the shortest path out of a maze, \& later developed by {\sc C. Y. Lee} into a \href{https://en.wikipedia.org/wiki/Routing_(electronic_design_automation)}{wire routing} algorithm (published in 1961).
+
+-- BFS \& ứng dụng của nó trong việc tìm các thành phần liên thông của đồ thị được {\sc Konrad Zuse} phát minh vào năm 1945, trong luận án tiến sĩ (bị từ chối) này về ngôn ngữ lập trình Plankalk\"ul, nhưng luận án này không được công bố cho đến năm 1972. Nó được {\sc Edward F. Moore} phát minh lại vào năm 1959, người đã sử dụng nó để tìm đường đi ngắn nhất ra khỏi mê cung, \& sau đó được {\sc C. Y. Lee} phát triển thành thuật toán định tuyến có dây (được công bố vào năm 1961).
+
+%------------------------------------------------------------------------------%
+
+\subsection{Pseudocode of BFS}
+
+\begin{itemize}
+	\item {\sf Input.} A graph $G = (V,E)$ \& a starting vertex {\it root} of $G$.
+	\item {\sf Output.} Goal state. The {\it parent} links trace the shortest path back to {\it root}
+	\begin{verbatim}
+procedure BFS(G, root) is
+    let Q be a queue
+    label root as explored
+    Q.enqueue(root)
+    while Q is not empty do
+        v := Q.dequeue()
+        if v is the goal then
+            return v
+        for all edges from v to w in G.adjacentEdges(v) do
+            if w is not labeled as explored then
+                label w as explored
+                w.parent := v
+                Q.enqueue(w)
+	\end{verbatim}
+\end{itemize}
+This non-recursive implementation is similar to the non-recursive implementation of DFS, but differs from it in 2 ways:
+\begin{enumerate}
+	\item it uses a \href{https://en.wikipedia.org/wiki/Queue_(abstract_data_type)}{queue} (\href{https://en.wikipedia.org/wiki/First_In_First_Out}{First In First Out}, abbr., FIFO) instead of a stack (Last In First Out, abbr., LIFO) \&
+	\item it checks whether a vertex has been explored before enqueueing vertex rather than delaying this check until the vertex is dequeued from the queue.
+\end{enumerate}
+If $G$ is a tree, replacing the queue of this BFS algorithm with a stack will yield a DFS algorithm. For general graphs, replacing the stack of the iterative DFS implementation with a queue would also produce a DFS algorithm, although a somewhat nonstandard one.
+
+-- Triển khai không đệ quy này tương tự như triển khai không đệ quy của DFS, nhưng khác ở 2 điểm:
+\begin{enumerate}
+	\item sử dụng hàng đợi (First In First Out, viết tắt là FIFO) thay vì ngăn xếp (Last In First Out, viết tắt là LIFO) \&
+	\item kiểm tra xem đỉnh đã được khám phá trước khi đưa đỉnh vào hàng đợi hay chưa thay vì trì hoãn việc kiểm tra này cho đến khi đỉnh được đưa ra khỏi hàng đợi.
+\end{enumerate}
+Nếu $G$ là một cây, việc thay thế hàng đợi của thuật toán BFS này bằng một ngăn xếp sẽ tạo ra một thuật toán DFS. Đối với đồ thị tổng quát, việc thay thế ngăn xếp của triển khai DFS lặp lại bằng một hàng đợi cũng sẽ tạo ra một thuật toán DFS, mặc dù là một thuật toán không chuẩn.
+
+The $Q$ queue contains the frontier along which the algorithm is currently searching.
+
+-- Hàng đợi $Q$ chứa biên giới (tiền tuyến?) mà thuật toán hiện đang tìm kiếm.
+
+Nodes can be labeled as explored by storing them in a set, or by an attribute on each node, depending on the implementation.
+
+-- Các nút có thể được gắn nhãn là đã khám phá bằng cách lưu trữ chúng trong một tập hợp hoặc bằng thuộc tính trên mỗi nút, tùy thuộc vào cách triển khai.
+
+Note: the word {\it node} is usually interchangeable with the word {\it vertex}.
+
+-- Lưu ý: từ nút thường có thể thay thế cho từ đỉnh.
+
+The {\it parent} attribute of each node is useful for accessing the nodes in a shortest path, e.g., by backtracking from the destination node up to the starting node, once the BFS has been run, \& the predecessors nodes have been set.
+
+-- Thuộc tính cha mẹ của mỗi nút rất hữu ích để truy cập các nút theo đường dẫn ngắn nhất, ví dụ, bằng cách quay lại từ nút đích đến nút bắt đầu sau khi BFS đã chạy và các nút tiền nhiệm đã được thiết lập.
+
+BFS produces a so-called {\it breadth 1st tree}, e.g., an example of breath-1st tree obtained by running a BFS on German cities starting from Frankfurt.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Analysis of BFS -- Phân tích BFS}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Time \& space complexity of BFS -- Độ phức tạp không gian \& thời gian của BFS}
+The \href{https://en.wikipedia.org/wiki/Time_complexity}{time complexity} can be expressed as $O(|V| + |E|)$, since every vertex \& every edge will be explored in the worst case. Note: $O(|E|)$ may be vary between $O(1)$ \& $O(|V|^2)$, depending on how sparse the input graph is.
+
+-- Độ phức tạp về thời gian có thể được biểu thị là $O(|V| + |E|)$, vì mọi đỉnh \& mọi cạnh sẽ được khám phá trong trường hợp xấu nhất. Lưu ý: $O(|E|)$ có thể thay đổi giữa $O(1)$ \& $O(|V|^2)$, tùy thuộc vào mức độ thưa thớt của đồ thị đầu vào.
+
+When the number of vertices in the graph is known ahead of time, \& additional data structures are used to determine which vertices have already been added to the queue, the \href{https://en.wikipedia.org/wiki/Space_complexity}{space complexity} can be expressed as $O(|V|)$, where $|V|$ is the number of vertices. This is in addition to the space required for the graph itself, which may vary depending on the \href{https://en.wikipedia.org/wiki/Graph_(abstract_data_type)}{graph representation} used by an implementation of the algorithm.
+
+-- Khi số lượng đỉnh trong đồ thị được biết trước, \& các cấu trúc dữ liệu bổ sung được sử dụng để xác định những đỉnh nào đã được thêm vào hàng đợi, độ phức tạp không gian có thể được biểu thị là $O(|V|)$, trong đó $|V|$ là số lượng đỉnh. Đây là phần bổ sung cho không gian cần thiết cho chính đồ thị, có thể thay đổi tùy thuộc vào biểu diễn đồ thị được sử dụng bởi một triển khai của thuật toán.
+
+When working with graphs that are too large to store explicitly (or infinite), it is more practical to describe the complexity of BFS in different terms: to find the nodes that are at distance $d$ from the start node (measured in number of edge traversals), BFS takes $O(b^{d+1})$ time \& memory, where $b$ is the ``\href{https://en.wikipedia.org/wiki/Branching_factor}{branching factor}'' of the graph (the average out-degree).
+
+-- Khi làm việc với các đồ thị quá lớn để lưu trữ rõ ràng (hoặc vô hạn), thì thực tế hơn khi mô tả độ phức tạp của BFS theo các thuật ngữ khác nhau: để tìm các nút cách nút bắt đầu ở khoảng cách $d$ (được đo bằng số lần duyệt cạnh), BFS mất $O(b^{d+1})$ thời gian \& bộ nhớ, trong đó $b$ là ``hệ số phân nhánh'' của đồ thị (bậc ra trung bình).
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Completeness of BFS -- Tính đầy đủ của BFS}
+In the analysis of algorithms, the input to BFS is assumed to be a finite graph, represented as an \href{https://en.wikipedia.org/wiki/Adjacency_list}{adjacency list}, \href{https://en.wikipedia.org/wiki/Adjacency_matrix}{adjacency matrix}, or similar representation. However, in the application of graph traversal methods in AI the input may be an \href{https://en.wikipedia.org/wiki/Implicit_graph}{implicit representation} of an infinite graph. In this context, a search method is described as being {\it complete} if it is guaranteed to find a goal state if one exists. BFS is complete, but DFS is not. When applied to infinite graphs represented implicitly, BFS will eventually find the goal state, but DFS may get lost in parts of the graph that have no goal state \& never return.
+
+-- Trong phân tích thuật toán, đầu vào của BFS được coi là một đồ thị hữu hạn, được biểu diễn dưới dạng danh sách kề, ma trận kề hoặc biểu diễn tương tự. Tuy nhiên, trong ứng dụng của các phương pháp duyệt đồ thị trong AI, đầu vào có thể là biểu diễn ngầm của một đồ thị vô hạn. Trong bối cảnh này, một phương pháp tìm kiếm được mô tả là hoàn chỉnh nếu nó được đảm bảo tìm thấy trạng thái mục tiêu nếu có. BFS là hoàn chỉnh, nhưng DFS thì không. Khi áp dụng cho các đồ thị vô hạn được biểu diễn ngầm, BFS cuối cùng sẽ tìm thấy trạng thái mục tiêu, nhưng DFS có thể bị mất trong các phần của đồ thị không có trạng thái mục tiêu \& không bao giờ trả về.
+
+
+\begin{intuition}[(BFS vs. DFS) vs. (Wide learning vs. Deep learning)]
+	Việc so sánh giữa BFS vs. DFS na ná với việc học rộng \& học sâu. 1 cách nôm na, 1 người học rộng sẽ tìm được mục tiêu cá nhân, bù lại là người đó sẽ mất nhiều thời gian. Còn 1 người học sâu, nếu không nhìn big picture hay big map sẽ dễ bị mắc kẹt, trapped ở những chỗ sâu tối tăm mà không nhận ra mục tiêu của mình nằm ở 1 chỗ khác, thậm chí là 1 lĩnh vực khác.
+\end{intuition}
+
+%------------------------------------------------------------------------------%
+
+\subsection{BFS ordering -- Thứ tự BFS}
+
+\begin{definition}[BFS ordering]
+	An enumeration of the vertices of a graph is said to be a {\rm BFS ordering} if it is the possible output of the application of BFS to this graph.
+\end{definition}
+Let $G = (V,E)$ be a graph with $n\in\mathbb{N}^\star$ vertices. Recall that $N(v)$ is the set of neighbors of $v$. Let $\sigma = (v_1,\ldots,v_m)$ be a list of distinct elements of $V$, for $v\in V\backslash\{v_1,\ldots,v_m\}$, let $\nu_\sigma(v)$ be the least $i$ s.t. $v_i$ is a neighbor of $v$, if such a $i$ exists, \& be $\infty$ otherwise:
+\begin{equation*}
+	\nu_\sigma(v) = \left\{\begin{split}
+		&\min\{i;v_i\in N(v)\}&&\mbox{if } V\cap N(v)\ne\emptyset,\\
+		&\infty&&\mbox{if } V\cap N(v) = \emptyset.
+	\end{split}\right.
+\end{equation*}
+Let $\sigma = (v_1,\ldots,v_n)$ be an enumeration of the vertices of $V$. The enumeration $\sigma$ is said to be a {\it BFS ordering} (with source $v_1$) if, $\forall i = 2,3,\ldots,n$, $v_i$ is the vertex $w\in V\backslash\{v_1,\ldots,v_{i-1}\}$ s.t. $\nu_{(v_1,\ldots,v_{i-1})}(w)$ is minimal. Equivalently, $\sigma$ is a BFS ordering if, for all $1\le i < j < k\le n$ with $v_i\in N(v_k)\backslash N(v_j)$, there exists a neighbor $v_m$ of $v_j$ s.t. $m < i$.
+
+
+%------------------------------------------------------------------------------%
+
+\subsection{Some applications of BFS -- Vài ứng dụng của BFS}
+BFS can be used to solve many problems in graph theory, e.g.:
+\begin{enumerate}
+	\item Copying \href{https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)}{garbage collection}, \href{https://en.wikipedia.org/wiki/Cheney%27s_algorithm}{Cheney's algorithm}
+	\item Finding the \href{https://en.wikipedia.org/wiki/Shortest_path}{shortest path} between 2 nodes $u,v$, with path length measured by number of edges (an advantage over DFS)
+	\item \href{https://en.wikipedia.org/wiki/Cuthill%E2%80%93McKee_algorithm}{(Reverse) Cuthill--McKee} mesh numbering
+	\item \href{https://en.wikipedia.org/wiki/Ford%E2%80%93Fulkerson_algorithm}{Ford--Fulkerson method} for computing the \href{https://en.wikipedia.org/wiki/Maximum_flow_problem}{maximum flow} in a \href{https://en.wikipedia.org/wiki/Flow_network}{flow network}
+	\item Serialization{\tt/}Deserialization of a binary tree vs. serialization in sorted order, allows the tree to be reconstructed in an efficient manner
+	\item Construction of the {\it failure function} of the \href{https://en.wikipedia.org/wiki/Aho-Corasick}{Aho-Corasick} pattern matcher
+	\item Testing \href{https://en.wikipedia.org/wiki/Bipartite_graph#Testing_bipartiteness}{bipartiteness of a graph}
+	\item Implementing parallel algorithms for computing a graph's transitive closure.
+\end{enumerate}
 
 %------------------------------------------------------------------------------%
 
@@ -1869,6 +2008,7 @@ Zarankiewicz's lemma is the main step in the proof of Turan's theorem -- a famou
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
 	\item \href{https://en.wikipedia.org/wiki/Depth-first_search}{Wikipedia{\tt/}depth-1st search}.
+	\item \href{https://wiki.vnoi.info/algo/graph-theory/Depth-First-Search-Tree.md}{VNOI Wiki{\tt/}cây DFS (depth-1st search tree) \& ứng dụng}.
 \end{enumerate}
 {\it Depth-1st search (DFS)} is an algorithm for traversing or search tree or graph data structures.The algorithm starts at the \href{https://en.wikipedia.org/wiki/Tree_(data_structure)#Terminology}{root node} (selecting some arbitrary node as the root node in the case of a graph) \& explores as far as possible along each branch before backtracking. Extra memory, usually a \href{https://en.wikipedia.org/wiki/Stack_(abstract_data_type)}{stack}, is needed to keep track of the nodes discovered so far along a specified branch which helps in backtracking of the graph.
 

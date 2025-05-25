@@ -44,7 +44,7 @@
 \setlist[itemize]{leftmargin=*}
 \setlist[enumerate]{leftmargin=*}
 
-\title{Lecture Note: Mathematical Analysis {\it\&} Numerical Analysis -- Bài Giảng: Giải Tích Toán Học {\it\&} Giải Tích Số}
+\title{Lecture Note: Mathematical Analysis {\it\&} Numerical Analysis\\Bài Giảng: Giải Tích Toán Học {\it\&} Giải Tích Số}
 \author{Nguyễn Quản Bá Hồng\footnote{A scientist- {\it\&} creative artist wannabe, a mathematics {\it\&} computer science lecturer of Department of Artificial Intelligence {\it\&} Data Science (AIDS), School of Technology (SOT), UMT Trường Đại học Quản lý {\it\&} Công nghệ TP.HCM, Hồ Chí Minh City, Việt Nam.\\E-mail: {\sf nguyenquanbahong@gmail.com} {\it\&} {\sf hong.nguyenquanba@umt.edu.vn}. Website: \url{https://nqbh.github.io/}. GitHub: \url{https://github.com/NQBH}.}}
 \date{\today}
 
@@ -84,6 +84,8 @@ Latest version:
 \end{itemize}
 
 %------------------------------------------------------------------------------%
+
+\part{Mathematical Analysis -- Giải Tích Toán Học}
 
 \chapter{Basic Mathematical Analysis -- Giải Tích Toán Học Cơ Bản}
 \minitoc
@@ -2406,7 +2408,95 @@ In \href{https://en.wikipedia.org/wiki/Calculus}{calculus}, the {\it Leibniz int
 
 %------------------------------------------------------------------------------%
 
-\chapter{Introduction to Ordinary Differential Equations (ODEs) -- Nhập Môn Phương Trình Vi Phân Đạo Hàm Thường}
+\part{Numerical Analysis -- Giải Tích Số}
+
+%------------------------------------------------------------------------------%
+
+\chapter{Basic Numerical Analysis -- Giải Tích Số Cơ Bản}
+\minitoc
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \cite{Atkinson_Han2009}. {\sc Kendall Atkinson, Weimin Han}. {\it Theoretical Numerical Analysis}. 3e.
+	
+	\item \cite{Burden_Faires_Burden2015}. {\sc Richard L. Burden, J. Douglas Faires, Annette M. Burden}. 8e.
+	
+	\item \cite{Isaacson_Keller1994}. {\sc Eugene Isaacson, Herbert Bishop Keller}. {\it Analysis of Numerical Methods}.
+	
+	\item \cite{Scheid1989}. {\sc Francis Scheid}. {\it Schaum's Outline of Numerical Analysis}. 2e.
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\section{Some Basic Concepts -- Vài Khái Niệm Cơ Bản}
+%------------------------------------------------------------------------------%
+
+\subsection{Algorithms -- Thuật Toán}
+``The objective of numerical analysis is to solve complex numerical problems using only the simplest operations of arithmetic, to develop \& evaluate methods for computing numerical results from given data. The methods of computation are called {\it algorithms}.'' -- \cite[p. 1]{Scheid1989}
+
+-- Mục tiêu của phân tích số là giải quyết các vấn đề số phức tạp chỉ bằng các phép toán số học đơn giản nhất, để phát triển \& đánh giá các phương pháp tính toán kết quả số từ dữ liệu đã cho. Các phương pháp tính toán được gọi là {\it thuật toán}.
+
+``Our efforts will be focused on the search for algorithms. For some problem no satisfactory algorithm has yet been found, while for others there are several \& we must choose among them. There are various reasons for choosing 1 algorithm over another, 2 obvious criteria being {\it speed \& accuracy}. Speed is clearly an advantage, though for problems of modest size this advantage is almost eliminated by the power of the computer. For larger scale problems speed is still a major factor, \& a slow algorithm may have to be rejected as impractical. However, other things being equal, the faster method surely gets the nod.'' -- \cite[p. 1]{Scheid1989}
+
+-- Nỗ lực của chúng tôi sẽ tập trung vào việc tìm kiếm các thuật toán. Đối với một số vấn đề, chưa có thuật toán nào thỏa đáng được tìm thấy, trong khi đối với những vấn đề khác, có một số \& chúng ta phải lựa chọn trong số chúng. Có nhiều lý do để chọn 1 thuật toán hơn thuật toán khác, 2 tiêu chí rõ ràng là {\it tốc độ \& độ chính xác}. Tốc độ rõ ràng là một lợi thế, mặc dù đối với các vấn đề có quy mô khiêm tốn, lợi thế này gần như bị loại bỏ bởi sức mạnh của máy tính. Đối với các vấn đề quy mô lớn hơn, tốc độ vẫn là một yếu tố chính, \& một thuật toán chậm có thể phải bị loại bỏ vì không thực tế. Tuy nhiên, các yếu tố khác đều như nhau, phương pháp nhanh hơn chắc chắn sẽ được chấp nhận.
+
+\begin{problem}[\cite{Scheid1989}, Ex. 1.1, p. 1, approximate square root]
+	Use the sequence $\{x_n\}_{n=1}^\infty$ defined by
+	\begin{equation*}
+		x_0 = 1,\ x_{n+1} = \frac{1}{2}\left(x_n + \frac{a}{x_n}\right),\ \forall n\in\mathbb{N}.
+	\end{equation*}
+	to approximate $\sqrt{a}$ with $a\in(0,\infty)$ to $m\in\mathbb{N}^\star$ decimal places.
+\end{problem}
+
+\begin{problem}[Approximate $n$th root]
+	Find algorithms to approximate $\sqrt[n]{a}$ with $a\in\mathbb{R},n\in\mathbb{N}^\star$ given. Investigate accuracy \& efficiencies of these algorithms.
+\end{problem}
+
+\begin{problem}[Approximate real-order root of complexes, R]
+	Find algorithms to approximate $\sqrt[n]{a}$ with $a\in\mathbb{C},n\in\mathbb{R}$ given. Investigate accuracy \& efficiencies of these algorithms.
+\end{problem}
+
+\begin{remark}
+	More than 1 algorithm, using only 4 basic operations of arithmetic $\pm,\cdot,:$, exists.
+\end{remark}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Error -- Sai Số}
+``The numerical optimist asks how accurate the computed results; the numerical pessimist asks how much error has been introduced. The 2 questions are, of course, 1 \& the same. Only rarely will the given data be exact, since it often originates in measurement process. So there is probably error in the input information. \& usually the algorithm itself introduces error, perhaps unavoidable roundoffs. The output information will then contain error from both of these sources.'' -- \cite[p. 1]{Scheid1989}
+
+-- Người lạc quan về số học hỏi kết quả tính toán chính xác đến mức nào; người bi quan về số học hỏi có bao nhiêu lỗi đã được đưa vào. Tất nhiên, 2 câu hỏi là 1 \& giống nhau. Chỉ hiếm khi dữ liệu được đưa ra là chính xác, vì nó thường bắt nguồn từ quá trình đo lường. Vì vậy, có thể có lỗi trong thông tin đầu vào. \& thường thì chính thuật toán sẽ đưa ra lỗi, có lẽ là làm tròn không thể tránh khỏi. Thông tin đầu ra sau đó sẽ chứa lỗi từ cả hai nguồn này.
+
+\begin{problem}[\cite{Scheid1989}, 1.1., p. 4]
+	Calculate the value of the polynomial $P(x) = 2x^3 - 3x^2 + 5x - 4$ for the argument $x = 3$. Count each of 4 elementary operations.
+\end{problem}
+
+\begin{baitoan}[Evaluate value of polynomials with real coefficients -- Tính giá trị đa thức hệ số thực]
+	Viết chương trình {\sf C{\tt/}C++, Pascal, Python} để tính giá trị $P(x_0)$ của đa thức $P(x) = \sum_{i=0}^n a_ix^i\in\mathbb{R}[x]$ (i.e., $\forall n\in\mathbb{N}$, $\forall a_i\in\mathbb{R}$, $\forall i = 0,1,\ldots,n$) tại $x = x_0\in\mathbb{R}$. Đếm số phép $\pm,\cdot,:$ đã thực hiện.
+	\item {\sf Input.} Dòng 1 lần lượt chứa $n = \deg P\in\mathbb{N}$ là bậc (degree) của đa thức $P(x)$ \& $x_0\in\mathbb{R}$. Dòng 2 chứa  $a_n,a_{n-1},\ldots,a_1,a_0\in\mathbb{R}$.
+	\item {\sf Output.} Giá trị $P(x_0)$.
+\end{baitoan}
+
+\begin{baitoan}[Evaluate value of polynomials with complex coefficients -- Tính giá trị đa thức hệ số phức]
+	Viết chương trình {\sf C{\tt/}C++, Pascal, Python} để tính giá trị $P(x_0)$ của đa thức $P(x) = \sum_{i=0}^n a_ix^i\in\mathbb{C}[x]$ (i.e., $\forall n\in\mathbb{N}$, $\forall a_i\in\mathbb{C}$, $\forall i = 0,1,\ldots,n$) tại $x = x_0\in\mathbb{C}$. Đếm số phép $\pm,\cdot,:$ đã thực hiện.
+	\item {\sf Input.} Dòng 1 lần lượt chứa $n = \deg P\in\mathbb{N}$ là bậc (degree) của đa thức $P(x)$ \& 2 số $a,b\in\mathbb{R}$ lần lượt là phần thực \& phần ảo của $x_0\in\mathbb{C}$, i.e., $a = \Re x_0,b = \Im x_0$. Dòng 2 chứa phần thực của $a_n,a_{n-1},\ldots,a_1,a_0\in\mathbb{R}$. Dòng 3 chứa phần thực của $a_n,a_{n-1},\ldots,a_1,a_0\in\mathbb{R}$.
+	\item {\sf Output.} Giá trị $P(x_0)$.
+\end{baitoan}
+
+\begin{problem}[\cite{Scheid1989}, 1.2., p. 5]
+	Define the error of an approximation.
+\end{problem}
+
+\begin{proof}[Solution.]
+	The tradition definition is: true value $=$ approximation $+$ error.
+\end{proof}
+
+\begin{problem}[\cite{Scheid1989}, 1.3., p. 5]
+	What is relative error?
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
+\part{Introduction to Ordinary Differential Equations (ODEs) -- Nhập Môn Phương Trình Vi Phân Đạo Hàm Thường}
 \minitoc
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
@@ -2416,7 +2506,7 @@ Lecture Notes chi tiết hơn về ODEs sẽ được viết riêng. Phần này
 
 %------------------------------------------------------------------------------%
 
-\chapter{Introduction to Partial Differential Equations (PDEs) -- Nhập Môn Phương Trình Vi Phân Đạo Hàm Riêng}
+\part{Introduction to Partial Differential Equations (PDEs) -- Nhập Môn Phương Trình Vi Phân Đạo Hàm Riêng}
 \minitoc
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
@@ -2434,7 +2524,7 @@ Lecture Notes chi tiết hơn về PDEs sẽ được viết riêng. Phần này
 
 %------------------------------------------------------------------------------%
 
-\chapter{Introduction to Differential Geometry -- Nhập Môn Hình Học Vi Phân}
+\part{Introduction to Differential Geometry -- Nhập Môn Hình Học Vi Phân}
 \minitoc
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
@@ -2448,7 +2538,7 @@ Lecture Notes chi tiết hơn về Hình Học Vi Phân sẽ được viết ri�
 
 %------------------------------------------------------------------------------%
 
-\chapter{Introduction to Functional Analysis -- Nhập Môn Giải Tích Hàm}
+\part{Introduction to Functional Analysis -- Nhập Môn Giải Tích Hàm}
 \minitoc
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
@@ -2462,7 +2552,7 @@ Lecture Notes chi tiết hơn về Giải Tích Hàm sẽ được viết riêng
 
 %------------------------------------------------------------------------------%
 
-\chapter{Fourier transform -- Biến đổi Fourier}
+\part{Fourier Transform -- Biến Đổi Fourier}
 \minitoc
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}

@@ -1,11 +1,12 @@
 # default parameters
-absence_point = 1
-late_point = 0.25 # -0.25/30 mins
+absence_point = 2
+late_point = 0.5 # -0.5/30 mins
 
 # parameters depending on each subject
 number_student = int(input())
 number_teaching_day = int(input()) # 20 days for both theory & practical classes
-early_attendence_point = 0.25 # go to class before lecturer & on time
+early_attendence_point_7h = 0.75 # go to class before lecturer & on time 7:00
+early_attendence_point_else = 0.5 # go to class before lecturer & on time 9:30
 
 # grading
 while (number_student):

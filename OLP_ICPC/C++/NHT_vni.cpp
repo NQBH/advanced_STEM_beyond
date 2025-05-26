@@ -1,8 +1,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 int n,q,t;
-int a[100001],ma[100001];
-long long f[100001],g[100001];
+int a[100001], ma[100001];
+long long f[100001], g[100001]; // f[i]: tien loi neu mua 1 co phieu vao ngay thu i roi ban ra vao ngay ma[i]
+// g[i] = tong so tien loi toi da neu tham gia choi co phieu vao ngay i
 void input()
 {
     cin>>n;
@@ -27,6 +28,7 @@ void solve()
         cout<<g[t]<<endl;
     }
 }
+
 int main()
 {
     ios_base::sync_with_stdio(0);

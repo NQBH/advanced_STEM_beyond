@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <numeric>
 using namespace std;
+int num_machine, num_work;
 
 void printSolution(const vector<int>& assignment, const vector<vector<int>>& t) {
     vector<int> load(3, 0);

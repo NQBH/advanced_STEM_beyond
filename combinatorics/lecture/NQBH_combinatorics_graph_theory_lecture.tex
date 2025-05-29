@@ -44,6 +44,18 @@
 }
 \setlist[itemize]{leftmargin=*}
 \setlist[enumerate]{leftmargin=*}
+\newcommand{\genstirlingI}[3]{%
+	\genfrac{[}{]}{0pt}{#1}{#2}{#3}%
+}
+\newcommand{\genstirlingII}[3]{%
+	\genfrac{\{}{\}}{0pt}{#1}{#2}{#3}%
+}
+\newcommand{\stirlingI}[2]{\genstirlingI{}{#1}{#2}}
+\newcommand{\dstirlingI}[2]{\genstirlingI{0}{#1}{#2}}
+\newcommand{\tstirlingI}[2]{\genstirlingI{1}{#1}{#2}}
+\newcommand{\stirlingII}[2]{\genstirlingII{}{#1}{#2}}
+\newcommand{\dstirlingII}[2]{\genstirlingII{0}{#1}{#2}}
+\newcommand{\tstirlingII}[2]{\genstirlingII{1}{#1}{#2}}
 
 \title{Lecture Note: Combinatorics {\it\&} Graph Theory\\Bài Giảng: Tổ Hợp {\it\&} Lý Thuyết Đồ Thị}
 \author{Nguyễn Quản Bá Hồng\footnote{A scientist- {\it\&} creative artist wannabe, a mathematics {\it\&} computer science lecturer of Department of Artificial Intelligence {\it\&} Data Science (AIDS), School of Technology (SOT), UMT Trường Đại học Quản lý {\it\&} Công nghệ TP.HCM, Hồ Chí Minh City, Việt Nam.\\E-mail: {\sf nguyenquanbahong@gmail.com} {\it\&} {\sf hong.nguyenquanba@umt.edu.vn}. Website: \url{https://nqbh.github.io/}. GitHub: \url{https://github.com/NQBH}.}}
@@ -465,10 +477,7 @@ The combinatorial version Thm. \ref{thm: inclusion-exclusion: combinatorial vers
 
 %------------------------------------------------------------------------------%
 
-\chapter{Counting -- Đếm}
-\minitoc
-
-\section{Problems on counting}
+\section{Problems: Counting -- Bài tập: Đếm}
 
 \begin{baitoan}
 	1 lớp có $n\in\mathbb{N}^\star$ sinh viên. Lớp muốn trong bức ảnh có $a\in\mathbb{N}^\star$ ngồi hàng đầu \& $n - a$ sinh viên ngồi hàng sau. Đếm số cách.
@@ -488,6 +497,84 @@ The combinatorial version Thm. \ref{thm: inclusion-exclusion: combinatorial vers
 \begin{baitoan}[+0.5]
 	Cho $n\in\mathbb{N}^\star$, $k\in\mathbb{N}$, $0\le k\le n$. Viết chương trình {\sf C{\tt/}C++, Pascal, Python} để tính \& cho biết giá trị nhỏ nhất của $n$ gặp lỗi overflow: (a) $P_n = n!$. (b) $A_n^k$. (c) $C_n^k$. (d) Số Catalan thứ $n$.	
 \end{baitoan}
+
+\begin{problem}[\cite{Shahriari2022}, p. 2]
+	Given $m,n\in\mathbb{N}^\star$, $m\le n$. Count the number of sequences $a_1,a_2,\ldots,a_n$ consisting of $m$ $0$'s \& $n - m$ $1$'s, if no 2 consecutive terms are both $0$'s? Write {\sf C{\tt/}C++, Python} programs to illustrate.
+	
+	-- Cho $m,n\in\mathbb{N}^\star$, $m\le n$. Đếm số dãy số $a_1,a_2,\ldots,a_n$ gồm $m$ $0$'s \& $n - m$ $1$'s, nếu không có 2 số hạng liên tiếp nào đều là $0$'s? Viết chương trình {\sf C{\tt/}C++, Python} để mô phỏng.
+\end{problem}
+
+\begin{proof}
+	$C_{n - m + 1}^m$.
+	
+	C++:
+	\begin{verbatim}
+		#include<bits/stdc++.h>
+		using namespace std;
+		
+		long long total = 0;
+		
+		long long nCk(int n, int k) {
+			if (k>n||k<0) return 0;
+			long long res=1;
+			for(int i=1; i<=k; i++) {
+				res*=(n-i+1);
+				res/=i;
+			}
+			return res;
+		}
+		
+		void generateSeq(int n, int m, int pos, int last, vector<int>& seq, int cnt0, int cnt1) {
+			if (cnt0>m || cnt1>n-m) return;
+			if (pos==n) {
+				if(cnt0==m && cnt1==n-m) {
+					for(int x:seq) cout<<x<<" ";
+					cout<<"\n";
+					total++;
+				}
+			}
+			
+			seq.push_back(1);
+			generateSeq(n, m, pos+1, 1, seq, cnt0, cnt1+1);
+			seq.pop_back();
+			
+			if(last!=0) {
+				seq.push_back(0);
+				generateSeq(n, m, pos+1, 0, seq, cnt0+1, cnt1);
+				seq.pop_back();
+			}
+		}
+		
+		
+		int main() {
+			ios_base::sync_with_stdio(0);
+			cin.tie(0); cout.tie(0);
+			int n, m;
+			cin>>n>>m;
+			vector<int> seq;
+			generateSeq(n, m, 0, -1, seq, 0, 0);
+			cout<<"Tong so day hop le: "<<total<<"\n";
+			cout<<"(n-m+1)Cm = "<<nCk(n-m+1, m);
+		}
+	\end{verbatim}
+\end{proof}
+
+\begin{problem}[\cite{Shahriari2022}, p. 3]
+	Let $f(n)$ be the number of subsets of $[n]$. Prove that $f(n) = 2^n$, $\forall n\in\mathbb{N}^\star$.
+\end{problem}
+
+\begin{problem}[\cite{Shahriari2022}, p. 3]
+	Assume $n\in\mathbb{N}$, $n\ge2$, people given their $n$ hats to a hat-check person. Let $f(n)$ be the number of ways that the hats can be returned, so that everyone has 1 hat, but no one has their own hat. Prove: (a) $f(n) = n!\sum_{i=0}^n \dfrac{(-1)^i}{i!}$, $\forall n\in\mathbb{N}^\star$. (b) $f(n)$ is the nearest integer to $\dfrac{n!}{e}$.
+\end{problem}
+
+\begin{problem}[\cite{Shahriari2022}, p. 3]
+	Given $n\in\mathbb{N}^\star$. Let $f(n)$ be the number of subsets of $[n]$ that do not contain 2 consecutive integers. (a) Compute $f(1),f(2),f(3),f(4)$. (b) Prove: $f(n) = f(n - 1) + f(n - 2)$, $\forall n\in\mathbb{N}$, $n\ge3$. (c) Prove:
+	\begin{equation*}
+		f(n) = \frac{1}{\sqrt{5}}\left(\tau^{n+2} - \overline{\tau}^{n+2}\right),\mbox{ where }\tau = \frac{1 + \sqrt{5}}{2},\ \overline{\tau} = \frac{1 - \sqrt{5}}{2}.
+	\end{equation*}
+\end{problem}
+
+%------------------------------------------------------------------------------%
 
 \section{Euler candy problem -- Bài toán chia kẹo Euler}
 
@@ -703,83 +790,73 @@ C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C++/Fi
 
 %------------------------------------------------------------------------------%
 
-\section{Counting rules \& Stirling number of type 1 \& type 2}
+\section{Stirling Numbers -- Các Số Stirling}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \href{https://en.wikipedia.org/wiki/Stirling_number}{Wikipedia{\tt/}Stirling number}.
+\end{enumerate}
+In mathematics, {\it Stirling numbers} arise in a variety of analytic \& combinatorial problems. They are named after \href{https://en.wikipedia.org/wiki/James_Stirling_(mathematician)}{\sc James Stirling}, who introduced them in a purely algebraic setting in his book {\it Methodus differentialis} (1730). They were rediscovered \& given a combinatorial meaning by {\sc Masanobu Saka} in his 1782 {\it Sanpō-Gakkai (The Sea of Learning on Mathematics)}.
 
-\begin{problem}[\cite{Shahriari2022}, p. 2]
-	Given $m,n\in\mathbb{N}^\star$, $m\le n$. Count the number of sequences $a_1,a_2,\ldots,a_n$ consisting of $m$ $0$'s \& $n - m$ $1$'s, if no 2 consecutive terms are both $0$'s? Write {\sf C{\tt/}C++, Python} programs to illustrate.
-	
-	-- Cho $m,n\in\mathbb{N}^\star$, $m\le n$. Đếm số dãy số $a_1,a_2,\ldots,a_n$ gồm $m$ $0$'s \& $n - m$ $1$'s, nếu không có 2 số hạng liên tiếp nào đều là $0$'s? Viết chương trình {\sf C{\tt/}C++, Python} để mô phỏng.
-\end{problem}
+-- Trong toán học, {\it số Stirling} phát sinh trong nhiều bài toán phân tích \& tổ hợp. Chúng được đặt theo tên của {\sc James Stirling}, người đã giới thiệu chúng trong bối cảnh hoàn toàn là đại số trong cuốn sách {\sc Methodus differentialis} (1730) của ông. Chúng được {\sc Masanobu Saka} khám phá lại \& đưa ra ý nghĩa tổ hợp trong cuốn {\sc Sanpō-Gakkai (Biển học về toán học)} năm 1782 của ông.
 
-\begin{proof}
-	$C_{n - m + 1}^m$.
-	
-	C++:
-\begin{verbatim}
-#include<bits/stdc++.h>
-using namespace std;
+2 different sets of numbers bear this name: the \href{https://en.wikipedia.org/wiki/Stirling_numbers_of_the_first_kind}{Stirling numbers of the 1st kind} \& the \href{https://en.wikipedia.org/wiki/Stirling_numbers_of_the_second_kind}{Stirling numbers of the 2nd kind}. Additionally, \href{https://en.wikipedia.org/wiki/Lah_numbers}{Lah numbers} are sometimes referred to as Stirling numbers of the 3rd kind. Each kind is detailed on its respective article, this one serving as a description of relations between them.
 
-long long total = 0;
+-- 2 bộ số khác nhau mang tên này: số Stirling loại 1 \& số Stirling loại 2. Ngoài ra, số Lah đôi khi được gọi là số Stirling loại 3. Mỗi loại được trình bày chi tiết trong bài viết tương ứng, bài viết này đóng vai trò mô tả mối quan hệ giữa chúng.
 
-long long nCk(int n, int k) {
-    if (k>n||k<0) return 0;
-    long long res=1;
-    for(int i=1; i<=k; i++) {
-        res*=(n-i+1);
-        res/=i;
-    }
-    return res;
-}
+A common property of all 3 kinds is that they describe coefficients relating 3 different sequences of polynomials that frequently arise in combinatorics. Moreover, all 3 can be defined as the number of partitions of $n$ elements into $k$ nonempty subsets, where each subset is endowed with a certain kind of order (no order, cyclical, or linear).
 
-void generateSeq(int n, int m, int pos, int last, vector<int>& seq, int cnt0, int cnt1) {
-    if (cnt0>m || cnt1>n-m) return;
-    if (pos==n) {
-        if(cnt0==m && cnt1==n-m) {
-            for(int x:seq) cout<<x<<" ";
-            cout<<"\n";
-            total++;
-        }
-    }
-	
-    seq.push_back(1);
-    generateSeq(n, m, pos+1, 1, seq, cnt0, cnt1+1);
-    seq.pop_back();
-	
-    if(last!=0) {
-        seq.push_back(0);
-        generateSeq(n, m, pos+1, 0, seq, cnt0+1, cnt1);
-        seq.pop_back();
-    }
-}
+-- 1 đặc tính chung của cả 3 loại là chúng mô tả các hệ số liên quan đến 3 chuỗi đa thức khác nhau thường xuất hiện trong tổ hợp. Hơn nữa, cả 3 đều có thể được định nghĩa là số phân hoạch của $n$ phần tử thành $k$ tập con không rỗng, trong đó mỗi tập con được ban cho một loại thứ tự nhất định (không có thứ tự, tuần hoàn hoặc tuyến tính).
+
+\paragraph*{Notation for Stirling numbers.} Several different notations for Stirling numbers are in use. Ordinary (signed) {\it Stirling numbers of the 1st kind} are commonly denoted $s(n,k)$. {\it Unsigned Stirling numbers of the 1st kind}, which count the number of \href{https://en.wikipedia.org/wiki/Permutation}{permutations} of $n$ elements with $k$ disjoint \href{https://en.wikipedia.org/wiki/Cyclic_permutation}{cycles}, are denoted $\stirlingI{n}{k} = c(n,k) = |s(n,k)| = (-1)^{n-k}s(n,k)$. {\it Stirling numbers of the 2nd kind}, which count the number of ways to partition a set of $n$ elements into $k$ nonempty subsets: $\stirlingII{n}{k} = S(n,k) = S_n^{(k)}$.
+
+--{\it Ký hiệu cho số Stirling.} Có một số ký hiệu khác nhau cho số Stirling đang được sử dụng. Số Stirling thông thường (có dấu) {\it Số Stirling loại 1} thường được ký hiệu là $s(n,k)$. {\it Số Stirling không dấu loại 1}, đếm số hoán vị của $n$ phần tử với $k$ chu trình rời rạc, được ký hiệu là $\stirlingI{n}{k} = c(n,k) = |s(n,k)| = (-1)^{n-k}s(n,k)$. {\it Số Stirling loại 2}, đếm số cách phân hoạch một tập hợp $n$ phần tử thành $k$ tập con không rỗng: $\stirlingII{n}{k} = S(n,k) = S_n^{(k)}$.
+
+The notation of brackets \& braces, in analogy to \href{https://en.wikipedia.org/wiki/Binomial_coefficients}{binomial coefficients}, was introduced in 1935 by \href{https://en.wikipedia.org/wiki/Jovan_Karamata}{\sc Jovan Karamata} \& promoted later by \href{https://en.wikipedia.org/wiki/Donald_Knuth}{\sc Donald Knuth}, though the bracket notation conflicts with a common notation for \href{https://en.wikipedia.org/wiki/Gaussian_coefficient}{Gaussian coefficients}. Another infrequent notation is $s_1(n,k),s_2(n,k)$.
+
+-- Ký hiệu của ngoặc \& dấu ngoặc nhọn, tương tự như hệ số nhị thức, được giới thiệu vào năm 1935 bởi {\sc Jovan Karamata} \& sau đó được {\sc Donald Knuth} thúc đẩy, mặc dù ký hiệu ngoặc nhọn xung đột với ký hiệu chung cho hệ số Gaussian. 1 ký hiệu không thường xuyên khác là $s_1(n,k),s_2(n,k)$.
 
 
-int main() {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0); cout.tie(0);
-    int n, m;
-    cin>>n>>m;
-    vector<int> seq;
-    generateSeq(n, m, 0, -1, seq, 0, 0);
-    cout<<"Tong so day hop le: "<<total<<"\n";
-    cout<<"(n-m+1)Cm = "<<nCk(n-m+1, m);
-}
-\end{verbatim}
-\end{proof}
 
-\begin{problem}[\cite{Shahriari2022}, p. 3]
-	Let $f(n)$ be the number of subsets of $[n]$. Prove that $f(n) = 2^n$, $\forall n\in\mathbb{N}^\star$.
-\end{problem}
+%------------------------------------------------------------------------------%
 
-\begin{problem}[\cite{Shahriari2022}, p. 3]
-	Assume $n\in\mathbb{N}$, $n\ge2$, people given their $n$ hats to a hat-check person. Let $f(n)$ be the number of ways that the hats can be returned, so that everyone has 1 hat, but no one has their own hat. Prove: (a) $f(n) = n!\sum_{i=0}^n \dfrac{(-1)^i}{i!}$, $\forall n\in\mathbb{N}^\star$. (b) $f(n)$ is the nearest integer to $\dfrac{n!}{e}$.
-\end{problem}
+\subsection{Stirling Numbers of Type 1 -- Số Stirling Loại 1}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \href{https://en.wikipedia.org/wiki/Stirling_numbers_of_the_first_kind}{Wikipedia{\tt/}Stirling numbers of the 1st kind}.
+\end{enumerate}
+In mathematics, especially in combinatorics, {\it Stirling numbers of the 1st kind} arise in the study of permutations. In particular, the unsigned Stirling numbers of the 1st kind count \href{https://en.wikipedia.org/wiki/Permutation}{permutations} according to their number of \href{https://en.wikipedia.org/wiki/Cycles_and_fixed_points}{cycles} (counting \href{https://en.wikipedia.org/wiki/Fixed_point_(mathematics)}{fixed points} as cycles of length 1).
 
-\begin{problem}[\cite{Shahriari2022}, p. 3]
-	Given $n\in\mathbb{N}^\star$. Let $f(n)$ be the number of subsets of $[n]$ that do not contain 2 consecutive integers. (a) Compute $f(1),f(2),f(3),f(4)$. (b) Prove: $f(n) = f(n - 1) + f(n - 2)$, $\forall n\in\mathbb{N}$, $n\ge3$. (c) Prove:
+-- Trong toán học, đặc biệt là trong tổ hợp, {\it số Stirling loại 1} phát sinh trong nghiên cứu về hoán vị. Đặc biệt, số Stirling không dấu loại 1 đếm các hoán vị theo số chu kỳ của chúng (đếm các điểm cố định là chu kỳ có độ dài 1).
+
+The Stirling numbers of the 1st \& 2nd kind can be understood as inverses of one another when viewed as \href{https://en.wikipedia.org/wiki/Triangular_matrix}{triangular matrices}. Identities linking the 2 kinds appear in the article on \href{https://en.wikipedia.org/wiki/Stirling_number}{Wikipedia{\tt/}Stirling numbers}.
+
+-- Số Stirling loại 1 \& loại 2 có thể được hiểu là nghịch đảo của nhau khi xem như ma trận tam giác. Các bản sắc liên kết 2 loại này xuất hiện trong bài viết về \href{https://en.wikipedia.org/wiki/Stirling_number}{Wikipedia{\tt/}Stirling numbers}.
+
+\begin{definition}[Definition of Stirling numbers of type 1 by algebra]
+	The {\it Stirling numbers of the 1st kind} are the coefficients $s(n,k)$ in the expansion of the \href{https://en.wikipedia.org/wiki/Falling_factorial}{falling factorial} $(x)_n = x(x - 1)(x - 2)\cdots(x - n + 1)$ into powers of the variable $x$:
 	\begin{equation*}
-		f(n) = \frac{1}{\sqrt{5}}\left(\tau^{n+2} - \overline{\tau}^{n+2}\right),\mbox{ where }\tau = \frac{1 + \sqrt{5}}{2},\ \overline{\tau} = \frac{1 - \sqrt{5}}{2}.
+		(x)_n = \sum_{k=0}^n s(n,k)x^k.
 	\end{equation*}
-\end{problem}
+\end{definition}
+
+\begin{example}[Some 1st Stirling numbers of the 1st kind -- Vài số Stirling loại 1 đầu tiên]
+	(a) When $n = 1$, $(x)_1 = x\Rightarrow s(1,1) = 1$. (b) When $n = 2$, $(x)_2 = x(x - 1) = x^2 - x\Rightarrow s(2,2) = 1,s(2,1) = -1$. (c) When $n = 3$, $(x)_3 = x(x - 1)(x - 2) = x^3 - 3x^2 + 2x\Rightarrow s(3,3) = 1,s(3,2) = -3,s(3,1) = 2$. (d) When $n = 4$, $(x)_4 = x(x - 1)(x - 2)(x - 3) = x^4 - 6x^3 + 11x^2 - 6x\Rightarrow s(4,4) = 1,s(4,3) = -6,s(4,2) = 11,s(4,1) = -6$. (d) When $n = 5$, $(x)_5 = x(x - 1)(x - 2)(x - 3)(x - 4) = x^5 - 10x^4 + 35x^3 - 50x^2 + 24x\Rightarrow s(5,5) = 1,s(5,4) = -10,s(5,3) = 35,s(5,2) = -50,s(5,1) = 24$.
+\end{example}
+The unsigned Stirling numbers may also be defined algebraically as the coefficients of the \href{https://en.wikipedia.org/wiki/Rising_factorial}{rising factorial}:
+\begin{equation*}
+	x^{\bar{n}} = x(x + 1)\cdots(x + n - 1) = \prod_{i=1}^n (x + i - 1) = \sum_{k=0}^n \stirlingI{n}{k}x^k.
+\end{equation*}
+
+%------------------------------------------------------------------------------%
+
+\section{Stirling Numbers of Type 2 -- Số Stirling Loại 2}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \href{https://en.wikipedia.org/wiki/Stirling_numbers_of_the_second_kind}{Wikipedia{\tt/}Stirling numbers of the 2nd kind}.
+	\item \cite{Ha_Thanh_to_hop}. 
+\end{enumerate}
+
+
 
 %------------------------------------------------------------------------------%
 
@@ -2220,7 +2297,11 @@ Several well-known algorithms exist for solving the shortest path problem \& its
 \section{Dijkstra's algorithm -- Thuật toán Dijkstra}
 ``{\it Dijkstra's algorithm} is an algorithm for finding the \href{https://en.wikipedia.org/wiki/Shortest_path_problem}{shorest paths} between \href{https://en.wikipedia.org/wiki/Vertex_(graph_theory)}{nodes} in a weighted graph, which may represent, e.g., a \href{https://en.wikipedia.org/wiki/Road_network}{road network}. It was conceived by computer scientist \href{https://en.wikipedia.org/wiki/Edsger_W._Dijkstra}{\sc Edsger W. Dijkstra} in 1956 \& published 3 years later.
 
-Dijkstra's algorithm finds the shortest path from a given source code to every node. It can be used to find the shortest path to a specific destination node, by terminating the algorithm after determining the shortest path to the destination node. E.g., if nodes 
+-- {\it Thuật toán Dijkstra} là một thuật toán để tìm đường đi gần bờ nhất giữa các nút trong một đồ thị có trọng số, có thể biểu diễn, ví dụ, một mạng lưới đường bộ. Thuật toán này được nhà khoa học máy tính {\sc Edsger W. Dijkstra} nghĩ ra vào năm 1956 \& xuất bản 3 năm sau đó.
+
+Dijkstra's algorithm finds the shortest path from a given source code to every node. It can be used to find the shortest path to a specific destination node, by terminating the algorithm after determining the shortest path to the destination node. E.g., if nodes of the graph represents cities, \& the costs of edges represent the distances between pairs of cities connected by a direct road, then Dijkstra's algorithm can be used to find the shortest route between 1 city \& all other cities. A common application of shortest path algorithms is network \href{https://en.wikipedia.org/wiki/Routing_protocol}{routing protocols}, most notably \href{https://en.wikipedia.org/wiki/IS-IS}{IS-IS} (Intermediate System to Intermediate System) \& \href{https://en.wikipedia.org/wiki/Open_Shortest_Path_First}{OSPF} (Open Shortest Path 1st). It is also employed as a \href{https://en.wikipedia.org/wiki/Subroutine}{subroutine} in algorithms e.g. \href{https://en.wikipedia.org/wiki/Johnson%27s_algorithm}{Johnson's algorithm}.
+
+-- Thuật toán Dijkstra tìm đường đi ngắn nhất từ 1 mã nguồn nhất định đến mọi nút. Thuật toán này có thể được sử dụng để tìm đường đi ngắn nhất đến một nút đích cụ thể, bằng cách kết thúc thuật toán sau khi xác định được đường đi ngắn nhất đến nút đích. Ví dụ, nếu các nút của đồ thị biểu diễn các thành phố, \& chi phí của các cạnh biểu diễn khoảng cách giữa các cặp thành phố được kết nối bằng một con đường trực tiếp, thì thuật toán Dijkstra có thể được sử dụng để tìm tuyến đường ngắn nhất giữa 1 thành phố \& tất cả các thành phố khác. 1 ứng dụng phổ biến của thuật toán đường đi ngắn nhất là các giao thức định tuyến mạng, đáng chú ý nhất là IS-IS (Hệ thống trung gian đến Hệ thống trung gian) \& OSPF (Đường dẫn ngắn nhất mở thứ nhất). Thuật toán này cũng được sử dụng như một chương trình con trong các thuật toán, ví dụ như thuật toán Johnson.
 
 %------------------------------------------------------------------------------%
 

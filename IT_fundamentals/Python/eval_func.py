@@ -20,7 +20,7 @@ else:
 
 #Bài 1
 def evaluate_function(x, y, z):
-  return (x**23 * y**2 * z**0.5) / (x**0.5 * (y**(1/3)))
+  return (x**3 * y**2 * z**0.5) / (x**0.5 * (y**(1/3)))
 
 x,y,z = map(float,input().split())
 print("Kết quả:", evaluate_function(x, y, z))

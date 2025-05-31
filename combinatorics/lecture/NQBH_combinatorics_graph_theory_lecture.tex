@@ -794,6 +794,7 @@ C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C++/Fi
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
 	\item \href{https://en.wikipedia.org/wiki/Stirling_number}{Wikipedia{\tt/}Stirling number}.
+	\item \href{https://tex.stackexchange.com/questions/86056/how-to-write-stirling-numbers-of-the-second-kind}{\TeX\ Stack Exchange{\tt/}how to write Stirling numbers of the 2nd kind}.
 \end{enumerate}
 In mathematics, {\it Stirling numbers} arise in a variety of analytic \& combinatorial problems. They are named after \href{https://en.wikipedia.org/wiki/James_Stirling_(mathematician)}{\sc James Stirling}, who introduced them in a purely algebraic setting in his book {\it Methodus differentialis} (1730). They were rediscovered \& given a combinatorial meaning by {\sc Masanobu Saka} in his 1782 {\it Sanpō-Gakkai (The Sea of Learning on Mathematics)}.
 
@@ -855,6 +856,60 @@ The unsigned Stirling numbers may also be defined algebraically as the coefficie
 	\item \href{https://en.wikipedia.org/wiki/Stirling_numbers_of_the_second_kind}{Wikipedia{\tt/}Stirling numbers of the 2nd kind}.
 	\item \cite{Ha_Thanh_to_hop}. 
 \end{enumerate}
+
+\begin{problem}[\cite{Shahriari2022}, Warm-Up 6.1, p. 193]
+	{\sc Kaitlyn \& Megan} together take a course in Latin American literature in translation. They buy 1 copy each of {\rm The President, The Labyrinth of Solitude, The Death of Artemio Cruz, The Time of the Hero, 100 Years of Solitude, The House of the Spirit}, \& {\rm The Motorcycle Diaries}. At the end of the course, they want to split the books between themselves. In how many ways can this be done if the only condition is that each gets at least $1$ book?
+\end{problem}
+{\bf Motivation of new tools beyond permutations \& combinations.} While the elementary counting methods, including the use of permutations \& combinations, can be used to solve many counting problems, other straightforward sounding problems will benefit from new tools, \& cannot directly be reduced to permutations \& combinations.
+
+\begin{problem}
+	Count the number of ways to put $s$ distinct balls into $t$ distinct boxes for which there is no restriction on the box capacities.
+\end{problem}
+
+If we have $s$ distinct balls \& $t$ distinct boxes, \& no restriction on the box capacities, then there are $t$ distinct choices for where to put the 1st ball, the same $t$ choices for where the 2nd ball should go, \& so on, hence the total number of choices is $t^s$.
+
+\begin{example}[\cite{Shahriari2022}, Example 6.2, pp. 193--194]
+	We have $4$ distinct balls $1,2,3,4$ \& $3$ identical boxes. In how many ways can we place the balls into boxes s.t. no box is empty?s This is the same as asking: In how many ways can we group the balls into $3$ nonempty parts?
+	
+	The answer is $6$: $\{1,2,3,4\},\{1,\{2,4\},3\},\{1,\{2,3,\},4\},\{\{1,2\},3,4\},\{\{1,3\},2,4\},\{\{1,4\},2,3\}$, which is found by brute force \& by enumerating all the possibilities. This method is clearly not going to work with much larger examples, \& even if it did work, it does not give us any insight into the problem.
+\end{example}
+In enumerative combinatorics, we often encounter new counting problems, i.e., even if we don't know the answer, we give a name -- often a function of 1 or more variables -- to the answer to the problem.
+\begin{quote}
+	``Sometimes naming a thing -- giving it a name or discovering its name -- helps one to begin to understand it. Knowing the name of a thing \& knowing what that thing is for gives me even more of a handle on it.'' -- {\sc Octavio Butler}, {\it Parable of the Sower}
+\end{quote}
+We then proceed to find properties of the function. If we can find a recurrence relation for the function, then we can calculate many of the values. The recurrence relation will also allow us to prove further properties of the function -- possibly even a formula -- using induction.
+
+\begin{definition}[Stirling numbers of the 2nd kind]
+	Let $s,t\in\mathbb{N}$. We define $\stirlingII{s}{t}$ to be the number of ways of putting $s$ distinct balls into $t$ identical boxes with at least 1 ball per box. Equivalently, $\stirlingII{s}{t}$ is the number of ways of partitioning a set of $s$ elements, i.e.,
+	\begin{equation*}
+		[s] = \left\{\begin{split}
+			&\{1,2,\ldots,s\}&&\mbox{if } s > 0,\\
+			&[0] = \emptyset&&\mbox{if } s = 0.
+		\end{split}\right.
+	\end{equation*}
+	into $t$ nonempty parts. $\stirlingII{s}{t}$ is called a {\rm Stirling number of the 2nd kind} (Some denote the Stirling numbers of the 2nd kind by $S(s,t)$ or $s_2(s,t)$.)
+\end{definition}
+
+\begin{remark}
+	We read $\stirlingII{s}{t}$ as ``$s$ subset $t$'' or ``$s$ squig $t$.'' Also, $\stirlingII{0}{0} = 1$. This could be mandated separately as a part of the definition, but that is really not necessary. If we have no balls \& no boxes, can I place each of the balls in some box in a way that none of the boxes is empty? Yes. We are done before we start, since we don't have any balls\footnote{Không được dịch thành: không có bi{\tt/}dái, i.e., tiếng lóng của nhát gan.} to worry about, \& there are no boxes to remain empty. Hence, the conditions -- distributing all the balls \& making sure that all the boxes are nonempty -- are satisfied trivially: we do nothing \& hence there is exactly 1 way of placing $0$ distinct balls in $0$ identical boxes with no empty boxes.
+\end{remark}
+
+\begin{question}
+	How to calculate $\stirlingII{s}{t}$.
+\end{question}
+A few cases are easy to calculate.
+
+\begin{lemma}[\cite{Shahriari2022}, Lem. 6.6, p. 195]
+	Let $s\in\mathbb{N}^\star,t\in\mathbb{N}$. Then: (a) $\stirlingII{s}{t} = 0$ if $t > s$. (b) $\stirlingII{s}{s} = 1$. (c) $\stirlingII{s}{1} = 1$. (d) $\stirlingII{s}{s - 1} = \binom{s}{2}$. (e) $\stirlingII{s}{2} = 2^{s - 1} - 1$.
+\end{lemma}
+
+%------------------------------------------------------------------------------%
+
+\section{Problems: Stirling numbers}
+
+\begin{problem}[\cite{Shahriari2022}, p. 193]
+	Let $n,k\in\mathbb{N}^\star$, $n\ge k$. Each time you open your favorite language app, an advertisement randomly chosen from among $k$ possible choices pops up. Far from being annoyed, in fact, you would like to see each of the $k$ ads. Assuming that the algorithm is equally likely to choose any of the ads each time, what is the probability that it takes you exactly $n$ tries to see all the $k$ ads?
+\end{problem}
 
 
 

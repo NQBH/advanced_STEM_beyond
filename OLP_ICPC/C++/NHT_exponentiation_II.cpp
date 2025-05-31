@@ -17,12 +17,12 @@ ll Power(ll a, ll b, int MOD)
     return ans;
 }
 
-int main(){
+int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
     cin >> n;
-    for(int i = 0; i < n; i++){
+    for (int i = 0; i < n; i++) {
         cin >> a >> b >> c;
         cout << Power(a, Power(b, c, MOD - 1), MOD) << '\n';
     }

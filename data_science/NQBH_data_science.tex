@@ -389,6 +389,40 @@ If have an aptitude for mathematics \& some programming skills, {\sc Joel Grus} 
 	\item {\sf16. Logistic Regression.}
 	\item {\sf17. Decision Trees.}
 	\item {\sf18. Neural Networks.}
+	\begin{quote}
+		``I like nonsense; it wakes up brain cells.'' -- Dr. {\sc Seuss}
+	\end{quote}
+	An {\it artificial neural network} (or neural network for short) is a predictive model motivated by way brain operates. Think of brain as a collection of neurons wired together. Each neuron looks at outputs of other neurons that feed into it, does a calculation, \& then either fires (if calculation exceeds some threshold) or doesn't (if it doesn't).
+	
+	Accordingly, ANNs consist of artificial neurons, which perform similar calculations over their inputs. Neural networks can solve a wide variety of problems like handwriting recognition \& face detection, \& they are used heavily in DL, 1 of trendiest subfields of DS. However, most neural networks are ``black boxes'' -- inspecting their details doesn't give much understanding of {\it how} they're solving a problem. \& large neural networks can be difficult to train. For most problems encounter a building data scientist, they're probably not right choice. Someday, when try to build an AI to bring about Singularity, they very well might be.
+	\begin{itemize}
+		\item {\sf Perceptrons.} Pretty much simplest neural network is {\it perceptron}, which approximates a single neuron with $n$ binary inputs. It computes a weighted sum of its input \& ``fires'' if that weighted sum is 0 or greater:
+		\begin{verbatim}
+		from scratch.linear_algebra import Vector, dot
+		
+		def step_function(x: float) -> float:
+		    return 1.0 if x >= 0 else 0.0
+		
+		def perceptron_output(weights: Vector, bias: float, x: Vector) -> float:
+		    """Returns 1 if the perceptron 'fires', 0 if not"""
+		    calculation = dot(weights, x) + bias
+		    return step_function(calculation)
+		\end{verbatim}
+		Perceptron is simply distinguishing between half-spaces separated by hyperplane of points ${\bf x}$ for which:
+		\begin{verbatim}
+			dot(weights, x) + bias == 0
+		\end{verbatim}
+		With properly chosen weights, perceptrons can solve a number of simple problems ({\sf Fig. 18.1: Decision space for a 2-input perceptron}). E.g., can create an {\it AND gate} (which returns 1 if both its inputs are 1 but returns 0 if 1 of its inputs is 0) with:
+		\begin{verbatim}
+			and_weights = [2., 2]
+			and_bias = -3.
+			
+			assert perceptron_output(and_weights, and_bias, [1, 1]) == 1
+			assert perceptron_output(and_weights, and_bias, [0, 1]) == 0
+			assert perceptron_output(and_weights, and_bias, [1, 0]) == 0
+			assert perceptron_output(and_weights, and_bias, [0, 0]) == 0
+		\end{verbatim}
+	\end{itemize}
 	\item {\sf19. DL.}
 	\item {\sf20. Clustering.}
 	\item {\sf21. Natural Language Processing.}
@@ -468,7 +502,7 @@ With open source software projects more thinly resourced than ever relative to s
 		
 		For data analysis \& interactive computing \& data visualization, Python will inevitably draw comparisons with other open source \& commercial programming languages \& tools in wide use, e.g. R, MATLAB, SAS, Stata, \& others. In recent years, Python's improved open source libraries (e.g. {\tt pandas} \& scikit-learn) have made it a popular choice for data analysis tasks. Combined with Python's overall strength for general-purpose software engineering, it is an excellent option as a primary language for building data applications.
 		\begin{itemize}
-			\item {\sf Python as Glue.} Part of Python's success in scientific computing: ease of integrating C, C++, \& FORTRAN code - -1 phần thành công của Python trong điện toán khoa học: dễ dàng tích hợp mã C, C++, \& FORTRAN. Most modern computing environments share a similar set of legacy FORTRAN \& C libraries for doing linear algebra, optimization, integration, fast Fourier transforms, \& other such algorithms. Same story has held true for many companies \& national labs that have used Python to glue together decades' worth of legacy software.
+			\item {\sf Python as Glue.} Part of Python's success in scientific computing: ease of integrating C, C++, \& FORTRAN code (1 phần thành công của Python trong điện toán khoa học: dễ dàng tích hợp mã C, C++, \& FORTRAN). Most modern computing environments share a similar set of legacy FORTRAN \& C libraries for doing linear algebra, optimization, integration, fast Fourier transforms, \& other such algorithms. Same story has held true for many companies \& national labs that have used Python to glue together decades' worth of legacy software.
 			
 			Many programs consist of small portions of code where most of time is spent, with large amounts of ``glue code'' that doesn't run often. In many cases, execution time of glue code is significant; effort is most fruitfully invested in optimizing computational bottlenecks, sometimes by moving code to a lower-level language like C.
 			\item {\sf Solving ``2-Language'' Problem.} In many organizations, common to research, prototype, \& test new ideas using a more specialized computing language like SAS or R \& then later port those ideas to be part of a larger production system written in, say, Java, C\#, or C++. What people are increasingly finding: Python is a suitable language not only for doing research \& prototyping but also for building production systems. {\it Why maintain 2 development environments when one will suffice?} Believe more \& more companies will go down this path, as there are often significant organizational benefits to having both researchers \& software engineers using same set of programming tools.

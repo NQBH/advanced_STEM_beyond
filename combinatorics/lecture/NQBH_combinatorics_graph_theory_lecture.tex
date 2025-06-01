@@ -5,7 +5,7 @@
 \usepackage{tocloft}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
-\usepackage{amsmath,amssymb,amsthm,enumitem,float,graphicx,mathtools,minitoc,tikz}
+\usepackage{amsmath,amssymb,amsthm,enumitem,fancyvrb,float,graphicx,mathtools,minitoc,tikz}
 \usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
 \usepackage{sectsty}
 \allsectionsfont{\sffamily}
@@ -37,7 +37,7 @@
 \newtheorem{remark}{Remark}
 \newtheorem{theorem}{Theorem}
 \newtheorem{vidu}{Ví dụ}
-\usepackage[left=1cm,right=1cm,top=5mm,bottom=5mm,footskip=4mm]{geometry}
+\usepackage[left=1cm,right=1cm,top=1.5cm,bottom=1.5cm]{geometry}
 \def\labelitemii{$\circ$}
 \DeclareRobustCommand{\divby}{%
 	\mathrel{\vbox{\baselineskip.65ex\lineskiplimit0pt\hbox{.}\hbox{.}\hbox{.}}}%
@@ -893,15 +893,162 @@ You are asked to find a formula for $f(n)$ but not the usual kind of formula of 
 
 \begin{problem}[\cite{Shahriari2022}, p. 6]
 	On a large square piece of paper, draw $n\in\mathbb{N}^\star$ straight lines that start from 1 side of the square \& end on another side. Each 2 of the lines intersect but no 3 (or more) lines go through the same point. Let $f(n)$ be the number of regions which the lines split the piece of paper. Compute some values of $f(n)$ \& predict its general formula.
+	
+	-- Trên 1 tờ giấy vuông lớn, vẽ $n\in\mathbb{N}^\star$ các đường thẳng bắt đầu từ 1 cạnh của hình vuông \& kết thúc ở cạnh còn lại. Mỗi 2 đường thẳng cắt nhau nhưng không có 3 (hoặc nhiều hơn) đường thẳng nào đi qua cùng 1 điểm. Giả sử $f(n)$ là số vùng{\tt/}miền mà các đường thẳng chia tờ giấy. Tính 1 số giá trị của $f(n)$ \& dự đoán công thức chung của nó.
 \end{problem}
 
+\begin{question}
+	How do we know that the number of regions does not depend on the configuration of the lines? Maybe if we draw the lines in a different relation to each other, the number of regions will change.
+	
+	-- Làm sao chúng ta biết được số lượng vùng không phụ thuộc vào cấu hình của các đường? Có thể nếu chúng ta vẽ các đường theo một mối quan hệ khác với nhau, số lượng vùng sẽ thay đổi.
+\end{question}
+
+\begin{proof}[Giải]
+	Let $f(n)$ denote the number of regions created by $n\in\mathbb{N}^\star$ straight lines assuming that each pair of lines intersects \& no 3 lines go through the same point (đồng quy). $f(1) = 2,f(2) = 4,f(3) = 7$. Instead of trying to find a formula for $f(n)$ or even trying to prove that $f(n)$ is independent of the position of the lines, we try to determine $f(n)$ in terms of $f(n - 1)$. Not only will this allow us to inductively start with $f(1)$ \& $f(2)$ \& find other values of $f(n)$, but it could also show that $f(n)$ is well defined. We do a thought experiment. Assume that $n - 1$ straight lines split the plane into $f(n - 1)$ regions. How many additional regions are created when we add 1 more line? If we just zoom onto this new line \& follow its path, it will start from 1 side of the square, 1 by 1 cross the $n - 1$ other lines, \& end at another side of the square. Hence, it will go through $n$ regions created by the original $n - 1$ lines. (The 1st region is the one our line is traversing before it hits the 1st line, the 2nd region is between the 1st \& the 2nd, \& so on until the $(n - 1)$th region -- i.e., between the $(n - 2)$th \& $(n - 1)$th lines. Finally, the $n$th region is after the $(n - 1)$th line.) Our line line will split each of these $n$ regions into 2, \& as a result will add $n$ regions to what was there before, hence $f(n) = f(n - 1) + n$, $\forall n\in\mathbb{N}^\star$. This relationship also proves that $f(n)$ does not depend on the configuration of the lines, \& t hat it is well defined. (After all, no matter how the lines are configured, if $f(n - 1)$ is well-defined, then $f(n)$ must be $f(n - 1) + n$. Since $f(1)$ is well defined, by induction all values of $f(n)$ are well defined.) Note that we could have even started with the case $n = 0$. Use mathematical induction to obtain $f(n) = 1 + \frac{n(n + 1)}{2}$, $\forall n\in\mathbb{N}$ (just 1 more than the triangle numbers). Thus $f(100) = 1 + \frac{100\cdot101}{2} = 5051$.
+\end{proof}
+
+\begin{remark}[A common approach to some combinatorial problems, \cite{Shahriari2022}, Rmk. 1.11, p. 22]
+	Often a given combinatorial problem is an instance of a sequence of problems indexed by $n\in\mathbb{N}^\star$, where $n$ is a natural parameter for the problem. If we let $f(n)$ denote the answer to the $n$th instance of our problem, ideally we may want a closed-form formula for $f(n)$. Sometimes, we can find a ``recurrence relation'' for $f$, i.e., finding a formula for $f(n)$ in terms of $f(n - 1),f(n - 2),\ldots$, e.g., $f(n) = f(n - 1) + f(n - 2)$, the defining recurrence relation for the sequence of Pi\.{n}gala--Fibonacci numbers. Usually, the recurrence relation itself is not proved by induction. Rather, we often use a ``thought experiment''. What are the possibilities for the ``1st'' or ``last'' step of the problem? 
+	
+	After we have a recurrence relation \& a few base cases, we can easily generate data \& record many values for $f(n)$. At this point, there are a number of possible approaches:
+	\begin{itemize}
+		\item Use a simple computer program to find any particular value of $f(n)$ that you need.
+		\item Look at the values of $f(n)$ for small $n$ \& try to guess the pattern. If your guess is correct, sometimes you can translate it to a closed formula, \& often you can prove your conjecture using induction. You can use the recurrence relation in your proof by induction. Recurrence relations are especially suited to help with proofs by induction.
+		\item Some classes of recurrence relations (e.g., so-called linear recurrence relations) can be solved systematically.
+		\item Sometimes you can ``unwind'' the recurrence relation.
+		\item Sometimes you can use ``generating functions'' to get information about the sequence $\{f(n)\}_{n=0}^\infty$.
+	\end{itemize}
+	Guessing the pattern from the starting values of an infinite sequence is not easy. For 1 thing, there are many distinct infinite sequences that agree in the 1st few terms -- after all, there are not that many very small integers, \&, in contrast, there are many infinite sequences of integers. If you have the beginning of a sequence of numbers, \& are wondering what the pattern could be, 1 very fun tool is the \emph{Online Encyclopedia of Integer Sequences} at \url{https://oeis.org/}
+\end{remark}
+
+\begin{question}[1st step vs. last step]
+	When should we focus on the 1st step of a problem to establish a recurrence relation? When on the last step?
+	
+	-- Khi nào chúng ta nên tập trung vào bước đầu tiên của một bài toán để thiết lập mối quan hệ lặp lại? Khi nào là bước cuối cùng?
+\end{question}
+A recurrence, for the integer valued function $f$, of the form $f(n) = \sum_{i=1}^k \alpha_if(n - i) + g(n) = \alpha_1f(n - 1) + \alpha_2f(n - 2) + \cdots + \alpha_kf(n - k) + g(n)$, where $\alpha_i$ are scalars, $\forall i\in[k]$, \& $g$ is a function of $n$, is called a {\it linear recurrence relation}. If you are lucky \& the recurrence relation is linear, then the most fruitful method is to 1st ignore the initial conditions \& find, basically by an educated guess, a set of functions that satisfy the recurrence relation, \& then use the initial conditions to choose a function that satisfies both the initial conditions \& the recurrence relation. The key observation -- which will be used often -- is that if 2 functions have the same initial values \& satisfy the same recurrence conditions, then they will have to be the same for all later inputs. See \cite[Sect. 1.4]{Shahriari2022} where both linear recurrence relations \& the idea of unwinding a recurrence relation were explored.
+
 \begin{baitoan}
-	Cho $m,n\in\mathbb{N}^\star$ cố định. Đếm số nghiệm nguyên dương của phương trình $\sum_{i=1}^d x_i n$ trong đó $x_i$ chỉ có thể nhận $1$ trong $m$ giá trị cho trước $a_1,a_2,\ldots,a_m$, i.e., $x_i\in\{a_1,\ldots,a_m\}$, $\forall i\in[d]$, $d\in\mathbb{N}^\star$ có thể thay đổi.
+	Cho $m,n\in\mathbb{N}^\star$ cố định. Đếm số nghiệm nguyên dương của phương trình $\sum_{i=1}^d x_i = n$ trong đó $x_i$ chỉ có thể nhận $1$ trong $m$ giá trị cho trước $a_1,a_2,\ldots,a_m$, i.e., $x_i\in\{a_1,\ldots,a_m\}$, $\forall i\in[d]$, $d\in\mathbb{N}^\star$ có thể thay đổi.
 \end{baitoan}
+
+\begin{remark}[\cite{Shahriari2022}, Rmk. 1.11, p. 22]
+	The problems in this section are ment to give you experience in setting up a recurrence relation for a counting problem. This skill will be used throughout the book. In some problems, you are also asked to use the recurrence relation, generate some data, guess the pattern, \& prove it by induction. The 2 techniques: solving linear recurrences \& unwinding when applicable give a better alternative to ``guess-the-pattern'' of the current section. Yet a 4th method -- using generating functions -- will be discussed in \cite[Chap. 9]{Shahriari2022}.
+\end{remark}
 
 %------------------------------------------------------------------------------%
 
-\section{Pigeonhole principle \& Ramsey theory -- Nguyên lý chuồng bồ câu \& lý thuyết Ramsey}
+\subsection{Problems: Recurrence relation -- Bài tập: Quan hệ hồi quy}
+
+\begin{problem}[\cite{Shahriari2022}, P1.3., p. 22]
+	
+\end{problem}
+
+\begin{problem}[\cite{Shahriari2022}, P1.3., p. 22]
+	
+\end{problem}
+
+\begin{problem}[\cite{Shahriari2022}, P1.3., p. 22]
+	
+\end{problem}
+
+\begin{problem}[\cite{Shahriari2022}, P1.3., p. 22]
+	
+\end{problem}
+
+\begin{problem}[\cite{Shahriari2022}, P1.3., p. 23]
+	
+\end{problem}
+
+\begin{problem}[\cite{Shahriari2022}, P1.3., p. 23]
+	
+\end{problem}
+
+\begin{problem}[\cite{Shahriari2022}, P1.3., p. 23]
+	
+\end{problem}
+
+\begin{problem}[\cite{Shahriari2022}, P1.3., p. 23]
+	
+\end{problem}
+
+\begin{problem}[\cite{Shahriari2022}, P1.3., p. 23]
+	
+\end{problem}
+
+\begin{problem}[\cite{Shahriari2022}, P1.3., p. 23]
+	
+\end{problem}
+
+\begin{problem}[\cite{Shahriari2022}, P1.3., p. 23]
+	
+\end{problem}
+
+\begin{problem}[\cite{Shahriari2022}, P1.3., p. 23]
+	
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
+\section{Linear Recurrence Relations \& Unwinding a Recurrence Relation -- }
+In this section, we consider 2 methods for attacking recurrence relations. When they work -- \& there are many common recurrence relations that can be solved using these methods -- they work well \& give a closed formula for the underlying function. However, there are also plenty of recurrence relations that defy both of these methods.
+
+-- Trong phần này, chúng ta sẽ xem xét 2 phương pháp để tấn công các mối quan hệ tái diễn. Khi chúng hoạt động -- \& có nhiều mối quan hệ tái diễn phổ biến có thể được giải quyết bằng các phương pháp này -- chúng hoạt động tốt \& đưa ra một công thức đóng cho hàm cơ bản. Tuy nhiên, cũng có rất nhiều mối quan hệ tái diễn thách thức cả hai phương pháp này.
+
+\begin{problem}[\cite{Shahriari2022}, Warm-Up 1.12, p. 27]
+	Let $f(n) = \alpha n + \beta$, where $\alpha,\beta\in\mathbb{R}$. Find $\alpha,\beta$ s.t. the resulting function $f$ satisfies the recurrence relation $f(n) = 5f(n - 1) - 6f(n - 2) + n$, $\forall n\in\mathbb{N}$, $n\ge2$.
+\end{problem}
+
+\begin{definition}[Homogeneous- \& nonhomogeneous linear recurrence relations, \cite{Shahriari2022}, Def. 1.15, pp. 28--29]
+	Let $\{f(n)\}_{n=0}^\infty = f(0),f(1),\ldots,f(n),\ldots$ be a sequence of real (or complex) numbers. Assume that
+	\begin{equation}
+		\label{homogeneous linear recurrence relation}
+		f(n) = \sum_{i=1}^k \alpha_if(n - i) = \alpha_1f(n - 1) + \alpha_2f(n - 2) + \cdots + \alpha_kf(n - k)\mbox{ for some } k\in\mathbb{N}^\star\mbox{ \& some } \alpha_i\in\mathbb{R},\ \forall i\in[k].
+	\end{equation}
+	We then say that $f$ satisfies a {\rm homogeneous linear recurrence relation} (with constant coefficients). If
+	\begin{equation}
+		\label{nonhomogeneous linear recurrence relation}
+		f(n) = \sum_{i=1}^k \alpha_if(n - i) + g(n) = \alpha_1f(n - 1) + \alpha_2f(n - 2) + \cdots + \alpha_kf(n - k) + g(n)\mbox{ for some } k\in\mathbb{N}^\star,\mbox{ some } \alpha_i\in\mathbb{R},\ \forall i\in[k],
+	\end{equation}
+	\& some nonzero function $g$, then we say that $f$ satisfies a nonhomogeneous {\rm linear recurrence relation} (with constant coefficients).
+\end{definition}
+
+\begin{example}[\cite{Shahriari2022}, Ex. 1.16, p. 29]
+	A sequence $\{a_n\}_{n=0}^\infty$ with the recurrence $a_n = a_{n-1} + a_{n-2}$ satisfies a homogeneous linear recurrence, while a sequence $\{b_n\}_{n=0}^\infty$ with the recurrence relation $b_n = b_{n-1} + b_{n-2} + n^2$ satisfies a nonhomogeneous linear recurrence.
+\end{example}
+We 1st formalize the ``linearity'' property of {\it linear} recurrence relations.
+
+\begin{lemma}[\cite{Shahriari2022}, Lem. 1.17, p. 29]
+	(a) Assume that the functions $f_1,f_2,\ldots,f_m$ satisfy the homogeneous linear recurrence of \eqref{homogeneous linear recurrence relation}. Then, for scalars $\beta_1,\ldots,\beta_m$, every linear combination $\sum_{i=1}^m \beta_if_i = \beta_1f_1 + \beta_2f_2 + \cdots + \beta_mf_m$ also satisfies the homogeneous linear recurrence of \eqref{homogeneous linear recurrence relation}.
+	\item (b) If functions $h_1,h_2$ satisfy the nonhomogeneous linear recurrence \eqref{nonhomogeneous linear recurrence relation}, then their difference $h_1 - h_2$ satisfies the homogeneous linear recurrence of \eqref{homogeneous linear recurrence relation}.
+\end{lemma}
+
+%------------------------------------------------------------------------------%
+
+\section{Pigeonhole Principle \& Ramsey Theory -- Nguyên Lý Chuồng Bồ Câu \& Lý Thuyết Ramsey}
+
+\begin{problem}[\cite{Shahriari2022}, p. 42]
+	In an ancient cave, you see a seemingly arbitrary list of $100$ positive integers carved in a row. You add up all the integers \& the sum is $152$. Show that, regardless of what the integers are, among them you can locate an unbroken block of adjacent integers that add up to exactly $47$.
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Dirichlet{\tt/}Pigeonhole principle -- Nguyên lý Dirichlet{\tt/}chuồng bồ câu}
+
+\begin{problem}[\cite{Shahriari2022}, Warm-Up 2.1, p. 42]
+	A bag contains $100$ apples, $100$ bananas, $100$ oranges, \& $100$ pears. If, every minute, I randomly pick 1 piece of fruit out of the bag, how long will it be before I am assured of having picked at least a dozen pieces of fruit of the same kind?
+	
+	-- 1 túi chứa $100$ quả táo, $100$ quả chuối, $100$ quả cam, \& $100$ quả lê. Nếu mỗi phút, tôi ngẫu nhiên hái 1 quả từ túi, thì sau bao lâu tôi chắc chắn đã hái được ít nhất một tá quả cùng loại?
+\end{problem}
+An almost trivial fact:
+
+\begin{theorem}[Dirichlet{\tt/}Pigeonhole principle, \cite{Shahriari2022}, Thm. 2.2, p. 42]
+	Given $n\in\mathbb{N}^\star$. If we put $n + 1$ pigeons into $n$ pigeonholes, then at least 1 pigeonhole contains $\ge2$ pigeons.
+\end{theorem}
+
+\begin{theorem}[Pigeonhole principle, reformulated, \cite{Shahriari2022}, Thm. 2.3, p. 42]
+	Let $P,H$ be $2$ finite sets. Let $f:P\to H$ be a function. If $|P| > |H|$, then $f$ is not 1-1.
+\end{theorem}
 
 %------------------------------------------------------------------------------%
 

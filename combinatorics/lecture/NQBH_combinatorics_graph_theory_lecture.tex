@@ -579,17 +579,6 @@ The combinatorial version Thm. \ref{thm: inclusion-exclusion: combinatorial vers
 	Chọn ra $a$ bạn ngồi hàng đầu \& sắp vị trí: có $A_n^a$ cách. Hoán vị $n - a$ bạn còn lại vào hàng sau: có $(n - a)!$ cách. Theo quy tắc nhân, có $A_n^a(n - a)! = \dfrac{n!}{(n - a)!}(n - a)! = n!$ cách.
 \end{proof}
 
-\begin{baitoan}[O, +1]
-	Cho $n\in\mathbb{N}^\star$. Chứng minh số cách khác nhau để đặt $n$ dấu ngoặc mở \& $n$ dấu ngoặc đóng đúng đắn bằng số Catalan thứ $n$:
-	\begin{equation*}
-		C_n\coloneqq\frac{1}{n + 1}C_{2n}^n = \frac{(2n)!}{n!(n + 1)!},\ \forall n\in\mathbb{N}^\star.
-	\end{equation*}
-\end{baitoan}
-
-\begin{baitoan}[+0.5]
-	Cho $n\in\mathbb{N}^\star$, $k\in\mathbb{N}$, $0\le k\le n$. Viết chương trình {\sf C{\tt/}C++, Pascal, Python} để tính \& cho biết giá trị nhỏ nhất của $n$ gặp lỗi overflow: (a) $P_n = n!$. (b) $A_n^k$. (c) $C_n^k$. (d) Số Catalan thứ $n$.	
-\end{baitoan}
-
 \begin{problem}[\cite{Shahriari2022}, p. 2]
 	Given $m,n\in\mathbb{N}^\star$, $m\le n$. Count the number of sequences $a_1,a_2,\ldots,a_n$ consisting of $m$ $0$'s \& $n - m$ $1$'s, if no 2 consecutive terms are both $0$'s? Write {\sf C{\tt/}C++, Python} programs to illustrate.
 	
@@ -1290,7 +1279,240 @@ While we have an infinite series on RHS, we can approximate it by finding a part
 
 %------------------------------------------------------------------------------%
 
-\chapter{Nhị thức Newton \& đa thức}
+\section{Catalan Numbers -- Số Catalan}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \href{https://en.wikipedia.org/wiki/Catalan_number}{Wikipedia{\tt/}Catalan number}
+\end{enumerate}
+The {\it Catalan numbers} are a sequence of natural numbers that occur in various \href{https://en.wikipedia.org/wiki/Enumeration}{counting problems}, often involving \href{https://en.wikipedia.org/wiki/Recursion}{recursionly} defined objects. They are named after \href{https://en.wikipedia.org/wiki/Eug%C3%A8ne_Charles_Catalan}{Eug\`ene Catalan}, though they were previously discovered in the 1730s by \href{https://en.wikipedia.org/wiki/Minggatu}{\sc Minggatu}.
+
+-- Số Catalan là 1 chuỗi số tự nhiên xuất hiện trong nhiều bài toán đếm khác nhau, thường liên quan đến các đối tượng được xác định đệ quy. Chúng được đặt theo tên của {\sc Eugène Catalan}, mặc dù trước đó chúng đã được {\sc Minggatu} phát hiện vào những năm 1730.
+
+The $n$-th Catalan number can be expressed directly in terms of the \href{https://en.wikipedia.org/wiki/Central_binomial_coefficient}{central binomial coefficients} by
+\begin{equation}
+	\label{Catalan number}
+	C_n = \frac{1}{n + 1}\binom{2n}{n} = \frac{(2n)!}{n!(n + 1)!},\ \forall n\in\mathbb{N}^\star.
+\end{equation}
+The 1st Catalan numbers for $n = 0,1,2,3,\ldots$ are $1, 1, 2, 5, 14, 42, 132, 429, 1430, 4862, 16796, 58786,\ldots$ (sequence \href{https://oeis.org/A000108}{A000108} in the \href{https://en.wikipedia.org/wiki/On-Line_Encyclopedia_of_Integer_Sequences}{OEIS}).
+
+%------------------------------------------------------------------------------%
+
+\subsection{Some properties of Catalan numbers -- Vài tính chất của số Catalan}
+An alternative expression for $C_n$ is
+\begin{equation*}
+	C_n = \binom{2n}{n} - \binom{2n}{n + 1},\ \forall n\in\mathbb{N}^\star,
+\end{equation*}
+which is equivalent to the expression \eqref{Catalan number} because $\binom{2n}{n+1} \frac{n}{n+1}\binom{2n}{n}$. This expression shows that $C_n\in\mathbb{Z}$, which is not immediately obvious from the 1st formula \eqref{Catalan number} given. Another alternative expression is
+\begin{equation*}
+	C_n = \frac{1}{2n + 1}\binom{2n + 1}{n},\ \forall n\in\mathbb{N}^\star,
+\end{equation*}
+which can be directly interpreted in terms of the \href{https://en.wikipedia.org/wiki/Cycle_lemma}{cycle lemma}.
+
+\begin{problem}
+	Prove: (a) The Catalan numbers satisfy the recurrence relations
+	\begin{align}
+		C_0 = 1,\ C_n &= \sum_{i=1}^n C_{i-1}C_{n-i},\ \forall n\in\mathbb{N}^\star,\label{Catalan: recurrence}\\
+		C_0 = 1,\ C_n &= \frac{2(2n - 1)}{n + 1}C_{n-1},\ \forall n\in\mathbb{N}^\star.\nonumber
+	\end{align}
+	(b) Asymptotically, the Catalan numbers grow as
+	\begin{equation*}
+		C_n\sim\frac{4^n}{n^{\frac{3}{2}}\sqrt{\pi}},\ \forall n\in\mathbb{N}^\star,
+	\end{equation*}
+	in the sense $\lim_{n\to\infty} \dfrac{C_nn^{\frac{3}{2}}\sqrt{\pi}}{4^n} = 1$.
+\end{problem}
+{\sf Hint.} (b) can be proved by using the \href{https://en.wikipedia.org/wiki/Central_binomial_coefficient#Asymptotic_growth}{asymptotic growth of the central binomial coefficients}, by \href{https://en.wikipedia.org/wiki/Stirling%27s_approximation}{Stirlings' approximation} for $n!$, or \href{https://en.wikipedia.org/wiki/Generating_function#Asymptotic_growth_of_the_Catalan_numbers}{via generating functions}.
+
+The only Catalan numbers $C_n$ that are odd are those for which $n = 2^k - 1$; all others are even. The only prime Catalan numbers are $C_2 = 2,C_3 = 5$. More generally, the multiplicity with which a prime $p$ divides $C_n$ can be determined by 1st expressing $n + 1$ in base $p$. For $p = 2$, the multiplicity is the number of 1 bits, minus 1. For $p$ an odd prime, count all digits $> \frac{p + 1}{2}$; also count digits $= \frac{p + 1}{2}$ unless final; \& count digits $= \frac{p - 1}{2}$ if not final \& the next digit is counted. The only known odd Catalan numbers that do not have last digit 5 are $C_0 = 1,C_1 = 1,C_7 = 429,C_{31},C_{127},C_{255}$. The odd Catalan numbers, $C_n$ for $n = 2^k - 1$, do not have last digit 5 if $n + 1$ has a base 5 representation containing $0,1,2$ only, except in the least significant place, which could also be a 3.
+
+The Catalan numbers have the integral representations
+\begin{equation*}
+	C_n = \frac{1}{2\pi}\int_0^4 x^n\sqrt{\frac{4 - x}{x}}\,{\rm d}x = \frac{2}{\pi}4^n\int_{-1}^1 t^{2n}\sqrt{1 - t^2}\,{\rm d}t,
+\end{equation*}
+which immediately yields $\sum_{n=0}^\infty \dfrac{C_n}{4^n} = 2$.
+
+This has a simple probabilistic interpretation. Consider a random walk on the integer line, starting at 0. Let $-1$ be a ``trap'' state, s.t. if the walker arrives at $-1$, it will remain there. The walker can arrive at the trap state at times $1,3,5,\ldots$, \& the number of ways the walker can arrive at the trap state at time $2k + 1$ is $C_k$. Since the 1D random walk is recurrent, the probability that the walker eventually arrives at $-1$ is $\sum_{n=0}^\infty \dfrac{C_n}{2^{2n + 1}} = 1$.
+
+-- Điều này có một cách giải thích xác suất đơn giản. Hãy xem xét một bước đi ngẫu nhiên trên đường số nguyên, bắt đầu từ 0. Giả sử $-1$ là trạng thái ``bẫy'', tức là nếu người đi bộ đến $-1$, thì nó sẽ vẫn ở đó. Người đi bộ có thể đến trạng thái bẫy tại các thời điểm $1,3,5,\ldots$, \& số cách người đi bộ có thể đến trạng thái bẫy tại thời điểm $2k + 1$ là $C_k$. Vì bước đi ngẫu nhiên 1D là tuần hoàn, nên xác suất người đi bộ cuối cùng đến $-1$ là $\sum_{n=0}^\infty \dfrac{C_n}{2^{2n + 1}} = 1$.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Some applications of Catalan numbers in Combinatorics --  Vài ứng dụng của số Catalan trong Tổ hợp}
+There are many counting problems in combinatorics whos solution is given by the Catalan numbers. The book {\it Enumerative Combinatorics: Vol 2} by combinatorialist \href{https://en.wikipedia.org/wiki/Richard_P._Stanley}{\sc Richard P. Stanley} contains a set of exercises which describe 66 different interpretations of the Catalan numbers, e.g.:
+\begin{enumerate}
+	\item $C_n$ is the number of \href{https://en.wikipedia.org/wiki/Dyck_word}{Dyck words} of length $2n$. A Dyck word is a string consisting of $n$ X's \& $n$ Y's s.t. no initial segment of the string has more Y's than X's. E.g., the following are Dyck words up to length 6:  XY, XXYY, XYXY, XXXYYY, XYXXYY, XYXYXY, XXYYXY, XXYXYY.
+	\item Re-interpreting the symbol X as an open parenthesis \& Y as close parenthesis, $C_n$ counts the number of expressions containing $n$ pairs of parentheses which are correctly matched: ((())), (()()), (())(), ()(()), ()()().
+\end{enumerate}
+
+
+%------------------------------------------------------------------------------%
+
+\subsection{Problems: Catalan numbers -- Bài tập: Số Catalan}
+
+\begin{baitoan}
+	Cho $n\in\mathbb{N}^\star$. Chứng minh số cách khác nhau để đặt $n$ dấu ngoặc mở \& $n$ dấu ngoặc đóng đúng đắn bằng số Catalan thứ $n$:
+	\begin{equation*}
+		C_n\coloneqq\frac{1}{n + 1}C_{2n}^n = \frac{(2n)!}{n!(n + 1)!},\ \forall n\in\mathbb{N}^\star.
+	\end{equation*}
+\end{baitoan}
+
+\begin{proof}[VNTA's proof by using strong induction]
+	Số Catalan thỏa hệ thức truy hồi \eqref{Catalan: recurrence}. Gọi $D_n$ là số chuỗi đúng đắn gồm $n$ dấu ngoặc mở \& $n$ dấu ngoặc đóng. Cần chứng minh $D_n = C_n = \frac{1}{n + 1}\binom{2n}{n}$, $\forall n\in\mathbb{N}^\star$. Khi $n = 0$, chỉ có 1 cách (chuỗi rỗng) nên $D_0 = C_0 = 1$. Giả sử $D_i = C_i = \frac{1}{i + 1}\binom{2i}{i}$ đúng $\forall i\in[n]$. Cần chứng minh $D_{n+1} = C_{n+1}$. Thật vậy, mỗi chuỗi ngoặc đúng có thể viết thành dạng $(S_1)S_2$, trong đó: $S_1$ là chuỗi ngoặc đúng với $i$ cặp ngoặc, $S_2$ là chuỗi ngoặc dúng với $n - i$ cặp ngoặc. Khi đó, tổng số cặp ngoặc trong chuỗi $(S_1)S_2$ là $i + (n - i) + 1 = n + 1$ cặp ngoặc nên số chuỗi $n + 1$ cặp ngoặc đúng có thể được biểu diễn thành $D_{n+1} = \sum_{i=0}^n D_iD_{n - i} = \sum_{i=0}^n C_iC_{n - i} = C_{n+1}$. Theo nguyên lý quy nạp mạnh, suy ra $D_n = C_n$, $\forall n\in\mathbb{N}^\star$.
+\end{proof}
+C++:
+\begin{enumerate}
+	\item VNTA's C++: valid parentheses: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/C++/VNTA_valid_parentheses.cpp}.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include<bits/stdc++.h>
+using namespace std;
+
+void validParentheses(int open, int close, string cur, vector<string>& res) {
+    if (open == 0 && close == 0) {
+        res.push_back(cur);
+        return;
+    }
+    if (open > 0) validParentheses(open - 1, close, cur + '(', res);
+    if (close > open) validParentheses(open, close - 1, cur + ')', res);
+}
+
+long long catalan(int n) {
+    long long res = 1;
+    for (int i = 0; i < n; i++) {
+        res *= 2 * (2 * i + 1);
+        res /= (i + 2);
+    }
+    return res;
+}
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n;
+    cin >> n;
+    vector<string> valid;
+    validParentheses(n, n, "", valid);
+    cout << "So chuoi dau ngoac dung dan: " << valid.size() << '\n';
+    for (const string& s : valid) cout << s << '\n';
+    cout << "\nSo catalan thu n: " << catalan(n);
+}
+\end{Verbatim}
+\end{enumerate}
+
+\begin{baitoan}
+	Cho $n\in\mathbb{N}^\star$, $k\in\mathbb{N}$, $0\le k\le n$. Viết chương trình {\sf C{\tt/}C++, Pascal, Python} để tính \& cho biết giá trị nhỏ nhất của $n$ gặp lỗi overflow: (a) $P_n = n!$. (b) $A_n^k$. (c) $C_n^k$. (d) Số Catalan thứ $n$.	
+\end{baitoan}
+C++:
+\begin{enumerate}
+	\item VNTA's: \url{https://github.com/vntanh1406/Graph_SUM2025/blob/main/Combinatorics/CalculateP_A_C_Catalan.cpp}.
+	
+	\url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/C++/VNTA_calculate_P_A_C_Catalan.cpp}.
+	\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include<bits/stdc++.h>
+using namespace std;
+
+// n_max = 20
+long long Pn(int n) {
+    long long res = 1;
+    for (int i = 2; i <= n; i++) res *= i;
+    return res;
+}
+
+// n_max = 20
+long long nAk(int n, int k) {
+    long long res = Pn(n) / Pn(n - k);
+    return res;
+}
+
+// n_max = 20
+long long nCk(int n, int k) {
+    long long res = Pn(n) / (Pn(n - k) * Pn(k));
+    return res;
+}
+
+// n_max = 10
+long long catalan_n(int n) {
+    long long res = Pn(2 * n) / (Pn(n) * Pn(n + 1));
+    return res;
+}
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n, k;
+    cin >> n >> k;
+    cout << Pn(n) << endl << nAk(n, k) << endl << nCk(n, k) << endl << catalan_n(n);
+}
+	\end{Verbatim}
+	\item ST's C++: PAC Catalan: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/C++/ST_calculate_P_A_C_Catalan.cpp}.
+	\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <climits>
+using namespace std;
+
+unsigned long long factorial(int n) {
+    unsigned long long res = 1;
+    for (int i = 2; i <= n; ++i) {
+        if (res > ULLONG_MAX / i) {
+            cout << "Overflow tại n = " << i << " khi tính giai thừa.\n";
+            return 0;
+        }
+        res *= i;
+    }
+    return res;
+}
+
+unsigned long long permutation(int n, int k) {
+    unsigned long long a = factorial(n);
+    unsigned long long b = factorial(n - k);
+    return (b == 0) ? 0 : a / b;
+}
+
+unsigned long long combination(int n, int k) {
+    unsigned long long a = factorial(n);
+    unsigned long long b = factorial(k);
+    unsigned long long c = factorial(n - k);
+    return (b == 0 || c == 0) ? 0 : a / (b * c);
+}
+
+unsigned long long catalan(int n) {
+    unsigned long long a = factorial(2 * n);
+    unsigned long long b = factorial(n + 1);
+    unsigned long long c = factorial(n);
+    return (b == 0 || c == 0) ? 0 : a / (b * c);
+}
+
+int main() {
+    int n, k;
+    cout << "Nhap n (n > 0): ";
+    cin >> n;
+    cout << "Nhap k (0 <= k <= n): ";
+    cin >> k;
+	
+    cout << "\n=== Ket qua ===\n";
+	
+    unsigned long long fn = factorial(n);
+    if (fn != 0) cout << "Pn = " << fn << endl;
+	
+    unsigned long long Ank = permutation(n, k);
+    if (Ank != 0) cout << "A^k_n = " << Ank << endl;
+	
+    unsigned long long Cnk = combination(n, k);
+    if (Cnk != 0) cout << "C^k_n = " << Cnk << endl;
+	
+    unsigned long long Catn = catalan(n);
+    if (Catn != 0) cout << "Catalan(n) = " << Catn << endl;
+    return 0;
+}
+	\end{Verbatim}
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\chapter{Newton Binomial Theorem \& Polynomials -- Nhị Thức Newton \& Đa Thức}
+\minitoc
+
+%------------------------------------------------------------------------------%
+
+\section{Newton Binomial Theorem -- Nhị thức Newton}
 
 \begin{theorem}[Binomial theorem]
 	(i) $(a + b)^n = \sum_{i=0}^n C_n^ia^{n-i}b^i$, $\forall a,b\in\mathbb{R}$, $\forall n\in\mathbb{N}$. (ii) $\sum_{i=0}^n C_n^i = 2^n$. (iii)
@@ -1305,6 +1527,92 @@ While we have an infinite series on RHS, we can approximate it by finding a part
 \begin{baitoan}
 	Khai triển: (a) $(a + b + c)^n$, $\forall a,b,c\in\mathbb{R}$, $\forall n\in\mathbb{N}^\star$. (b) $(a + b + c + d)^n$, $\forall a,b,c,d\in\mathbb{R}$, $\forall n\in\mathbb{N}^\star$. (c) $\left(\sum_{i=1}^m a_i\right)^n$, $\forall m,n\in\mathbb{N}^\star$, $\forall a_i\in\mathbb{R}$, $\forall i = 1,\ldots,m$. (d) $z^n$, $\forall z\in\mathbb{C}$, $\forall n\in\mathbb{N}^\star$ với $z = a + bi$, $a\coloneqq\Re z$, $b\coloneqq\Im z$.
 \end{baitoan}
+
+\begin{proof}
+	Add PVT's proofs+++
+\end{proof}
+C++:
+\begin{enumerate}
+	\item VNTA's C++: Pascal triangle \& multinomial:
+	\begin{itemize}
+		\item \url{https://github.com/vntanh1406/Graph_SUM2025/blob/main/Combinatorics/PascalTriaAndMultinomial.cpp}.
+		\item \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/C%2B%2B/VNTA_Pascal_triangle_multinomial.cpp}.
+	\end{itemize}
+	\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include<bits/stdc++.h>
+using namespace std;
+
+unsigned long long Pn(int n) {
+    if (n == 0) return 1;
+    unsigned long long res = 1;
+    for (int i = 2; i <= n; i++)res *= i;
+    return res;
+}
+
+unsigned long long nCk(int n, int k) {
+    long long res = Pn(n) / (Pn(n - k) * Pn(k));
+    return res;
+}
+
+void pascalTriangle(int n) {
+    cout << "1st " << n + 1 << " lines of the Pascal triangle: \n";
+    for (int i = 0; i <= n; i++) {
+        for (int j = 0; j <= i; j++) {
+            cout << nCk(i, j) << " ";
+        }
+        cout << '\n';
+    }
+    cout << "\n========================================\n";
+}
+
+void generatePartitions(int n, int m, int idx, vector<int>& cur, vector<vector<int>>& res) {
+    if (idx == m - 1) {
+        cur[idx] = n;
+        res.push_back(cur);
+        return;
+    }
+    for (int i = 0; i <= n; i++) {
+        cur[idx] = i;
+        generatePartitions(n - i, m, idx + 1, cur, res);
+    }
+}
+
+double multinomialExpansion(int n, const vector<double>& a) {
+    int m = a.size();
+    vector<vector<int>> partitions;
+    vector<int> cur(m, 0);
+    generatePartitions(n, m, 0, cur, partitions);
+	
+    double res = 0;
+    for (const auto& k : partitions) {
+        unsigned long long coeff = Pn(n);
+        double term = 1;
+        for (int i = 0; i < m; i++) {
+            coeff /= Pn(k[i]);
+            term *= pow(a[i], k[i]);
+        }
+        res += coeff * term;
+    }
+    return res;
+}
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n, m;
+    cin >> n >> m;
+	
+    pascalTriangle(n);
+	
+    vector<double> a(m);
+    for (int i = 0; i < m; i++) cin >> a[i];
+    double result = multinomialExpansion(n, a);
+    if (m > 2) cout << "(a1 +... + a" << m << ")^" << n << " = " << result << "\n";
+    else cout <<  "(a1 + a2)^" << n << " = " << result << "\n";
+}
+	\end{Verbatim}
+\end{enumerate}
+
 
 %------------------------------------------------------------------------------%
 
@@ -1392,7 +1700,8 @@ Pascal's rule can be generalized to \href{https://en.wikipedia.org/wiki/Multinom
 
 %------------------------------------------------------------------------------%
 
-\chapter{Phân vùng số nguyên \& nguyên tắc loại suy}
+\chapter{Phân Vùng Số Nguyên \& Nguyên Tắc Loại Suy}
+\minitoc
 
 %------------------------------------------------------------------------------%
 
@@ -1406,7 +1715,7 @@ Pascal's rule can be generalized to \href{https://en.wikipedia.org/wiki/Multinom
 \begin{enumerate}
 	\item \href{https://en.wikipedia.org/wiki/Generating_function}{Wikipedia{\tt/}generating function}.
 	\item MathScope. {\it Chuyên đề Tổ Hợp}.
-	\item {\sc Lê Anh Vinh, Lê Phúc Lữ}. 
+	\item \cite{Vinh_Lu_Olympic_Toan_to_hop}. {\sc Lê Anh Vinh, Lê Phúc Lữ, Nguyễn Huy Tùng, Trần Đăng Phúc, Vũ Văn Luân, Phạm Văn Thắng, Lê Quang Quân, Nguyễn Văn Thế, Nguyễn Tuấn Hải Đăng, Hà Hữu Cao Trình, Phạm Việt Hùng}. {\it Định Hướng Bồi Dưỡng Học Sinh Năng Khiếu Toán. Tập 4: Tổ Hợp}. Chap. 13: Hàm sinh \& ứng dụng.
 \end{enumerate}
 In mathematics, a {\it generating function} is a representation of an \href{https://en.wikipedia.org/wiki/Infinite_sequence}{infinite sequence} of numbers as the \href{https://en.wikipedia.org/wiki/Coefficient}{coefficients} of the \href{https://en.wikipedia.org/wiki/Formal_power_series}{formal power series}. Generating functions are often expressed in \href{https://en.wikipedia.org/wiki/Closed-form_expression}{closed form} (rather than as a series), by some expression involving operations on the formal series.
 

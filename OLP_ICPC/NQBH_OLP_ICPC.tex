@@ -5,7 +5,7 @@
 \usepackage{tocloft}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
-\usepackage{amsmath,amssymb,amsthm,enumitem,float,graphicx,mathtools,tikz}
+\usepackage{amsmath,amssymb,amsthm,enumitem,fancyvrb,float,graphicx,mathtools,tikz}
 \usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
 \allowdisplaybreaks
 \newtheorem{assumption}{Assumption}
@@ -41,7 +41,7 @@
 \setlist[itemize]{leftmargin=*}
 \setlist[enumerate]{leftmargin=*}
 
-\title{Olympic Tin Học Sinh Viên OLP \& ACM-ICPC}
+\title{Olympic Tin Học Sinh Viên OLP {\it\&} ACM-ICPC}
 \author{Nguyễn Quản Bá Hồng\footnote{A Scientist {\it\&} Creative Artist Wannabe. Website: \url{https://nqbh.github.io}. GitHub: \url{https://github.com/NQBH}.\\E-mail: {\sf nguyenquanbahong@gmail.com, hong.nguyenquanba@umt.edu.vn}. Bến Tre \& Hồ Chí Minh Cities, Việt Nam.}}
 \date{\today}
 
@@ -347,9 +347,6 @@ Bài toán có thể mở rộng từ double thành triple, multiple, or just eq
 	\item {\sf ID for online judge.} Ural 1068.
 \end{problem}
 
-%------------------------------------------------------------------------------%
-
-\section{Olympic Tin THCS \& THPT}
 
 \begin{baitoan}[\cite{Trung_HSG_THPT_Tin}, HSG12 Tp. Hà Nội 2020--2021, Prob. 1, p. 80: Find mid -- Tìm giữa]
 	(a) Cho $l,r\in\mathbb{N}^\star$. Tìm $m\in[l,r)\cap\mathbb{N}^\star$ để chênh lệch giữa tổng các số nguyên liên tiếp từ $l$ đến $m$ \& tổng các số nguyên liên tiếp từ $m + 1$ đến $r$ là nhỏ nhất. (b) Mở rộng cho $l,r\in\mathbb{Z}$. (c$\star$) Thay tổng bởi tổng bình phương, tổng lập phương, tổng lũy thừa bậc $a\in\mathbb{R}$.
@@ -1890,6 +1887,77 @@ int main() {
 		\end{tabular}
 	\end{table}
 \end{problem}
+
+%------------------------------------------------------------------------------%
+
+\section{Number Theory -- Lý Thuyết Số}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Primorial}
+In mathematics, \& more particular in number theory, {\it primorial}, denoted by $p_n\#:\mathbb{N}\to\mathbb{N}$ similar to the \href{https://en.wikipedia.org/wiki/Factorial}{factorial} function, but rather than successively multiplying positive integers, the function only multiplies prime numbers. The name ``primorial'', coined by \href{https://en.wikipedia.org/wiki/Harvey_Dubner}{\sc Harvey Dubner}, draws an analogy to {\it primes} similar to the way the name ``factorial'' relates to {\it factors}.
+
+-- Trong toán học, \& cụ thể hơn trong lý thuyết số, {\it primorial}, được ký hiệu là $p_n\#:\mathbb{N}\to\mathbb{N}$ tương tự như hàm giai thừa, nhưng thay vì nhân liên tiếp các số nguyên dương, hàm này chỉ nhân các số nguyên tố. Tên ``primorial'', do {\sc Harvey Dubner} đặt ra, có sự tương tự với {\it primes} tương tự như cách tên ``factorial'' liên quan đến các thừa số.
+
+\begin{definition}[Primorial for prime numbers]
+	For the $n$th prime number $p_n$, the primorial $p_n\#$ is defined as the product of the 1st $n$ primes: $p_n\# = \prod_{i=1}^n p_i$, where $p_i$ is the $i$th prime number.
+\end{definition}
+The 1st few primorials $p_n\#$ are $1, 2, 6, 30, 210, 2310, 30030, 510510, 9699690,\ldots$ (sequence A002110 in the OEIS). Asymptotically, primorials $p_n\#$ grow according to $p_n\# = e^{(1 + o(1))n\log n}$.
+
+\begin{definition}
+	The primorial $n\#$ for $n\in\mathbb{N}^\star$ is the product of the primes that are not greater than $n$, i.e.,
+	\begin{equation*}
+		n\# = \prod_{p\le n,\,p\ {\rm prime}} p = \prod_{i=1}^{\pi(n)} p_i = p_{\pi(n)}\#,
+	\end{equation*}
+	where $\pi(n)$ is the \href{https://en.wikipedia.org/wiki/Prime-counting_function}{prime-counting function} (sequence A000720 in the OEIS), which gives the number of primes $\le n$. This is equivalent to:
+	\begin{equation*}
+		n\# = \left\{\begin{split}
+			&1&&\mbox{if } n = 0,1,\\
+			&(n - 1)\#\times n&&\mbox{if } n\mbox{ is prime},\\
+			&(n - 1)\#&&\mbox{if } n\mbox{ is composite}.
+		\end{split}\right.
+	\end{equation*}
+\end{definition}
+
+\begin{example}
+	$12\# = 2\cdot3\cdot5\cdot7\cdot11 = 2310$. Since $\pi(12) = 5$, this can be calculated as $12\# = p_{\pi(12)}\# = p_5\# = 2310$.
+\end{example}
+Consider the 1st 12 values of $n\#$: $1, 2, 6, 6, 30, 30, 210, 210, 210, 210, 2310, 2310$. We see that for composite $n$ every term $n\#$ simply duplicates the preceding term $(n - 1)\#$, as given in the definition. Since $12$ is a composite number, $12\# = p_5\# = 11\#$.
+
+Primorials are related to the 1st \href{https://en.wikipedia.org/wiki/Chebyshev_function}{Chebyshev function}, written $\vartheta(n)$ or $\theta(n)$ according to $\ln(n\#) = \vartheta(n)$. Since $\vartheta(n)$ asymptotically approaches $n$ for large values of $n$, primorials therefore grow according to $n\# = e^{(1 + o(1))n}$. The idea of multiplying all known primes occur in some proofs of the \href{https://en.wikipedia.org/wiki/Infinitude_of_the_prime_numbers}{infinitude of the prime numbers}, where it is used to derive the existence of another prime.
+
+\begin{theorem}[Characteristics of primorials]
+	(a) Let $p,q$ be 2 adjacent prime numbers. Given any $n\in\mathbb{N}$, where $p\le n < q$, $n\# = p\#$.
+	\item(b) The fact that the binomial coefficient $\binom{2n}{n}$ is divisible by every prime between $n + 1$ \& $2n$, together with the inequality $\binom{2n}{n}\le2^n$, allows to derive the upper bound $n\#\le4^n$.
+\end{theorem}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Divisor function -- Hàm ước số}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \href{https://en.wikipedia.org/wiki/Divisor_function}{Wikipedia{\tt/}divisor function}.
+\end{enumerate}
+In mathematics, \& specifically in \href{https://en.wikipedia.org/wiki/Number_theory}{number theory}, a {\it divisor function} is an \href{https://en.wikipedia.org/wiki/Arithmetic_function}{arithmetic function} related to the \href{https://en.wikipedia.org/wiki/Divisor}{divisors} of an integer. When referred to as {\it the} divisor function, it counts the {\it number of divisors of an integer} (including 1 \& the number itself). It appears in a number of remarkable identities, including relationships on the \href{https://en.wikipedia.org/wiki/Riemann_zeta_function}{Riemann zeta function} \& the \href{https://en.wikipedia.org/wiki/Eisenstein_series}{Eisenstein series} of \href{https://en.wikipedia.org/wiki/Modular_form}{modular forms}. Divisor functions were studied by \href{https://en.wikipedia.org/wiki/Ramanujan}{\sc Ramanujan}, who gave a number of important \href{https://en.wikipedia.org/wiki/Modular_arithmetic}{congruences} \& \href{https://en.wikipedia.org/wiki/Identity_(mathematics)}{identities}; these are treated separately in \href{https://en.wikipedia.org/wiki/Ramanujan%27s_sum}{Wikipedia{\tt/}Ramanujan's sum}.
+
+\begin{definition}
+	The {\rm sum of positive divisors function} $\sigma_z(n)$, for a real or complex number $z$, is defined as the sum of the $z$th powers of the positive divisors of $n$. It can be expressed in \href{https://en.wikipedia.org/wiki/Summation#Capital-sigma_notation}{sigma notation} as
+	\begin{equation*}
+		\sigma_z(n) = \sum_{d|n} d^z,\ \forall n\in\mathbb{N}^\star.
+	\end{equation*}
+\end{definition}
+The notation $d(n),\nu(n),\tau(n)$ (for the German {\it Teiler} $=$ divisors) are also used to denote $\sigma_0(n)$, or the {\it number-of-divisors function} (OEIS: \href{https://oeis.org/A000005}{A000005}). When $z = 1$, the function is called the {\it sigma function} or {\it sum-of-divisors function}, \& the subscript is often omitted, so $\sigma(n)$ is the same as $\sigma_1(n)$ (OEIS: \href{https://oeis.org/A000203}{A000203}).
+
+The \href{https://en.wikipedia.org/wiki/Aliquot_sum}{aliquot sum} $s(n)$ of $n$ is the sum of the \href{https://en.wikipedia.org/wiki/Proper_divisor}{proper divisors} (i.e., the divisors excluding $n$ itself, OEIS: \href{https://oeis.org/A001065}{A001065}), \& equals $\sigma_1(n) - n$; the \href{https://en.wikipedia.org/wiki/Aliquot_sequence}{aliquot sequence} of $n$ is formed by repeatedly applying the aliquot sum function.
+
+\begin{example}
+	The number of divisors of 12 is $\sigma_0(12) = 6$, the sum of all the divisors of $12$ is $\sigma_1(12) = 1 + 2 + 3 + 4 + 6 + 12 = 28$, \& the aliquot sum $s(12) = 1 + 2 + 3 + 4 + 6 = 16$. $\sigma_{-1}(n)$ is sometimes called the \href{https://en.wikipedia.org/wiki/Abundancy_index}{abundancy index} of $n$, \& we have $\sigma_{-1}
+	(12) = 1^{-1} + 2^{-1} + 3^{-1} + 4^{-1} + 6^{-1} + 12^{-1} = \frac{1}{1} + \frac{1}{2} + \frac{1}{4} + \frac{1}{6} + \frac{1}{12} = \frac{12 + 6 + 4 + 3 + 2 + 1}{12} = \frac{28}{12} = \frac{7}{3} = \frac{\sigma_1(12)}{12}$. 
+\end{example}
+
+\begin{theorem}
+	For any prime number $p$: (a) $\sigma_0(p) = 2,\sigma_1(p) = p + 1$. (b) $\sigma_0(p^n) = n + 1,,\sigma_1(p^n) = \sum_{i=0}^n p^i = \dfrac{p^{n+1} - 1}{p - 1}$, $\forall n\in\mathbb{N}$. (c) $\sigma_0(p_n\#) = 2^n$ where $p_n\#$ denotes the \href{https://en.wikipedia.org/wiki/Primorial}{primorial}
+\end{theorem}
 
 %------------------------------------------------------------------------------%
 

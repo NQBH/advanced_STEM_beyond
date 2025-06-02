@@ -5,7 +5,7 @@
 \usepackage{tocloft}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
-\usepackage{amsmath,amssymb,amsthm,enumitem,float,graphicx,mathtools,minitoc,tikz,tipa}
+\usepackage{amsmath,amssymb,amsthm,enumitem,fancyvrb,float,graphicx,mathtools,minitoc,tikz,tipa}
 \usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
 \usepackage{sectsty}
 \allsectionsfont{\sffamily}
@@ -1999,6 +1999,158 @@ Ta có 3 dạng hàm số sơ cấp thường gặp: hàm đa thức $P(x;n,{\bf
 \begin{baitoan}[\cite{TLCT_BT_dai_so_giai_tich_11}, 14., p. 50]
 	1 viên đạn được bắn lên từ mặt đất theo phương thẳng đứng với tốc độ ban đầu $v_0 = 196$ {\rm m{\tt/}s} (bỏ qua sức cản của không khí). Tìm thời điểm tại đó tốc độ của viên đạn bằng $0$. Khi đó viên đạn cách mặt đất bao nhiêu {\rm m}?
 \end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\section{Numerical Differentiation -- Xấp Xỉ Đạo Hàm}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \href{https://www.geeksforgeeks.org/vector-in-cpp-stl/}{Geeks4Geeks{\tt/}vector in C++ STL}.
+	\item \cite{Scheid1989}. {\sc Scheid, Francis}. {\it Schaum's Outline of Numerical Analysis}. Chap. 13: Numerical Differentiation.
+	\item \cite{LeVeque2007}. {\sc Randall J. LeVeque}. {\it Finite Difference Methods for Ordinary \& Partial Differential Equations: Steady-State \& Time-Dependent Problems}.
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Approximate 1st-order derivatives -- Xấp xỉ đạo hàm bậc nhất}
+Approximate derivatives of a function $y = f(x)$ may be found from a polynomial approximation $P(x)$ simply by accepting $P',P'',P^{(3)},\ldots$ in place of $y' = f'(x),y'' = f''(x),y^{(3)} = f^{(3)}(x),\ldots$. Our collocation polynomials lead to a broad variety of useful formulas of this sort. The 3 well-known formulas:
+\begin{enumerate}
+	\item Newton forward differentiation:
+	\begin{equation*}
+		y'|_{x = x_0} = f'(x_0)\approx\frac{f(x_0 + h) - f(x_0)}{h}\mbox{ for all } h > 0\mbox{ small enough}.
+	\end{equation*}
+	\item Newton backward differentiation:
+	\begin{equation*}
+		y'|_{x = x_0} = f'(x_0)\approx\frac{f(x_0) - f(x_0 - h)}{h}\mbox{ for all } h > 0\mbox{ small enough}.
+	\end{equation*}
+	\item Stirling differentiation:
+	\begin{equation*}
+		y'|_{x = x_0} = f'(x_0)\approx\frac{f(x_0 + h) - f(x_0 - h)}{2h}\mbox{ for all } h > 0\mbox{ small enough}.
+	\end{equation*}
+\end{enumerate}
+More complicated formulas are available simply by using more terms. Thus [fill in more details]
+\begin{equation*}
+	f'(x)\approx\frac{1}{h}\left[\Delta y_0 + \left(k - \frac{1}{2}\right)\Delta^2y_0 + \frac{3k^2 - 6k + 2}{6}\Delta^3y_0 + \cdots\right]
+\end{equation*}
+comes from the Newton formula, while
+\begin{equation*}
+	f'(x)\approx\frac{1}{h}\left(\delta\mu y_0 + k\delta^2y_0 + \frac{3k^2 - 1}{6}\delta^3\mu y_0 + \cdots\right)
+\end{equation*}
+results from differentiating Stirling's. Other collocation formulas produce similar approximations.
+
+\begin{baitoan}[Error estimate in numerical differentiation -- Đánh giá sai số trong xấp xỉ đạo hàm]
+	Giả sử $f\in C^1(\mathbb{R})$. Dùng khai triển Taylor tìm sai số của quy tắc xấp xỉ đạo hàm: (a) Newton forward $f'(x)\approx\dfrac{f(x + h) - f(x)}{h}$. (b) Newton backward $f'(x)\approx\dfrac{f(x) - f(x - h)}{h}$. (c) Stirling $f'(x)\approx\dfrac{f(x + h) - f(x - h)}{2h}$.
+\end{baitoan}
+
+\begin{baitoan}[Numerical differentiation of polynomials -- Xấp xỉ đạo hàm của đa thức]
+	Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để xấp xỉ đạo hàm $P'(x_0)$ của đa thức $P(x) = \sum_{i=0}^n a_ix^i$.
+	\item {\sf Input.} Dòng 1 của file input chứa $n\in\mathbb{N}$ là bậc của đa thức $P$, i.e., $n = \deg P$, $x_0\in\mathbb{R}$, $h\in(0,\infty)$. Dòng 2 chứa $n + 1$ hệ số thực theo thứ tự $a_n,a_{n-1},\ldots,a_1,a_0\in\mathbb{R}$.
+	\item {\sf Output.} In ra 3 giá trị xấp xỉ của $P'(x_0)$ lần lượt bằng 3 phương pháp Newton forward, Newton backward, \& Stirling.
+	\item {\sf Sample.}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			\verb|numerical_differentiation.inp| & \verb|numerical_differentiation.out| \\
+			\hline
+			3 1.4142135623730951 0.013 & -0.1767932308 \\
+			-1 3 -2.6457513110645907 3.141592653589793 & -0.1444846154 \\
+			& -0.1606389231 \\
+			\hline
+		\end{tabular}
+	\end{table}
+\end{baitoan}
+
+\begin{baitoan}[Numerical differentiation of polynomial-like function -- Xấp xỉ đạo hàm của hàm tựa-đa thức]
+	Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để xấp xỉ đạo hàm $f'(x_0)$ của hàm số tựa-đa thức $f(x) = \sum_{i=0}^n a_ix^{\alpha_i}$.
+	\item {\sf Input.} Dòng 1 của file input chứa $n\in\mathbb{N}$ là bậc của đa thức $P$, i.e., $n = \deg P$, $x_0\in\mathbb{R}$, $h\in(0,\infty)$. Dòng 2 chứa $n + 1$ hệ số thực theo thứ tự $a_n,a_{n-1},\ldots,a_1,a_0\in\mathbb{R}$. Dòng 3 chứa $n + 1$ số mũ thực theo thứ tự $\alpha_n,\alpha_{n-1},\ldots,\alpha_1,\alpha_0\in\mathbb{R}$.
+	\item {\sf Output.} In ra 3 giá trị xấp xỉ của $f'(x_0)$ lần lượt bằng 3 phương pháp Newton forward, Newton backward, \& Stirling.
+	\item {\sf Sample.}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			\verb|numerical_differentiation_1.inp| & \verb|numerical_differentiation_1.out| \\
+			\hline
+			3 1.4142135623730951 0.013 & -25.80051177 \\
+			-1 3 -2.6457513110645907 3.141592653589793 & -25.40984308 \\
+			3 -2 3.141592653589793 -22.16716829679195 & -25.60517742 \\
+			\hline
+		\end{tabular}
+	\end{table}
+\end{baitoan}
+
+\begin{baitoan}[Numerical differentiation of rational functions -- Xấp xỉ đạo hàm của phân thức]
+	Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để xấp xỉ đạo hàm $f'(x_0)$ của hàm số phân thức
+	\begin{equation*}
+		f(x) = \frac{P(x)}{Q(x)} = \frac{\sum_{i=0}^m a_ix^i}{\sum_{i=0}^n b_ix^i},\ \forall x\in\mathbb{R}\backslash{\rm ker}\,Q.
+	\end{equation*}
+	\item {\sf Input.} Dòng 1 của file input chứa $m,n\in\mathbb{N}$ lần lượt là bậc của 2 đa thức $P,Q$, i.e., $m = \deg P,n = \deg Q$, $x_0\in\mathbb{R}$, $h\in(0,\infty)$. Dòng 2 chứa $m + 1$ hệ số thực theo thứ tự $a_m,a_{m-1},\ldots,a_1,a_0\in\mathbb{R}$. Dòng 3 chứa $n + 1$ hệ số thực theo thứ tự $b_n,b_{n-1},\ldots,b_1,b_0\in\mathbb{R}$.
+	\item {\sf Output.} In ra 3 giá trị xấp xỉ của $f'(x_0)$ lần lượt bằng 3 phương pháp Newton forward, Newton backward, \& Stirling.
+	\item {\sf Sample.}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			\verb|numerical_differentiation_2.inp| & \verb|numerical_differentiation_2.out| \\
+			\hline
+			& \\
+			\hline
+		\end{tabular}
+	\end{table}
+\end{baitoan}
+
+\begin{baitoan}[Numerical differentiation of rational-like functions -- Xấp xỉ đạo hàm của hàm tựa-phân thức]
+	Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để xấp xỉ đạo hàm $f'(x_0)$ của hàm số tựa-phân thức 
+	\begin{equation*}
+		f(x) = \frac{f_{\rm num}(x)}{f_{\rm den}(x)} = \frac{\sum_{i=0}^m a_ix^{\alpha_i}}{\sum_{i=0}^n b_ix^{\beta_i}},\ \forall x\in\mathbb{R}\backslash{\rm ker}\,f_{\rm den}.
+	\end{equation*}
+	\item {\sf Input.} Dòng 1 của file input chứa $m,n\in\mathbb{N}$, $x_0\in\mathbb{R}$, $h\in(0,\infty)$. Dòng 2 chứa $m + 1$ hệ số thực theo thứ tự $a_m,a_{m-1},\ldots,a_1,a_0\in\mathbb{R}$. Dòng 3 chứa $n + 1$ số mũ thực theo thứ tự $\alpha_n,\alpha_{n-1},\ldots,\alpha_1,\alpha_0\in\mathbb{R}$. Dòng 4 chứa $n + 1$ hệ số thực theo thứ tự $b_n,b_{n-1},\ldots,b_1,b_0\in\mathbb{R}$. Dòng 5 chứa $n + 1$ số mũ thực theo thứ tự $\beta_n,\beta_{n-1},\ldots,\beta_1,\beta_0\in\mathbb{R}$.
+	\item {\sf Output.} In ra 3 giá trị xấp xỉ của $f'(x_0)$ lần lượt bằng 3 phương pháp Newton forward, Newton backward, \& Stirling.
+	\item {\sf Sample.}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			\verb|numerical_differentiation_3.inp| & \verb|numerical_differentiation_3.out| \\
+			\hline
+			& \\
+			\hline
+		\end{tabular}
+	\end{table}
+\end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Approximate 2nd-order derivatives -- Xấp xỉ đạo hàm bậc 2}
+For 2nd derivatives 1 popular result is
+\begin{equation*}
+	f''(x)\approx\frac{1}{h}\left(\delta^2y_0 + k\delta^3\mu y_0 + \frac{6k^2 - 1}{12}\delta^4y_0 + \cdots\right)
+\end{equation*}
+\& comes from the Stirling formula. Retaining only the 1st term, we have the familiar
+\begin{equation*}
+	y''|_{x = x_0} = f''(x_0)\approx\frac{f(x + h) - 2f(x) + f(x - h)}{h^2}\mbox{ for all } h > 0\mbox{ small enough}.
+\end{equation*}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Approximate higher order derivatives -- Xấp xỉ đạo hàm bậc cao}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Sources of error in approximate differentiation -- Nguồn lỗi trong xấp xỉ đạo hàm}
+The study of test cases suggests that approximate derivatives obtained from collocation polynomials be viewed with skepticism unless very accurate data are available. Even then the accuracy diminishes with increasing order of the derivatives.
+
+-- Nghiên cứu các trường hợp thử nghiệm cho thấy rằng các đạo hàm gần đúng thu được từ các đa thức sắp xếp được xem xét với sự hoài nghi trừ khi có dữ liệu rất chính xác. Ngay cả khi đó, độ chính xác giảm dần theo thứ tự tăng dần của các đạo hàm.
+
+The basic difficulty is that $y(x) - P(x)$ may be very small while $y'(x) - P'(x)$ is very large. In geometrical language, 2 curves may be close together but still have very different slopes. All the other familiar sources of error are also present, including input errors in the $y_i$ values, truncation errors e.g. $y' - P',y'' - P''$, etc., \& internal roundoffs.
+
+-- Khó khăn cơ bản là $y(x) - P(x)$ có thể rất nhỏ trong khi $y'(x) - P'(x)$ lại rất lớn. Trong ngôn ngữ hình học, 2 đường cong có thể gần nhau nhưng vẫn có độ dốc rất khác nhau. Tất cả các nguồn lỗi quen thuộc khác cũng có mặt, bao gồm lỗi đầu vào trong các giá trị $y_i$, lỗi cắt cụt ví dụ $y' - P',y'' - P''$, v.v., \& làm tròn nội bộ.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Problems: Numerical approximation -- Bài tập: Xấp xỉ đạo hàm}
+
 
 %------------------------------------------------------------------------------%
 

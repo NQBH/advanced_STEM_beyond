@@ -4,11 +4,11 @@ using namespace std;
 int N = 1e6;
 const int mod = 1e9 + 7;
 
-signed main(){
+signed main() {
     int n, k; cin >> n >> k;
-    vector<int>a(k);
+    vector<int> a(k);
     int ans = 0;
-    for (int i = 0; i < k; i++){
+    for (int i = 0; i < k; i++) {
         cin >> a[i];
         ans += n / a[i];
     }
@@ -17,7 +17,7 @@ signed main(){
     for (int i = 0; i < mask; i++) {
         vector<int> temp;
         for (int j = 0; j < k; j++) {
-            if ((1 << j)&i){
+            if ((1 << j)&i) {
                 temp.push_back(a[j]);
             }
         }
@@ -28,8 +28,8 @@ signed main(){
         for (auto c : temp) {
             temp_n /= c;
         }
-        if (temp.size() % 2 == 0) { 
-            ans-=temp_n;
+        if (temp.size() % 2 == 0) {
+            ans -= temp_n;
         }
         else {
             ans += temp_n;

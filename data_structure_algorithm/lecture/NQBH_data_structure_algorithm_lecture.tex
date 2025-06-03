@@ -893,6 +893,10 @@ Output: {\tt5 4 3 2 1}.
 %------------------------------------------------------------------------------%
 
 \section{Pair in C++ STL}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \href{https://www.geeksforgeeks.org/pair-in-cpp-stl/}{Geeks4Geeks{\tt/}pair in C++ STL}.
+\end{enumerate}
 In C++, pair is used to combine together 2 values that may be of different data types of same data types as a single unit. The 1st element is stored as a data member with name {\tt first} \& the 2nd element as {\tt second}, e.g.:
 \begin{Verbatim}[numbers=left,xleftmargin=5mm]
 #include <bits/stdc++.h>
@@ -908,7 +912,7 @@ int main() {
 \end{Verbatim}
 Output: {\tt 1: Geeks}. Explanation: In this program, we created a pair {\tt p1} of type {\tt int} \& {\tt string} with values \verb|{1, "Geeks"}|.
 
-{\bf Syntax.} The pair container is defined in {\tt<utility>} header file.
+\noindent{\bf Syntax.} The pair container is defined in {\tt<utility>} header file.
 \begin{verbatim}
 pair <T1, T2> p;
 \end{verbatim}
@@ -1099,6 +1103,222 @@ A pair is commonly used for the following purposes:
 	\item Storing key-value pairs in other containers, especially maps.
 	\item Sorting containers on the basis of multiple criteria.
 \end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+
+\section{Set in C++ STL}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \href{https://www.geeksforgeeks.org/set-in-cpp-stl/}{Geeks4Geeks{\tt/}set in C++ STL}.
+	\item \href{https://www.geeksforgeeks.org/different-ways-to-initialize-an-set-in-cpp/}{Geeks4Geeks{\tt/}different ways to initialize an set in C++ STL}.
+	\item \href{https://www.geeksforgeeks.org/different-ways-to-insert-elements-in-set-in-cpp-stl/}{Geeks4Geeks{\tt/}different ways to insert elements into set in C++ STL}.
+\end{enumerate}
+In C++, {\it sets} are associative container which stores unique elements in some sorted order. By default, it is sorted ascending order of the keys, but this can be changed as per requirement. It provides fast insertion, deletion, \& search operations, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <set>
+using namespace std;
+
+int main() {
+    // creating a set of integers
+    set<int> s = {3, 5, 2, 1};
+	
+    for (auto x : s)
+        cout << x << " ";
+    return 0;
+}
+\end{Verbatim}
+Output: {\tt1 2 3 5}. Explanation: In the above program, we create a set with name {\tt s} values $\{3,5,2,1\}$.
+
+\noindent{\bf Syntax.} The set container is defined as {\tt std::set} class template inside {\tt<set>} header file.
+\begin{verbatim}
+set<T, comp> s;
+\end{verbatim}
+where {\tt T}: data type of elements in the set, {\tt s}: name assigned to the set, {\tt comp}: a binary predicate function that tells set how to compare 2 elements, which is used to sort set in custom order \& is optional \& if not provided, set is sorted in increasing order.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Declaration \& initialization -- Khai báo \& khởi tạo}
+We can declare \& initialize a set in multiple ways, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    // creating an empty set
+    set<int> s1;
+	
+    // creating a set from an initializer list
+    set<int> s2 = {5, 1, 3, 2, 4};
+	
+    for (auto i : s2) 
+        cout << i << " ";
+    return 0;
+}
+\end{Verbatim}
+Output: {\tt1 2 3 4 5}. Explanation: In this program, we create 2 sets: Statement {\tt set<int> s1} creates an empty set {\tt s1}, called {\tt default initialization}. Statement \verb|set<int> s2 = {5, 1, 3, 2}| creates a {\tt s2} with 4 elements using {\it initializer list}.
+
+Some basic operations that can be performed on a set are as follows.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Inserting elements -- chèn phần tử}
+In set, elements are added using the \href{https://www.geeksforgeeks.org/set-insert-function-in-c-stl/}{insert()} or \href{https://www.geeksforgeeks.org/setemplace-c-stl/}{eplace()} function. If the element already exists in the set, it will not be added again. We cannot specify the position to insert the element as it is automatically decided according to the order, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    set<int> s = {1, 4, 2};
+	
+    // insert elements into set
+    s.insert(5);
+    s.emplace(3);
+    s.insert(5);
+	
+    for (auto x: s) cout << x << " ";
+    return 0;
+}
+\end{Verbatim}
+Output: {\tt1 2 3 4 5}.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Accessing elements}
+We can't access elements of a set by index like in an array or vector. In set, we have to increment or decrement iterator obtained from \href{https://www.geeksforgeeks.org/access-element-in-set-in-cpp/}{begin()} or \href{https://www.geeksforgeeks.org/setbegin-setend-c-stl/}{end()} methods respectively to access the element by position. This can also be done with the help of \href{https://www.geeksforgeeks.org/stdnext-in-cpp/}{next()} or \href{https://www.geeksforgeeks.org/stdadvance-in-cpp/}{advance()} function, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    set<int> s = {1, 4, 2, 3, 5};
+	
+    // accessing first element
+    auto it1 = s.begin();
+	
+    // accessing third element
+    auto it2 = next(it1, 2);
+	
+    cout << *it1 << " " << *it2;
+    return 0;
+}
+\end{Verbatim}
+Output: {\tt1 3}. Explanation: In the above program, {\tt s.begin()} returns an iterator to the 1st element of the set which is stored in {\tt it1}. To access the 3rd element, {\tt next()} is used to move the iterator {\tt it1} by 2 positions \& store it in {\tt it2}. The {\tt*it1, *it2} dereference the iterators to access the values at those positions.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Updating elements -- Cập nhật phần tử}
+We cannot change the value of elements once they are stored in the set.
+
+-- Chúng ta không thể thay đổi giá trị của các phần tử sau khi chúng được lưu trữ trong tập hợp.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Finding elements -- Tìm phần tử}
+Set provides fast search by value operation using the \href{https://www.geeksforgeeks.org/set-find-function-in-c-stl/}{\tt find()} member function. This function returns iterator the element if found, otherwise returns {\tt end()} iterator, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    set<int> s = {1, 4, 2, 3, 5};
+	
+    // finding 3
+    auto it = s.find(3);
+	
+    if (it != s.end()) cout << *it;
+    else cout << "Element not Found!";
+    return 0;
+}
+\end{Verbatim}
+Output: 3.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Traversing -- Duyệt}
+Just like other containers, sets can be easily traversed using {\it range-based for loop} or using {\tt begin(), end()} iterators, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    set<int> s = {5, 1, 4, 3, 2};
+	
+    // traversing using range based for loop
+    for(auto it = s.begin(); it != s.end(); it++)
+        cout << *it << " ";
+    return 0;
+}
+\end{Verbatim}
+Output: {\tt1 2 3 4 5}.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Deleting elements -- Xóa phần tử}
+In set, elements are removed from a set using the \href{https://www.geeksforgeeks.org/seterase-c-stl/}{erase()} function. We can erase elements either by value or by position, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    set<int> s = {1, 4, 2, 3, 5};
+	
+    // deleting elements by value
+    s.erase(5);
+	
+    // deleting first element by iterator
+    s.erase(s.begin());
+	
+    for (auto x: s) cout << x << " ";
+    return 0;
+}
+\end{Verbatim}
+Output: {\tt2 3 4}.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Time complexity}
+The below table lists the time complexity of the above operations on set:
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c|c|}
+		\hline
+		Operation & Time complexity \\
+		\hline
+		Insert an element & $O(\log n)$ \\
+		\hline
+		Delete an element & $O(\log n)$ \\
+		\hline
+		Find the largest element & $O(1)$ \\
+		\hline
+		Find smallest element & $O(1)$ \\
+		\hline
+		Find element by value & $O(\log n)$ \\
+		\hline
+		Traverse the set & $O(n)$ \\
+		\hline
+	\end{tabular}
+\end{table}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Other common operations on sets}
+\begin{enumerate}
+	\item Check if the Set is Empty
+	\item Find the Size of a Set
+	\item Traverse Set in Reverse
+	\item Change Sorting Order in a Set
+	\item Swap Two Sets
+	\item Create Set of Pairs
+	\item Create Set of User Defined Datatype
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Internal working}
+In C++, set is an associative container that provides the implementation of \href{https://www.geeksforgeeks.org/red-black-tree-in-cpp/}{Red-Black Tree}. This data structure makes sure that elements are always stored in a sorted order. It also makes sure that insertion, deletion, \& access operations take logarithmic time.
+
 
 %------------------------------------------------------------------------------%
 

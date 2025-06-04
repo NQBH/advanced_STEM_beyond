@@ -13,6 +13,7 @@ bool dfs(const vector<vector<int>>& adj, vector<bool>& visited, vector<int>& par
             return true;
         }
     }
+
     return false;
 }
 
@@ -44,9 +45,11 @@ int main(){
 
     // Reconstruct and output the cycle
     vector<int> route;
-    for (int v = end; v != start; v = parent[v]) route.push_back(v);
-    route.push_back(start);
-    route.push_back(end); // để khép chu trình đúng format
+    for (int v = end; v != start; v = parent[v]){ // lần lại trước start 
+        route.push_back(v);
+    }
+    route.push_back(start); // để đầu đuôi là mục tiêu, đúng format 
+    route.push_back(end); 
 
     cout << route.size() << "\n";
     for (int i = route.size() - 1; i >= 0; i--) cout << route[i] << " ";

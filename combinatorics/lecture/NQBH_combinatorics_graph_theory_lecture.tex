@@ -43,6 +43,22 @@
 }}
 \makeatother
 
+
+\DeclareMathSymbol{\mathinvertedexclamationmark}{\mathclose}{operators}{'074}
+\DeclareMathSymbol{\mathexclamationmark}{\mathclose}{operators}{'041}
+
+\makeatletter
+\newcommand{\raisedmathinvertedexclamationmark}{%
+	\mathclose{\mathpalette\raised@mathinvertedexclamationmark\relax}%
+}
+\newcommand{\raised@mathinvertedexclamationmark}[2]{%
+	\raisebox{\depth}{$\m@th#1\mathinvertedexclamationmark$}%
+}
+\begingroup\lccode`~=`! \lowercase{\endgroup
+	\def~}{\@ifnextchar`{\raisedmathinvertedexclamationmark\@gobble}{\mathexclamationmark}}
+\mathcode`!="8000
+\makeatother
+
 \usepackage{sectsty}
 \allsectionsfont{\sffamily}
 \allowdisplaybreaks
@@ -741,7 +757,7 @@ You are asked to find a formula for $f(n)$ but not the usual kind of formula of 
 \begin{question}
 	How do we know that the number of regions does not depend on the configuration of the lines? Maybe if we draw the lines in a different relation to each other, the number of regions will change.
 	
-	-- Làm sao chúng ta biết được số lượng vùng không phụ thuộc vào cấu hình của các đường? Có thể nếu chúng ta vẽ các đường theo một mối quan hệ khác với nhau, số lượng vùng sẽ thay đổi.
+	-- Làm sao chúng ta biết được số lượng vùng không phụ thuộc vào cấu hình của các đường? Có thể nếu chúng ta vẽ các đường theo 1 mối quan hệ khác với nhau, số lượng vùng sẽ thay đổi.
 \end{question}
 
 \begin{proof}[Giải]
@@ -765,7 +781,7 @@ You are asked to find a formula for $f(n)$ but not the usual kind of formula of 
 \begin{question}[1st step vs. last step]
 	When should we focus on the 1st step of a problem to establish a recurrence relation? When on the last step?
 	
-	-- Khi nào chúng ta nên tập trung vào bước đầu tiên của một bài toán để thiết lập mối quan hệ lặp lại? Khi nào là bước cuối cùng?
+	-- Khi nào chúng ta nên tập trung vào bước đầu tiên của 1 bài toán để thiết lập mối quan hệ lặp lại? Khi nào là bước cuối cùng?
 \end{question}
 A recurrence, for the integer valued function $f$, of the form $f(n) = \sum_{i=1}^k \alpha_if(n - i) + g(n) = \alpha_1f(n - 1) + \alpha_2f(n - 2) + \cdots + \alpha_kf(n - k) + g(n)$, where $\alpha_i$ are scalars, $\forall i\in[k]$, \& $g$ is a function of $n$, is called a {\it linear recurrence relation}. If you are lucky \& the recurrence relation is linear, then the most fruitful method is to 1st ignore the initial conditions \& find, basically by an educated guess, a set of functions that satisfy the recurrence relation, \& then use the initial conditions to choose a function that satisfies both the initial conditions \& the recurrence relation. The key observation -- which will be used often -- is that if 2 functions have the same initial values \& satisfy the same recurrence conditions, then they will have to be the same for all later inputs. See \cite[Sect. 1.4]{Shahriari2022} where both linear recurrence relations \& the idea of unwinding a recurrence relation were explored.
 
@@ -834,7 +850,7 @@ A recurrence, for the integer valued function $f$, of the form $f(n) = \sum_{i=1
 \section{Linear Recurrence Relations \& Unwinding a Recurrence Relation -- }
 In this section, we consider 2 methods for attacking recurrence relations. When they work -- \& there are many common recurrence relations that can be solved using these methods -- they work well \& give a closed formula for the underlying function. However, there are also plenty of recurrence relations that defy both of these methods.
 
--- Trong phần này, chúng ta sẽ xem xét 2 phương pháp để tấn công các mối quan hệ tái diễn. Khi chúng hoạt động -- \& có nhiều mối quan hệ tái diễn phổ biến có thể được giải quyết bằng các phương pháp này -- chúng hoạt động tốt \& đưa ra một công thức đóng cho hàm cơ bản. Tuy nhiên, cũng có rất nhiều mối quan hệ tái diễn thách thức cả hai phương pháp này.
+-- Trong phần này, chúng ta sẽ xem xét 2 phương pháp để tấn công các mối quan hệ tái diễn. Khi chúng hoạt động -- \& có nhiều mối quan hệ tái diễn phổ biến có thể được giải quyết bằng các phương pháp này -- chúng hoạt động tốt \& đưa ra 1 công thức đóng cho hàm cơ bản. Tuy nhiên, cũng có rất nhiều mối quan hệ tái diễn thách thức cả hai phương pháp này.
 
 \begin{problem}[\cite{Shahriari2022}, Warm-Up 1.12, p. 27]
 	Let $f(n) = \alpha n + \beta$, where $\alpha,\beta\in\mathbb{R}$. Find $\alpha,\beta$ s.t. the resulting function $f$ satisfies the recurrence relation $f(n) = 5f(n - 1) - 6f(n - 2) + n$, $\forall n\in\mathbb{N}$, $n\ge2$.
@@ -879,7 +895,7 @@ We 1st formalize the ``linearity'' property of {\it linear} recurrence relations
 \begin{problem}[\cite{Shahriari2022}, Warm-Up 2.1, p. 42]
 	A bag contains $100$ apples, $100$ bananas, $100$ oranges, \& $100$ pears. If, every minute, I randomly pick 1 piece of fruit out of the bag, how long will it be before I am assured of having picked at least a dozen pieces of fruit of the same kind?
 	
-	-- 1 túi chứa $100$ quả táo, $100$ quả chuối, $100$ quả cam, \& $100$ quả lê. Nếu mỗi phút, tôi ngẫu nhiên hái 1 quả từ túi, thì sau bao lâu tôi chắc chắn đã hái được ít nhất một tá quả cùng loại?
+	-- 1 túi chứa $100$ quả táo, $100$ quả chuối, $100$ quả cam, \& $100$ quả lê. Nếu mỗi phút, tôi ngẫu nhiên hái 1 quả từ túi, thì sau bao lâu tôi chắc chắn đã hái được ít nhất 1 tá quả cùng loại?
 \end{problem}
 An almost trivial fact:
 
@@ -1184,7 +1200,7 @@ which immediately yields $\sum_{n=0}^\infty \dfrac{C_n}{4^n} = 2$.
 
 This has a simple probabilistic interpretation. Consider a random walk on the integer line, starting at 0. Let $-1$ be a ``trap'' state, s.t. if the walker arrives at $-1$, it will remain there. The walker can arrive at the trap state at times $1,3,5,\ldots$, \& the number of ways the walker can arrive at the trap state at time $2k + 1$ is $C_k$. Since the 1D random walk is recurrent, the probability that the walker eventually arrives at $-1$ is $\sum_{n=0}^\infty \dfrac{C_n}{2^{2n + 1}} = 1$.
 
--- Điều này có một cách giải thích xác suất đơn giản. Hãy xem xét một bước đi ngẫu nhiên trên đường số nguyên, bắt đầu từ 0. Giả sử $-1$ là trạng thái ``bẫy'', tức là nếu người đi bộ đến $-1$, thì nó sẽ vẫn ở đó. Người đi bộ có thể đến trạng thái bẫy tại các thời điểm $1,3,5,\ldots$, \& số cách người đi bộ có thể đến trạng thái bẫy tại thời điểm $2k + 1$ là $C_k$. Vì bước đi ngẫu nhiên 1D là tuần hoàn, nên xác suất người đi bộ cuối cùng đến $-1$ là $\sum_{n=0}^\infty \dfrac{C_n}{2^{2n + 1}} = 1$.
+-- Điều này có 1 cách giải thích xác suất đơn giản. Hãy xem xét 1 bước đi ngẫu nhiên trên đường số nguyên, bắt đầu từ 0. Giả sử $-1$ là trạng thái ``bẫy'', tức là nếu người đi bộ đến $-1$, thì nó sẽ vẫn ở đó. Người đi bộ có thể đến trạng thái bẫy tại các thời điểm $1,3,5,\ldots$, \& số cách người đi bộ có thể đến trạng thái bẫy tại thời điểm $2k + 1$ là $C_k$. Vì bước đi ngẫu nhiên 1D là tuần hoàn, nên xác suất người đi bộ cuối cùng đến $-1$ là $\sum_{n=0}^\infty \dfrac{C_n}{2^{2n + 1}} = 1$.
 
 %------------------------------------------------------------------------------%
 
@@ -1846,12 +1862,12 @@ For more details, see, e.g., \href{https://en.wikipedia.org/wiki/Inclusion%E2%80
 
 The inclusion--exclusion principle is a counting method that generalizes familiar ideas. The addition principle told us that, if a set was partitioned into subsets, we could count the number of elements in the set by adding the number of elements in each part. In a partition, the subsets cover the original set -- i.e., the union of the subsets is the original set -- \& the pairwise intersection of the subsets is the empty set. The inclusion--exclusion principle extends the addition principle to the case when we have a collection of subsets that cover the original set but -- unlike a partition -- may have nontrivial intersections.
 
--- Nguyên lý bao gồm-loại trừ là một phương pháp đếm khái quát hóa các ý tưởng quen thuộc. Nguyên lý cộng cho chúng ta biết rằng, nếu một tập hợp được phân hoạch thành các tập con, chúng ta có thể đếm số phần tử trong tập hợp bằng cách cộng số phần tử trong mỗi phần. Trong một phân hoạch, các tập con bao phủ tập hợp ban đầu -- tức là, hợp của các tập con là tập hợp ban đầu -- \& giao từng cặp của các tập con là tập rỗng. Nguyên lý bao gồm-loại trừ mở rộng nguyên lý cộng sang trường hợp khi chúng ta có một tập hợp các tập con bao phủ tập hợp ban đầu nhưng -- không giống như một phân hoạch -- có thể có các giao điểm không tầm thường.
+-- Nguyên lý bao gồm-loại trừ là 1 phương pháp đếm khái quát hóa các ý tưởng quen thuộc. Nguyên lý cộng cho chúng ta biết rằng, nếu 1 tập hợp được phân hoạch thành các tập con, chúng ta có thể đếm số phần tử trong tập hợp bằng cách cộng số phần tử trong mỗi phần. Trong 1 phân hoạch, các tập con bao phủ tập hợp ban đầu -- tức là, hợp của các tập con là tập hợp ban đầu -- \& giao từng cặp của các tập con là tập rỗng. Nguyên lý bao gồm-loại trừ mở rộng nguyên lý cộng sang trường hợp khi chúng ta có 1 tập hợp các tập con bao phủ tập hợp ban đầu nhưng -- không giống như 1 phân hoạch -- có thể có các giao điểm không tầm thường.
 
 \begin{remark}[\cite{Shahriari2022}, Rmk. 8.2, p. 261]
 	The inclusion--exclusion principle is also an example of a {\it sieve} method. In a sieve method you start with a set larger than what you are interested in \& systematically throw out extraneous elements. Historically, an early use of a sieve method was by {\sc Eratosthenes}. For the sieve of Eratostheses, you start with the integers from $2$ to $n$ \&, 1 by 1, cross out the multiples of the 1st integer that has not been crossed out (you don't cross out that integer itself \& you stop when you get to $\sqrt{n}$). At the end of the process, you are left with all the primes up to $n$.
 	
-	-- Nguyên lý bao gồm-loại trừ cũng là một ví dụ về phương pháp {\it sieve}. Trong phương pháp sieve, bạn bắt đầu với một tập hợp lớn hơn tập hợp bạn quan tâm \& loại bỏ một cách có hệ thống các phần tử không liên quan. Theo truyền thống, một ứng dụng sớm của phương pháp sieve là của {\sc Eratosthenes}. Đối với sieve của Eratostheses, bạn bắt đầu với các số nguyên từ $2$ đến $n$ \&, 1 x 1, gạch bỏ các bội số của số nguyên đầu tiên chưa bị gạch bỏ (bạn không gạch bỏ chính số nguyên đó \& bạn dừng lại khi bạn đến $\sqrt{n}$). Khi kết thúc quá trình, bạn còn lại tất cả các số nguyên tố lên đến $n$.
+	-- Nguyên lý bao gồm-loại trừ cũng là 1 ví dụ về phương pháp {\it sieve}. Trong phương pháp sieve, bạn bắt đầu với 1 tập hợp lớn hơn tập hợp bạn quan tâm \& loại bỏ 1 cách có hệ thống các phần tử không liên quan. Theo truyền thống, 1 ứng dụng sớm của phương pháp sieve là của {\sc Eratosthenes}. Đối với sieve của Eratostheses, bạn bắt đầu với các số nguyên từ $2$ đến $n$ \&, 1 x 1, gạch bỏ các bội số của số nguyên đầu tiên chưa bị gạch bỏ (bạn không gạch bỏ chính số nguyên đó \& bạn dừng lại khi bạn đến $\sqrt{n}$). Khi kết thúc quá trình, bạn còn lại tất cả các số nguyên tố lên đến $n$.
 \end{remark}
 
 \begin{definition}[Complement, \cite{Shahriari2022}, Def. 8.3, p. 261]
@@ -2020,13 +2036,395 @@ The combinatorial version Thm. \ref{thm: inclusion-exclusion: combinatorial vers
 
 %------------------------------------------------------------------------------%
 
-\section{Derangement}
+\section{Derangement -- Sự rối loạn{\tt/}Số hoán vị sai vị trí}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \href{https://en.wikipedia.org/wiki/Derangement}{Wikipedia{\tt/}derangement}.
+\end{enumerate}
+In combinatorial mathematics, a {\it derangement} is a permutation of the elements of a set in which no element appears in its original position. I.e., a derangement is a permutation that has no \href{https://en.wikipedia.org/wiki/Fixed_point_(mathematics)}{fixed points}.
+
+-- Trong toán học tổ hợp, 1 {\it derangement} là 1 hoán vị của các phần tử của 1 tập hợp trong đó không có phần tử nào xuất hiện ở vị trí ban đầu của nó. Nghĩa là, 1 derangement là 1 hoán vị không có điểm cố định.
+
+The number of derangements of a set of size $n\in\mathbb{N}^\star$ is known as the {\it subfactorial} of $n$ or the $n$th {\it derangement number} or $n$th {\it de Montmort number} (after \href{https://en.wikipedia.org/wiki/Pierre_Remond_de_Montmort}{\sc Pierre Remond de Montmort}). Notations for subfactorials in common use include $!n,D_n,d_n$, or $n_{!`}$.
+
+-- Số lượng các biến đổi của 1 tập hợp có kích thước $n\in\mathbb{N}^\star$ được gọi là {\it subfactorial} của $n$ hoặc {\it derangement number} thứ $n$ hoặc {\it de Montmort number} thứ $n$ (theo {\sc Pierre Remond de Montmort}). Các ký hiệu cho các biến đổi thường dùng bao gồm $!n,D_n,d_n$ hoặc $n_{!`}$.
+
+For $n > 0$, the subfactorial $!n$ equals too the nearest integer to $\frac{n!}{e}$, where $n!$ denotes the factorial of $n$ \& $e$ is \href{https://en.wikipedia.org/wiki/Euler%27s_number}{Euler's number}.
+
+The problem of counting derangements was 1st considered by \href{https://en.wikipedia.org/wiki/Pierre_Raymond_de_Montmort}{\sc Pierre Raymond de Montmort} in his \href{https://en.wikipedia.org/wiki/Essay_d%27analyse_sur_les_jeux_de_hazard}{\it Essay d'analyse sur les jeux de hazard} in 1708; he solved it in 1713, as did \href{https://en.wikipedia.org/wiki/Nicolaus_I_Bernoulli}{\sc Nicholas Bernoulli} at about the same time.
 
 \begin{problem}[Counting derangements -- đếm số quân bài đánh tráo]
 	Suppose there is a deck of $n$ cards numbered from $1$ to $n$. Suppose a card numbered $m$ is in the correct position if it is the $m$th card in the deck. How many ways, $W$, can the cards be shuffled with at least $1$ card being in the correct position?
 	
 	-- Giả sử có 1 bộ bài $n$ lá bài được đánh số từ $1$ đến $n$. Giả sử 1 lá bài được đánh số $m$ ở đúng vị trí nếu nó là lá bài thứ $m$ trong bộ bài. Có bao nhiêu cách, $W$, có thể xáo trộn các lá bài sao cho ít nhất $1$ lá bài ở đúng vị trí?
 \end{problem}
+
+\begin{example}
+	Suppose that a professor gave a test to $4$ students -- A, B, C, \& D -- \& wants to let them grade each other's tests. Of course, no student should grade their own test. How many ways could the professor hand the tests back to the students for grading, s.t. no student receives their own test back? Out of $24$ \href{https://en.wikiversity.org/wiki/Symmetric_group_S4#tables}{possible permutations} $4!$ for handing back the tests, ABCD, ABDC, ACBD, ACDB, ADBC, ADCB, BACD, BADC, BCAD, BCDA, BDAC, BDCA, CABD, CADB, CBAD, CBDA, CDAB, CDBA, DABC, DACB, DBAC, DBCA, DCAB, DCBA. there are only $9$ derangements BADC, BCDA, BDAC, CADB, CDAB, CDBA, DABC, DCAB, DCBA. In every other permutation of this $4$-member set, at least $1$ student gets their own test back.
+	
+	-- Giả sử 1 giáo sư giao bài kiểm tra cho $4$ sinh viên -- A, B, C, \& D -- \& muốn để họ chấm bài kiểm tra của nhau. Tất nhiên, không có sinh viên nào được chấm bài kiểm tra của chính mình. Có bao nhiêu cách giáo sư có thể trả bài kiểm tra lại cho sinh viên để chấm, tức là không có sinh viên nào nhận lại bài kiểm tra của chính mình? Trong số $24$ cách hoán vị có thể có $4!$ để trả bài kiểm tra, ABCD, ABDC, ACBD, ACDB, ADBC, ADCB, BACD, BADC, BCAD, BCDA, BDAC, BDCA, CABD, CADB, CBAD, CBDA, CDAB, CDBA, DABC, DACB, DBAC, DBCA, DCAB, DCBA. chỉ có $9$ cách sắp xếp BADC, BCDA, BDAC, CADB, CDAB, CDBA, DABC, DCAB, DCBA. Trong mỗi hoán vị khác của tập $4$ phần tử này, có ít nhất $1$ sinh viên nhận lại bài kiểm tra của chính mình.
+\end{example}
+Another version of the problem arises when we ask for the number of ways $n$ letters, each addressed to a different person, can be placed in $n$ pre-addressed envelopes so that no letter appears in the correctly addressed envelope.
+
+-- 1 phiên bản khác của bài toán này nảy sinh khi chúng ta yêu cầu tìm số cách để bỏ $n$ lá thư, mỗi lá thư được gửi đến 1 người khác nhau, vào $n$ phong bì có ghi sẵn địa chỉ sao cho không có lá thư nào xuất hiện trong phong bì có ghi đúng địa chỉ.
+
+\subsection{Counting derangements -- Đếm số hoán vị sai vị trí}
+Counting derangements of a set amounts to the {\it hat-check problem}, in which one considers the number of ways in which $n$ hats (call them $h_1$ through $h_n$) can be returned to $n$ people ($P_1$ through $P_n$) s.t. no hat makes it back to its owner.
+
+-- Đếm các sự xáo trộn của 1 tập hợp tương đương với {\it bài toán kiểm tra mũ}, trong đó người ta xem xét số cách mà $n$ chiếc mũ (gọi là $h_1$ đến $h_n$) có thể được trả lại cho $n$ người ($P_1$ đến $P_n$) nghĩa là không có chiếc mũ nào được trả lại cho chủ nhân của nó.
+
+Each person may receive any of the $n - 1$ hats that is not their own. Call the hat which the person $P_1$ receives $h_i$ \& consider $h_i$'s owner: $P_i$ receives either $P_1$'s hat, $h_1$, or some other. Accordingly, the problem splits into 2 possible cases:
+\begin{enumerate}
+	\item $P_i$ receives a hat other than $h_1$. This case is equivalent to solving the problem with $n - 1$ people \& $n - 1$ hats because for each of the $n - 1$ people besides $P_1$ there is exactly $1$ hat from among the remaining $n - 1$ hats that they may not receive (for any $P_j$ besides $P_i$, the unreceivable hat is $h_j$, while for $P_i$ it is $h_1$). Another way to see this is to rename $h_1$ to $h_i$, where the derangement is more explicit: for any $j$ from $2$ to $n$, $P_j$ cannot receive $h_j$.
+	\item $P_i$ receives $h_1$. In this case the problem reduces to $n - 2$ people \& $n - 2$ hats, because $P_1$ received $h_i$'s hat \& $P_i$ received $h_1$'s hat, effectively putting both out of further consideration.
+\end{enumerate}
+For each of the $n - 1$ hats that $P_1$ may receive, the number of ways that $P_2,\ldots,P_n$ may all receive hats is the sum of the counts for the 2 cases. This gives us the solution to the hat-check problem: Stated algebraically, the number $!n$ of derangements of an $n$-element set is
+\begin{equation*}
+	!0 = 1,\ !1 = 0,\ !n = (n - 1)(!(n - 1) + !( n -2)),\ \forall n\in\mathbb{N},\,n\ge2.
+\end{equation*}
+-- Mỗi người có thể nhận được bất kỳ chiếc mũ nào trong số $n - 1$ chiếc mũ không phải của mình. Gọi chiếc mũ mà người $P_1$ nhận được là $h_i$ \& xét đến chủ sở hữu của $h_i$: $P_i$ nhận được mũ của $P_1$, $h_1$ hoặc 1 chiếc mũ khác. Theo đó, bài toán chia thành 2 trường hợp có thể xảy ra:
+\begin{enumerate}
+	\item $P_i$ nhận được 1 chiếc mũ khác với $h_1$. Trường hợp này tương đương với việc giải bài toán với $n - 1$ người \& $n - 1$ chiếc mũ vì đối với mỗi $n - 1$ người ngoài $P_1$ thì có đúng $1$ chiếc mũ trong số $n - 1$ chiếc mũ còn lại mà họ không được nhận (đối với bất kỳ $P_j$ nào ngoài $P_i$, chiếc mũ không được nhận là $h_j$, trong khi đối với $P_i$ thì là $h_1$). Một cách khác để thấy điều này là đổi tên $h_1$ thành $h_i$, trong đó sự sắp xếp rõ ràng hơn: đối với bất kỳ $j$ nào từ $2$ đến $n$, $P_j$ không thể nhận được $h_j$.
+	\item $P_i$ nhận được $h_1$. Trong trường hợp này, bài toán được rút gọn thành $n - 2$ người \& $n - 2$ mũ, vì $P_1$ nhận được mũ của $h_i$ \& $P_i$ nhận được mũ của $h_1$, về cơ bản là loại cả hai ra khỏi việc xem xét thêm.
+\end{enumerate}
+Đối với mỗi $n - 1$ mũ mà $P_1$ có thể nhận được, số cách mà $P_2,\ldots,P_n$ có thể nhận được mũ là tổng số đếm của 2 trường hợp. Điều này cung cấp cho chúng ta giải pháp cho bài toán kiểm tra mũ: Nói theo đại số, số $!n$ các phép sắp xếp của 1 tập hợp $n$ phần tử là
+\begin{equation*}
+	!0 = 1,\ !1 = 0,\ !n = (n - 1)(!(n - 1) + !( n -2)),\ \forall n\in\mathbb{N},\,n\ge2.
+\end{equation*}
+The number of derangements of small lengths, (sequence \href{https://oeis.org/A000166}{A000166} in the OEIS), is given as follows. $!0 = 1,!1 = 1,!2 = 1,!3 = 2,!4 = 9,!5 = 44,!6 = 265,!7 = 1,854,!8 = 14,833,!9 = 133,496,!10 = 1,334,961,!11 = 14,684,570,!12 = 176,214,841,!13 = 2,290,792,932,!14 = 32,071,101,049,!15 = 481,066,515,734,!16 = 7,697,064,251,745,!17 = 130,850,092,279,664,!18 =  2,355,301,661,033,953,!19 = 44,750,731,559,645,106,!20 = 895,014,631,192,902,121,!21 = 18,795,307,255,050,944,540,!22 = 413,496,759,611,120,779,881l!23 = 9,510,425,471,055,777,937,262,!24 = 228,250,211,305,338,670,494,289,!25 = 5,706,255,282,633,466,762,357,224,!26 = 148,362,637,348,470,135,821,287,825,!27 = 4,005,791,208,408,693,667,174,771,274,!28 = 112,162,153,835,443,422,680,893,595,673,!29 = 3,252,702,461,227,859,257,745,914,274,516,!30 = 97,581,073,836,835,777,732,377,428,235,481,\ldots$
+
+There are various other expressions for $!n$, equivalent to the formula given above.
+
+\begin{theorem}
+	The number of derangements of an $n$-element set can be given by the following formulas:
+	\begin{align*}
+		!n &= n!\sum_{i=0}^n \frac{(-1)^n}{i!},\ \forall n\in\mathbb{N},\\
+		!n &= \left[\frac{n!}{e}\right] = \left\lfloor\frac{n!}{e} + \frac{1}{2}\right\rfloor,\ \forall n\in\mathbb{N}^\star,
+	\end{align*}
+	where $[x]$ is the \href{https://en.wikipedia.org/wiki/Nearest_integer_function}{nearest integer function} \& $\lfloor x\rfloor$ is the \href{https://en.wikipedia.org/wiki/Floor_function}{floor function}, or
+	\begin{align*}
+		!n &= \lfloor\frac{n! + 1}{e}\rfloor,\ \forall n\in\mathbb{N}^\star,\\
+		!n &= \lfloor\left(e + \frac{1}{e}\right)n!\rfloor - \lfloor en!\rfloor,\ \forall n\in\mathbb{N},\,n\ge2,\\
+		!n &= n! - \sum_{i=1}^n \binom{n}{i}\cdot!(n - i),\ \forall n\in\mathbb{N}^\star,\\
+		!n &= n!\sum_{i=0}^n \frac{(-1)^i}{i!}.
+	\end{align*}
+	The following recurrence also holds:
+	\begin{equation*}
+		!n = \left\{\begin{split}
+			&1&&\mbox{if } n = 0,\\
+			&n(!(n - 1)) + (-1)^n&&\mbox{if } n\in\mathbb{N}^\star.
+		\end{split}\right.
+	\end{equation*}
+\end{theorem}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Derivation of derangements by inclusion--exclusion principle -- Sự suy ra derangement bằng nguyên lý bao gồm-loại trừ}
+
+\begin{theorem}
+	The following formulas hold
+	\begin{align*}
+		!n &= n!\sum_{i=0}^n \frac{(-1)^i}{i!},\ \forall n\in\mathbb{N},\\
+		n! &= \sum_{i=0}^n \binom{n}{i}!i,\ \forall n\in\mathbb{N}.
+	\end{align*}
+\end{theorem}
+One may derive a non-recursive formula for the number of derangements of an $n$-set as well. For $1\le k\le n$ we define $S_k$ to be the set of permutations of $n$ objects that fix the $k$th object. Any intersection of a collection of $i$ of these sets fixes a particular set of $i$ objects \& therefore contains $(n - i)!$ permutations. There are $\binom{n}{i}$ such collections, so the inclusion-exclusion principle yields
+\begin{align*}
+	|S_1\cup\cdots\cup S_n| &= \sum_i |S_i| - \sum_{i < j} |S_i\cap S_j| + \sum_{i < j < k} |S_i\cap S_j\cap S_k| + \cdots + (-1)^{n+1}|S_1\cap\cdots\cap S_n|\\
+	&= \binom{n}{1}(n - 1)! - \binom{n}{2}(n - 2)! + \binom{n}{3}(n - 3)! - \cdots + (-1)^{n+1}\binom{n}{n}0! = \sum_{i=1}^n (-1)^{i+1}\binom{n}{i}(n - i)! = n!\sum_{i=1}^n \frac{(-1)^{i+1}}{i!},
+\end{align*}
+\& since a derangement is a permutation that leaves none of the $n$ objects fixed, this implies
+\begin{equation*}
+	!n = n! - |S_1\cup\cdots\cup S_n| = n!\sum_{i=0}^n \frac{(-1)^i}{i!}.
+\end{equation*}
+On the other hand, $n! = \sum_{i=0}^n \binom{n}{i}!i$ since we can choose $n - i$ elements to be in their own place \& derange the other $i$ elements in just $!i$ ways, by definition.
+
+-- Người ta cũng có thể suy ra 1 công thức không đệ quy cho số lần sắp xếp của 1 tập $n$. Với $1\le k\le n$, chúng ta định nghĩa $S_k$ là tập hợp các hoán vị của $n$ đối tượng cố định đối tượng thứ $k$. Bất kỳ giao điểm nào của 1 tập hợp $i$ trong số các tập hợp này đều cố định 1 tập hợp cụ thể gồm $i$ đối tượng \& do đó chứa $(n - i)!$ hoán vị. Có $\binom{n}{i}$ các tập hợp như vậy, vì vậy nguyên lý bao gồm-loại trừ tạo ra
+\begin{align*}
+	|S_1\cup\cdots\cup S_n| &= \sum_i |S_i| - \sum_{i < j} |S_i\cap S_j| + \sum_{i < j < k} |S_i\cap S_j\cap S_k| + \cdots + (-1)^{n+1}|S_1\cap\cdots\cap S_n|\\
+	&= \binom{n}{1}(n - 1)! - \binom{n}{2}(n - 2)! + \binom{n}{3}(n - 3)! - \cdots + (-1)^{n+1}\binom{n}{n}0! = \sum_{i=1}^n (-1)^{i+1}\binom{n}{i}(n - i)! = n!\sum_{i=1}^n \frac{(-1)^{i+1}}{i!},
+\end{align*}
+\& vì 1 sự sắp xếp là 1 hoán vị không để lại bất kỳ đối tượng nào trong số $n$ đối tượng cố định, điều này ngụ ý
+\begin{equation*}
+	!n = n! - |S_1\cup\cdots\cup S_n| = n!\sum_{i=0}^n \frac{(-1)^i}{i!}.
+\end{equation*}
+Mặt khác, $n! = \sum_{i=0}^n \binom{n}{i}!i$ vì chúng ta có thể chọn $n - i$ phần tử ở đúng vị trí của chúng \& sắp xếp lại các phần tử $i$ khác theo đúng $!i$ cách, theo định nghĩa.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Growth of number of derangements as $n$ approaches $\infty$}
+From $!n = n!\sum_{i=0}^n \frac{(-1)^i}{i!}$ \& $e^x = \sum_{i=0}^\infty \frac{x^i}{i!}$ by substituting $x = -1$ one immediately obtains that
+\begin{equation*}
+	\lim_{n\to\infty} \frac{!n}{n!} = \lim_{n\to\infty} \sum_{i=0}^n \frac{(-1)^i}{i!} = \frac{1}{e}\approx0.36787944117144233\ldots
+\end{equation*}
+This is the limit of the probability that a randomly selected permutation of a large number of objects is a derangement. The probability converges to this limit extremely quickly as $n$ increases, which is why $!n$ is the nearest integer to $\frac{n!}{e}$. The above \href{https://en.wikipedia.org/wiki/Semi-log}{semi-log} graph shows that the derangement graph lags the permutation graph by an almost constant value. More information about this calculation \& the above limit may be found in the article on the \href{https://en.wikipedia.org/wiki/Random_permutation_statistics#Number_of_permutations_that_are_derangements}{statistics of random permutations}.
+
+-- Đây là giới hạn của xác suất mà 1 hoán vị được chọn ngẫu nhiên của 1 số lượng lớn các đối tượng là 1 sự sắp xếp. Xác suất hội tụ đến giới hạn này cực kỳ nhanh khi $n$ tăng, đó là lý do tại sao $!n$ là số nguyên gần nhất với $\frac{n!}{e}$. Đồ thị bán logarit ở trên cho thấy đồ thị sắp xếp chậm hơn đồ thị hoán vị 1 giá trị gần như hằng số. Có thể tìm hiểu thêm thông tin về phép tính này và giới hạn trên trong bài viết về thống kê hoán vị ngẫu nhiên.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Asymptotic expansion in terms of Bell numbers -- Mở rộng tiệm cận theo số Bell}
+
+\begin{theorem}[Asymptotic expansion for the number of derangements in terms of Bell numbers]
+	An asymptotic expansion for the number of derangements in terms of Bell numbers is as follows:
+	\begin{equation*}
+		!n = \frac{n!}{e} + \sum_{i=1}^m (-1)^{n + i - 1}\frac{B_i}{n^i} + O\left(\frac{1}{n^{m+1}}\right),
+	\end{equation*}
+	where $m\in\mathbb{N}^\star$ is any fixed positive integer, \& $B_i$ denotes the $i$th Bell number. Moreover, the constant implied by the big O-term does not exceed $B_{m+1}$.
+\end{theorem}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Generalizations of derangements -- Các tổng quát hóa của hoán vị sai vị trí}
+The \href{https://en.wikipedia.org/wiki/Rencontres_numbers}{probl\`eme des rencontres} asks how many permutations of a size-$n$ set have exactly $k$ fixed points. Derangements are an example of the wider field of constrained permutations. E.g., the \href{https://en.wikipedia.org/wiki/M%C3%A9nage_problem}{m\'enage problem} asks if $n\in\mathbb{N}^\star$ opposite-sex couples are seated man-woman-man-woman-$\ldots$ around a table, how many ways can they be seated so that nobody is seated next to his or her partner?
+
+-- Bài toán về sự gặp gỡ hỏi có bao nhiêu hoán vị của 1 tập hợp có kích thước $n$ có đúng $k$ điểm cố định. Sự sắp xếp là 1 ví dụ về lĩnh vực rộng hơn của các hoán vị bị ràng buộc. E.g., bài toán m\'enage hỏi nếu $n\in\mathbb{N}^\star$ cặp đôi khác giới ngồi theo kiểu nam-nữ-nam-nữ-$\ldots$ quanh 1 chiếc bàn, có bao nhiêu cách sắp xếp chỗ ngồi cho họ sao cho không ai ngồi cạnh bạn đời của mình?
+
+More formally, given sets $A,S$, \& some sets $U,V$ of \href{https://en.wikipedia.org/wiki/Surjection}{surjections} $A\to S$, we often wish to know the number of pairs of functions $(f,g)$ s.t. $f\in U,g\in V$, \& $\forall a\in $, $f(a)\ne g(a)$; i.e., where for each $f,g$, there exists a derangement $\varphi$ of $S$ s.t. $f(a) = \varphi(g(a))$.
+
+-- Chính thức hơn, cho các tập $A,S$, \& 1 số tập $U,V$ các phép toàn ánh $A\to S$, chúng ta thường muốn biết số cặp hàm $(f,g)$ s.t. $f\in U,g\in V$, \& $\forall a\in $, $f(a)\ne g(a)$; tức là, với mỗi $f,g$, tồn tại 1 phép biến đổi $\varphi$ của $S$ s.t. $f(a) = \varphi(g(a))$.
+
+Another generalization:
+
+\begin{problem}
+	How many anagrams with no fixed letters of a given word are there?
+	
+	-- Có bao nhiêu từ đảo chữ không có chữ cái cố định của 1 từ nhất định?
+\end{problem}
+E.g., for a word made of only 2 different letters, say $n\in\mathbb{N}^\star$ letters A \& $m\in\mathbb{N}^\star$ letters $B$, the answer is, of course, 1 or 0 according to whether $n = m$ or not, for the only way to form an anagram without fixed letters is to exchange all the A with B, which is possible iff $n = m$. In general case, for a word with $n_i$ letters $X_i$, $\forall i\in[r]$, it turns out (after a proper use of the inclusion--exclusion formula) that the answer has the form
+\begin{equation*}
+	\int_0^\infty \prod_{i=1}^r P_{n_i}(x)e^{-x}\,{\rm d}x = \int_0^\infty P_{n_1}(x)P_{n_2}(x)\cdots P_{n_r}(x)e^{-x}\,{\rm d}x
+\end{equation*}
+for a certain sequence of polynomials $\{P_n\}_{n=1}^\infty$, where $\deg P_n = n$. But the above answer for the case $r = 2$ gives an orthogonality relation, whence the $P_n$'s are the \href{https://en.wikipedia.org/wiki/Laguerre_polynomials}{Laguerre polynomials} up to a sign that is easily decided.
+
+-- E.g., đối với 1 từ chỉ được tạo thành từ 2 chữ cái khác nhau, chẳng hạn $n\in\mathbb{N}^\star$ chữ cái A \& $m\in\mathbb{N}^\star$ chữ cái $B$, thì câu trả lời tất nhiên là 1 hoặc 0 tùy thuộc vào việc $n = m$ hay không, vì cách duy nhất để tạo thành 1 từ đảo chữ mà không có chữ cái cố định là hoán đổi tất cả A bằng B, điều này có thể thực hiện được khi và chỉ khi $n = m$. Trong trường hợp chung, đối với 1 từ có $n_i$ chữ cái $X_i$, $\forall i\in[r]$, thì (sau khi sử dụng đúng công thức bao gồm-loại trừ) câu trả lời có dạng
+\begin{equation*}
+	\int_0^\infty \prod_{i=1}^r P_{n_i}(x)e^{-x}\,{\rm d}x = \int_0^\infty P_{n_1}(x)P_{n_2}(x)\cdots P_{n_r}(x)e^{-x}\,{\rm d}x
+\end{equation*}
+đối với 1 dãy đa thức nhất định $\{P_n\}_{n=1}^\infty$, trong đó $\deg P_n = n$. Nhưng câu trả lời trên cho trường hợp $r = 2$ đưa ra 1 quan hệ trực giao, do đó $P_n$ là \href{https://en.wikipedia.org/wiki/Laguerre_polynomials}{Đa thức Laguerre} cho đến 1 dấu có thể dễ dàng quyết định.
+
+In particular, for the classical derangements:
+
+\begin{theorem}
+	One has
+	\begin{equation*}
+		!n = \frac{\Gamma(n + 1,-1)}{e} = \int_0^\infty (x - 1)^ne^{-x}\,{\rm d}x,
+	\end{equation*}
+	where $\Gamma(s,x)$ is the \href{https://en.wikipedia.org/wiki/Incomplete_gamma_function}{upper incomplete gamma function}.
+\end{theorem}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Computational complexity of derangement computations}
+It is \href{https://en.wikipedia.org/wiki/NP-complete}{NP-complete} to determine whether a given \href{https://en.wikipedia.org/wiki/Permutation_group}{permutation group} (described by a given set of permutations that generate it) contains any derangements.
+
+-- Việc xác định xem một nhóm hoán vị nhất định (được mô tả bởi một tập hợp các hoán vị tạo ra nó) có chứa bất kỳ sự xáo trộn nào hay không là NP-đầy đủ.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Problems: Derangement -- Bài tập: Hoán vị sai vị trí}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1717}{CSES Problem Set{\tt/}Christmas party}]
+	There are $n\in\mathbb{N}^\star$ children at a Christmas party, \& each of them has brought a gift. The idea is that everybody will get a gift brought by someone else. In how many ways can be gifts be distributed?
+	\item {\sf Input.} The only input line has an integer $n\in\mathbb{N}^\star$: the number of children.
+	\item {\sf Output.} Print the number of ways module $10^9 + 7$.
+	\item {\sf Constraints.} $n\in[10^6]$.
+	\item {\sf Sample.}
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|}
+			\hline
+			\verb|Christmas_party.inp| & \verb|Christmas_party.out| \\
+			\hline
+			4 & 9 \\
+			\hline
+		\end{tabular}
+	\end{table}
+\end{problem}
+C++:
+\begin{enumerate}
+	\item VNTA's C++: Christmas party:
+	
+	\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include<bits/stdc++.h>
+using namespace std;
+
+const int MOD = 1e9 + 7;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    int n;
+    cin >> n;
+    vector<int>dp(n + 1);
+    dp[0] = 1; dp[1] = 0; dp[2] = 1;
+    for (int i = 3; i <= n; i++) dp[i] = ((i - 1LL) * (dp[i - 1] + dp[i - 2])) % MOD;
+    cout << dp[n];
+}
+	\end{Verbatim}
+	\item NHH's C++: Christmas party:
+	\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+
+static const long long MOD = 1000000007;
+
+int main() {
+    int n; cin >> n;
+    // base cases: !0 = 1,  !1 = 0
+    if (n == 0) {
+        cout << 1 << "\n";
+        return 0;
+    }
+    if (n == 1) {
+        cout << 0 << "\n";
+        return 0;
+    }
+	
+    long long prev2 = 1; // !(0) = 1
+    long long prev1 = 0; // !(1) = 0
+	
+    for (int i = 2; i <= n; ++i) {
+        long long current = ( (long long)(i - 1) * ((prev1 + prev2) % MOD) ) % MOD;
+        prev2 = prev1;
+        prev1 = current;
+    }
+	
+    cout << prev1 << "\n";
+    return 0;
+}
+	\end{Verbatim}
+    \item NLDK's C++: Christmas party:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include<bits/stdc++.h>
+#pragma GCC optimize ("O3")
+#pragma GCC optimize ("unroll-loops")
+#define Sanic_speed ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL);
+#define Ret return 0;
+#define ret return;
+#define all(x) x.begin(), x.end()
+#define el "\n";
+#define elif else if
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define pops pop_back
+#define cYES cout << "YES" << "\n";
+#define cNO cout << "NO" << "\n";
+#define cYes cout << "Yes" << "\n";
+#define cNo cout << "No" << "\n";
+#define frs(i, a, b) for(int i = a; i < b; ++i)
+#define fre(i, a, b) for(int i = a; i <= b; ++i)
+#define wh(t) while (t--)
+#define SORAI int main()
+using namespace std;
+typedef unsigned long long ull;
+
+const int M = 1e9 + 7;
+
+void solve() {
+    int n;
+    cin >> n;
+    int dp[1000001];
+    dp[0] = dp[1] = 0;
+    dp[2] = 1;
+    dp[3] = 2;
+    fre(i, 4, n) {
+        dp[i] = (1LL * (i - 1) * (dp[i - 1] + dp[i - 2]) % M);
+    }
+    cout << dp[n];
+}
+
+SORAI {
+    Sanic_speed
+    int t = 1; //cin >> t;
+    wh(t) {solve();}
+}
+    \end{Verbatim}
+    \item PGL's C++: Christmas party:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <algorithm>
+#define ll long long
+#define mod 1000000007
+using namespace std;
+ll fac[1000001];
+ll pow(ll a, ll b) {
+    ll res = 1;
+    while (b > 0) {
+        if (b & 1) res = (res * a) % mod;
+        a = (a * a) % mod;
+        b >>= 1;
+    }
+    return res;
+}
+ll inv(ll x) {
+    return pow(x, mod - 2);
+}
+ll ncr(ll a, ll b) {
+    return fac[a] * inv(fac[b] * fac[a - b] % mod) % mod;
+}
+int main() {
+    fac[0] = 1;
+    for (int i = 1; i <= 1000000; i++) {
+        fac[i] = fac[i - 1] * i % mod;
+    }
+    ll n; cin >> n;
+    ll add;
+    ll count = 0;
+    for (int i = 1; i <= n; i++) {
+        add = ncr(n, i) * fac[n - i] % mod;
+        if (i % 2 == 0) add = -add;
+        count += add;
+    }
+    ll ans = ((fac[n] - count) % mod + mod) % mod;
+    cout << ans << "\n";
+} 
+    \end{Verbatim}
+	\item NHT's C++: Christmas party:
+	\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+
+const int mod = 1e9 + 7;
+int n;
+ll dp[1000005];
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    
+    cin >> n;
+    dp[2] = 1;
+    for (int i = 3; i <= n; ++i)
+        dp[i] = (dp[i - 1] + dp[i - 2]) % mod * (i - 1) % mod;
+    cout << dp[n] << '\n';
+    return 0;
+}
+	\end{Verbatim}
+	\item PDHT's C++: Christmas party:
+	\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+#define ll long long
+#define MOD 1000000007
+#define MAX 1000005
+using namespace std;
+ll der[MAX];
+int main() {
+    int n;
+    cin >> n;
+    der[1] = 0;
+    if (n >= 2)
+        der[2] = 1;
+    for (int i = 3; i <= n; ++i)
+	    der[i] = (1ll * (i - 1) * (der[i - 1] + der[i - 2])) % MOD;
+    cout << der[n] << '\n';
+    return 0;
+}
+	\end{Verbatim}
+\end{enumerate}
 
 %------------------------------------------------------------------------------%
 
@@ -3027,7 +3425,7 @@ Several well-known algorithms exist for solving the shortest path problem \& its
 
 Dijkstra's algorithm finds the shortest path from a given source code to every node. It can be used to find the shortest path to a specific destination node, by terminating the algorithm after determining the shortest path to the destination node. E.g., if nodes of the graph represents cities, \& the costs of edges represent the distances between pairs of cities connected by a direct road, then Dijkstra's algorithm can be used to find the shortest route between 1 city \& all other cities. A common application of shortest path algorithms is network \href{https://en.wikipedia.org/wiki/Routing_protocol}{routing protocols}, most notably \href{https://en.wikipedia.org/wiki/IS-IS}{IS-IS} (Intermediate System to Intermediate System) \& \href{https://en.wikipedia.org/wiki/Open_Shortest_Path_First}{OSPF} (Open Shortest Path 1st). It is also employed as a \href{https://en.wikipedia.org/wiki/Subroutine}{subroutine} in algorithms e.g. \href{https://en.wikipedia.org/wiki/Johnson%27s_algorithm}{Johnson's algorithm}.
 
--- Thuật toán Dijkstra tìm đường đi ngắn nhất từ 1 mã nguồn nhất định đến mọi nút. Thuật toán này có thể được sử dụng để tìm đường đi ngắn nhất đến 1 nút đích cụ thể, bằng cách kết thúc thuật toán sau khi xác định được đường đi ngắn nhất đến nút đích. Ví dụ, nếu các nút của đồ thị biểu diễn các thành phố, \& chi phí của các cạnh biểu diễn khoảng cách giữa các cặp thành phố được kết nối bằng 1 con đường trực tiếp, thì thuật toán Dijkstra có thể được sử dụng để tìm tuyến đường ngắn nhất giữa 1 thành phố \& tất cả các thành phố khác. 1 ứng dụng phổ biến của thuật toán đường đi ngắn nhất là các giao thức định tuyến mạng, đáng chú ý nhất là IS-IS (Hệ thống trung gian đến Hệ thống trung gian) \& OSPF (Đường dẫn ngắn nhất mở thứ nhất). Thuật toán này cũng được sử dụng như 1 chương trình con trong các thuật toán, ví dụ như thuật toán Johnson.
+-- Thuật toán Dijkstra tìm đường đi ngắn nhất từ 1 mã nguồn nhất định đến mọi nút. Thuật toán này có thể được sử dụng để tìm đường đi ngắn nhất đến 1 nút đích cụ thể, bằng cách kết thúc thuật toán sau khi xác định được đường đi ngắn nhất đến nút đích. E.g., nếu các nút của đồ thị biểu diễn các thành phố, \& chi phí của các cạnh biểu diễn khoảng cách giữa các cặp thành phố được kết nối bằng 1 con đường trực tiếp, thì thuật toán Dijkstra có thể được sử dụng để tìm tuyến đường ngắn nhất giữa 1 thành phố \& tất cả các thành phố khác. 1 ứng dụng phổ biến của thuật toán đường đi ngắn nhất là các giao thức định tuyến mạng, đáng chú ý nhất là IS-IS (Hệ thống trung gian đến Hệ thống trung gian) \& OSPF (Đường dẫn ngắn nhất mở thứ nhất). Thuật toán này cũng được sử dụng như 1 chương trình con trong các thuật toán, ví dụ như thuật toán Johnson.
 
 %------------------------------------------------------------------------------%
 

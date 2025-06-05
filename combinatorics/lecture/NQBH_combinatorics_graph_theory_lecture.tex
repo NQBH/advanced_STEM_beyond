@@ -7,6 +7,42 @@
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
 \usepackage{amsmath,amssymb,amsthm,enumitem,fancyvrb,float,graphicx,mathtools,minitoc,tikz}
 \usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+%  \addtolength{\headheight}{0pt}% obsolete
+\lhead{\itshape  \chaptername~\thechapter}
+\rhead{\itshape  \nouppercase{\leftmark}} %\nouppercase !
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\cfoot{\thepage}
+
+\usepackage{textcase}
+
+\makeatletter
+\def\@makechapterhead#1{%
+	\vspace*{50\p@}%
+	{\parindent \z@ \centering\normalfont
+		\ifnum \c@secnumdepth >\m@ne
+		\if@mainmatter
+		\huge\bfseries \MakeTextUppercase{\@chapapp}\space \thechapter
+		\par\nobreak
+		\vskip 20\p@
+		\fi
+		\fi
+		\interlinepenalty\@M
+		\huge \bfseries \MakeTextUppercase{#1}\par\nobreak
+		\vskip 40\p@
+}}
+\def\@makeschapterhead#1{%
+	\vspace*{50\p@}%
+	{\parindent \z@ \centering
+		\normalfont
+		\interlinepenalty\@M
+		\huge \bfseries  \MakeTextUppercase{#1}\par\nobreak
+		\vskip 40\p@
+}}
+\makeatother
+
 \usepackage{sectsty}
 \allsectionsfont{\sffamily}
 \allowdisplaybreaks
@@ -290,190 +326,6 @@ A {\it multiset} is like a set except that its members need not be distinct.
 \begin{baitoan}[\cite{Phuong_to_hop}, 7., p. 20]
 	Chứng minh có thể chia $\mathbb{N}$ thành $A,B\subset\mathbb{N}$ có cùng lực lượng sao cho $\forall n\in\mathbb{N}$ tồn tại duy nhất cặp số $(a,b)\in A\times B$ thỏa $n = a + b$.
 \end{baitoan}
-
-%------------------------------------------------------------------------------%
-
-\section{Inclusion--exclusion principle -- Nguyên lý bao hàm--loại trừ}
-In combinatorics, the {\it inclusion--exclusion principle} is a counting technique which generalizes the familiar method of obtaining the number of elements in the \href{https://en.wikipedia.org/wiki/Union_(set_theory)}{union} of 2 \href{https://en.wikipedia.org/wiki/Finite_set}{finite sets}; symbolically expressed as $|A\cup B| = |A| + |B| - |A\cap B|$ where $A,B$: 2 finite sets \& $|S|$ indicates the \href{https://en.wikipedia.org/wiki/Cardinality}{cardinality} of a set $S$ (which may be considered as the number of elements of the set, if the set is finite). The formula expresses the fact that the sum of the sizes of the 2 sets may be too large since some elements may be counted twice. The double-counted elements are those in the \href{https://en.wikipedia.org/wiki/Intersection_(set_theory)}{intersection} of the 2 sets \& the count is corrected by subtracting the size of the intersection.
-
-The inclusion--exclusion principle, being a generalization of the 2-set case, is perhaps more clearly seen in the case of 3 sets, which for the sets $A,B,C$ is given by $|A\cup B\cup C| = |A| + |B| + |C| - |A\cap B| - |B\cap C| - |C\cap A| + |A\cap B\cap C|$. This formula can be verified by counting how many times each region in the \href{https://en.wikipedia.org/wiki/Venn_diagram}{Venn diagram} figure is included in RHS of the formula. In this case, when removing the contributions of over-counted elements, the number of elements in the mutual intersection of 3 sets has been subtracted too often, so must be added back in to get the corrected total.
-
-Generalizing the results of these examples gives the principle of inclusion--exclusion. To find the cardinality of the union of $n$ sets:
-\begin{enumerate}
-	\item Include the cardinalities of the sets.
-	\item Exclude the cardinalities of pairwise intersections.
-	\item Include the cardinalities of the triple-wise intersections.
-	\item Exclude the cardinalities of the quadruple-wise intersections.
-	\item Include the cardinalities of quintuple-wise intersections.
-	\item Continue, until the cardinality of the $n$-tuple-wise intersection is included (if $n$ is odd) or excluded (if $n$ is even).
-\end{enumerate}
-The name comes from the idea that the principle is based on over-generous {\it inclusion}, followed by compensating {\it exclusion}. The principle can be viewed as an example of the \href{https://en.wikipedia.org/wiki/Sieve_theory}{sieve method} extensively used in \href{https://en.wikipedia.org/wiki/Number_theory}{number theory} \& is sometimes referred to as the {\it sieve formula}.
-
-As finite probabilities are computed as counts relative to the cardinality of the \href{https://en.wikipedia.org/wiki/Probability_space}{probability space}, the formulas for the principle of inclusion--exclusion remain valid when the cardinalities of the sets are replaced by finite probabilities. More generally, both versions of the principle can be put under the common umbrella of \href{https://en.wikipedia.org/wiki/Measure_theory}{measure theory}.
-
-In a very abstract setting, the principle of inclusion--exclusion can be expressed as the calculation of the inverse of a certain matrix. This inverse has a special structure, making the principle an extremely valuable technique in combinatorics \& related areas of mathematics.
-\begin{quotation}
-	``1 of the most useful principles of enumeration is discrete probability \& combinatorial theory is the celebrated principle of inclusion--exclusion. When skillfully applied, this principle has yielded the solution to many a combinatorial problem.'' -- \href{https://en.wikipedia.org/wiki/Gian-Carlo_Rota}{\sc Gian-Carlo Rota}
-\end{quotation}
-For more details, see, e.g., \href{https://en.wikipedia.org/wiki/Inclusion%E2%80%93exclusion_principle}{Wikipedia{\tt/}inclusion--exclusion principle}.
-
-\begin{dinhly}[Nguyên lý bao hàm--loại trừ]
-	\item(i) Với 2 tập hợp hữu hạn $A,B$ bất kỳ, $|A\cup B| = |A| + |B| - |A\cap B|$, $|A\backslash B| = |A| - |A\cap B|$.
-	\item(ii) Với 3 tập hợp hữu hạn $A,B,C$ bất kỳ, $|A\cup B\cup C| = |A| + |B| + |C| - |A\cap B| - |B\cap C| - |C\cap A| + |A\cap B\cap C|$.
-	\item(iii) Với 4 tập hợp hữu hạn $A,B,C,D$ bất kỳ, $|A\cap B\cap C\cap D| = |A| + |B| + |C| + |D| - |A\cap B| - |A\cap C| - |A\cap D| - |B\cap C| - |B\cap D| - |C\cap D| + |A\cap B\cap C| + |A\cap B\cap D| + |A\cap C\cap D| + |B\cap C\cap D| - |A\cap B\cap C\cap D|$.
-	\item(iv) Với $n\in\mathbb{N}^\star$, $A_i$, $i = 1,\ldots,n$, là $n$ tập hợp hữu hạn bất kỳ:
-	\begin{equation*}
-		\left|\bigcup_{i=1}^n A_i\right| = \sum_{T\subseteq\{1,\ldots,n\},\,T\ne\emptyset} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right|.
-	\end{equation*}
-	(v)
-	\begin{equation*}
-		\left|\bigcup_{i=1}^n A_i\right|\ge\sum_{i=1}^n |A_i| - \sum_{1\le i < j\le n} |A_i\cap A_j|.
-	\end{equation*}
-	Prove that if you take into account only the 1st $m < n$ sums on the right (in the general form of the principle), then you will get an overestimate if $m$ is odd \& an underestimate if $m$ is even.
-	
-	-- Chứng minh rằng nếu bạn chỉ tính tổng $m < n$ đầu tiên ở bên phải (theo dạng tổng quát của nguyên lý), thì bạn sẽ nhận được 1 ước tính cao hơn nếu $m$ là số lẻ \& 1 ước tính thấp hơn nếu $m$ là số chẵn.	
-\end{dinhly}
-
-\begin{proof}
-	Vẽ biểu đồ Venn (Venn diagram) để tiện lập luận.
-	\item(i) Các phần tử $x$ của tập hợp $A$ gồm 2 loại:
-	\begin{itemize}
-		\item $x\in A$ nhưng $x\notin B$, i.e., $x\in A\backslash B$: có đúng $|A\backslash B|$ phần tử $x$ như vậy.
-		\item $x\in A$ \& $x\in B$, i.e., $x\in A\cap B$: có đúng $|A\cap B|$ phần tử như vậy.
-	\end{itemize}
-	Suy ra tổng số phần tử của tập $A$ bằng $|A\backslash B| + |A\cap B|$, i.e., $|A| = |A\backslash B| + |A\cap B|$, hay $|A\backslash B| = |A| - |A\cap B|$. Chứng minh tương tự cho tập hợp $B$ được: $|B| = |B\backslash A| + |B\cap A|$, hay $|B\backslash A| = |B| - |A\cap B|$. Áp dụng 2 kết quả này được: $|A\cup B| = |A\backslash B| + |A\cap B| + |B\backslash A| = |A| - |A\cap B| + |A\cap B| + |B| - |A\cap B| = |A| + |B| - |A\cap B|$.
-	\item(ii) Áp dụng kết quả ý (i) cho $(A,B) = (A,B\cup B)$ được:
-	\begin{align*}
-		|A\cup B\cup C| &= |A\cup(B\cup C)| = |A| + |B\cup C| - |A\cap(B\cup C)| = |A| + |B| + |C| - |B\cap C| - |(A\cap B)\cup(A\cap C)|\\
-		&= |A| + |B| + |C| - |B\cap C| - (|A\cap B| + |A\cap C| - |(A\cap B)\cap(A\cap C)|)\\
-		&= |A| + |B| + |C| - |B\cap C| - |C\cap A| - |A\cap B| + |A\cap B\cap C|.
-	\end{align*}
-	\item(iv) [PVT's] Chứng minh bằng phương pháp quy nạp Toán học. Trường hợp $n = 1$ hiển nhiên, $n = 2,3,4$ đã chứng minh lần lươt ở (i)--(iii). Giả sử đẳng thức đúng đến $n = N$, i.e.:
-	\begin{equation*}
-		\left|\bigcup_{i=1}^N A_i\right| = \sum_{\emptyset\ne T\subset[N]} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right|.
-	\end{equation*}
-	Cần chứng minh đẳng thức cũng đúng với $n = N + 1$, i.e., cần chứng minh:
-	\begin{equation*}
-		\left|\bigcup_{i=1}^{N+1} A_i\right| = \sum_{\emptyset\ne T\subset[N + 1]} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right|.
-	\end{equation*}
-	Áp dụng (i) với $A = \bigcup_{i=1}^N A_i,B = A_{N+1}$ \& giả thiết quy nạp, được:
-	\begin{equation*}
-		\left|\bigcup_{i=1}^{N+1} A_i\right| = \left|\bigcup_{i=1}^N A_i\right| + |A_{N+1}| - \left|A_{N+1}\cap\left(\bigcup_{i=1}^N A_i\right)\right| = \sum_{\emptyset\ne T\subset[N]} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right| + |A_{N+1}| - \left|\bigcup_{i=1}^N A_{N+1}\cap A_i\right|.
-	\end{equation*}
-	{\it Nhận xét}: Tập con khác rỗng của $[N + 1]$ gồm 2 loại:
-	\begin{itemize}
-		\item các tập con của $[N]$, ký hiệu $S_1,\ldots,S_m$ (không có phần tử thứ $N + 1$)
-		\item tập $\{N + 1\}$ \& các tập $\{N + 1\}\cup S_i$ (có phần tử thứ $N + 1$).
-	\end{itemize}
-	Suy ra
-	\begin{equation*}
-		\sum_{\emptyset\ne T\subset[N + 1]} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right| = \sum_{\emptyset\ne T\subset[N]} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right| + |A_{N+1}| + \sum_{\emptyset\ne T\subset\{N + 1\}\cap S_i} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right|.
-	\end{equation*}
-	Như vậy ta chỉ cần chứng minh
-	\begin{equation*}
-		\left|\bigcup_{i=1}^N A_{N+1}\cap A_i\right| = -\sum_{\emptyset\ne T\subset\{N + 1\}\cup S_i} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right|.
-	\end{equation*}
-	Thật vậy, áp dụng giả thiết quy nạp cho VT được
-	\begin{align*}
-		\left|\bigcup_{i=1}^N A_{N+1}\cap A_i\right| &= \sum_{\emptyset\ne T\subset[N]} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_{N+1}\cap A_i\right|\\
-		&= -\sum_{\emptyset\ne T\subset[N]} (-1)^{|T| + 2}\left|\left(\bigcap_{i\in T} A_i\right)\cap A_{N+1}\right| = -\sum_{\emptyset\ne T'\subset\{N + 1\}\cup S_i} (-1)^{|T'| + 1}\left|\bigcap_{i\in T'} A_i\right|.
-	\end{align*}
-	Như vậy đẳng thức cũng đúng với $n = N + 1$. Theo nguyên lý quy nạp toán học, ta có điều phải chứng minh.
-	\item(v) Đặt $P(n,k)\colon(-1)^{k+1}\sum_{1\le i_1 < \cdots < i_k\le n} \left|\bigcap_{j=1}^k A_{i_j}\right|$, đẳng thức vừa chứng minh ở (iv) có thể được viết lại thành
-	\begin{equation*}
-		\left|\bigcup_{i=1}^n A_i\right| = \sum_{k=1}^n (-1)^{k+1}\sum_{1\le i_1 < \cdots < i_k\le n} \left|\bigcap_{j=1}^k A_{i_j}\right| = \sum_{k=1}^n P(n,k).
-	\end{equation*}
-	Cần chứng minh:
-	\begin{equation*}
-		\left|\bigcup_{i=1}^n A_i\right|\left\{\begin{split}
-			&\le\sum_{k=1}^m P(n,k),\ \forall m\in[n-1],m\not{\divby}\ 2,\\
-			&\ge\sum_{k=1}^m P(n,k),\ \forall m\in[n-1],m\divby2,\\
-		\end{split}\right.
-	\end{equation*}
-	bằng phương pháp quy nạp Toán học.
-\end{proof}
-
-\begin{proof}[2nd chứng minh]
-	(i) (Sử dụng phương pháp liệt kê, \cite[VD2, p. 16]{Phuong_to_hop}) Xuất phát từ phần giao của 2 tập hợp $A,B$: Giả sử $A\cap B = \{c_1,\ldots,c_p\}$, $A = \{a_1,\ldots,a_m,c_1,\ldots,c_p\}$, $B = \{b_1,\ldots,b_n,c_1,\ldots,c_p\}$, thì $A\cup B = \{a_1,\ldots,a_m,b_1,\ldots,b_n,c_1,\ldots,c_p\}$, nên $|A| = m + p,|B| = n + p,|A\cup B| = m + n + p$, suy ra $|A\cup B| = |A| + |B| - |A\cap B$. (ii)  Có thể sử dụng (i) 2 lần liên tiếp như 1st chứng minh hoặc sử dụng phương pháp liệt kê tương tự như (i) của 2nd chứng minh.
-\end{proof}
-
-\begin{theorem}[Inclusion--exclusion principle]
-	\label{thm: inclusion-exclusion: combinatorial version}
-	For any $n\in\mathbb{N}^\star$, \& any finite sets $A_1,\ldots,A_n$, one has the identity
-	\begin{equation*}
-		\left|\bigcup_{i=1}^n A_i\right| = \sum_{i=1}^n |A_i| - \sum_{1\le i < j\le n} |A_i\cap A_j| + \sum_{1\le i < j < k\le n} |A_i\cap A_j\cap A_k| - \cdots + (-1)^{n+1}|A_1\cap\cdots\cap A_n|,
-	\end{equation*}
-	which can be compactly written as
-	\begin{equation*}
-		\left|\bigcup_{i=1}^n A_i\right| = \sum_{k=1}^n (-1)^{k+1}\sum_{1\le i_1 < \cdots < i_k\le n} |A_{i_1}\cap\cdots\cap A_{i_k}|,
-	\end{equation*}
-	or
-	\begin{equation*}
-		\left|\bigcup_{i=1}^n A_i\right| = \sum_{\emptyset\ne J\subset\{1,\ldots,n\}} (-1)^{|J|+1} \left|\bigcap_{j\in J} A_j\right|.
-	\end{equation*}
-\end{theorem}
-In words, to count the number of elements in a finite union of finite sets, 1st sum the cardinalities of the individual sets, then subtract the number of elements that appear in at least 2 sets, then add back the number of elements that appear in at least 3 sets, then subtract the number of elements that appear in at least 4 sets, \& so on. This process always ends since there can be no elements that appear in more than the number of sets in the union.
-
-In applications, it is common to see the principle expressed in its complementary form:
-
-\begin{theorem}[Complementary form of inclusion--exclusion principle]
-	Let $S$ be a finite \href{https://en.wikipedia.org/wiki/Universal_set}{universal set} containing all of the $A_i$ \& letting $\overline{A_i}$ denote the complement of $A_i$ in $S$, by \href{https://en.wikipedia.org/wiki/De_Morgan%27s_laws}{De Morgan's laws}, one has
-	\begin{equation*}
-		\left|\bigcap_{i=1}^n \overline{A_i}\right| = \left|S\backslash\bigcup_{i=1}^n A_i\right| = |S| - \sum_{i=1}^n |A_i| + \sum_{1\le i < j\le n} |A_i\cap A_j| - \cdots + (-1)^n|A_1\cap\cdots\cap A_n|.
-	\end{equation*}	
-\end{theorem}
-As another variant due to \href{https://en.wikipedia.org/wiki/J._J._Sylvester}{\sc J. J. Sylvester} of the statement, let $P_1,\ldots,P_n$ be a list of properties that elements of a set $S$ may or may not have, then the principle of inclusion--exclusion provides a way to calculate the number of elements of $S$ that have none of the properties. Just let $A_i$ be the subset of elements of $S$ which have the property $P_i$ \& use the principle in its complementary form.
-
-\begin{theorem}[Inclusion--exclusion principle in probability]
-	\label{thm: inclusion-exclusion: probabilistic version}
-	For any $n\in\mathbb{N}^\star$, \& for any events $A_1,\ldots,A_n$ in a \href{https://en.wikipedia.org/wiki/Probability_space}{probability space} $(\Omega,{\cal F},\mathbb{P})$:
-	\item(i) For $n = 2$, $\mathbb{P}(A_1\cup A_2) = \mathbb{P}(A_1) + \mathbb{P}(A_2) - \mathbb{P}(A_1\cap A_2)$.
-	\item(ii) For $n = 3$, $\mathbb{P}(A_1\cup A_2\cup A_3) = \mathbb{P}(A_1) + \mathbb{P}(A_2) + \mathbb{P}(A_3) - \mathbb{P}(A_1\cap A_2) - \mathbb{P}(A_2\cap A_3) - \mathbb{P}(A_3\cap A_1) + \mathbb{P}(A_1\cap A_2\cap A_3)$.
-	\item(iii) In general
-	\begin{equation}
-		\mathbb{P}\left(\bigcup_{i=1}^n A_i\right) = \sum_{i=1}^n \mathbb{P}(A_i) - \sum_{i < j} \mathbb{P}(A_i\cap A_j) + \sum_{i < j < k} \mathbb{P}(A_i\cap A_j\cap A_k) + \cdots + (-1)^{n-1}\mathbb{P}\left(\bigcap_{i=1}^n A_i\right),
-	\end{equation}
-	which can be written in closed form as
-	\begin{equation}
-		\label{inclusion-exclusion: probabilistic version}
-		\mathbb{P}\left(\bigcup_{i=1}^n A_i\right) = \sum_{i=1}^n (-1)^{k-1}\sum_{I\subset[n],\,|I| = k} \mathbb{P}(A_I),
-	\end{equation}
-	where the last sum runs over all subsets $I$ of the indices $1,\ldots,n$ which contain exactly $k$ elements, \& $A_I\coloneqq\bigcap_{i\in I} A_i$ denotes the intersection of all those $A_i$ with index in $I$.
-	
-	In particular, if the probability of the intersection $A_I$ only depends on the cardinality of $I$, i.e., for every $k\in[n]$, there is an $a_k$ s.t. $a_k = \mathbb{P}(A_I)$ for every $I\in[n]$ with $|I| = k$, then \eqref{inclusion-exclusion: probabilistic version} simplifies to
-	\begin{equation*}
-		\mathbb{P}\left(\bigcup_{i=1}^n A_i\right) = \sum_{k=1}^n (-1)^{k-1}\binom{n}{k}a_k.
-	\end{equation*}
-	In addition, if the events $A_i$ are \href{https://en.wikipedia.org/wiki/Independent_and_identically_distributed}{independent \& identically distributed} (i.i.d.), then $\mathbb{P}(A_i) = p$, $\forall i$, \& $a_k = p^k$, hence
-	\begin{equation*}
-		\mathbb{P}\left(\bigcup_{i=1}^n A_i\right) = 1 - (1 - p)^n.
-	\end{equation*}
-\end{theorem}
-
-\begin{problem}
-	Prove this theorem (the last result can also be derived more simply by considering the intersection of the complements of the events $A_i$.)
-\end{problem}
-According to the \href{https://en.wikipedia.org/wiki/Boole%27s_inequality#Bonferroni_inequalities}{Bonferroni inequalities}, the sum of the 1st terms in the formula is alternately an upper bound \& a lower bound for the LHS. This can be used in cases where the full formula is to cumbersome.
-
-For a general \href{https://en.wikipedia.org/wiki/Measure_space}{measure space} $(S,\Sigma,\mu)$ \& \href{https://en.wikipedia.org/wiki/Measurable}{measurable} subsets $A_1,\ldots,A_n$ of \href{https://en.wikipedia.org/wiki/Finite_measure}{finite measure}, the above identities also hold when the probability measure $\mathbb{P}$ is replaced by the measure $\mu$.
-
-\begin{theorem}[General form]
-	\label{thm: inclusion-exclusion: general form}
-	\begin{equation*}
-		g(A) = \sum_{S\subset A} f(S)\Rightarrow f(A) = \sum_{S\subset A} (-1)^{|A| - |S|}g(S).
-	\end{equation*}
-\end{theorem}
-The combinatorial version Thm. \ref{thm: inclusion-exclusion: combinatorial version} \& the probabilistic version Thm. \ref{thm: inclusion-exclusion: probabilistic version} of the inclusion-exclusion principle are instances of \ref{thm: inclusion-exclusion: general form}.
-
-%------------------------------------------------------------------------------%
-
-\section{Problems on inclusion--exclusion principle}
-
-\begin{problem}[Counting derangements -- đếm số quân bài đánh tráo]
-	Suppose there is a deck of $n$ cards numbered from $1$ to $n$. Suppose a card numbered $m$ is in the correct position if it is the $m$th card in the deck. How many ways, $W$, can the cards be shuffled with at least $1$ card being in the correct position?
-	
-	-- Giả sử có 1 bộ bài $n$ lá bài được đánh số từ $1$ đến $n$. Giả sử 1 lá bài được đánh số $m$ ở đúng vị trí nếu nó là lá bài thứ $m$ trong bộ bài. Có bao nhiêu cách, $W$, có thể xáo trộn các lá bài sao cho ít nhất $1$ lá bài ở đúng vị trí?
-\end{problem}
 
 %------------------------------------------------------------------------------%
 
@@ -1288,7 +1140,7 @@ The {\it Catalan numbers} are a sequence of natural numbers that occur in variou
 
 -- Số Catalan là 1 chuỗi số tự nhiên xuất hiện trong nhiều bài toán đếm khác nhau, thường liên quan đến các đối tượng được xác định đệ quy. Chúng được đặt theo tên của {\sc Eugène Catalan}, mặc dù trước đó chúng đã được {\sc Minggatu} phát hiện vào những năm 1730.
 
-The $n$-th Catalan number can be expressed directly in terms of the \href{https://en.wikipedia.org/wiki/Central_binomial_coefficient}{central binomial coefficients} by
+The $n$th Catalan number can be expressed directly in terms of the \href{https://en.wikipedia.org/wiki/Central_binomial_coefficient}{central binomial coefficients} by
 \begin{equation}
 	\label{Catalan number}
 	C_n = \frac{1}{n + 1}\binom{2n}{n} = \frac{(2n)!}{n!(n + 1)!},\ \forall n\in\mathbb{N}^\star.
@@ -1536,7 +1388,7 @@ C++:
 	\item VNTA's C++: Pascal triangle \& multinomial:
 	\begin{itemize}
 		\item \url{https://github.com/vntanh1406/Graph_SUM2025/blob/main/Combinatorics/PascalTriaAndMultinomial.cpp}.
-		\item \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/C%2B%2B/VNTA_Pascal_triangle_multinomial.cpp}.
+		\item \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/C++/VNTA_Pascal_triangle_multinomial.cpp}.
 	\end{itemize}
 	\begin{Verbatim}[numbers=left,xleftmargin=5mm]
 #include<bits/stdc++.h>
@@ -1955,6 +1807,226 @@ Other sequences generated by more complex generating functions include:
 		\sum_{i=1}^m x_i = n\mbox{ s.t. } m_i\le x_i\le M_i\mbox{ where } m_i,M_i\in\mathbb{Z},\ m_i\le M_i,\ \forall i\in[m].
 	\end{equation*}
 \end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\chapter{Inclusion--exclusion principle -- Nguyên lý bao hàm--loại trừ}
+\minitoc
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+	\item \href{https://en.wikipedia.org/wiki/Inclusion%E2%80%93exclusion_principle}{Wikipedia{\tt/}inclusion--exclusion principle}.
+	\cite{Shahriari2022}. {\sc Shahriar Shahriari}. {\it An Invitation To Combinatorics}. Chap. 8: The Inclusion--Exclusion Principle.
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\section{Some Variants of Inclusion--Exclusion Principle -- Vài Biến Thể của Nguyên Lý Bao Hàm--Loại Trừ}
+In combinatorics, the {\it inclusion--exclusion principle} is a counting technique which generalizes the familiar method of obtaining the number of elements in the \href{https://en.wikipedia.org/wiki/Union_(set_theory)}{union} of 2 \href{https://en.wikipedia.org/wiki/Finite_set}{finite sets}; symbolically expressed as $|A\cup B| = |A| + |B| - |A\cap B|$ where $A,B$: 2 finite sets \& $|S|$ indicates the \href{https://en.wikipedia.org/wiki/Cardinality}{cardinality} of a set $S$ (which may be considered as the number of elements of the set, if the set is finite). The formula expresses the fact that the sum of the sizes of the 2 sets may be too large since some elements may be counted twice. The double-counted elements are those in the \href{https://en.wikipedia.org/wiki/Intersection_(set_theory)}{intersection} of the 2 sets \& the count is corrected by subtracting the size of the intersection.
+
+The inclusion--exclusion principle, being a generalization of the 2-set case, is perhaps more clearly seen in the case of 3 sets, which for the sets $A,B,C$ is given by $|A\cup B\cup C| = |A| + |B| + |C| - |A\cap B| - |B\cap C| - |C\cap A| + |A\cap B\cap C|$. This formula can be verified by counting how many times each region in the \href{https://en.wikipedia.org/wiki/Venn_diagram}{Venn diagram} figure is included in RHS of the formula. In this case, when removing the contributions of over-counted elements, the number of elements in the mutual intersection of 3 sets has been subtracted too often, so must be added back in to get the corrected total.
+
+Generalizing the results of these examples gives the principle of inclusion--exclusion. To find the cardinality of the union of $n$ sets:
+\begin{enumerate}
+	\item Include the cardinalities of the sets.
+	\item Exclude the cardinalities of pairwise intersections.
+	\item Include the cardinalities of the triple-wise intersections.
+	\item Exclude the cardinalities of the quadruple-wise intersections.
+	\item Include the cardinalities of quintuple-wise intersections.
+	\item Continue, until the cardinality of the $n$-tuple-wise intersection is included (if $n$ is odd) or excluded (if $n$ is even).
+\end{enumerate}
+The name comes from the idea that the principle is based on over-generous {\it inclusion}, followed by compensating {\it exclusion}. The principle can be viewed as an example of the \href{https://en.wikipedia.org/wiki/Sieve_theory}{sieve method} extensively used in \href{https://en.wikipedia.org/wiki/Number_theory}{number theory} \& is sometimes referred to as the {\it sieve formula}.
+
+As finite probabilities are computed as counts relative to the cardinality of the \href{https://en.wikipedia.org/wiki/Probability_space}{probability space}, the formulas for the principle of inclusion--exclusion remain valid when the cardinalities of the sets are replaced by finite probabilities. More generally, both versions of the principle can be put under the common umbrella of \href{https://en.wikipedia.org/wiki/Measure_theory}{measure theory}.
+
+In a very abstract setting, the principle of inclusion--exclusion can be expressed as the calculation of the inverse of a certain matrix. This inverse has a special structure, making the principle an extremely valuable technique in combinatorics \& related areas of mathematics.
+\begin{quotation}
+	``1 of the most useful principles of enumeration is discrete probability \& combinatorial theory is the celebrated principle of inclusion--exclusion. When skillfully applied, this principle has yielded the solution to many a combinatorial problem.'' -- \href{https://en.wikipedia.org/wiki/Gian-Carlo_Rota}{\sc Gian-Carlo Rota}
+\end{quotation}
+For more details, see, e.g., \href{https://en.wikipedia.org/wiki/Inclusion%E2%80%93exclusion_principle}{Wikipedia{\tt/}inclusion--exclusion principle}.
+
+The inclusion--exclusion principle is a counting method that generalizes familiar ideas. The addition principle told us that, if a set was partitioned into subsets, we could count the number of elements in the set by adding the number of elements in each part. In a partition, the subsets cover the original set -- i.e., the union of the subsets is the original set -- \& the pairwise intersection of the subsets is the empty set. The inclusion--exclusion principle extends the addition principle to the case when we have a collection of subsets that cover the original set but -- unlike a partition -- may have nontrivial intersections.
+
+-- Nguyên lý bao gồm-loại trừ là một phương pháp đếm khái quát hóa các ý tưởng quen thuộc. Nguyên lý cộng cho chúng ta biết rằng, nếu một tập hợp được phân hoạch thành các tập con, chúng ta có thể đếm số phần tử trong tập hợp bằng cách cộng số phần tử trong mỗi phần. Trong một phân hoạch, các tập con bao phủ tập hợp ban đầu -- tức là, hợp của các tập con là tập hợp ban đầu -- \& giao từng cặp của các tập con là tập rỗng. Nguyên lý bao gồm-loại trừ mở rộng nguyên lý cộng sang trường hợp khi chúng ta có một tập hợp các tập con bao phủ tập hợp ban đầu nhưng -- không giống như một phân hoạch -- có thể có các giao điểm không tầm thường.
+
+\begin{remark}[\cite{Shahriari2022}, Rmk. 8.2, p. 261]
+	The inclusion--exclusion principle is also an example of a {\it sieve} method. In a sieve method you start with a set larger than what you are interested in \& systematically throw out extraneous elements. Historically, an early use of a sieve method was by {\sc Eratosthenes}. For the sieve of Eratostheses, you start with the integers from $2$ to $n$ \&, 1 by 1, cross out the multiples of the 1st integer that has not been crossed out (you don't cross out that integer itself \& you stop when you get to $\sqrt{n}$). At the end of the process, you are left with all the primes up to $n$.
+	
+	-- Nguyên lý bao gồm-loại trừ cũng là một ví dụ về phương pháp {\it sieve}. Trong phương pháp sieve, bạn bắt đầu với một tập hợp lớn hơn tập hợp bạn quan tâm \& loại bỏ một cách có hệ thống các phần tử không liên quan. Theo truyền thống, một ứng dụng sớm của phương pháp sieve là của {\sc Eratosthenes}. Đối với sieve của Eratostheses, bạn bắt đầu với các số nguyên từ $2$ đến $n$ \&, 1 x 1, gạch bỏ các bội số của số nguyên đầu tiên chưa bị gạch bỏ (bạn không gạch bỏ chính số nguyên đó \& bạn dừng lại khi bạn đến $\sqrt{n}$). Khi kết thúc quá trình, bạn còn lại tất cả các số nguyên tố lên đến $n$.
+\end{remark}
+
+\begin{definition}[Complement, \cite{Shahriari2022}, Def. 8.3, p. 261]
+	Let $S$ be a set \& $A\subset S$. Then the {\rm complement} of $A$ in $S$, written $A_S^{\rm c}$, is defined by $A^{\rm c} = S - A = \{x\in S;x\notin A\}$.
+\end{definition}
+
+\begin{dinhly}[Nguyên lý bao hàm--loại trừ]
+	\item(i) Với 2 tập hợp hữu hạn $A,B$ bất kỳ, $|A\cup B| = |A| + |B| - |A\cap B|$, $|A\backslash B| = |A| - |A\cap B|$.
+	\item(ii) Với 3 tập hợp hữu hạn $A,B,C$ bất kỳ, $|A\cup B\cup C| = |A| + |B| + |C| - |A\cap B| - |B\cap C| - |C\cap A| + |A\cap B\cap C|$.
+	\item(iii) Với 4 tập hợp hữu hạn $A,B,C,D$ bất kỳ, $|A\cap B\cap C\cap D| = |A| + |B| + |C| + |D| - |A\cap B| - |A\cap C| - |A\cap D| - |B\cap C| - |B\cap D| - |C\cap D| + |A\cap B\cap C| + |A\cap B\cap D| + |A\cap C\cap D| + |B\cap C\cap D| - |A\cap B\cap C\cap D|$.
+	\item(iv) Với $n\in\mathbb{N}^\star$, $A_i$, $i = 1,\ldots,n$, là $n$ tập hợp hữu hạn bất kỳ:
+	\begin{equation*}
+		\left|\bigcup_{i=1}^n A_i\right| = \sum_{T\subseteq\{1,\ldots,n\},\,T\ne\emptyset} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right|.
+	\end{equation*}
+	(v)
+	\begin{equation*}
+		\left|\bigcup_{i=1}^n A_i\right|\ge\sum_{i=1}^n |A_i| - \sum_{1\le i < j\le n} |A_i\cap A_j|.
+	\end{equation*}
+	Prove that if you take into account only the 1st $m < n$ sums on the right (in the general form of the principle), then you will get an overestimate if $m$ is odd \& an underestimate if $m$ is even.
+	
+	-- Chứng minh rằng nếu bạn chỉ tính tổng $m < n$ đầu tiên ở bên phải (theo dạng tổng quát của nguyên lý), thì bạn sẽ nhận được 1 ước tính cao hơn nếu $m$ là số lẻ \& 1 ước tính thấp hơn nếu $m$ là số chẵn.	
+\end{dinhly}
+
+\begin{proof}
+	Vẽ biểu đồ Venn (Venn diagram) để tiện lập luận.
+	\item(i) Các phần tử $x$ của tập hợp $A$ gồm 2 loại:
+	\begin{itemize}
+		\item $x\in A$ nhưng $x\notin B$, i.e., $x\in A\backslash B$: có đúng $|A\backslash B|$ phần tử $x$ như vậy.
+		\item $x\in A$ \& $x\in B$, i.e., $x\in A\cap B$: có đúng $|A\cap B|$ phần tử như vậy.
+	\end{itemize}
+	Suy ra tổng số phần tử của tập $A$ bằng $|A\backslash B| + |A\cap B|$, i.e., $|A| = |A\backslash B| + |A\cap B|$, hay $|A\backslash B| = |A| - |A\cap B|$. Chứng minh tương tự cho tập hợp $B$ được: $|B| = |B\backslash A| + |B\cap A|$, hay $|B\backslash A| = |B| - |A\cap B|$. Áp dụng 2 kết quả này được: $|A\cup B| = |A\backslash B| + |A\cap B| + |B\backslash A| = |A| - |A\cap B| + |A\cap B| + |B| - |A\cap B| = |A| + |B| - |A\cap B|$.
+	\item(ii) Áp dụng kết quả ý (i) cho $(A,B) = (A,B\cup B)$ được:
+	\begin{align*}
+		|A\cup B\cup C| &= |A\cup(B\cup C)| = |A| + |B\cup C| - |A\cap(B\cup C)| = |A| + |B| + |C| - |B\cap C| - |(A\cap B)\cup(A\cap C)|\\
+		&= |A| + |B| + |C| - |B\cap C| - (|A\cap B| + |A\cap C| - |(A\cap B)\cap(A\cap C)|)\\
+		&= |A| + |B| + |C| - |B\cap C| - |C\cap A| - |A\cap B| + |A\cap B\cap C|.
+	\end{align*}
+	\item(iv) [PVT's] Chứng minh bằng phương pháp quy nạp Toán học. Trường hợp $n = 1$ hiển nhiên, $n = 2,3,4$ đã chứng minh lần lươt ở (i)--(iii). Giả sử đẳng thức đúng đến $n = N$, i.e.:
+	\begin{equation*}
+		\left|\bigcup_{i=1}^N A_i\right| = \sum_{\emptyset\ne T\subset[N]} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right|.
+	\end{equation*}
+	Cần chứng minh đẳng thức cũng đúng với $n = N + 1$, i.e., cần chứng minh:
+	\begin{equation*}
+		\left|\bigcup_{i=1}^{N+1} A_i\right| = \sum_{\emptyset\ne T\subset[N + 1]} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right|.
+	\end{equation*}
+	Áp dụng (i) với $A = \bigcup_{i=1}^N A_i,B = A_{N+1}$ \& giả thiết quy nạp, được:
+	\begin{equation*}
+		\left|\bigcup_{i=1}^{N+1} A_i\right| = \left|\bigcup_{i=1}^N A_i\right| + |A_{N+1}| - \left|A_{N+1}\cap\left(\bigcup_{i=1}^N A_i\right)\right| = \sum_{\emptyset\ne T\subset[N]} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right| + |A_{N+1}| - \left|\bigcup_{i=1}^N A_{N+1}\cap A_i\right|.
+	\end{equation*}
+	{\it Nhận xét}: Tập con khác rỗng của $[N + 1]$ gồm 2 loại:
+	\begin{itemize}
+		\item các tập con của $[N]$, ký hiệu $S_1,\ldots,S_m$ (không có phần tử thứ $N + 1$)
+		\item tập $\{N + 1\}$ \& các tập $\{N + 1\}\cup S_i$ (có phần tử thứ $N + 1$).
+	\end{itemize}
+	Suy ra
+	\begin{equation*}
+		\sum_{\emptyset\ne T\subset[N + 1]} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right| = \sum_{\emptyset\ne T\subset[N]} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right| + |A_{N+1}| + \sum_{\emptyset\ne T\subset\{N + 1\}\cap S_i} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right|.
+	\end{equation*}
+	Như vậy ta chỉ cần chứng minh
+	\begin{equation*}
+		\left|\bigcup_{i=1}^N A_{N+1}\cap A_i\right| = -\sum_{\emptyset\ne T\subset\{N + 1\}\cup S_i} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_i\right|.
+	\end{equation*}
+	Thật vậy, áp dụng giả thiết quy nạp cho VT được
+	\begin{align*}
+		\left|\bigcup_{i=1}^N A_{N+1}\cap A_i\right| &= \sum_{\emptyset\ne T\subset[N]} (-1)^{|T| + 1}\left|\bigcap_{i\in T} A_{N+1}\cap A_i\right|\\
+		&= -\sum_{\emptyset\ne T\subset[N]} (-1)^{|T| + 2}\left|\left(\bigcap_{i\in T} A_i\right)\cap A_{N+1}\right| = -\sum_{\emptyset\ne T'\subset\{N + 1\}\cup S_i} (-1)^{|T'| + 1}\left|\bigcap_{i\in T'} A_i\right|.
+	\end{align*}
+	Như vậy đẳng thức cũng đúng với $n = N + 1$. Theo nguyên lý quy nạp toán học, ta có điều phải chứng minh.
+	\item(v) Đặt $P(n,k)\colon(-1)^{k+1}\sum_{1\le i_1 < \cdots < i_k\le n} \left|\bigcap_{j=1}^k A_{i_j}\right|$, đẳng thức vừa chứng minh ở (iv) có thể được viết lại thành
+	\begin{equation*}
+		\left|\bigcup_{i=1}^n A_i\right| = \sum_{k=1}^n (-1)^{k+1}\sum_{1\le i_1 < \cdots < i_k\le n} \left|\bigcap_{j=1}^k A_{i_j}\right| = \sum_{k=1}^n P(n,k).
+	\end{equation*}
+	Cần chứng minh:
+	\begin{equation*}
+		\left|\bigcup_{i=1}^n A_i\right|\left\{\begin{split}
+			&\le\sum_{k=1}^m P(n,k),\ \forall m\in[n-1],m\not{\divby}\ 2,\\
+			&\ge\sum_{k=1}^m P(n,k),\ \forall m\in[n-1],m\divby2,\\
+		\end{split}\right.
+	\end{equation*}
+	bằng phương pháp quy nạp Toán học.
+\end{proof}
+
+\begin{proof}[2nd chứng minh]
+	(i) (Sử dụng phương pháp liệt kê, \cite[VD2, p. 16]{Phuong_to_hop}) Xuất phát từ phần giao của 2 tập hợp $A,B$: Giả sử $A\cap B = \{c_1,\ldots,c_p\}$, $A = \{a_1,\ldots,a_m,c_1,\ldots,c_p\}$, $B = \{b_1,\ldots,b_n,c_1,\ldots,c_p\}$, thì $A\cup B = \{a_1,\ldots,a_m,b_1,\ldots,b_n,c_1,\ldots,c_p\}$, nên $|A| = m + p,|B| = n + p,|A\cup B| = m + n + p$, suy ra $|A\cup B| = |A| + |B| - |A\cap B$. (ii)  Có thể sử dụng (i) 2 lần liên tiếp như 1st chứng minh hoặc sử dụng phương pháp liệt kê tương tự như (i) của 2nd chứng minh.
+\end{proof}
+
+\begin{theorem}[Inclusion--exclusion principle]
+	\label{thm: inclusion-exclusion: combinatorial version}
+	For any $n\in\mathbb{N}^\star$, \& any finite sets $A_1,\ldots,A_n$, one has the identity
+	\begin{equation*}
+		\left|\bigcup_{i=1}^n A_i\right| = \sum_{i=1}^n |A_i| - \sum_{1\le i < j\le n} |A_i\cap A_j| + \sum_{1\le i < j < k\le n} |A_i\cap A_j\cap A_k| - \cdots + (-1)^{n+1}|A_1\cap\cdots\cap A_n|,
+	\end{equation*}
+	which can be compactly written as
+	\begin{equation*}
+		\left|\bigcup_{i=1}^n A_i\right| = \sum_{k=1}^n (-1)^{k+1}\sum_{1\le i_1 < \cdots < i_k\le n} |A_{i_1}\cap\cdots\cap A_{i_k}|,
+	\end{equation*}
+	or
+	\begin{equation*}
+		\left|\bigcup_{i=1}^n A_i\right| = \sum_{\emptyset\ne J\subset\{1,\ldots,n\}} (-1)^{|J|+1} \left|\bigcap_{j\in J} A_j\right|.
+	\end{equation*}
+\end{theorem}
+In words, to count the number of elements in a finite union of finite sets, 1st sum the cardinalities of the individual sets, then subtract the number of elements that appear in at least 2 sets, then add back the number of elements that appear in at least 3 sets, then subtract the number of elements that appear in at least 4 sets, \& so on. This process always ends since there can be no elements that appear in more than the number of sets in the union.
+
+In applications, it is common to see the principle expressed in its complementary form:
+
+\begin{theorem}[Complementary form of inclusion--exclusion principle]
+	Let $S$ be a finite \href{https://en.wikipedia.org/wiki/Universal_set}{universal set} containing all of the $A_i$ \& letting $\overline{A_i}$ denote the complement of $A_i$ in $S$, by \href{https://en.wikipedia.org/wiki/De_Morgan%27s_laws}{De Morgan's laws}, one has
+	\begin{equation*}
+		\left|\bigcap_{i=1}^n \overline{A_i}\right| = \left|S\backslash\bigcup_{i=1}^n A_i\right| = |S| - \sum_{i=1}^n |A_i| + \sum_{1\le i < j\le n} |A_i\cap A_j| - \cdots + (-1)^n|A_1\cap\cdots\cap A_n|.
+	\end{equation*}	
+\end{theorem}
+As another variant due to \href{https://en.wikipedia.org/wiki/J._J._Sylvester}{\sc J. J. Sylvester} of the statement, let $P_1,\ldots,P_n$ be a list of properties that elements of a set $S$ may or may not have, then the principle of inclusion--exclusion provides a way to calculate the number of elements of $S$ that have none of the properties. Just let $A_i$ be the subset of elements of $S$ which have the property $P_i$ \& use the principle in its complementary form.
+
+\begin{theorem}[Inclusion--exclusion principle in probability]
+	\label{thm: inclusion-exclusion: probabilistic version}
+	For any $n\in\mathbb{N}^\star$, \& for any events $A_1,\ldots,A_n$ in a \href{https://en.wikipedia.org/wiki/Probability_space}{probability space} $(\Omega,{\cal F},\mathbb{P})$:
+	\item(i) For $n = 2$, $\mathbb{P}(A_1\cup A_2) = \mathbb{P}(A_1) + \mathbb{P}(A_2) - \mathbb{P}(A_1\cap A_2)$.
+	\item(ii) For $n = 3$, $\mathbb{P}(A_1\cup A_2\cup A_3) = \mathbb{P}(A_1) + \mathbb{P}(A_2) + \mathbb{P}(A_3) - \mathbb{P}(A_1\cap A_2) - \mathbb{P}(A_2\cap A_3) - \mathbb{P}(A_3\cap A_1) + \mathbb{P}(A_1\cap A_2\cap A_3)$.
+	\item(iii) In general
+	\begin{equation}
+		\mathbb{P}\left(\bigcup_{i=1}^n A_i\right) = \sum_{i=1}^n \mathbb{P}(A_i) - \sum_{i < j} \mathbb{P}(A_i\cap A_j) + \sum_{i < j < k} \mathbb{P}(A_i\cap A_j\cap A_k) + \cdots + (-1)^{n-1}\mathbb{P}\left(\bigcap_{i=1}^n A_i\right),
+	\end{equation}
+	which can be written in closed form as
+	\begin{equation}
+		\label{inclusion-exclusion: probabilistic version}
+		\mathbb{P}\left(\bigcup_{i=1}^n A_i\right) = \sum_{i=1}^n (-1)^{k-1}\sum_{I\subset[n],\,|I| = k} \mathbb{P}(A_I),
+	\end{equation}
+	where the last sum runs over all subsets $I$ of the indices $1,\ldots,n$ which contain exactly $k$ elements, \& $A_I\coloneqq\bigcap_{i\in I} A_i$ denotes the intersection of all those $A_i$ with index in $I$.
+	
+	In particular, if the probability of the intersection $A_I$ only depends on the cardinality of $I$, i.e., for every $k\in[n]$, there is an $a_k$ s.t. $a_k = \mathbb{P}(A_I)$ for every $I\in[n]$ with $|I| = k$, then \eqref{inclusion-exclusion: probabilistic version} simplifies to
+	\begin{equation*}
+		\mathbb{P}\left(\bigcup_{i=1}^n A_i\right) = \sum_{k=1}^n (-1)^{k-1}\binom{n}{k}a_k.
+	\end{equation*}
+	In addition, if the events $A_i$ are \href{https://en.wikipedia.org/wiki/Independent_and_identically_distributed}{independent \& identically distributed} (i.i.d.), then $\mathbb{P}(A_i) = p$, $\forall i$, \& $a_k = p^k$, hence
+	\begin{equation*}
+		\mathbb{P}\left(\bigcup_{i=1}^n A_i\right) = 1 - (1 - p)^n.
+	\end{equation*}
+\end{theorem}
+
+\begin{problem}
+	Prove this theorem (the last result can also be derived more simply by considering the intersection of the complements of the events $A_i$.)
+\end{problem}
+According to the \href{https://en.wikipedia.org/wiki/Boole%27s_inequality#Bonferroni_inequalities}{Bonferroni inequalities}, the sum of the 1st terms in the formula is alternately an upper bound \& a lower bound for the LHS. This can be used in cases where the full formula is to cumbersome.
+
+For a general \href{https://en.wikipedia.org/wiki/Measure_space}{measure space} $(S,\Sigma,\mu)$ \& \href{https://en.wikipedia.org/wiki/Measurable}{measurable} subsets $A_1,\ldots,A_n$ of \href{https://en.wikipedia.org/wiki/Finite_measure}{finite measure}, the above identities also hold when the probability measure $\mathbb{P}$ is replaced by the measure $\mu$.
+
+\begin{theorem}[General form]
+	\label{thm: inclusion-exclusion: general form}
+	\begin{equation*}
+		g(A) = \sum_{S\subset A} f(S)\Rightarrow f(A) = \sum_{S\subset A} (-1)^{|A| - |S|}g(S).
+	\end{equation*}
+\end{theorem}
+The combinatorial version Thm. \ref{thm: inclusion-exclusion: combinatorial version} \& the probabilistic version Thm. \ref{thm: inclusion-exclusion: probabilistic version} of the inclusion-exclusion principle are instances of \ref{thm: inclusion-exclusion: general form}.
+
+%------------------------------------------------------------------------------%
+
+\section{Problems on inclusion--exclusion principle}
+
+\begin{problem}[\cite{Shahriari2022}, p. 261]
+	You compose 10 different emails, each to a different friend. The prank-ware on your email server permutes the recipients' email addresses \& randomly sends each of the messages to 1 of the individuals on your list. What is the probability that none of your fiends receives the email intended for them? Would this probability go up or down if instead of 10 emails, you had written $10000$ emails?
+\end{problem}
+
+\begin{problem}
+	A coffee company spent 10 cents per person to question patrons about their coffee preferences. Of the persons interviewed, $a = 250$ liked latte, $b = 200$ liked cappuccino, $c = 80$ liked both, \& $100$ did not like either choice. What was the total amount of money the company had to pay?
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
+\section{Derangement}
+
+\begin{problem}[Counting derangements -- đếm số quân bài đánh tráo]
+	Suppose there is a deck of $n$ cards numbered from $1$ to $n$. Suppose a card numbered $m$ is in the correct position if it is the $m$th card in the deck. How many ways, $W$, can the cards be shuffled with at least $1$ card being in the correct position?
+	
+	-- Giả sử có 1 bộ bài $n$ lá bài được đánh số từ $1$ đến $n$. Giả sử 1 lá bài được đánh số $m$ ở đúng vị trí nếu nó là lá bài thứ $m$ trong bộ bài. Có bao nhiêu cách, $W$, có thể xáo trộn các lá bài sao cho ít nhất $1$ lá bài ở đúng vị trí?
+\end{problem}
 
 %------------------------------------------------------------------------------%
 
@@ -2793,7 +2865,8 @@ If the original graph is undirected then all of its edges are tree edges or back
 \end{itemize}
 Nếu đồ thị gốc không có hướng thì tất cả các cạnh của nó đều là các cạnh cây hoặc các cạnh lùi.
 
-\paragraph{Vertex orderings.} It is also possible to use DFS to linearly order the vertices of a graph or tree. There are 4 possible ways of doing this:
+\subsubsection{Vertex orderings -- Đánh số đỉnh}
+It is also possible to use DFS to linearly order the vertices of a graph or tree. There are 4 possible ways of doing this:
 \begin{itemize}
 	\item A {\it preordering} is a list of the vertices in the order that they were 1st visited by the DFS algorithm. This is a compact \& natural way of describing the progress of the search. A preordering of an \href{https://en.wikipedia.org/wiki/Parse_tree}{expression tree} is the expression in \href{https://en.wikipedia.org/wiki/Polish_notation}{Polish notation}.
 	\item A {\it postordering} is a list of the vertices in the order that they were {\it last} visited by the algorithm. A postordering of an expression tree is the expression in \href{https://en.wikipedia.org/wiki/Reverse_Polish_notation}{reverse Polish notation}.
@@ -2816,7 +2889,8 @@ Reverse postordering produces a \href{https://en.wikipedia.org/wiki/Topological_
 
 -- Sắp xếp ngược sau tạo ra 1 sắp xếp tôpô của bất kỳ đồ thị có hướng không có chu trình nào. Sắp xếp này cũng hữu ích trong phân tích luồng điều khiển vì nó thường biểu diễn 1 tuyến tính hóa tự nhiên của luồng điều khiển.
 
-\paragraph{Pseudocode of DFS.} A recursive implementation of DFS:
+\subsubsection{Pseudocode of DFS - Mã giả của DFS}
+A recursive implementation of DFS:
 \begin{verbatim}
 procedure DFS(G, v) is
     label v as discovered

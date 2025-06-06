@@ -39,8 +39,7 @@ ll permutation_index(int n, const vector<int> &pi) {
 	for (int i = 0; i < n; i++) {
 		// Tìm vị trí của pi[i] trong unused
 		int val = pi[i];
-		int pos = int(lower_bound(unused.begin(), unused.end(), val) -
-		              unused.begin());
+		int pos = int(lower_bound(unused.begin(), unused.end(), val) - unused.begin());
 		// Có pos phần tử nhỏ hơn val chưa dùng
 		idx += pos * fact[n - 1 - i];
 		// Xóa val khỏi unused

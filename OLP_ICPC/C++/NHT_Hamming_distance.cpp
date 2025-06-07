@@ -1,8 +1,7 @@
 #include <bits/stdc++.h>
-
 using namespace std;
-const int maxN = 2e4;
 
+const int maxN = 2e4;
 int N, ans, b[maxN];
 
 int scanBinary() {

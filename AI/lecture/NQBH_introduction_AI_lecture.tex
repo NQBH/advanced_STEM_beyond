@@ -5,7 +5,7 @@
 \usepackage{tocloft}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
-\usepackage{amsmath,amssymb,amsthm,enumitem,float,graphicx,mathtools,tikz}
+\usepackage{amsmath,amssymb,amsthm,enumitem,fancyvrb,float,graphicx,mathtools,tikz}
 \usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
 \allowdisplaybreaks
 \newtheorem{assumption}{Assumption}
@@ -846,7 +846,7 @@ $d[x]$: số đỉnh cạnh $x$ mà chưa tô màu. ???
 \subsection{Shortest path problem -- Bài toán đường đi ngắn nhất}
 
 \begin{baitoan}
-	Cài đặt \& thử nghiệm $\rm A^*$. So sánh với Dijkstra nếu được.
+	Cài đặt \& thử nghiệm A*. So sánh với Dijkstra nếu được.
 	\item {\sf Input.} $G = (V,E)$ có trọng số dương, đỉnh xuất phát $a$, đỉnh mục tiêu $z$. Thông tin bổ sung: $h(x)$: ước lượng khoảng cách từ $a$ đến mục tiêu $z$.
 	\item {\sf Output.} Đường đi ngắn nhất shortest path SP từ $a$ đến $z$.
 \end{baitoan}
@@ -924,13 +924,452 @@ z
 
 %------------------------------------------------------------------------------%
 
+\section{A* Search Algorithm -- Thuật Toán Tìm Kiếm A*}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/A*_search_algorithm}{Wikipedia{\tt/}A* search algorithm}.
+    
+    \item \href{https://www.geeksforgeeks.org/a-search-algorithm/}{Geeks4Geeks{\tt/}A* search algorithm}.
+\end{enumerate}
+A* (pronounced ``A-star'') is a \href{https://en.wikipedia.org/wiki/Graph_traversal}{graph traversal} \& \href{https://en.wikipedia.org/wiki/Pathfinding}{pathfinding} algorithm that is used in many fields of CS due to its completeness, optimality, \& optimal efficiency. Given a \href{https://en.wikipedia.org/wiki/Weighted_graph}{weighted graph}, a source node \& a goal node, the algorithm finds the \href{https://en.wikipedia.org/wiki/Shortest_path_problem}{shortest path} (w.r.t. the given weights) from source to goal.
+
+-- A* (phát âm là ``A-star'') là 1 thuật toán duyệt đồ thị \& tìm đường được sử dụng trong nhiều lĩnh vực của CS do tính hoàn chỉnh, tối ưu, \& hiệu quả tối ưu của nó. Với 1 đồ thị có trọng số, 1 nút nguồn \& 1 nút đích, thuật toán tìm đường đi ngắn nhất (so với các trọng số đã cho) từ nguồn đến đích.
+
+1 major practical drawback is its $O(b^d)$ space complexity where $d$ is the depth of the shallowest solution (the length of the shortest path from the source node to any given goal node) \& $b$ is the \href{https://en.wikipedia.org/wiki/Branching_factor}{branching factor} (the maximum number of successors for any given state), as it stores all generated nodes in memory. Thus, in practical \href{https://en.wikipedia.org/wiki/Travel-routing_system}{travel-routing systems}, it is generally outperformed by algorithms that can pre-process the graph to attain better performance, as well as by memory-bounded approaches; however, A* is still the best solution in many cases.
+
+-- 1 nhược điểm thực tế lớn là độ phức tạp không gian $O(b^d)$ trong đó $d$ là độ sâu của giải pháp nông nhất (độ dài của đường đi ngắn nhất từ nút nguồn đến bất kỳ nút đích nào) \& $b$ là hệ số phân nhánh (số lượng nút kế nhiệm tối đa cho bất kỳ trạng thái nào), vì nó lưu trữ tất cả các nút được tạo trong bộ nhớ. Do đó, trong các hệ thống định tuyến du lịch thực tế, nó thường bị các thuật toán có thể xử lý trước đồ thị để đạt được hiệu suất tốt hơn, cũng như các phương pháp tiếp cận bị giới hạn bộ nhớ đánh bại; tuy nhiên, A* vẫn là giải pháp tốt nhất trong nhiều trường hợp.
+
+\href{https://en.wikipedia.org/wiki/Peter_E._Hart}{\sc Peter hart}, \href{https://en.wikipedia.org/wiki/Nils_Nilsson_(researcher)}{\sc Nils Nilsson}, \& \href{https://en.wikipedia.org/wiki/Bertram_Raphael}{\sc Bertram Raphael} of Stanford Research Institute (now \href{https://en.wikipedia.org/wiki/SRI_International}{SRI International}) 1st published the algorithm in 1968. It can be seen as an extension of \href{https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm}{Dijkstra's algorithm}. A* achieves better performance by using \href{https://en.wikipedia.org/wiki/Heuristic_(computer_science)}{heuristics} to guide its search.
+
+-- {\sc Peter Hart, Nils Nilsson, \& Bertram Raphael} của Viện nghiên cứu Stanford (nay là SRI International) lần đầu tiên công bố thuật toán này vào năm 1968. Thuật toán này có thể được coi là phần mở rộng của thuật toán Dijkstra. A* đạt được hiệu suất tốt hơn bằng cách sử dụng phương pháp tìm kiếm để hướng dẫn tìm kiếm của nó.
+
+Compared to Dijkstra's algorithm, the A* algorithm only finds the shortest path from a specified source to a specified goal, \& not the shortest-path tree from a specified source to all possible goals. This is a necessary \href{https://en.wikipedia.org/wiki/Trade-off}{trade-off} for using a specific-goal-directed heuristics. For Dijkstra's algorithm, since the entire shortest-path tree is generated, every node is a goal, \& there can be no specific-goal-directed heuristic.
+
+-- So với thuật toán Dijkstra, thuật toán A* chỉ tìm đường đi ngắn nhất từ 1 nguồn cụ thể đến 1 mục tiêu cụ thể, \& không phải là cây đường đi ngắn nhất từ 1 nguồn cụ thể đến tất cả các mục tiêu có thể. Đây là 1 sự đánh đổi cần thiết để sử dụng thuật toán tìm kiếm theo mục tiêu cụ thể. Đối với thuật toán Dijkstra, vì toàn bộ cây đường đi ngắn nhất được tạo ra, nên mọi nút đều là 1 mục tiêu, \& không thể có thuật toán tìm kiếm theo mục tiêu cụ thể.
+
+{\sf Motivation.} To approximate the shortest path in real-life situations, like in maps, games where there can be many hindrances. We can consider a 2D Grid having several obstacles \& we start from a source cell to reach towards a goal cell.
+
+-- Để ước lượng đường đi ngắn nhất trong các tình huống thực tế, như trong bản đồ, trò chơi, nơi có thể có nhiều chướng ngại vật. Chúng ta có thể xem xét 1 Lưới 2D có nhiều chướng ngại vật \& chúng ta bắt đầu từ 1 ô nguồn để tiếp cận đến 1 ô đích.
+
+{\sf What is A* search algorithm?} A* search algorithm is 1 of the best \& popular technique used in path-finding \& graph traversals.
+
+-- Thuật toán tìm kiếm A* là 1 trong những kỹ thuật \& phổ biến nhất được sử dụng trong tìm đường \& duyệt đồ thị.
+
+{\sf Why A* search algorithm?} Informally speaking, A* search algorithms, unlike other traversal techniques, it has ``brains''. I.e., it is really a smart algorithm which separates it from the other conventional algorithms. Many games \& web-based map use this algorithm to find the shortest path very efficiently (approximation).
+
+-- Nói 1 cách không chính thức, thuật toán tìm kiếm A*, không giống như các kỹ thuật duyệt khác, nó có ``bộ não''. Tức là, nó thực sự là 1 thuật toán thông minh giúp nó tách biệt với các thuật toán thông thường khác. Nhiều trò chơi \& bản đồ dựa trên web sử dụng thuật toán này để tìm đường đi ngắn nhất rất hiệu quả (xấp xỉ).
+
+{\sf Explanation.} Consider a square grid having many obstacles \& we are given a starting cell \& a target cell. We want to reach the target cell (if possible) from the starting cell as quickly as possible. Here A* search algorithm comes to the rescue.
+
+-- Xem xét 1 lưới vuông có nhiều chướng ngại vật \& chúng ta được cung cấp 1 ô bắt đầu \& 1 ô đích. Chúng ta muốn tiếp cận ô đích (nếu có thể) từ ô bắt đầu càng nhanh càng tốt. Ở đây, thuật toán tìm kiếm A* sẽ giải cứu.
+
+What A* search algorithm does it that at each step it picks the node according to a value $f$ which is a parameter equal to the sum of 2 other parameters $g,h$. At each step it picks the node{\tt/}cell having the lowest $f$, \& process that node{\tt/}cell. We define $g,h$ as simply as possible:
+\begin{itemize}
+    \item $g =$ the movement cost to move from the starting point to a given square on the grid, following the path generated to get there.
+    \item $h=$ the estimated movement cost to move from that given square on the grid to the final destination. This is often referred to as the {\it heuristic}, which is nothing but a ind of smart guess.
+    \begin{center}
+        heuristics $=$ smart guess.
+    \end{center}
+    We really don't know the actual distance until we find the path, because all sorts of things can be in the ways (walls, water, etc.). There can be many ways to calculate this $h$ discussed later.
+\end{itemize}
+-- Thuật toán tìm kiếm A* thực hiện điều gì khi ở mỗi bước, nó chọn nút theo giá trị $f$ là tham số bằng tổng của 2 tham số khác $g,h$. Ở mỗi bước, nó chọn nút{\tt/}ô có $f$ thấp nhất, \& xử lý nút{\tt/}ô đó. Chúng tôi định nghĩa $g,h$ đơn giản nhất có thể:
+\begin{itemize}
+    \item $g =$ chi phí di chuyển để di chuyển từ điểm bắt đầu đến 1 ô vuông cho trước trên lưới, theo đường dẫn được tạo ra để đến đó.
+    \item $h=$ chi phí di chuyển ước tính để di chuyển từ ô vuông cho trước đó trên lưới đến đích cuối cùng. Điều này thường được gọi là {\it heuristic}, không gì khác ngoài 1 ind của phỏng đoán thông minh.
+    \begin{center}
+        heuristics $=$ phỏng đoán thông minh.
+    \end{center}
+    Chúng ta thực sự không biết khoảng cách thực tế cho đến khi tìm thấy đường đi, vì có thể có nhiều thứ cản đường (tường, nước, v.v.). Có thể có nhiều cách để tính $h$ này được thảo luận sau.
+\end{itemize}
+{\sf Algorithm.} We create 2 lists - open list \& closed list (just like Dijkstra algorithm):
+
+\noindent{\sc A* Search Algorithm.}
+\begin{enumerate}
+    \item Initialize the open list.
+    \item Initialize the closed list. Put the startiong node on the open list (you can leave its $f$ at 0).
+    \item While the open list is not empty:
+    \begin{enumerate}
+        \item Find the node with the least $f$ on the open list, call it $q$.
+        \item Pop $q$ off the open list.
+        \item Generate $q$'s 8 (why 8?) successors \& set their parents to $q$.
+        \item For each successor
+        \begin{enumerate}
+            \item if successor is the goal, stop search.
+            \item else, compute both $g,h$ for successor.
+            
+            successor.$g$ = $q$.$g$ + distance between successor \& $q$
+            
+            successor.$h$ = distance from goal to successor (this can be done using many ways, e.g., 3 heuristics: Manhattan, diagonal, \& Euclidean heuristics).
+            
+            successor.$f$ = successor.$g$ + successor.$h$
+            \item if a node with the same position as successor is in the OPEN list which has a lower $f$ than successor, skip this successor.
+            \item if a node with the same position as successor is in the CLOSED list which has a lower $f$ than successor, skip this successor otherwise, add the node to the open list
+        \end{enumerate}
+        end (for loop)
+        \item Push $q$ on the closed list.
+    \end{enumerate}
+    end (while loop)
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Description of A* algorithm -- Mô tả thuật toán A*}
+A* is an \href{https://en.wikipedia.org/wiki/Informed_search_algorithm}{informed search algorithm}, or a \href{https://en.wikipedia.org/wiki/Best-first_search}{best-1st search}, i.e., it is formulated in terms of \href{https://en.wikipedia.org/wiki/Weighted_graph}{weighted graphs}: starting from a specific starting node of a graph, it aims to find a path to the given goal node having the smallest cost (least distance traveled, shortest time, etc.). It does this by maintaining a tree of paths originating at the start node \& extending those paths 1 edge at a time until the goal node is reached.
+
+-- A* là 1 thuật toán tìm kiếm có thông tin, hay tìm kiếm best-1st, tức là nó được xây dựng theo các đồ thị có trọng số: bắt đầu từ 1 nút bắt đầu cụ thể của đồ thị, nó nhằm mục đích tìm 1 đường dẫn đến nút đích đã cho có chi phí nhỏ nhất (khoảng cách di chuyển ngắn nhất, thời gian ngắn nhất, v.v.). Nó thực hiện điều này bằng cách duy trì 1 cây các đường dẫn bắt đầu từ nút bắt đầu \& mở rộng các đường dẫn đó thêm 1 cạnh tại 1 thời điểm cho đến khi đạt đến nút đích.
+
+At each iteration of its main loop, A* needs to determine which of its paths to extend. It does so based on the cost of the path \& an estimate of the cost required to extend the path all the way to the goal. Specifically, A* selects the path that minimizes $f(n) = g(n) + h(n)$ where $n$ is the next node on the path, $g(n)$ is the cost of the path from the start node to $n$, \& $h(n)$ is a heuristic function that estimates the cost of the cheapest path from $n$ to the goal. The heuristic function is problem-specific. If the heuristic function is \href{https://en.wikipedia.org/wiki/Admissible_heuristic}{admissible}, i.e., it never overestimates the actual cost to get to the goal -- A* is guaranteed to return a least-cost path from start to goal.
+
+-- Tại mỗi lần lặp của vòng lặp chính, A* cần xác định đường dẫn nào của nó sẽ được mở rộng. Nó thực hiện việc này dựa trên chi phí của đường dẫn \& ước tính chi phí cần thiết để mở rộng đường dẫn cho đến đích. Cụ thể, A* chọn đường dẫn tối thiểu hóa $f(n) = g(n) + h(n)$ trong đó $n$ là nút tiếp theo trên đường dẫn, $g(n)$ là chi phí của đường dẫn từ nút bắt đầu đến $n$, \& $h(n)$ là hàm heuristic ước tính chi phí của đường dẫn rẻ nhất từ $n$ đến đích. Hàm heuristic là hàm cụ thể cho từng vấn đề. Nếu hàm heuristic có thể chấp nhận được, tức là nó không bao giờ ước tính quá cao chi phí thực tế để đến đích -- A* được đảm bảo trả về đường dẫn có chi phí thấp nhất từ điểm bắt đầu đến đích.
+
+Typical implementations of A* use a \href{https://en.wikipedia.org/wiki/Priority_queue}{priority queue} to perform the repeated selection of minimum (estimated) cost nodes to expand. This priority queue is known as the {\it open} set, {\it fringe} or {\it frontier}. At each step of the algorithm, the node with the lowest $f(x)$ value is removed from the queue, the $f,g$ values of its neighbors are updated accordingly, \& these neighbors are added to the queue. The algorithm continues until a removed node (thus the node with the lowest $f$ value out of all fringe nodes) is a goal node. The $f$ value of that goal is then also the cost of the shortest path, since $h$ at the goal is 0 in an admissible heuristic.
+
+-- Các triển khai điển hình của A* sử dụng hàng đợi ưu tiên để thực hiện lựa chọn lặp lại các nút có chi phí tối thiểu (ước tính) để mở rộng. Hàng đợi ưu tiên này được gọi là tập {\it open}, {\it fringe} hoặc {\it frontier}. Tại mỗi bước của thuật toán, nút có giá trị $f(x)$ thấp nhất sẽ bị xóa khỏi hàng đợi, các giá trị $f,g$ của các nút lân cận của nó sẽ được cập nhật tương ứng, \& các nút lân cận này sẽ được thêm vào hàng đợi. Thuật toán tiếp tục cho đến khi 1 nút bị xóa (do đó là nút có giá trị $f$ thấp nhất trong số tất cả các nút rìa) là 1 nút mục tiêu. Giá trị $f$ của mục tiêu đó sau đó cũng là chi phí của đường dẫn ngắn nhất, vì $h$ tại mục tiêu là 0 trong 1 thuật toán tìm kiếm có thể chấp nhận được.
+
+The algorithm described so far only gives the length of the shortest path. To find the actual sequence of steps, the algorithm can be easily revised so that each node on the path keeps track of its predecessor. After this algorithm is run, the ending node will point to its predecessor, \& so on, until some node's predecessor is the start node.
+
+-- Thuật toán được mô tả cho đến nay chỉ cung cấp độ dài của đường đi ngắn nhất. Để tìm trình tự các bước thực tế, thuật toán có thể dễ dàng được sửa đổi để mỗi nút trên đường đi theo dõi nút tiền nhiệm của nó. Sau khi thuật toán này được chạy, nút kết thúc sẽ trỏ đến nút tiền nhiệm của nó, \& cứ thế, cho đến khi nút tiền nhiệm của 1 số nút là nút bắt đầu.
+
+E.g., when searching for the shortest route on a map, $h(x)$ might represent the \href{https://en.wikipedia.org/wiki/Euclidean_distance}{straight-line distance} to the goal, since that is physically the smallest possible distance between any 2 points. For a grid map from a video game, using the \href{https://en.wikipedia.org/wiki/Taxicab_distance}{Taxicab distance} or the \href{https://en.wikipedia.org/wiki/Chebyshev_distance}{Chebyshev distance} becomes better depending on the set of movements available (4-way or 8-way).
+
+-- E.g., khi tìm kiếm tuyến đường ngắn nhất trên bản đồ, $h(x)$ có thể biểu diễn khoảng cách theo đường thẳng đến đích, vì về mặt vật lý, đó là khoảng cách nhỏ nhất có thể giữa bất kỳ 2 điểm nào. Đối với bản đồ lưới từ trò chơi điện tử, sử dụng khoảng cách Taxicab hoặc khoảng cách Chebyshev sẽ tốt hơn tùy thuộc vào tập hợp các chuyển động khả dụng (4 chiều hoặc 8 chiều).
+
+If the heuristic $h$ satisfies the additional condition $h(x)\le d(x,y) + h(y)$ for every edge $(x,y)$ of the graph (where $d$ denotes the length of that edge), then $h$ is called \href{https://en.wikipedia.org/wiki/Consistent_heuristic}{monotone or consistent}. With a consistent heuristic, A* is guaranteed to find an optimal path without processing any node more than once \& A* is equivalent to running Dijkstra's algorithm with the \href{https://en.wikipedia.org/wiki/Reduced_cost}{reduced cost} $d'(x,y)\coloneqq d(x,y) + h(y) - h(x)$.
+
+-- Nếu thuật toán heuristic $h$ thỏa mãn điều kiện bổ sung $h(x)\le d(x,y) + h(y)$ cho mọi cạnh $(x,y)$ của đồ thị (trong đó $d$ biểu thị độ dài của cạnh đó), thì $h$ được gọi là đơn điệu hoặc nhất quán. Với thuật toán heuristic nhất quán, A* được đảm bảo tìm ra đường đi tối ưu mà không cần xử lý bất kỳ nút nào nhiều hơn 1 lần \& A* tương đương với việc chạy thuật toán Dijkstra với chi phí giảm $d'(x,y)\coloneqq d(x,y) + h(y) - h(x)$.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Pseudocode of A* algorithm -- Mã giả của thuật toán A*}
+The following pseudocode describes the algorithm: 
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+function reconstruct_path(cameFrom, current)
+    total_path := {current}
+    while current in cameFrom.Keys:
+        current := cameFrom[current]
+        total_path.prepend(current)
+    return total_path
+
+// A* finds a path from start to goal.
+// h: heuristic function. h(n) estimates the cost to reach goal from node n.
+function A_star(start, goal, h)
+    // set of discovered nodes that may need to be (re-)expanded.
+    // initially, only the start node is known.
+    // this is usually implemented as a min-heap or priority queue rather than a hash-set.
+    openSet := {start}
+    
+    // for node n, cameFrom[n] is the node immediately preceding it on the cheapest path from the start
+    cameFrom := an empty map
+    
+    // for node n, gScore[n] is the currently known cost of the cheapest path from start to n.
+    gScore := map with default value of Infinity
+    gScore[start] := 0
+    
+    // for node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to\\
+    // how cheap a path could be from start to finish if it goes through n.
+    fScore := map with default value of Infinity
+    fScore[start] := h(start)
+    
+    while openSet is not empty
+        // this operation can occur in O(log N) time if openSet is a min-heap or a priority queue
+        current := the node in openSet having the lowest fScore[] value
+        if current = goal
+            return reconstruct_path(cameFrom, current)
+        
+        openSet.remove(current)
+        for each neighbor of current
+            // d(current, neighbor) is the weight of the edge from current to neighbor
+            // tentative_gScore is the distance from start to the neighbor through current
+            tentative_gScore := gScore[current] + d(current, neighbor)
+            if tentative_gScore < gScore[neighbor]
+                // this path to neighbor is better than any previous one. Record it!
+                cameFrom[neighbor] := current
+                gScore[neighbor] := tentative_gScore
+                fScore[neighbor] := tentative_gScore + h(neighbor)
+                if neighbor not in openSet
+                    openSet.add(neighbor)
+    // open set is empty but goal was never reached
+    return failure
+\end{Verbatim}
+
+\begin{remark}
+    In this pseudocode, if a node is reached by $1$ path, removed from {\tt openSet}, \& subsequently reached by a cheaper path, it will be added to openSet again. This is essential to guarantee that the path returned is optimal if the heuristic function is \href{https://en.wikipedia.org/wiki/Admissible_heuristic}{admissible} but not \href{https://en.wikipedia.org/wiki/Consistent_heuristic}{consistent}. If the heuristic is consistent, when a node is removed from {\tt openSet} the path to it is guaranteed to be optimal so the test \verb|tentative_gScore < gScore[neighbor]| will always fail if the node is reached again. The pseudocode implemented here is sometimes called the {\rm graph-search} version of A*. This is in contrast with the version without \verb|tentative_gScore < gScore[neighbor]| test to add nodes back to {\tt openSet}, which is sometimes called the {\rm tree-search} version of A* \& require a consistent heuristic to guarantee optimality.
+    
+    -- Trong mã giả này, nếu 1 nút được tiếp cận bằng $1$ đường dẫn, được xóa khỏi {\tt openSet}, \& sau đó được tiếp cận bằng 1 đường dẫn rẻ hơn, thì nút đó sẽ được thêm vào openSet 1 lần nữa. Điều này rất cần thiết để đảm bảo rằng đường dẫn được trả về là tối ưu nếu hàm heuristic được chấp nhận nhưng không nhất quán. Nếu heuristic là nhất quán, khi 1 nút được xóa khỏi {\tt openSet} thì đường dẫn đến nút đó được đảm bảo là tối ưu, do đó, thử nghiệm \verb|tentative_gScore < gScore[neighbor]| sẽ luôn thất bại nếu nút được tiếp cận lại. Mã giả được triển khai ở đây đôi khi được gọi là phiên bản {\rm graph-search} của A*. Điều này trái ngược với phiên bản không có thử nghiệm \verb|tentative_gScore < gScore[neighbor]| để thêm các nút trở lại {\tt openSet}, đôi khi được gọi là phiên bản {\rm tree-search} của A* \& yêu cầu 1 heuristic nhất quán để đảm bảo tính tối ưu.
+\end{remark}
+
+\begin{example}
+    An example of an A* algorithm in action where nodes are cities connected with roads \& $h(x)$ is the straight-line distance to the target point. 
+\end{example}
+The A* algorithm has real-world applications.
+
+\begin{example}
+    Edges are railroads \& $h(x)$ is the \href{https://en.wikipedia.org/wiki/Great-circle_distance}{great-circle distance} (the shortest possible distance on a sphere) to the target. The algorithm is searching for a path between Washington, D.C., \& Los Angeles.
+\end{example}
+
+\begin{example}
+    Illustration of A* search for finding path from a start node to a goal node in a \href{https://en.wikipedia.org/wiki/Robotics}{robot} \href{https://en.wikipedia.org/wiki/Motion_planning}{motion planning} problem. The empty circles represent the nodes in the {\rm open} set, i.e., those that remain to be explored, \& the filled ones are in the closed set. Color on each closed node indicates the distance from the goal: the greener, the closer. One can 1st see the A* moving in a straight line in the direction of the goal, then when hitting the obstacle, it explores alternative routes through the nodes from the open set.
+\end{example}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Implementation details of A* search algorithm}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Special cases}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Properties of A* search algorithm}
+
+%------------------------------------------------------------------------------%
+
+
+
+
+
+%------------------------------------------------------------------------------%
+
+\subsection{Bounded relaxation}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Complexity of A* search algorithm}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Applications}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Relations to other algorithms}
+What sets A* apart from a greedy best-1st search algorithm is that it takes the cost{\tt/}distance already traveled, $g(n)$, into account.
+
+Some common variants of \href{https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm}{Dijkstra's algorithm} can be viewed as a special case of A* where the heuristic $h(n) = 0$ for all nodes; in turn, both Dijkstra \& A* are special cases of DP. A* itself is a special case of a generalization of \href{https://en.wikipedia.org/wiki/Branch_and_bound}{branch \& bound}.
+
+A* is similar to \href{https://en.wikipedia.org/wiki/Beam_search}{beam search} except that beam search maintains a limit on the numbers of paths that it has to explore.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Variants of A* search algorithm -- Các biến thể của thuật toán tìm kiếm A*}
+Anytime A*, Block A*, D*, Field D*, Fringe, Fringe Saving A* (FSA*), Generalized Adaptive A* (GAA*), incremental heuristic search, reduced A*, Iterative deepening A* (IDA*), jump point search, Lifelong Planning A* (LPA*), New Bidirectional A* (NBA*), Simplified Memory bounded A* (SMA*), Theta*.
+
+A* can also be adapted to a \href{https://en.wikipedia.org/wiki/Bidirectional_search}{bidirectional search} algorithm, but special care needs to be taken for the stopping criterion.
+
+%------------------------------------------------------------------------------%
+
+\section{Traveling Salesman Problem (TSP) -- Bài Toán Người Bán Hàng Du Lịch}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/Travelling_salesman_problem}{Wikipedia{\tt/}traveling salesman problem}.
+\end{enumerate}
+
+\begin{example}
+    The TSP seeks to find the shortest possible loop that connects every red dot.
+\end{example}
+In the \href{https://en.wikipedia.org/wiki/Computational_complexity_theory}{theory of computational complexity}, the {\it traveling salesman problem} (TSP) asks the following question: ``Given a list of cities \& the distances between each pair of cities, what is the shortest possible route that visits each city exactly once \& returns to the origin city?'' It is an \href{https://en.wikipedia.org/wiki/NP-hardness}{NP-hard} problem in \href{https://en.wikipedia.org/wiki/Combinatorial_optimization}{combinatorial optimization}, important in \href{https://en.wikipedia.org/wiki/Theoretical_computer_science}{theoretical CS} \& \href{https://en.wikipedia.org/wiki/Operations_research}{operations research}.
+
+-- Trong lý thuyết về độ phức tạp tính toán, bài toán người bán hàng du lịch (TSP) đặt ra câu hỏi sau: "Cho 1 danh sách các thành phố và khoảng cách giữa mỗi cặp thành phố, đâu là tuyến đường ngắn nhất có thể đến thăm mỗi thành phố đúng 1 lần và quay trở lại thành phố ban đầu?" Đây là 1 bài toán NP-khó trong tối ưu hóa tổ hợp, quan trọng trong khoa học máy tính lý thuyết và nghiên cứu hoạt động (vận trù học).
+
+The \href{https://en.wikipedia.org/wiki/Traveling_purchaser_problem}{traveling purchaser problem}, the \href{https://en.wikipedia.org/wiki/Vehicle_routing_problem}{vehicle routing problem}, \& the \href{https://en.wikipedia.org/wiki/Ring_star_problem}{ring star problem} are 3 generalizations of TSP.
+
+-- Vấn đề người mua du lịch, vấn đề định tuyến phương tiện, \& vấn đề vòng tròn sao là 3 tổng quát hóa của TSP.
+
+The decision version of the TSP (where given a length $L$, the task is to decide whether the graph has a tour whose length is at most $L$) belongs to the class of \href{https://en.wikipedia.org/wiki/NP-completeness}{NP-complete} problems. Thus, it is possible that the worst-case running time for any algorithm for the TSP increases \href{https://en.wikipedia.org/wiki/Time_complexity#Superpolynomial_time}{superpolynomially} (but no more than \href{https://en.wikipedia.org/wiki/Exponential_time_hypothesis}{exponentially}) with the number of cities.
+
+-- Phiên bản quyết định của TSP (với độ dài $L$, nhiệm vụ là quyết định xem đồ thị có 1 chuyến tham quan có độ dài tối đa là $L$ hay không) thuộc về lớp các bài toán NP-complete. Do đó, có thể thời gian chạy trường hợp xấu nhất cho bất kỳ thuật toán nào đối với TSP tăng theo siêu đa thức (nhưng không quá cấp số nhân) với số lượng thành phố.
+
+The problem was 1st formulated in 1930 \& is 1 of the most intensively studied problems in optimization. It is used as a \href{https://en.wikipedia.org/wiki/Benchmark_(computing)}{benchmark} for many optimization methods. Even though the problem is computationally difficult, many \href{https://en.wikipedia.org/wiki/Heuristic}{heuristics} \& \href{https://en.wikipedia.org/wiki/Exact_algorithm}{exact algorithms} are known, so that some instances with 10s of thousands of cities can be solved completely, \& even problems with millions of cities can be approximated within a small fraction of 1\%.
+
+-- Bài toán này được xây dựng lần đầu tiên vào năm 1930 và là 1 trong những bài toán được nghiên cứu chuyên sâu nhất trong tối ưu hóa. Bài toán này được sử dụng làm chuẩn mực cho nhiều phương pháp tối ưu hóa. Mặc dù bài toán này khó tính toán, nhưng người ta đã biết nhiều phương pháp tìm kiếm và thuật toán chính xác, do đó 1 số trường hợp với hàng chục nghìn thành phố có thể được giải quyết hoàn toàn, và thậm chí các bài toán với hàng triệu thành phố cũng có thể được xấp xỉ trong phạm vi 1 phần nhỏ của 1\%.
+
+The TSP has several applications even in its purest formulation, e.g. \href{https://en.wikipedia.org/wiki/Planning}{planning}, \href{https://en.wikipedia.org/wiki/Logistics}{logistics}, \& the manufacture of \href{https://en.wikipedia.org/wiki/Integrated_circuit}{microchips}. Slightly modified, it appears as a sub-problem in many cases, e.g. \href{https://en.wikipedia.org/wiki/DNA_sequencing}{DNA sequencing}. In these applications, the concept {\it city} represents, e.g., customers, soldering points, or DNA fragments, \& the concept {\it distance} represents traveling times or cost, or a \href{https://en.wikipedia.org/wiki/Similarity_measure}{similarity measure} between DNA fragments. The TSP also appears in astronomy, as astronomers observing many sources wants to minimize the time spent moving the telescope between the sources; in such problems, the TSP can be embedded inside an \href{https://en.wikipedia.org/wiki/Optimal_control}{optimal control problem}. In many applications, additional constraints e.g. limited resources or time windows may be imposed.
+
+-- TSP có 1 số ứng dụng ngay cả trong công thức tinh khiết nhất của nó, ví dụ như lập kế hoạch, hậu cần, \& sản xuất vi mạch. Được sửa đổi 1 chút, nó xuất hiện như 1 bài toán phụ trong nhiều trường hợp, ví dụ như giải trình tự DNA. Trong các ứng dụng này, khái niệm {\it city} biểu diễn, ví dụ như khách hàng, điểm hàn hoặc đoạn DNA, \& khái niệm {\it distance} biểu diễn thời gian di chuyển hoặc chi phí hoặc thước đo độ tương đồng giữa các đoạn DNA. TSP cũng xuất hiện trong thiên văn học, vì các nhà thiên văn học quan sát nhiều nguồn muốn giảm thiểu thời gian di chuyển kính thiên văn giữa các nguồn; trong các bài toán như vậy, TSP có thể được nhúng bên trong 1 bài toán điều khiển tối ưu. Trong nhiều ứng dụng, các ràng buộc bổ sung ví dụ như tài nguyên hạn chế hoặc cửa sổ thời gian có thể được áp dụng.
+
+%------------------------------------------------------------------------------%
+
+\subsection{History of TSP -- Lịch sử của bài toán người bán hàng du lịch}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Description of TSP -- Mô tả bài toán người bán hàng du lịch}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Description of TSP as a graph problem}
+TSP can be modeled as an \href{https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)}{undirected weighted graph}, s.t. cities are the graph's vertices, paths are the graph's edges, \& a path's distance is the edge's weight. It is a minimization problem starting \& finishing at a specified vertex after having visited each other vertex exactly once. Often, the model is a \href{https://en.wikipedia.org/wiki/Complete_graph}{complete graph} (i.e., each pair of vertices is connected by an edge). If no path exists between 2 cities, then adding a sufficiently long edge will complete the graph without affecting the optimal tour.
+
+-- TSP có thể được mô hình hóa như 1 đồ thị có trọng số không định hướng, s.t. cities là các đỉnh của đồ thị, paths là các cạnh của đồ thị, \& khoảng cách của 1 path là trọng số của cạnh. Đây là 1 bài toán tối thiểu hóa bắt đầu \& kết thúc tại 1 đỉnh đã chỉ định sau khi đã đi qua từng đỉnh khác đúng 1 lần. Thông thường, mô hình là 1 đồ thị hoàn chỉnh (tức là mỗi cặp đỉnh được kết nối bằng 1 cạnh). Nếu không có đường đi nào tồn tại giữa 2 thành phố, thì việc thêm 1 cạnh đủ dài sẽ hoàn thành đồ thị mà không ảnh hưởng đến hành trình tối ưu.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Asymmetric \& symmetric}
+In the {\it symmetric TSP}, the distance between 2 cities is the same in each opposite direction, forming an \href{https://en.wikipedia.org/wiki/Undirected_graph}{undirected graph}. This symmetry halves the number of possible solutions. In the {\it asymmetric TSP}, paths may not exist in both directions or the distances might be different, forming a \href{https://en.wikipedia.org/wiki/Directed_graph}{directed graph}. Traffic congestion, 1-way streets, \& airfares for cities with different departure \& arrival fees are real-world considerations that could yield a TSP problem in asymmetric form.
+
+-- Trong TSP đối xứng, khoảng cách giữa hai thành phố là như nhau theo mỗi hướng ngược nhau, tạo thành 1 đồ thị vô hướng. Sự đối xứng này làm giảm 1 nửa số lượng các giải pháp khả thi. Trong TSP không đối xứng, các đường đi có thể không tồn tại theo cả hai hướng hoặc khoảng cách có thể khác nhau, tạo thành 1 đồ thị có hướng. Tình trạng tắc nghẽn giao thông, đường 1 chiều và giá vé máy bay cho các thành phố có mức phí khởi hành và đến khác nhau là những cân nhắc thực tế có thể tạo ra 1 bài toán TSP ở dạng không đối xứng.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Related problems to TSP}
+
+\begin{enumerate}
+    \item An equivalent formulation in terms of graph theory is: Given a \href{https://en.wikipedia.org/wiki/Glossary_of_graph_theory}{complete weighted graph} (where the vertices would represent the cities, the edges would represent the roads, \& the weights would be the cost or distance of that road), find a \href{https://en.wikipedia.org/wiki/Hamiltonian_cycle}{Hamiltonian cycle} with the least weight. This is more general than the \href{https://en.wikipedia.org/wiki/Hamiltonian_path_problem}{Hamiltonian path problem}, which only asks if a Hamiltonian path (or cycle) exists in a non-complete unweighted graph.
+    
+    -- 1 công thức tương đương về mặt lý thuyết đồ thị là: Cho 1 đồ thị có trọng số hoàn chỉnh (trong đó các đỉnh sẽ biểu diễn các thành phố, các cạnh sẽ biểu diễn các con đường, \& trọng số sẽ là chi phí hoặc khoảng cách của con đường đó), hãy tìm 1 chu trình Hamilton có trọng số nhỏ nhất. Điều này tổng quát hơn bài toán đường đi Hamilton, chỉ yêu cầu xem có tồn tại đường đi Hamilton (hoặc chu trình) trong 1 đồ thị không có trọng số không hoàn chỉnh hay không.
+    \item The requirement of returning to the starting city does not change the \href{https://en.wikipedia.org/wiki/Computational_complexity_theory}{computational complexity} of the problem; see \href{https://en.wikipedia.org/wiki/Hamiltonian_path_problem}{Hamiltonian path problem}.
+    
+    -- Yêu cầu quay trở lại thành phố xuất phát không làm thay đổi độ phức tạp tính toán của bài toán; xem Bài toán đường đi Hamilton.
+    \item Another related problem is the bottleneck traveling salesman problem: Find a Hamiltonian cycle in a weighted graph with the minimal weightof the weightiest edge. 
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Integer linear programming formulations -- Công thức lập trình tuyến tính số nguyên}
+The TSP can be formulated as an \href{https://en.wikipedia.org/wiki/Integer_programming}{integer linear program}. Several formulations are known. 2 notable formulations are the Miller-Tucker-Zemlin (MTZ) formulation \& the Dantzig--Fulkerson--Johnson (DFJ) formulation. The DFJ formulation is stronger, though the MTZ formulation is still useful in certain settings.
+
+-- TSP có thể được xây dựng như 1 chương trình tuyến tính số nguyên. Có 1 số công thức được biết đến. 2 công thức đáng chú ý là công thức Miller-Tucker-Zemlin (MTZ) \& công thức Dantzig--Fulkerson--Johnson (DFJ). Công thức DFJ mạnh hơn, mặc dù công thức MTZ vẫn hữu ích trong 1 số cài đặt nhất định.
+
+Common to both these formulations is that one labels the cities with the numbers $1,2,\ldots,n$ \& takes $c_{ij} > 0$ to be the cost (distance) from city $i$ to city $j$. The main variables in the formulations are
+\begin{equation*}
+    x_{ij} = \left\{\begin{split}
+        &1&&\mbox{the path goes from city } i\mbox{ to city } j,\\
+        &0&&\mbox{otherwise}.
+    \end{split}\right.
+\end{equation*}
+It is because these are {\tt0/1} variables that the formulations become integer programs; all other constraints are purely linear. In particular, the objective in the program is to minimize the tour length
+\begin{equation*}
+    \sum_{i=1}^n\sum_{j\ne i,\,j = 1}^n c_{ij}x_{ij}.
+\end{equation*}
+Without further constraints, the $\{x_{ij}\}_{i,j}$ will effectively range over all subsets of the set of edges, which is very far from the sets of edges in a tour \& allows for a trivial minimum where all $x_{ij} = 0$. Therefore, both formulations also have the constraints that, at each vertex, there is exactly 1 incoming edge \& 1 outgoing edge, which may be expressed as the $2n$ linear equations
+\begin{equation*}
+    \left\{\begin{split}
+        \sum_{i=1,\,i\ne j}^n x_{ij} = 1,\ \forall j\in[n],\\
+        \sum_{j=1,\,j\ne i}^n x_{ij} = 1,\ \forall i\in[n].
+    \end{split}\right.
+\end{equation*}
+These ensure that the chosen set of edges locally looks like that of a tour, but still allow for solutions violating the global requirement that there is {\it1} tour which visits all vertices, as the edges chosen could make up several tours, each visiting only a subset of the vertices; arguably, it is this global requirement that makes TSP a hard problem. The MTZ \& DFJ formulations differ in how they express this final requirement as linear constraints.
+
+-- Điểm chung của cả hai công thức này là người ta dán nhãn các thành phố bằng các số $1,2,\ldots,n$ \& lấy $c_{ij} > 0$ là chi phí (khoảng cách) từ thành phố $i$ đến thành phố $j$. Các biến chính trong các công thức là
+\begin{equation*}
+    x_{ij} = \left\{\begin{split}
+        &1&&\mbox{đường đi từ thành phố } i\mbox{ đến thành phố } j,\\
+        &0&&\mbox{nếu không}.
+    \end{split}\right.
+\end{equation*}
+Chính vì đây là các biến {\tt0/1} nên các công thức trở thành các chương trình số nguyên; tất cả các ràng buộc khác đều hoàn toàn tuyến tính. Cụ thể, mục tiêu trong chương trình là giảm thiểu độ dài chuyến tham quan
+\begin{equation*}
+    \sum_{i=1}^n\sum_{j\ne i,\,j = 1}^n c_{ij}x_{ij}.
+\end{equation*}
+Nếu không có thêm ràng buộc nào nữa, $\{x_{ij}\}_{i,j}$ sẽ thực sự bao phủ tất cả các tập hợp con của tập hợp các cạnh, rất xa so với các tập hợp các cạnh trong 1 chuyến tham quan \& cho phép 1 giá trị tối thiểu tầm thường trong đó tất cả $x_{ij} = 0$. Do đó, cả hai công thức đều có ràng buộc là tại mỗi đỉnh, chỉ có đúng 1 cạnh vào \& 1 cạnh ra, có thể được biểu thị dưới dạng $2n$ phương trình tuyến tính
+\begin{equation*}
+    \left\{\begin{split}
+        \sum_{i=1,\,i\ne j}^n x_{ij} = 1,\ \forall j\in[n],\\
+        \sum_{j=1,\,j\ne i}^n x_{ij} = 1,\ \forall i\in[n].
+    \end{split}\right.
+\end{equation*}
+Những ràng buộc này đảm bảo rằng tập hợp các cạnh được chọn trông giống như 1 chuyến tham quan cục bộ, nhưng vẫn cho phép các giải pháp vi phạm yêu cầu toàn cục là có {\it1} chuyến tham quan đi qua tất cả các đỉnh, vì các cạnh được chọn có thể tạo thành 1 số chuyến tham quan, mỗi chuyến tham quan chỉ đi qua 1 tập hợp con các đỉnh; có thể nói, chính yêu cầu toàn cục này khiến TSP trở thành 1 bài toán khó. Các công thức MTZ \& DFJ khác nhau ở cách chúng thể hiện yêu cầu cuối cùng này dưới dạng các ràng buộc tuyến tính.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Miller--Tucker--Zemblin formulation}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Dantzig--Fulkerson--Johnson formulation}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Computing a solution of TSP}
+The traditional lines of attack for the NP-hard problems are the following:
+\begin{itemize}
+    \item Devising exact algorithms, which work reasonably fast only for small problem sizes.
+    \item Devising ``suboptimal'' or heuristic algorithms, i.e., algorithms that deliver approximated solutions in a reasonable time.
+    \item Finding special cases for the problem (``subproblems'') for which either better or exact heuristics are possible.
+\end{itemize}
+-- Các hướng tấn công truyền thống cho các bài toán NP-hard như sau:
+\begin{itemize}
+    \item Thiết kế các thuật toán chính xác, chỉ hoạt động khá nhanh đối với các bài toán có kích thước nhỏ.
+    \item Thiết kế các thuật toán ``không tối ưu'' hoặc thuật toán heuristic, tức là các thuật toán đưa ra các giải pháp gần đúng trong thời gian hợp lý.
+    \item Tìm các trường hợp đặc biệt cho bài toán (``các bài toán con'') mà có thể áp dụng các heuristic tốt hơn hoặc chính xác hơn.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+
+\subsubsection{Exact algorithms}
+The most direct solution would be to try all permutations (ordered combinations) \& see which one is cheapest (using \href{https://en.wikipedia.org/wiki/Brute-force_search}{brute-force search}). The running time for this approach lies within polynomial factor of $O(n!)$, the factorial of the number of cities, so this solution becomes impractical even for only 20 cities.
+
+-- Giải pháp trực tiếp nhất là thử tất cả các hoán vị (các tổ hợp có thứ tự) \& xem cái nào rẻ nhất (sử dụng tìm kiếm theo kiểu brute-force). Thời gian chạy cho cách tiếp cận này nằm trong hệ số đa thức của $O(n!)$, giai thừa của số thành phố, do đó giải pháp này trở nên không thực tế ngay cả khi chỉ có 20 thành phố.
+
+1 of the earliest applications of dynamic programming is the \href{https://en.wikipedia.org/wiki/Held%E2%80%93Karp_algorithm}{Held--Karp algorithm}, which solves the problem in time $O(n^22^n)$. This bound has also been reached by Exclusion--Inclusion in an attempt preceding the dynamic programming approach.
+
+-- 1 trong những ứng dụng sớm nhất của lập trình động là thuật toán Held-Karp, giải quyết vấn đề trong thời gian $O(n^22^n)$. Giới hạn này cũng đã đạt được bởi Exclusion-Inclusion trong 1 nỗ lực trước phương pháp quy hoạch động.
+
+Improving these time bounds seems to be difficult. E.g., it has not been determined whether a classical exact algorithm for TSP that runs in time $O(1.9999^n)$ exists. The currently best quantum exact algorithm for TSP due to Ambainis et al. runs in time $O(1.728^n)$.
+
+-- Việc cải thiện các giới hạn thời gian này có vẻ khó khăn. Ví dụ, vẫn chưa xác định được liệu có tồn tại thuật toán chính xác cổ điển cho TSP chạy trong thời gian $O(1.9999^n)$ hay không. Thuật toán chính xác lượng tử tốt nhất hiện tại cho TSP do Ambainis và cộng sự thực hiện chạy trong thời gian $O(1.728^n)$.
+
+Other approaches include:
+\begin{itemize}
+    \item Various \href{https://en.wikipedia.org/wiki/Branch_and_bound}{branch-\&-bound} algorithms, which can be used to process TSPs containing thousands of cities.
+    \item Progressive improvement algorithms, which use techniques reminiscent of \href{https://en.wikipedia.org/wiki/Linear_programming}{linear programming}. This works well for up to 200 cities.
+    \item Implementations of branch-\&-bound \& problem-specific cut generation (\href{https://en.wikipedia.org/wiki/Branch_and_cut}{branch-\&-cut}); this is the method of choice for solving large instances. This approach holds the current record, solving an instance with 85900 cities.
+\end{itemize}
+-- Các phương pháp tiếp cận khác bao gồm:
+\begin{itemize}
+    \item Nhiều thuật toán nhánh-\&-bound, có thể được sử dụng để xử lý TSP chứa hàng nghìn thành phố.
+    \item Các thuật toán cải tiến tiến bộ, sử dụng các kỹ thuật gợi nhớ đến lập trình tuyến tính. Điều này hoạt động tốt với tối đa 200 thành phố.
+    \item Các triển khai của thế hệ cắt nhánh-\&-bound \& cụ thể cho vấn đề (branch-\&-cut); đây là phương pháp được lựa chọn để giải quyết các trường hợp lớn. Phương pháp tiếp cận này giữ kỷ lục hiện tại, giải quyết 1 trường hợp với 85900 thành phố.
+\end{itemize}
+An exact solution for 15112 German towns from TSPLIB was found in 2001 using the \href{https://en.wikipedia.org/wiki/Cutting-plane_method}{cutting-plane method} proposed by \href{https://en.wikipedia.org/wiki/George_Dantzig}{\sc George Dantzig}, \href{https://en.wikipedia.org/wiki/D._R._Fulkerson}{\sc Ray Fulkerson}, \& \href{https://en.wikipedia.org/wiki/Selmer_M._Johnson}{\sc Selmer M. Johnson} in 1954, based on linear programming. The computations were performed on a network of 110 processors located at Rice University \& Princeton University. The total computation time was equivalent to 22.6 years on a single 500 MHz \href{https://en.wikipedia.org/wiki/Alpha_processor}{Alpha processor}. In May 2004, the TSP of visiting all 24978 towns in Sweden was solved: a tour of length approximately 72500 km was found, \& it was proven that no shorter tour exists. In Mar 2005, the TSP of visiting all 33810 points in a circuit board was solved using \href{https://en.wikipedia.org/wiki/Concorde_TSP_Solver}{\it Concorde TSP Solver}: a tour of length 66048945 units was found, \& it was proven that no shorter tour exists. The computation took approximately 15.7 CPU-years. In Apr 2006 an instance with 85900 points was solved using {\it Concorde TSP Solver}, talking over 136 CPU-years.
+
+-- 1 lời giải chính xác cho 15112 thị trấn Đức từ TSPLIB đã được tìm thấy vào năm 2001 bằng cách sử dụng phương pháp mặt phẳng cắt do {\sc George Dantzig}, {\sc Ray Fulkerson}, \& {\sc Selmer M. Johnson} đề xuất vào năm 1954, dựa trên lập trình tuyến tính. Các phép tính được thực hiện trên 1 mạng lưới gồm 110 bộ xử lý đặt tại Đại học Rice \& Đại học Princeton. Tổng thời gian tính toán tương đương với 22,6 năm trên 1 bộ xử lý Alpha 500 MHz duy nhất. Vào tháng 5 năm 2004, TSP của việc ghé thăm tất cả 24978 thị trấn ở Thụy Điển đã được giải quyết: 1 chuyến đi có chiều dài khoảng 72500 km đã được tìm thấy, \& người ta đã chứng minh rằng không tồn tại chuyến đi nào ngắn hơn. Vào tháng 3 năm 2005, TSP của việc ghé thăm tất cả 33810 điểm trong 1 bảng mạch đã được giải quyết bằng cách sử dụng {\it Concorde TSP Solver}: 1 chuyến đi có chiều dài 66048945 đơn vị đã được tìm thấy, \& người ta đã chứng minh rằng không tồn tại chuyến đi nào ngắn hơn. Việc tính toán mất khoảng 15,7 năm CPU. Vào tháng 4 năm 2006, 1 trường hợp với 85900 điểm đã được giải quyết bằng {\it Concorde TSP Solver}, mất hơn 136 năm CPU.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Heuristic \& approximation algorithms}
+Various \href{https://en.wikipedia.org/wiki/Heuristic_(computer_science)}{heuristics} \& \href{https://en.wikipedia.org/wiki/Approximation_algorithm}{approximation algorithms}, which quickly yield good solutions, have been devised. These include the \href{https://en.wikipedia.org/wiki/Multi-fragment_algorithm}{multi-fragment algorithm}. Modern methods can find solutions for extremely large problems (millions of cities) within a reasonable time which are, with a high probability, just 2--3\% away from the optimal solution.
+
+-- Nhiều thuật toán heuristic \& xấp xỉ, nhanh chóng đưa ra các giải pháp tốt, đã được đưa ra. Chúng bao gồm thuật toán đa phân mảnh. Các phương pháp hiện đại có thể tìm ra giải pháp cho các vấn đề cực lớn (hàng triệu thành phố) trong thời gian hợp lý, với xác suất cao, chỉ cách giải pháp tối ưu 2--3\%.
+
+Several categories of heuristics are recognized. 
+\begin{enumerate}
+    \item {\bf Constructive heuristics.} The nearest neighbor (NN) algorithm (a greedy algorithm) lets the salesman choose the nearest unvisited city as his next move. This algorithm quickly yields an effectively short route. For $n$ cities randomly distributed on a plane, the algorithm on average yields a path 25\% longer than the shortest possible path; however, there exist many specially-arranged city distributions which make the NN algorithm give the worst route. This is true for both asymmetric \& symmetric TSPs. Rosenkrantz et al. showed that the NN algorithm has the approximation factor $\Theta(\log|V|)$ for instances satisfying the triangle inequality. A variation of the NN algorithm, called {\it nearest fragment (NF) operator}, which connects a group (fragment) of nearest unvisited cities, can find shorter routes with successive iterations. The NF operator can also be applied on an initial solution obtained by the NN algorithm for further improvement in an elitist model, where only better solutions are accepted.
+    
+    -- Thuật toán láng giềng gần nhất (NN) (thuật toán tham lam) cho phép người bán hàng chọn thành phố gần nhất chưa được ghé thăm làm nước đi tiếp theo. Thuật toán này nhanh chóng tạo ra 1 tuyến đường ngắn hiệu quả. Đối với $n$ thành phố được phân bố ngẫu nhiên trên 1 mặt phẳng, thuật toán trung bình tạo ra 1 đường đi dài hơn 25\% so với đường đi ngắn nhất có thể; tuy nhiên, có nhiều phân phối thành phố được sắp xếp đặc biệt khiến thuật toán NN đưa ra tuyến đường tệ nhất. Điều này đúng với cả TSP đối xứng \& không đối xứng. Rosenkrantz và cộng sự đã chỉ ra rằng thuật toán NN có hệ số xấp xỉ $\Theta(\log|V|)$ đối với các trường hợp thỏa mãn bất đẳng thức tam giác. Một biến thể của thuật toán NN, được gọi là {\it toán tử đoạn gần nhất (NF)}, kết nối 1 nhóm (đoạn) thành phố gần nhất chưa được ghé thăm, có thể tìm ra các tuyến đường ngắn hơn với các lần lặp liên tiếp. Toán tử NF cũng có thể được áp dụng cho 1 giải pháp ban đầu thu được bởi thuật toán NN để cải tiến hơn nữa trong mô hình ưu tú, trong đó chỉ chấp nhận các giải pháp tốt hơn.
+    
+    The \href{https://en.wikipedia.org/wiki/Bitonic_tour}{bitonic tour} of a set of points is the minimum-perimeter \href{https://en.wikipedia.org/wiki/Monotone_polygon}{monotone polygon} that has the points as its vertices; it can be computed efficiently with dynamic programming.
+    
+    -- Chuyến du hành bitonic của một tập hợp các điểm là đa giác đơn điệu có chu vi nhỏ nhất có các điểm là đỉnh của nó; nó có thể được tính toán hiệu quả bằng quy hoạch động.
+    
+    Another constructive heuristic, Match Twice \& Stich (MTS), performs 2 sequential matchings, where the 2nd matching is executed after deleting all the edges of the 1st matching, to yield a set of cycles. The cycles are then stitched to produce the final tour.
+    
+    -- 1 phương pháp tìm kiếm mang tính xây dựng khác, Match Twice \& Stich (MTS), thực hiện 2 phép ghép nối tuần tự, trong đó phép ghép nối thứ 2 được thực hiện sau khi xóa tất cả các cạnh của phép ghép nối thứ nhất, để tạo ra một tập hợp các chu kỳ. Các chu kỳ sau đó được khâu lại để tạo ra chuyến tham quan cuối cùng.
+    \item {\bf Algorithm of {\sc Christofides \& Serdyukov}.}
+    \item {\bf Pairwise exchange.}
+    \item {\bf$k$-opt heuristic, or Lin--Kernighan heuristics.}
+    \item {\bf$V$-opt heuristic.}
+    \item {\bf Randomized improvement.}
+    \item {\bf Constricting Insertion Heuristic.} This starts with a sub-tour e.g. the \href{https://en.wikipedia.org/wiki/Convex_hull}{convex hull} \& then inserts other vertices.
+    \item {\bf Ant colony optimization.}
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Some special cases of TSP -- Vài trường hợp đặc biệt của bài toán người bán hàng du lịch}
+
+%------------------------------------------------------------------------------%
+
 \section{Miscellaneous}
 
 \subsection{Contributors}
 
 \begin{enumerate}
-	\item PGS. TS. {\sc Đỗ Văn Nhơn}. Slide Bài Giảng \& Bài Tập môn học Introduction to Artificial Intelligence -- Nhập Môn Trí Tuệ Nhân Tạo.
-	\item {\sc Vòng Lỷ Nàm Phúc.} C++ codes for scheduling problems.
+	\item PGS. TS. {\sc Đỗ Văn Nhơn}. {\it Slide Bài Giảng \& Bài Tập môn học Introduction to Artificial Intelligence -- Nhập Môn Trí Tuệ Nhân Tạo}.
+    
+	\item {\sc Vòng Lỷ Nàm Phúc.} C++ codes.
 \end{enumerate}
 
 %------------------------------------------------------------------------------%

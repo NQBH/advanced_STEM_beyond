@@ -10,11 +10,14 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
-%  \addtolength{\headheight}{0pt}% obsolete
-\lhead{\itshape  \chaptername~\thechapter}
-\rhead{\itshape  \nouppercase{\leftmark}} %\nouppercase !
+\addtolength{\headheight}{0pt}% obsolete
+\lhead{\scshape\small\chaptername~\thechapter}
+\rhead{\small\nouppercase{\leftmark}}
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 \cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyheadoffset[RE,LO]{-0.0\textwidth}
 
 \usepackage{textcase}
 
@@ -66,6 +69,7 @@
 \newtheorem{baitoan}{Bài toán}
 \newtheorem{cauhoi}{Câu hỏi}
 \newtheorem{conjecture}{Conjecture}
+\newtheorem{convention}{Convention}
 \newtheorem{corollary}{Corollary}
 \newtheorem{dangtoan}{Dạng toán}
 \newtheorem{definition}{Definition}
@@ -157,12 +161,96 @@ Tài liệu này là bài giảng tôi dạy cho sinh viên Khoa Công Nghệ (u
 
 %------------------------------------------------------------------------------%
 
-\section*{Preliminaries}
+\chapter{Differential Calculus -- Phép Tính Vi Phân}
+\minitoc
+
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item NQBH. {\it Lecture Note: Mathematical Analysis \& Numerical Analysis -- Bài Giảng: Giải Tích Toán Học \& Giải Tích Số}.
+    
+    PDF: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/analysis/lecture/NQBH_mathematical_analysis_lecture.pdf}.
+    
+    \TeX: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/analysis/lecture/NQBH_mathematical_analysis_lecture.tex}.
+    
+    \item \cite{Gueler2010}. {\sc Osman G\"uller}. {\it Foundations of Optimization}. Chap. 1: Differential Calculus.
+\end{enumerate}
+Tools from differential calculus are widely used in many branches of analysis, including in optimization. In optimization, they are used, among other things, to derive optimality conditions in extremal problems which are described by differentiable functions.
+
+%------------------------------------------------------------------------------%
+
+\section{Taylor's Formula -- Công Thức Taylor}
+Taylor's formula in 1 or several variables is needed to obtain necessary \& sufficient conditions for local optimal solutions to unconstrained \& constrained optimization problems.
+
+\begin{theorem}[Taylor's formula in Lagrange's form for functions of a single variable, \cite{Gueler2010}, Thm. 1.1, p. 2]
+    Let $f:I = (c,d)\to\mathbb{R}$ be a $n$-times differentiable function. If $a,b$ are distinct points in $I$, then there exists a point $\bar x$ strictly between $a$ \& $b$ s.t.
+    \begin{equation*}
+        f(b) = \sum_{i=0}^{n-1} \frac{f^{(i)}(a)}{i!}(b - a)^i + \frac{f^{(n)}(\bar x)}{n!}(b - a)^n.
+    \end{equation*}
+\end{theorem}
+The case $n = 1$ is precisely the mean value theorem. For a proof, see, e.g., \cite[ Thm. 1.1, p. 2]{Gueler2010}.
+
+\begin{corollary}[\cite{Gueler2010}, Cor. 1.2, p. 3]
+    Let $f:I = (c,d)\to\mathbb{R}$ be a function \& $a,b$ be distinct points in $I$.
+    \item(i) {\rm(Mean value theorem)} If $f$ is differentiable on $I$, then there exists a point $\xi$ strictly between $a,b$ s.t. $f(b) = f(a) + f'(\xi)(b - a)$.
+    \item(ii) If $f$ is twice differentiable on $I$, then there exists a point $\zeta$ strictly between $a,b$ s.t.
+    \begin{equation*}
+        f(b) = f(a) + f'(a)(b - a) + \frac{f''(\zeta)}{2}(b - a)^2.
+    \end{equation*}
+\end{corollary}
 
 %------------------------------------------------------------------------------%
 
 \chapter{Basic Mathematical Optimization -- Toán Tối Ưu Cơ Bản}
 \minitoc
+
+%------------------------------------------------------------------------------%
+
+\section{Basic Concepts}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/Mathematical_optimization}{Wikipedia{\tt/}mathematical optimization}.
+    
+    \item \cite{Fischetti2019}. {\sc Matteo Fischetti}. {\it Introduction to Mathematical Optimization}.
+    
+    \item \cite{Gueler2010}. {\sc Osman G\"uller}. {\it Foundations of Optimization}.
+\end{enumerate}
+A {\it Mathematical Programming} (or {\it Mathematical Optimization}) problem can formulated as
+\begin{equation}
+    \label{mathematical optimization}
+    \min_{{\bf x}\in X} f({\bf x}),
+\end{equation}
+where $X\subseteq\mathbb{R}^d$ is the {\it set of feasible solutions} \& $f:X\to\mathbb{R}$ is the {\it objective function}.
+\begin{convention}
+    Formulate each problem as a minimization problem \&, where appropriate, operate the substitution $\max\{f({\bf x});{\bf x}\in X\} = -\min\{f(-{\bf x});{\bf x}\in X\}$.
+\end{convention}
+A problem for which there is no feasible solution, $X = \emptyset$, is said to be {\it infeasible}; in this case, write $\min_{{\bf x}\in X} f({\bf x}) = +\infty$. A problem for which $f$ is not bounded from below in $X$ is hence said to be an {\it unbounded} problem; in this case, write $\min_{{\bf x}\in X} f({\bf x}) = -\infty$. Solving problem \eqref{mathematical optimization} consists in identifying an {\it optimal solution}, if any, i.e., a solution ${\bf x}^*\in X$ s.t. $f({\bf x}^*)\le f({\bf x})$, $\forall{\bf x}\in X$. This solution is not necessarily unique. There are 2 main problems (as in PDEs):
+\begin{enumerate}
+    \item {\it Existence problem}: Determine whether there exists an optimal solution.
+    \item {\it Uniqueness problem}: Determine whether an optimal solution is the only optimal solution or not.
+\end{enumerate}
+-- 1 bài toán không có lời giải khả thi, $X = \emptyset$, được gọi là {\it infeasible}; trong trường hợp này, hãy viết $\min_{{\bf x}\in X} f({\bf x}) = +\infty$. Một bài toán mà $f$ không bị chặn dưới trong $X$ do đó được gọi là bài toán {\it không bị chặn}; trong trường hợp này, hãy viết $\min_{{\bf x}\in X} f({\bf x}) = -\infty$. Giải bài toán \eqref{mathematical optimization} bao gồm việc xác định một {\it lời giải tối ưu}, nếu có, tức là một lời giải ${\bf x}^*\in X$ s.t. $f({\bf x}^*)\le f({\bf x})$, $\forall{\bf x}\in X$. Lời giải này không nhất thiết phải duy nhất. Có 2 vấn đề chính (như trong PDE):
+\begin{enumerate}
+    \item {\it Vấn đề tồn tại}: Xác định xem có tồn tại một giải pháp tối ưu hay không.
+    \item {\it Vấn đề duy nhất}: Xác định xem một giải pháp tối ưu có phải là giải pháp tối ưu duy nhất hay không.
+\end{enumerate}
+
+\begin{definition}[Local optimal solution]
+    A solution $\overline{\bf x}\in X$ is said to be {\rm locally optimal} if there exists an $\varepsilon\in(0,\infty)$ s.t. $f(\overline{\bf x})\le f({\bf x})$, $\forall{\bf x}\in X$ with $\|{\bf x} - \overline{\bf x}\|\le\varepsilon$.
+\end{definition}
+
+%------------------------------------------------------------------------------%
+
+\section{Convex Optimization{\tt/}Programming -- Tối Ưu Lồi}
+
+\begin{definition}[Convex combination, \cite{Fischetti2019}, Def. 1.1.1, p. 3]
+    Given ${\bf x},{\bf y}\in\mathbb{R}^d$, the point ${\bf z}_\lambda\coloneqq\lambda{\bf x} + (1 - \lambda){\bf y}$ is said to be a {\rm convex combination} of ${\bf x},{\bf y}$, $\forall\lambda\in[0,1]$. The combination is said to be {\rm strict} if $\lambda\in(0,1)$.
+    
+    More generally, a {\rm convex combination} of $n\in\mathbb{N},k\ge2$ points ${\bf x}^1,\ldots,{\bf x}^n\in\mathbb{R}^d$ is defined as
+    \begin{equation*}
+        {\bf z}\coloneqq\sum_{i=1}^n \lambda_i{\bf x}^i,\ \lambda_i\ge0,\ \forall i\in[n],\ \sum_{i=1}^n \lambda_i = 1.
+    \end{equation*}
+\end{definition}
+
 
 %------------------------------------------------------------------------------%
 

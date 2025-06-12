@@ -7,6 +7,61 @@
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
 \usepackage{amsmath,amssymb,amsthm,enumitem,fancyvrb,float,graphicx,mathtools,minitoc,tikz,tipa}
 \usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\addtolength{\headheight}{0pt}% obsolete
+\lhead{\scshape\small\chaptername~\thechapter}
+\rhead{\small\nouppercase{\leftmark}}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyheadoffset[RE,LO]{-0.0\textwidth}
+
+\usepackage{textcase}
+
+\makeatletter
+\def\@makechapterhead#1{%
+    \vspace*{50\p@}%
+    {\parindent \z@ \centering\normalfont
+        \ifnum \c@secnumdepth >\m@ne
+        \if@mainmatter
+        \huge\bfseries \MakeTextUppercase{\@chapapp}\space \thechapter
+        \par\nobreak
+        \vskip 20\p@
+        \fi
+        \fi
+        \interlinepenalty\@M
+        \huge \bfseries \MakeTextUppercase{#1}\par\nobreak
+        \vskip 40\p@
+}}
+\def\@makeschapterhead#1{%
+    \vspace*{50\p@}%
+    {\parindent \z@ \centering
+        \normalfont
+        \interlinepenalty\@M
+        \huge \bfseries  \MakeTextUppercase{#1}\par\nobreak
+        \vskip 40\p@
+}}
+\makeatother
+
+
+\DeclareMathSymbol{\mathinvertedexclamationmark}{\mathclose}{operators}{'074}
+\DeclareMathSymbol{\mathexclamationmark}{\mathclose}{operators}{'041}
+
+\makeatletter
+\newcommand{\raisedmathinvertedexclamationmark}{%
+    \mathclose{\mathpalette\raised@mathinvertedexclamationmark\relax}%
+}
+\newcommand{\raised@mathinvertedexclamationmark}[2]{%
+    \raisebox{\depth}{$\m@th#1\mathinvertedexclamationmark$}%
+}
+\begingroup\lccode`~=`! \lowercase{\endgroup
+    \def~}{\@ifnextchar`{\raisedmathinvertedexclamationmark\@gobble}{\mathexclamationmark}}
+\mathcode`!="8000
+\makeatother
+
 \usepackage{sectsty}
 \allsectionsfont{\sffamily}
 \allowdisplaybreaks
@@ -24,6 +79,7 @@
 \newtheorem{goal}{Goal}
 \newtheorem{hequa}{Hệ quả}
 \newtheorem{hypothesis}{Hypothesis}
+\newtheorem{intuition}{Intuition}
 \newtheorem{lemma}{Lemma}
 \newtheorem{luuy}{Lưu ý}
 \newtheorem{nhanxet}{Nhận xét}
@@ -36,13 +92,25 @@
 \newtheorem{remark}{Remark}
 \newtheorem{theorem}{Theorem}
 \newtheorem{vidu}{Ví dụ}
-\usepackage[left=1cm,right=1cm,top=5mm,bottom=5mm,footskip=4mm]{geometry}
+\usepackage[left=1cm,right=1cm,top=1.5cm,bottom=1.5cm]{geometry}
 \def\labelitemii{$\circ$}
 \DeclareRobustCommand{\divby}{%
-	\mathrel{\vbox{\baselineskip.65ex\lineskiplimit0pt\hbox{.}\hbox{.}\hbox{.}}}%
+    \mathrel{\vbox{\baselineskip.65ex\lineskiplimit0pt\hbox{.}\hbox{.}\hbox{.}}}%
 }
 \setlist[itemize]{leftmargin=*}
 \setlist[enumerate]{leftmargin=*}
+\newcommand{\genstirlingI}[3]{%
+    \genfrac{[}{]}{0pt}{#1}{#2}{#3}%
+}
+\newcommand{\genstirlingII}[3]{%
+    \genfrac{\{}{\}}{0pt}{#1}{#2}{#3}%
+}
+\newcommand{\stirlingI}[2]{\genstirlingI{}{#1}{#2}}
+\newcommand{\dstirlingI}[2]{\genstirlingI{0}{#1}{#2}}
+\newcommand{\tstirlingI}[2]{\genstirlingI{1}{#1}{#2}}
+\newcommand{\stirlingII}[2]{\genstirlingII{}{#1}{#2}}
+\newcommand{\dstirlingII}[2]{\genstirlingII{0}{#1}{#2}}
+\newcommand{\tstirlingII}[2]{\genstirlingII{1}{#1}{#2}}
 
 \title{Lecture Note: Mathematical Analysis {\it\&} Numerical Analysis\\Bài Giảng: Giải Tích Toán Học {\it\&} Giải Tích Số}
 \author{Nguyễn Quản Bá Hồng\footnote{A scientist- {\it\&} creative artist wannabe, a mathematics {\it\&} computer science lecturer of Department of Artificial Intelligence {\it\&} Data Science (AIDS), School of Technology (SOT), UMT Trường Đại học Quản lý {\it\&} Công nghệ TP.HCM, Hồ Chí Minh City, Việt Nam.\\E-mail: {\sf nguyenquanbahong@gmail.com} {\it\&} {\sf hong.nguyenquanba@umt.edu.vn}. Website: \url{https://nqbh.github.io/}. GitHub: \url{https://github.com/NQBH}.}}
@@ -1989,8 +2057,16 @@ Ta có 3 dạng hàm số sơ cấp thường gặp: hàm đa thức $P(x;n,{\bf
 \end{baitoan}
 
 \begin{baitoan}[\cite{TLCT_BT_dai_so_giai_tich_11}, 12., p. 50]
-	Chứng minh hàm số $y = \sin^6x + \cos^6x + 3\sin^2x\cos^2x$ có đạo hàm bằng $0$.
+	(a) Chứng minh hàm số $y = f(x) = \sin^6x + \cos^6x + 3\sin^2x\cos^2x$ có đạo hàm bằng $0$. (b) Mở rộng bài toán.
 \end{baitoan}
+
+\begin{proof}
+    (a) $y = f(x) = \sin^6x + \cos^6x + 3\sin^2x\cos^2x = \sin^6x + \cos^6x + 3\sin^2x\cos^2x(\sin^2x + \cos^2x) = (\sin^2x + \cos^2x)^3 = 1\Rightarrow f'(x) = 0$, $\forall x\in\mathbb{R}$. (b) Xét hàm $f:D_f\subset\mathbb{R}\to\mathbb{R}$ bất kỳ sao cho $1\in D_f$ \& $f$ khả vi tại $x = 1$. Đặt $g(x)\coloneqq\sin^2x + \cos^2x\equiv1$, thì $g'(x) = 1' = 0$ (hoặc tính cụ thể $g'(x) = 2\sin x\cos x - 2\cos x\sin x = 0$), $\forall x\in\mathbb{R}$. Khi đó đạo hàm của hàm hợp $f\circ g$ sẽ bằng $0$ vì $(f\circ g)'(x) = (f(1))' = 0$, hoặc theo quy tắc xích $(f\circ g)'(x) = f'(g(x))g'(x) = f'(1)\cdot0 = 0$.
+\end{proof}
+
+\begin{remark}
+    Mấu chốt của bài toán chỉ là dùng đẳng thức lượng giác cơ bản $\sin^2x + \cos^2x = 1$, $\forall x\in\mathbb{R}$, để đưa về đạo hàm của hàm hằng bằng $0$. Tương tự nếu ta có 1 đẳng thức đại số hoặc 1 đẳng thức lượng giác nói riêng, hoặc 1 đẳng thức toán học có dạng $g(x) = a\in\mathbb{R}$. Xét hàm $f:D_f\subset\mathbb{R}\to\mathbb{R}$ bất kỳ sao cho $a\in D_f$ \& $f$ khả vi tại $x = a$. Khi đó đạo hàm của hàm hợp $f\circ g$ sẽ bằng $0$ vì $(f\circ g)'(x) = (f(a))' = 0$, hoặc theo quy tắc xích $(f\circ g)'(x) = f'(g(x))g'(x) = f'(a)(a)' = f'(a)\cdot0 = 0$, $\forall x\in\mathbb{R}$.
+\end{remark}
 
 \begin{baitoan}[\cite{TLCT_BT_dai_so_giai_tich_11}, 13., p. 50]
 	Viết phương trình tiếp tuyến của parabol $y = x^2$ biết tiếp tuyến đó đi qua điểm $A(0,-1)$.
@@ -2005,10 +2081,15 @@ Ta có 3 dạng hàm số sơ cấp thường gặp: hàm đa thức $P(x;n,{\bf
 \section{Numerical Differentiation -- Xấp Xỉ Đạo Hàm}
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
-	\item \href{https://www.geeksforgeeks.org/vector-in-cpp-stl/}{Geeks4Geeks{\tt/}vector in C++ STL}.
-	\item \cite{Scheid1989}. {\sc Scheid, Francis}. {\it Schaum's Outline of Numerical Analysis}. Chap. 13: Numerical Differentiation.
+	\item \href{https://en.wikipedia.org/wiki/Numerical_differentiation}{Wikipedia{\tt/}numerical differentiation}.
+    
+	\item \cite{Scheid1989}. {\sc Francis Scheid}. {\it Schaum's Outline of Numerical Analysis}. Chap. 13: Numerical Differentiation.
+    
 	\item \cite{LeVeque2007}. {\sc Randall J. LeVeque}. {\it Finite Difference Methods for Ordinary \& Partial Differential Equations: Steady-State \& Time-Dependent Problems}.
 \end{enumerate}
+In \href{https://en.wikipedia.org/wiki/Numerical_analysis}{numerical analysis}, {\it numerical differentiation} algorithms estimate the derivative of a mathematical function or \href{https://en.wikipedia.org/wiki/Function_(computer_programming)}{subroutine} using values of the function \& perhaps other knowledge about the function.
+
+-- Trong phân tích số, thuật toán phân biệt số ước tính đạo hàm của một hàm toán học hoặc chương trình con bằng cách sử dụng các giá trị của hàm \& có thể là các kiến thức khác về hàm.
 
 %------------------------------------------------------------------------------%
 
@@ -2053,13 +2134,256 @@ results from differentiating Stirling's. Other collocation formulas produce simi
 			\hline
 			\verb|numerical_differentiation.inp| & \verb|numerical_differentiation.out| \\
 			\hline
-			3 1.4142135623730951 0.013 & -0.1767932308 \\
-			-1 3 -2.6457513110645907 3.141592653589793 & -0.1444846154 \\
-			& -0.1606389231 \\
+			3 1.4142135623730951 0.013 & $-0.1767932308$ \\
+			$-1 3$ $-2.6457513110645907$ 3.141592653589793 & $-0.1444846154$ \\
+			& $-0.1606389231$ \\
 			\hline
 		\end{tabular}
 	\end{table}
 \end{baitoan}
+
+\begin{proof}[Solution]
+    Đa thức $P(x) = \sum_{i=0}^n a_ix^i$ có đạo hàm $P'(x) = \sum_{i=1}^n ia_ix^{i - 1}$ nên $P'(x_0) = \sum_{i=1}^n ia_ix_0^{i - 1}$, $\forall x_0\in\mathbb{R}$.
+    
+    C++:
+    \begin{enumerate}
+        \item VNTA's C++: numerical differentiation:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+// P(x) = an.x^n + ... + a1.x + a0
+double Px(vector<double>a, double x) {
+    double res = 0;
+    for (int i = 0; i < a.size(); i++) {
+        res += a[i] * pow(x, a.size() - 1 - i);
+    }
+    return res;
+}
+
+double forward(vector<double>a, double x, double h) {
+    double res;
+    res = (double)(Px(a, x + h) - Px(a, x)) / (h * 1.0);
+    return res;
+}
+
+double stirling(vector<double>a, double x, double h) {
+    double res;
+    res = (double)(Px(a, x + h) - Px(a, x - h)) / (h * 2.0);
+    return res;
+}
+
+double backward(vector<double>a, double x, double h) {
+    double res;
+    res = (double)(Px(a, x) - Px(a, x - h)) / (h * 1.0);
+    return res;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    int n;
+    double x, h;
+    cin >> n >> x >> h;
+    vector<double>a(n + 1);
+    for (int i = 0; i <= n; i++) cin >> a[i];
+    cout << "Newton forward: " << fixed << setprecision(10) << forward(a, x, h) << "\n";
+    cout << "Stirling: " << fixed << setprecision(10) << stirling(a, x, h) << "\n";
+    cout << "Newton backward: " << fixed << setprecision(10) << backward(a, x, h) << "\n";
+}
+        \end{Verbatim}
+        \item DXH's C++: numerical differentiation:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+#include <functional>
+using namespace std;
+
+class DerivativeApproximator {
+    private:
+    double m_x; // Tên thuộc tính nên có tiền tố để dễ phân biệt, ví dụ m_ (member)
+    double m_h;
+    // Hàm & đạo hàm của hàm đó
+    std::function<double(double)> m_func;
+    std::function<double(double)> m_func_prime;
+    
+    public:
+    // Constructor nhận các hàm & giá trị x, h
+    DerivativeApproximator(std::function<double(double)> func,
+    std::function<double(double)> func_prime,
+    double x_val, double h_val)
+    : m_func(func), m_func_prime(func_prime), m_x(x_val), m_h(h_val) {}
+    // Phương thức tính hàm
+    double caculateNewtonForward() {
+        return (m_func(m_x + m_h) - m_func(m_x)) / m_h;
+    }
+    double caculateNewtonBackward() {
+        return (m_func(m_x) - m_func(m_x - m_h)) / m_h;
+    }
+    double caculateStirling(double x, double h, std::function<double(double)> func) {
+        return (func(x + h) - func(x - h)) / (2 * h);
+    }
+};
+int main() {
+    // Định nghĩa hàm & đạo hàm của nó
+    auto func = [](double x) { return x * x; }; // Hàm f(x) = x^2
+    auto func_prime = [](double x) { return 2 * x; }; // Đạo hàm f'(x) = 2x
+    
+    double x_val = 1.0; // Giá trị x tại đó ta muốn tính đạo hàm
+    double h_val = 0.01; // H
+    
+    DerivativeApproximator approximator(func, func_prime, x_val, h_val);
+    
+    cout << fixed << setprecision(4);
+    cout  << approximator.caculateNewtonForward() << endl;
+    cout  << approximator.caculateNewtonBackward() << endl;
+    cout  << approximator.caculateStirling(x_val, h_val, func) << endl;
+    
+    return 0;
+}  
+        \end{Verbatim}
+        \item DPAK's C++: numerical differentiation.
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+int n;
+double h;
+
+double forward(double xo, double x, vector<double> &a) {
+    double ans =  0;
+    for (int i = 0; i <= n; i++) {
+        ans = ans + a[i] * pow(xo, i);
+    }
+    cout << ans << endl;
+    for (int i = 0; i <= n; i++) {
+        ans = ans - a[i] * pow(x, i);
+    }
+    cout << ans << endl;
+    ans = ans / h;
+    cout << ans << endl;
+    return ans;
+}
+
+double backward(double xo, double x, vector<double> &a) {
+    double ans =  0;
+    for (int i = 0; i <= n; i++) {
+        ans += a[i] * pow(xo, i);
+    }
+    for (int i = 0; i <= n; i++) {
+        ans -= a[i] * pow(x, i);
+    }
+    ans = ans / h;
+    return ans;
+}
+
+double stirling(double xo, double x, vector<double> &a) {
+    double ans =  0;
+    for (int i = 0; i <= n; i++) {
+        ans += a[i] * pow(xo, i);
+    }
+    for (int i = 0; i <= n; i++) {
+        ans -= a[i] * pow(x, i);
+    }
+    ans = ans / (2 * h);
+    return ans;
+}
+
+int main() {
+    vector<double>a;
+    a.resize(n + 1);
+    double xo;
+    cin >> n >> xo >> h;
+    for (int i = n; i >= 0; i--) {
+        cin >> a[i];
+    }
+    double FW = forward(xo + h, xo, a);
+    double BW = backward(xo, xo - h, a);
+    double ST = stirling(xo + h, xo - h, a);
+    cout << "Newton Forward = " << FW << endl;
+    cout << "Newton Backward = " << BW << endl;
+    cout << "Stirling = " << ST << endl;
+} 
+        \end{Verbatim}
+        \item NHT's C++ numerical differentiation:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+#define ll long long
+#define ld long double
+using namespace std;
+
+const int mod = 1e9 + 7;
+int n;
+ld x, h, res;
+ld a[1000005];
+
+/*ll Power(ll a, ll b){
+    ll ans(1);
+    for(; b; b >>= 1){
+        if(b & 1) ans = (ans * a) % mod;
+        a = (a * a) % mod;
+    }
+    return ans;
+}*/
+
+ld Qx(int x) {
+    ld ans(0);
+    for (int i = 0; i <= n; ++i)
+    ans += (i * a[i] * pow(x, i));
+    return ans;
+}
+
+ld forward(ld x, ld h) {
+    ld ans(0), fx(0);
+    for (int i = 0; i <= n; ++i)
+    ans += (a[i] * pow(x + h, i));
+    for (int i = 0; i <= n; ++i)
+    fx += (a[i] * pow(x, i));
+    ans -= fx;
+    return ans / h;
+}
+
+ld backward(ld x, ld h) {
+    ld ans(0), fx(0);
+    for (int i = 0; i <= n; ++i)
+    ans += (a[i] * pow(x - h, i));
+    for (int i = 0; i <= n; ++i)
+    fx += (a[i] * pow(x, i));
+    ans = fx - ans;
+    return ans / h;
+}
+
+ld stirling(ld x, ld h) {
+    ld ans1(0), ans2(0);
+    for (int i = 0; i <= n; ++i)
+    ans1 += (a[i] * pow(x + h, i));
+    
+    for (int i = 0; i <= n; ++i)
+    ans2 += (a[i] * pow(x - h, i));
+    
+    ld ans = ans1 - ans2;
+    return ans / (2 * h);
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    
+    cin >> n >> x >> h;
+    for (int i = n; i >= 0; i--) cin >> a[i];
+    
+    res = Qx(x);
+    //cout << "P'(xo) = " << res << endl;
+    ld FORWARD = forward(x, h), BACKWARD = backward(x, h), STIRLING = stirling(x, h);
+    cout << "Forward: " << FORWARD << endl;
+    cout << "Backward: " << BACKWARD << endl;
+    cout << "Stirling: " << STIRLING << endl;
+    
+    return 0;
+}
+\end{Verbatim}
+    \end{enumerate}
+\end{proof}
 
 \begin{baitoan}[Numerical differentiation of polynomial-like function -- Xấp xỉ đạo hàm của hàm tựa-đa thức]
 	Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để xấp xỉ đạo hàm $f'(x_0)$ của hàm số tựa-đa thức $f(x) = \sum_{i=0}^n a_ix^{\alpha_i}$.
@@ -2960,6 +3284,61 @@ In \href{https://en.wikipedia.org/wiki/Calculus}{calculus}, the {\it Leibniz int
 	\end{equation}
 	where the \href{https://en.wikipedia.org/wiki/Partial_derivative}{partial derivative} $\partial_x = \frac{\partial}{\partial x}$ indicates that inside the integral, only the variation of $f(t,x)$ with $x$ is considered in taking the derivative.
 \end{theorem}
+Cho tiện, ký hiệu
+\begin{align*}
+    I(f(x),a,b)&\coloneqq\int_a^b f(x)\,{\rm d}x,\ \forall f\in{\rm Riemann}([a,b]),\ \forall a,b\in\mathbb{R},\\
+    I(f(t,x),a(x),b(x))&\coloneqq\int_{a(x)}^{b(x)} f(t,x)\,{\rm d}t,\ \forall f\mbox{ s.t. } f(\cdot,x)\in{\rm Riemann}([a,b]),\ \forall a,b\in C^1(\mathbb{R}),\\
+\end{align*}
+
+\begin{baitoan}
+    Sử dụng quy tắc tích phân Leibniz, tính đạo hàm theo biến $x$ của tích phân:
+    \begin{align*}
+        I\left(\sum_{i=1}^n f_i(t,x),a(x),b(x)\right)&\coloneqq\int_{a(x)}^{b(x)} \sum_{i=1}^n f_i(t,x)\,{\rm d}t,\\
+        I\left(f(t,x),\sum_{i=1}^m a_i(x),\sum_{i=1}^n b_i(x)\right)&\coloneqq\int_{\sum_{i=1}^m a_i(x)}^{\sum_{i=1}^n b_i(x)} f(t,x)\,{\rm d}t,\\
+        I\left(\sum_{i=1}^p f_i(t,x),\sum_{i=1}^m a_i(x),\sum_{i=1}^n b_i(x)\right)&\coloneqq\int_{\sum_{i=1}^m a_i(x)}^{\sum_{i=1}^n b_i(x)} \sum_{i=1}^p f_i(t,x)\,{\rm d}t,\\
+        I(f(t,x),I(A(x,y),a(x),b(x)),I(B(x,y),c(x),d(x)))&\coloneqq\int_{\int_{a(x)}^{b(x)} A(x,y)\,{\rm d}y}^{\int_{c(x)}^{d(x)} B(x,y)\,{\rm d}y} f(t,x)\,{\rm d}t.
+    \end{align*}
+    Cho dãy hàm $\{a_n\}_{n=1}^\infty,\{b_n\}_{n=1}^\infty,\{f_n\}_{n=1}^\infty\subset C_t^\infty C_x^\infty$ tính đạo hàm của tích phân lặp chồng chất:
+    \begin{equation*}
+        I_n(f_n(t,x),I_{n-1}(f_{n-1}(t,x),I_{n-2}(f_{n-2}(t,x),\ldots)).)***
+    \end{equation*}
+\end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\section{Numerical Integration{\tt/}Quadrature -- Xấp Xỉ Tích Phân}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/Numerical_integration}{Wikipedia{\tt/}numerical integration}.
+    
+    \item \cite{Scheid1989}. {\sc Francis Scheid}. {\it Schaum's Outline of Numerical Analysis}. Chap. 14: Numerical Integration.
+\end{enumerate}
+In numerical analysis, {\it numerical integration} comprises a broad family of algorithms for calculating the numerical values of a definite integral. The term {\it numerical quadrature} (often abbreviated to {\it quadrature}) is more or less a synonym for ``numerical integration'', especially as applied to 1D integrals. Some authors refer to numerical integration over $> 1$ dimension as {\it cubature}; others take ``quadrature'' to include higher-dimensional integration.
+
+-- Trong phân tích số, {\it tích phân số} bao gồm một họ rộng các thuật toán để tính toán các giá trị số của một tích phân xác định. Thuật ngữ {\it tích phân số} (thường được viết tắt là {\it quadrature}) ít nhiều là từ đồng nghĩa với ``tích phân số'', đặc biệt khi áp dụng cho tích phân 1 chiều. Một số tác giả gọi tích phân số trên $> 1$ chiều là {\it cubature}; những tác giả khác coi ``tích phân'' bao gồm tích phân chiều cao hơn.
+
+\begin{problem}[Approximate indefinite integrals, R]
+    Find a way to approximate indefinite integral via limit.
+    
+    -- Tìm cách tính gần đúng tích phân không xác định thông qua giới hạn.
+\end{problem}
+The basic problem in numerical integration is to compute an approximate solution to a definite integral $\int_a^b f(x)\,{\rm d}x$ to a given degree of accuracy. If $f(x)$ is a smooth function integrated over a small number of dimensions, \& the domain of integration is bounded, there are many methods for approximating the integral to the desired precision.
+
+-- Vấn đề cơ bản trong tích phân số là tính toán một giải pháp gần đúng cho một tích phân xác định $\int_a^b f(x)\,{\rm d}x$ với một mức độ chính xác nhất định. Nếu $f(x)$ là một hàm trơn tích phân trên một số lượng nhỏ chiều, \& miền tích phân bị chặn, thì có nhiều phương pháp để xấp xỉ tích phân với độ chính xác mong muốn.
+
+\begin{baitoan}
+    Xấp xỉ bản thân tích phân \& đạo hàm của tích phân, đánh giá sai số nếu có thể:
+    \begin{align*}
+        I\left(\sum_{i=1}^n f_i(t,x),a(x),b(x)\right)&\coloneqq\int_{a(x)}^{b(x)} \sum_{i=1}^n f_i(t,x)\,{\rm d}t,\\
+        I\left(f(t,x),\sum_{i=1}^m a_i(x),\sum_{i=1}^n b_i(x)\right)&\coloneqq\int_{\sum_{i=1}^m a_i(x)}^{\sum_{i=1}^n b_i(x)} f(t,x)\,{\rm d}t,\\
+        I\left(\sum_{i=1}^p f_i(t,x),\sum_{i=1}^m a_i(x),\sum_{i=1}^n b_i(x)\right)&\coloneqq\int_{\sum_{i=1}^m a_i(x)}^{\sum_{i=1}^n b_i(x)} \sum_{i=1}^p f_i(t,x)\,{\rm d}t,\\
+        I(f(t,x),I(A(x,y),a(x),b(x)),I(B(x,y),c(x),d(x)))&\coloneqq\int_{\int_{a(x)}^{b(x)} A(x,y)\,{\rm d}y}^{\int_{c(x)}^{d(x)} B(x,y)\,{\rm d}y} f(t,x)\,{\rm d}t.
+    \end{align*}
+    Cho dãy hàm $\{a_n\}_{n=1}^\infty,\{b_n\}_{n=1}^\infty,\{f_n\}_{n=1}^\infty\subset C_t^\infty C_x^\infty$ tính đạo hàm của tích phân lặp chồng chất:
+    \begin{equation*}
+        I_n(f_n(t,x),I_{n-1}(f_{n-1}(t,x),I_{n-2}(f_{n-2}(t,x),\ldots)).)***
+    \end{equation*}
+\end{baitoan}
 
 %------------------------------------------------------------------------------%
 

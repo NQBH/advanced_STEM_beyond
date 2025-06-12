@@ -1,12 +1,69 @@
-\documentclass{article}
+\documentclass[oneside]{book}
 \usepackage[backend=biber,natbib=true,style=alphabetic,maxbibnames=50]{biblatex}
 \addbibresource{/home/nqbh/reference/bib.bib}
 \usepackage[utf8]{vietnam}
 \usepackage{tocloft}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
-\usepackage{amsmath,amssymb,amsthm,enumitem,fancyvrb,float,graphicx,mathtools,tikz}
+\usepackage{amsmath,amssymb,amsthm,enumitem,fancyvrb,float,graphicx,mathtools,minitoc,tikz}
 \usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\addtolength{\headheight}{0pt}% obsolete
+\lhead{\scshape\small\chaptername~\thechapter}
+\rhead{\small\nouppercase{\leftmark}}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyheadoffset[RE,LO]{-0.0\textwidth}
+
+\usepackage{textcase}
+
+\makeatletter
+\def\@makechapterhead#1{%
+    \vspace*{50\p@}%
+    {\parindent \z@ \centering\normalfont
+        \ifnum \c@secnumdepth >\m@ne
+        \if@mainmatter
+        \huge\bfseries \MakeTextUppercase{\@chapapp}\space \thechapter
+        \par\nobreak
+        \vskip 20\p@
+        \fi
+        \fi
+        \interlinepenalty\@M
+        \huge \bfseries \MakeTextUppercase{#1}\par\nobreak
+        \vskip 40\p@
+}}
+\def\@makeschapterhead#1{%
+    \vspace*{50\p@}%
+    {\parindent \z@ \centering
+        \normalfont
+        \interlinepenalty\@M
+        \huge \bfseries  \MakeTextUppercase{#1}\par\nobreak
+        \vskip 40\p@
+}}
+\makeatother
+
+
+\DeclareMathSymbol{\mathinvertedexclamationmark}{\mathclose}{operators}{'074}
+\DeclareMathSymbol{\mathexclamationmark}{\mathclose}{operators}{'041}
+
+\makeatletter
+\newcommand{\raisedmathinvertedexclamationmark}{%
+    \mathclose{\mathpalette\raised@mathinvertedexclamationmark\relax}%
+}
+\newcommand{\raised@mathinvertedexclamationmark}[2]{%
+    \raisebox{\depth}{$\m@th#1\mathinvertedexclamationmark$}%
+}
+\begingroup\lccode`~=`! \lowercase{\endgroup
+    \def~}{\@ifnextchar`{\raisedmathinvertedexclamationmark\@gobble}{\mathexclamationmark}}
+\mathcode`!="8000
+\makeatother
+
+\usepackage{sectsty}
+\allsectionsfont{\sffamily}
 \allowdisplaybreaks
 \newtheorem{assumption}{Assumption}
 \newtheorem{baitoan}{Bài toán}
@@ -19,8 +76,10 @@
 \newtheorem{dinhnghia}{Định nghĩa}
 \newtheorem{example}{Example}
 \newtheorem{ghichu}{Ghi chú}
+\newtheorem{goal}{Goal}
 \newtheorem{hequa}{Hệ quả}
 \newtheorem{hypothesis}{Hypothesis}
+\newtheorem{intuition}{Intuition}
 \newtheorem{lemma}{Lemma}
 \newtheorem{luuy}{Lưu ý}
 \newtheorem{nhanxet}{Nhận xét}
@@ -33,45 +92,65 @@
 \newtheorem{remark}{Remark}
 \newtheorem{theorem}{Theorem}
 \newtheorem{vidu}{Ví dụ}
-\usepackage[left=1cm,right=1cm,top=5mm,bottom=5mm,footskip=4mm]{geometry}
+\usepackage[left=1cm,right=1cm,top=1.5cm,bottom=1.5cm]{geometry}
 \def\labelitemii{$\circ$}
 \DeclareRobustCommand{\divby}{%
-	\mathrel{\vbox{\baselineskip.65ex\lineskiplimit0pt\hbox{.}\hbox{.}\hbox{.}}}%
+    \mathrel{\vbox{\baselineskip.65ex\lineskiplimit0pt\hbox{.}\hbox{.}\hbox{.}}}%
 }
 \setlist[itemize]{leftmargin=*}
 \setlist[enumerate]{leftmargin=*}
+\newcommand{\genstirlingI}[3]{%
+    \genfrac{[}{]}{0pt}{#1}{#2}{#3}%
+}
+\newcommand{\genstirlingII}[3]{%
+    \genfrac{\{}{\}}{0pt}{#1}{#2}{#3}%
+}
+\newcommand{\stirlingI}[2]{\genstirlingI{}{#1}{#2}}
+\newcommand{\dstirlingI}[2]{\genstirlingI{0}{#1}{#2}}
+\newcommand{\tstirlingI}[2]{\genstirlingI{1}{#1}{#2}}
+\newcommand{\stirlingII}[2]{\genstirlingII{}{#1}{#2}}
+\newcommand{\dstirlingII}[2]{\genstirlingII{0}{#1}{#2}}
+\newcommand{\tstirlingII}[2]{\genstirlingII{1}{#1}{#2}}
 
 \title{Olympiad in Informatics {\it\&} Association for Computing Machinery--International Collegiate Programming Contest\\Olympic Tin Học Sinh Viên OLP {\it\&} ACM-ICPC}
-\author{Nguyễn Quản Bá Hồng\footnote{A Scientist {\it\&} Creative Artist Wannabe. Website: \url{https://nqbh.github.io}. GitHub: \url{https://github.com/NQBH}.\\E-mail: {\sf nguyenquanbahong@gmail.com, hong.nguyenquanba@umt.edu.vn}. Bến Tre \& Hồ Chí Minh Cities, Việt Nam.}}
+\author{Nguyễn Quản Bá Hồng\footnote{A scientist- {\it\&} creative artist wannabe, a mathematics {\it\&} computer science lecturer of Department of Artificial Intelligence {\it\&} Data Science (AIDS), School of Technology (SOT), UMT Trường Đại học Quản lý {\it\&} Công nghệ TP.HCM, Hồ Chí Minh City, Việt Nam.\\E-mail: {\sf nguyenquanbahong@gmail.com} {\it\&} {\sf hong.nguyenquanba@umt.edu.vn}. Website: \url{https://nqbh.github.io/}. GitHub: \url{https://github.com/NQBH}.}}
 \date{\today}
 
 \begin{document}
 \maketitle
-\begin{abstract}
-	This text is a part of the series {\it Some Topics in Advanced STEM \& Beyond}:
-	
-	{\sc url}: \url{https://nqbh.github.io/advanced_STEM/}.
-	
-	Latest version:
-	\begin{itemize}
-		\item {\it Olympiad in Informatics \& Association for Computing Machinery--International Collegiate Programming Contest -- Olympic Tin Học Sinh Viên OLP \& ICPC}.
-		
-		PDF: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/NQBH_OLP_ICPC.pdf}.
-		
-		\TeX: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/NQBH_OLP_ICPC.tex}.
-		\item Codes:
-		\begin{itemize}
-			\item C: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/OLP_ICPC/C}.
-			\item C++: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/OLP_ICPC/C++}.
-			\item Python: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/OLP_ICPC/Python}.
-		\end{itemize}
-	\end{itemize}
-\end{abstract}
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+\dominitoc % Initialization
 \tableofcontents
 
 %------------------------------------------------------------------------------%
 
-\section*{Preliminaries -- Kiến thức chuẩn bị}
+\chapter*{Preface}
+
+\chapter*{Abstract}
+This text is a part of the series {\it Some Topics in Advanced STEM \& Beyond}:
+
+{\sc url}: \url{https://nqbh.github.io/advanced_STEM/}.
+
+Latest version:
+\begin{itemize}
+    \item {\it Olympiad in Informatics \& Association for Computing Machinery--International Collegiate Programming Contest -- Olympic Tin Học Sinh Viên OLP \& ICPC}.
+    
+    PDF: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/NQBH_OLP_ICPC.pdf}.
+    
+    \TeX: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/NQBH_OLP_ICPC.tex}.
+    \item Codes:
+    \begin{itemize}
+        \item C: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/OLP_ICPC/C}.
+        \item C++: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/OLP_ICPC/C++}.
+        \item Python: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/OLP_ICPC/Python}.
+    \end{itemize}
+\end{itemize}
+\tableofcontents
+
+%------------------------------------------------------------------------------%
+
+\chapter*{Preliminaries -- Kiến thức chuẩn bị}
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
 	\item \cite{Wu_Wang2016}. {\sc Yonghui Wu, Jiande Wang}. {\it Data Structure Practice for Collegiate Programming Contests \& Education}.
@@ -93,7 +172,7 @@ Some critical-thinking questions:
 	Nếu bài toán có chứa $n\in\mathbb{N}^\star$ tổng quát hoặc chứa số tự nhiên của năm ra đề, e.g., 2025, thì đưa $2025$ về $n\in\mathbb{N}^\star$, rồi sử dụng các kỹ thuật toán học để đưa về phép lặp, hoặc sử dụng phương pháp quy nạp toán học (method mathematical induction).
 \end{remark}
 
-\subsection*{Notation -- Ký hiệu}
+\section*{Notation -- Ký hiệu}
 
 \begin{itemize}
 	\item $\overline{m,n}\coloneqq\{m,m + 1,\ldots,n - 1, n\}$, $\forall m,n\in\mathbb{Z}$, $m\le n$. Hence the notation ``for $i\in\overline{m,n}$'' means ``for $i = m,m + 1,\ldots,n$'', i.e., chỉ số{\tt/}biến chạy $i$ chạy từ $m\in\mathbb{Z}$ đến $n\in\mathbb{Z}$. Trong trường hợp $a,b\in\mathbb{R}$, ký hiệu $\overline{a,b}\coloneqq\overline{\lceil a\rceil,\lfloor b\rfloor}$ có nghĩa như định nghĩa trước đó với $m\coloneqq\lceil a\rceil,n\coloneqq\lfloor b\rfloor\in\mathbb{Z}$; khi đó ký hiệu ``for $i\in\overline{a,b}$'' với $a,b\in\mathbb{R}$, $a\le b$ có nghĩa là ``for $i = \lceil a\rceil,\lceil a\rceil + 1,\ldots,\lfloor b\rfloor - 1,\lfloor b\rfloor$, i.e., chỉ số{\tt/}biến chạy $i$ chạy từ $\lceil a\rceil$ đến $\lfloor b\rfloor\in\mathbb{Z}$.
@@ -105,7 +184,7 @@ Some critical-thinking questions:
 
 %------------------------------------------------------------------------------%
 
-\section{Basic Competitive Programming -- Lập Trình Thi Đấu Cơ Bản}
+\chapter{Basic Competitive Programming -- Lập Trình Thi Đấu Cơ Bản}
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
 	\item \cite{Laaksonen2020}. {\sc Antti Laaksonen}. {\it Guide to Competitive Programming: Learning \& Improving Algorithms Through Contests}.
@@ -114,7 +193,7 @@ Some critical-thinking questions:
 	\item \cite{Thu_Tien_Khang_PPLTHDT}. {\sc Trần Đan Thư, Đinh Bá Tiến, Nguyễn Tấn Trần Minh Khang}. {\it Phương Pháp Lập Trình Hướng Đối Tượng}.
 \end{enumerate}
 
-\subsection{The art of handling inputs \& formatting outputs -- Nghệ thuật xử lý các dạng đầu vào \& định dạng các dạng đầu ra}
+\section{The art of handling inputs \& formatting outputs -- Nghệ thuật xử lý các dạng đầu vào \& định dạng các dạng đầu ra}
 To handle various types of inputs \& format various types of outputs, see, e.g.:
 \begin{itemize}
 	\item \href{http://poj.org/faq.htm}{Peking University Judge Online for ACM{\tt/}ICPC (POJ){\tt/}FAQ}.
@@ -139,13 +218,13 @@ $ ./program_name < program_name.inp > program_name.out
 	\item {\tt i++} vs. {\tt++i}: \href{https://stackoverflow.com/questions/24886/is-there-a-performance-difference-between-i-and-i-in-c}{StackOverflow{\tt/}Is there a performance difference between i++ \& ++i in C?}
 \end{itemize}
 
-\subsection{Repeat{\tt/}Loop -- Lặp}
+\section{Repeat{\tt/}Loop -- Lặp}
 
-\subsection{String data -- Kiểu dữ liệu chuỗi}
+\section{String data -- Kiểu dữ liệu chuỗi}
 
 %------------------------------------------------------------------------------%
 
-\subsection{Array data -- Kiểu dữ liệu mảng}
+\section{Array data -- Kiểu dữ liệu mảng}
 Về mặt toán học, kiểu dữ liệu mảng là dãy số hữu hạn $(a_i)_{i=1}^n = (a_1,a_2,\ldots,a_n)$. Về mặt Tin học, kiểu dữ liệu mảng được ký hiệu bởi {\tt a[1..n]}.
 
 \begin{baitoan}[\cite{Duc_200_BT_Python}, 141., pp. 140--141: Count digit -- Đếm chữ số]
@@ -188,7 +267,7 @@ for _ in range(t):
 	\item C++: ?
 \end{itemize}
 
-\subsubsection{Kỹ thuật mảng chỉ số cho kiểu dữ liệu mảng}
+\subsection{Kỹ thuật mảng chỉ số cho kiểu dữ liệu mảng}
 {\bf A general idea.} Giả sử có dãy số $\{a_n\}_{n=1}^n$ được lưu với mảng {\tt a = a[0], a[1],...,a[n - 1]} với $a_i =$ {\tt a[i - 1]}, $\forall i\in[n]$. Giả sử có $m\in\mathbb{N}^\star$ mảng chỉ số $\{f_i\}_{i=1}^m$ mà mỗi mảng có số phần tử là 1 hàm của $n$, $f_i:[n]\to\mathbb{R}$, mà $m$ mảng chỉ số này lại liên quan hay ràng buộc với nhau theo những cách nào đấy, biểu diễn được bằng công thức toán, e.g., $f_i(n) = F_i(f_1,f_2,\ldots,f_{i-1},f_{i+1},\ldots,f_n)$. Tìm hiểu cấu trúc toán học, cấu trúc giải thuật, \& tạo ra các ví dụ để minh họa ý tưởng tổng quát này.
 
 Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý tưởng này với $m = 2$, $f_1(i) =$ left index (chỉ số trái), $f_2(i) =$ right index (chỉ số phải) \& ta thường lấy tổng $\sum_{\tt left\_index}^{\tt right\_index} a[i]$, tích $\prod_{\tt left\_index}^{\tt right\_index} a[i]$, hoặc 1 hàm nào đấy của các phần tử bị giới hạn bởi 2 chỉ số trái \& phải này, e.g., $\sum_{\tt left\_index}^{\tt right\_index} f(a[i])$ or $F(a[{\tt left\_index}],\ldots,a[{\tt right\_index}])$.
@@ -199,7 +278,7 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
 
 %------------------------------------------------------------------------------%
 
-\section{Introductory Problems -- Các Bài Toán Mở Đầu}
+\chapter{Introductory Problems -- Các Bài Toán Mở Đầu}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1068}{CSES Problem Set{\tt/}weird algorithm}]
     Consider an algorithm that takes as input a positive integer $n$. If $n$ is even, the algorithm divides it by $2$, \& if $n$ is odd, the algorithm multiplies it by $3$ \& adds $1$. The algorithm repeats this, until $n = 1$. E.g., the sequence for $n = 3$ is as follows: $3\to10\to5\to16\to8\to4\to2\to1$. Simulate the execution of the algorithm for a given value of $n$.
@@ -742,7 +821,7 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
 
 %------------------------------------------------------------------------------%
 
-\section{Sorting \& Searching -- Sắp Xếp \& Tìm Kiếm}
+\chapter{Sorting \& Searching -- Sắp Xếp \& Tìm Kiếm}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1621}{CSES Problem Set{\tt/}distinct numbers}]
     You are given a list of $n\in\mathbb{N}^\star$ integers. Calculate the number of {\rm distinct} values in the list.
@@ -1436,7 +1515,7 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
 
 %------------------------------------------------------------------------------%
 
-\section{Practice for Simple Computing -- Thực Hành Tính Toán Đơn Giản}
+\chapter{Practice for Simple Computing -- Thực Hành Tính Toán Đơn Giản}
 
 \begin{enumerate}
 	\item \cite{Wu_Wang2016}. {\sc Yonghui Wu, Jiande Wang}. {\it Data Structure Practice for Collegiate Programming Contests \& Education}.
@@ -1601,7 +1680,7 @@ Bài toán có thể mở rộng từ double thành triple, multiple, or just eq
 
 %------------------------------------------------------------------------------%
 
-\section{Ad Hoc Problems}
+\chapter{Ad Hoc Problems}
 
 \begin{itemize}\sf
 	\item \textbf{ad hoc} [a] (from Latin) arranged or happening when necessary \& not planned in advance; [adv] (from Latin) in a way that is arranged or happens when necessary \& is not planned in advance.
@@ -1612,7 +1691,7 @@ For the definitions of ``ad hoc'', see also, e.g., \href{https://vi.wikipedia.or
 
 %------------------------------------------------------------------------------%
 
-\subsection{Solving Ad Hoc Problems by Mechanism Analysis}
+\section{Solving Ad Hoc Problems by Mechanism Analysis}
 
 \begin{problem}[\cite{Wu_Wang2018}, 1.1.1, p. 1, Factstone Benchmark]
 	{\sc Amtel} has announced that it will release a 128-bit computer chip by 2010, a 256-bit computer by 2020, \& so on, continuing its strategy of doubling the word size every 10 years. ({\sc Amtel} released a 64-bit computer in 2000, a 32-bit computer in 1990, a 16-bit computer in 1980, an 8-bit computer in 1970, \& a 4-bit computer, its 1st, in 1960.) {\sc Amtel} will use a new benchmark -- the {\rm Factstone} -- to advertise the vastly improved capacity of its new chips. The {\rm Factstone} rating is defined to be the largest integer $n$ such that $n!$ can be represented as an unsigned integer in a computer word. Given a year $1960\le y\le2160$, what will be the {\rm Factstone} rating of {\sc Amtel}'s most recently released chip?
@@ -1737,7 +1816,7 @@ Codes:
 
 %------------------------------------------------------------------------------%
 
-\subsection{Solving Ad Hoc Problems by Statistical Analysis}
+\section{Solving Ad Hoc Problems by Statistical Analysis}
 Unlike mechanism analysis, statistical analysis begins with a partial solution to the problem, \& the overall global solution is found based on analyzing the partial solution. Solving problems by statistical analysis is a bottom-up method.
 
 -- Không giống như phân tích cơ chế, phân tích thống kê bắt đầu bằng một giải pháp cục bộ cho vấn đề, \& giải pháp toàn cục tổng thể được tìm thấy dựa trên việc phân tích giải pháp cục bộ. Giải quyết vấn đề bằng phân tích thống kê là phương pháp từ dưới lên.
@@ -1763,7 +1842,7 @@ Unlike mechanism analysis, statistical analysis begins with a partial solution t
 
 %------------------------------------------------------------------------------%
 
-\section{VNOI}
+\chapter{VNOI}
 
 \begin{baitoan}[gcd in Pascal triangle -- ƯCLN trong tam giác Pascal, \url{https://oj.vnoi.info/problem/gpt}]
 	Tam giác Pascal là 1 cách sắp xếp hình học của các hệ số nhị thức vào 1 tam giác. Hàng thứ $n\in\mathbb{N}$ của tam giác bao gồm các hệ số trong khai triển của đa thức $f(x,y) = (x + y)^n$. I.e., phần tử tại cột thứ $k$, hàng thứ $n$ của tam giác Pascal là $C_n^k = \binom{n}{k}$, i.e., tổ hợp chập $k$ của $n$ phần tử $0\le k\le n$. Cho $n\in\mathbb{N}$. Tính ${\rm GPT}(n)$ là ƯCLN của các số nằm giữa 2 số 1 trên hàng thứ $n$ của tam giác Pascal.
@@ -1795,7 +1874,7 @@ See also, e.g.:
 
 %------------------------------------------------------------------------------%
 
-\section{Recurrence Relation -- Quan Hệ Hồi Quy}
+\chapter{Recurrence Relation -- Quan Hệ Hồi Quy}
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
 	\item \cite{Andrica_Bagdasar2020}. {\sc Dorin Andrica, Ovidiu Bagdasar}. {\it Recurrent Sequences: Key Results, Applications, \& Problems}.
@@ -1925,7 +2004,7 @@ The concept of a recurrence relation can be extended to \href{https://en.wikiped
 
 %------------------------------------------------------------------------------%
 
-\subsection{Linear recurrence with constant coefficients -- Hồi quy tuyến tính với hệ số hằng}
+\section{Linear recurrence with constant coefficients -- Hồi quy tuyến tính với hệ số hằng}
 See, e.g., \href{https://en.wikipedia.org/wiki/Linear_recurrence_with_constant_coefficients}{Wikipedia{\tt/}linear recurrence with constant coefficients}. In mathematics (including combinatorics, linear algebra, \& \href{https://en.wikipedia.org/wiki/Dynamical_systems}{dynamical system}), a {\it linear recurrence with constant coefficients} (also known as a {\it linear recurrence relation} or {\it linear difference equation}) sets equal to 0 a \href{https://en.wikipedia.org/wiki/Polynomial}{polynomial} that is linear in the various iterates of a variable -- i.e., in the values of the elements of a sequence. The polynomial's linearity means that each of its terms has degree 0 or 1. A linear recurrence denotes the evolution of some variable over time, with the current \href{https://en.wikipedia.org/wiki/Discrete_time}{time period} or discrete moment in time denoted as $t$, 1 period earlier denoted as $t - 1$, 1 period later as $t + 1$, etc.
 
 The \href{https://en.wikipedia.org/wiki/Equation_solving}{solution} of such an equation is a function of $t$, \& not of any iterate values, giving the value of the iterate at any time. To find the solution, it is necessary to know the specific values (known as \href{https://en.wikipedia.org/wiki/Initial_condition}{\it initial conditions}) of $n$ of the iterates, \& normally these are the $n$ iterates that are oldest. The equation or its variable is said to be \href{https://en.wikipedia.org/wiki/Lyapunov_stability#Definition_for_discrete-time_systems}{\it stable} if from any set of initial conditions the variable's limit as time goes to $\infty$ exists; this limit is called the \href{https://en.wikipedia.org/wiki/Steady_state}{\it steady state}.
@@ -1947,7 +2026,7 @@ Difference equations are used in a variety of contexts, e.g. in \href{https://en
 
 %------------------------------------------------------------------------------%
 
-\section{Dynamic Programming -- Quy Hoạch Động}
+\chapter{Dynamic Programming -- Quy Hoạch Động}
 \textbf{\textsf{Resource -- Tài nguyên.}}
 \begin{enumerate}
 	\item \href{https://en.wikipedia.org/wiki/Dynamic_programming}{Wikipedia{\tt/}dynamic programming}.
@@ -2875,24 +2954,104 @@ int main() {
 
 %------------------------------------------------------------------------------%
 
-\section{Graph Algorithms -- Thuật Toán Đồ Thị}
+\chapter{Graph Algorithms -- Thuật Toán Đồ Thị}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1192}{CSES Problem Set{\tt/}counting rooms}]
 	You are given a map of a building, \& your task is to count the number of its rooms. The size of the map is $n\times m$ squares, \& each square is either floor or wall. You can walk left, right, up, \& down through the floor squares.
 	\item {\sf Input.} The 1st input lines has 2 integers $n,m$: the height \& width of the map. Then there are $n$ lines of $m$ characters describing the map. Each character is either . (floor) or {\tt\#} (wall).
-	\item {\it Output.} Print 1 integer: the number of rooms.
+	\item {\sf Output.} Print 1 integer: the number of rooms.
 	\item {\sf Constraints.} $1\le n,m\le10^3$.
-	\item {\sf Sample.} Input:
-	\begin{verbatim}
-		5 8
-		########
-		#..#...#
-		####.#.#
-		#..#...#
-		########		
-	\end{verbatim}
-	Output: {\tt3}.
+	\item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|counting_room.inp| & \verb|counting_room.out| \\
+            \hline
+            5 8 & 3 \\
+            \verb|########| & \\
+            \verb|#..#...#| & \\
+            \verb|####.#.#| & \\
+            \verb|#..#...#| & \\
+            \verb|########| & \\
+            \hline
+        \end{tabular}
+    \end{table}
 \end{problem}
+
+\begin{baitoan}
+    Bạn được cung cấp 1 bản đồ của một tòa nhà, \& nhiệm vụ của bạn là đếm số phòng trong đó. Kích thước của bản đồ là $n\times m$ ô vuông, \& mỗi ô vuông là sàn hoặc tường. Bạn có thể đi sang trái, phải, lên, \& xuống qua các ô vuông trên sàn.
+    \item {\sf Đầu vào.} Dòng đầu vào thứ nhất có 2 số nguyên $n,m$: chiều cao \& chiều rộng của bản đồ. Sau đó, có $n$ dòng gồm $m$ ký tự mô tả bản đồ. Mỗi ký tự là . (sàn) hoặc {\tt\#} (tường).
+    \item {\sf Đầu ra.} In 1 số nguyên: số phòng.
+    \item {\sf Ràng buộc.} $1\le n,m\le10^3$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|counting_room.inp| & \verb|counting_room.out| \\
+            \hline
+            5 8 & 3 \\
+            \verb|########| & \\
+            \verb|#..#...#| & \\
+            \verb|####.#.#| & \\
+            \verb|#..#...#| & \\
+            \verb|########| & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{baitoan}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item PGL's C++: counting room: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C%2B%2B/PGL_counting_room.cpp}
+    
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void dfs(vector<vector<char>> &a, int r, int c, int n, int m) {
+    if ( r < 0 || c < 0 || r >= n || c >= m || a[r][c] != '.' ) {
+        return;
+    }
+    
+    a[r][c] = '#';
+    
+    dfs(a, r + 1, c, n, m);
+    dfs(a, r - 1, c, n, m);
+    dfs(a, r, c + 1, n, m);
+    dfs(a, r, c - 1, n, m);
+}
+
+void Countroom(vector<vector<char>> &a, int n, int m) {
+    int count = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (a[i][j] == '.') {
+                dfs(a, i, j, n, m);
+                count++;
+            }
+        }
+    }
+    cout << count << endl;
+}
+
+int main() {
+    int n, m; cin >> n >> m;
+    vector<vector<char>> a(n, vector<char>(m)) ;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            cin >> a[i][j];
+        }
+    }
+    Countroom(a, n, m);
+}
+    \end{Verbatim}
+    
+    \end{enumerate}
+\end{proof}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1193}{CSES Problem Set{\tt/}labyrinth}]
 	You are given a map of a labyrinth, task: find a path from start to end. You can walk left, right, up, \& down.
@@ -3697,15 +3856,15 @@ int main() {
 
 %------------------------------------------------------------------------------%
 
-\section{Range Queries -- Truy Vấn Phạm Vi}
+\chapter{Range Queries -- Truy Vấn Phạm Vi}
 
 %------------------------------------------------------------------------------%
 
-\section{Tree Algorithms -- Thuật Toán Trên Cây}
+\chapter{Tree Algorithms -- Thuật Toán Trên Cây}
 
 %------------------------------------------------------------------------------%
 
-\section{Mathematics}
+\chapter{Mathematics}
 
 \begin{problem}[CSES{\tt/}Josephus Queries, \url{https://cses.fi/problemset/task/2164}]
     Consider a game where there are $n\in\mathbb{N}^\star$ children, numbered $1,2,\ldots,n$, in a circle. During the game, every 2nd child is removed from circle, until there are no children left. Task: process $q$ queries of the form: ``when there are $n$ children, who is the $k$th child that will be removed?''
@@ -3734,11 +3893,11 @@ Codes:
 
 %------------------------------------------------------------------------------%
 
-\section{String Algorithms}
+\chapter{String Algorithms}
 
 %------------------------------------------------------------------------------%
 
-\section{Computational Geometry -- Hình Học Tính Toán}
+\chapter{Computational Geometry -- Hình Học Tính Toán}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/2189}{CSES Problem Set{\tt/}point location test}]
     There is a line that goes through the points $p_1 = (x_1,y_2),p_2(x_2,y_2)$. There is also a point $p_3 = (x_3,y_3)$. Determine whether $p_3$ is located on the left or right side of the line or if it touches the line when we are looking from $p_1$ to $p_2$.
@@ -4112,11 +4271,11 @@ Codes:
 
 %------------------------------------------------------------------------------%
 
-\section{Number Theory -- Lý Thuyết Số}
+\chapter{Number Theory -- Lý Thuyết Số}
 
 %------------------------------------------------------------------------------%
 
-\subsection{Primorial}
+\section{Primorial}
 In mathematics, \& more particular in number theory, {\it primorial}, denoted by $p_n\#:\mathbb{N}\to\mathbb{N}$ similar to the \href{https://en.wikipedia.org/wiki/Factorial}{factorial} function, but rather than successively multiplying positive integers, the function only multiplies prime numbers. The name ``primorial'', coined by \href{https://en.wikipedia.org/wiki/Harvey_Dubner}{\sc Harvey Dubner}, draws an analogy to {\it primes} similar to the way the name ``factorial'' relates to {\it factors}.
 
 -- Trong toán học, \& cụ thể hơn trong lý thuyết số, {\it primorial}, được ký hiệu là $p_n\#:\mathbb{N}\to\mathbb{N}$ tương tự như hàm giai thừa, nhưng thay vì nhân liên tiếp các số nguyên dương, hàm này chỉ nhân các số nguyên tố. Tên ``primorial'', do {\sc Harvey Dubner} đặt ra, có sự tương tự với {\it primes} tương tự như cách tên ``factorial'' liên quan đến các thừa số.
@@ -4155,7 +4314,7 @@ Primorials are related to the 1st \href{https://en.wikipedia.org/wiki/Chebyshev_
 
 %------------------------------------------------------------------------------%
 
-\subsection{Divisor function -- Hàm ước số}
+\section{Divisor function -- Hàm ước số}
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
 	\item \href{https://en.wikipedia.org/wiki/Divisor_function}{Wikipedia{\tt/}divisor function}.
@@ -4183,7 +4342,7 @@ The \href{https://en.wikipedia.org/wiki/Aliquot_sum}{aliquot sum} $s(n)$ of $n$ 
 
 %------------------------------------------------------------------------------%
 
-\section{Advanced Techniques -- Các Kỹ Thuật Nâng Cao}
+\chapter{Advanced Techniques -- Các Kỹ Thuật Nâng Cao}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1628}{CSES Problem Set{\tt/}meet in the middle}]
     You are given an array of $n\in\mathbb{N}^\star$ numbers. In how many ways can you choose a subset of the numbers with sum $x\in\mathbb{N}^\star$?
@@ -4778,42 +4937,42 @@ int main() {
 
 %------------------------------------------------------------------------------%
 
-\section{Sliding Window Problems -- Các Bài Toán Về Cửa Sổ Trượt}
+\chapter{Sliding Window Problems -- Các Bài Toán Về Cửa Sổ Trượt}
 The sliding window technique is 1 of common techniques in digital image processing \& Computer Vision.
 
 %------------------------------------------------------------------------------%
 
-\section{Interactive Problems -- Các Bài Toán Tương Tác}
+\chapter{Interactive Problems -- Các Bài Toán Tương Tác}
 
 %------------------------------------------------------------------------------%
 
-\section{Bitwise Operations -- Các Phép Toán Bitwise}
+\chapter{Bitwise Operations -- Các Phép Toán Bitwise}
 
 %------------------------------------------------------------------------------%
 
-\section{Construction Problems -- Các Bài Toán Xây Dựng}
+\chapter{Construction Problems -- Các Bài Toán Xây Dựng}
 
 %------------------------------------------------------------------------------%
 
-\section{Advanced Graph Problems -- Các Bài Toán Đồ Thị Nâng Cao}
+\chapter{Advanced Graph Problems -- Các Bài Toán Đồ Thị Nâng Cao}
 
 %------------------------------------------------------------------------------%
 
-\section{Counting Problems -- Các Bài Toán Đếm}
+\chapter{Counting Problems -- Các Bài Toán Đếm}
 
 %------------------------------------------------------------------------------%
 
 %------------------------------------------------------------------------------%
 
-\section{Additional Problems}
+\chapter{Additional Problems}
 
 %------------------------------------------------------------------------------%
 
-\section{Combinatorial Optimization -- Tối Ưu Tổ Hợp}
+\chapter{Combinatorial Optimization -- Tối Ưu Tổ Hợp}
 
 %------------------------------------------------------------------------------%
 
-\subsection{Knapsack problem -- Bài toán xếp balô}
+\section{Knapsack problem -- Bài toán xếp balô}
 
 \begin{baitoan}[\cite{Thanh_computational_complexity_theory}, p. 25, xếp balô, MAX-KNAPSACK]
     Cho 1 lô hàng hóa gồm các gói hàng, mỗi gói đều có khối lượng cùng với giá trị cụ thể, \& cho 1 chiếc balô. Chọn từ lô này vài gói hàng nào đó \& xếp đầy vào balô, nhưng không được quá, sao cho thu được 1 {\rm GTLN} có thể.
@@ -4833,19 +4992,19 @@ The sliding window technique is 1 of common techniques in digital image processi
 
 %------------------------------------------------------------------------------%
 
-\subsection{Traveling salesman problem -- Bài toán người bán hàng du lịch}
+\section{Traveling salesman problem -- Bài toán người bán hàng du lịch}
 
 %------------------------------------------------------------------------------%
 
-\section{Miscellaneous}
+\chapter{Miscellaneous}
 
 %------------------------------------------------------------------------------%
 
-\subsection{Contributors}
-
+\section{Contributors}
+In alphabetical order:
 \begin{enumerate}
-	\item {\sc Võ Ngọc Trâm Anh}. C++ codes.
-	\item {\sc Đặng Phúc An Khang}. C++ codes.
+	\item {\sc Võ Ngọc Trâm Anh [VNTA]}. C++ codes.
+	\item {\sc Đặng Phúc An Khang [DPAK]}. C++ codes.
 	\begin{itemize}
 		\item {\sc Đặng Phúc An Khang}. {\it Combinatorics \& Number Theory in Competitive Programming -- Tổ Hợp \& Lý Thuyết Số trong Lập Trình Thi Đấu}.
 		\item {\sc Đặng Phúc An Khang}. {\it Hướng Đến Kỳ Thi Olympic Tin học Sinh Viên Toàn Quốc \& ICPC 2025}.
@@ -4856,10 +5015,10 @@ The sliding window technique is 1 of common techniques in digital image processi
 	\item {\sc Phan Vĩnh Tiến}. C++ codes.
 \end{enumerate}
 
-\subsection{Donate or Buy Me Coffee}
+\section{Donate or Buy Me Coffee}
 Donate (but do not donut) or buy me some coffee via NQBH's bank account information at \url{https://github.com/NQBH/publication/blob/master/bank/NQBH_bank_account_information}.
 
-\subsection{See also}
+\section{See also}
 
 \begin{enumerate}
 	\item {\it Vietnamese Mathematical Olympiad for High School- \& College Students (VMC) -- Olympic Toán Học Học Sinh \& Sinh Viên Toàn Quốc}.

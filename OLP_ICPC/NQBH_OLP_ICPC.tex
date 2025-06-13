@@ -3896,9 +3896,267 @@ int main() {
     Give that, in this competition, the largest size of a clique is even, prove that the competitors can be arranged in $2$ rooms s.t. the largest size of a clique contained in $1$ room is the same as the largest size of a clique contained in the other room.
 \end{problem}
 
-\begin{baitoan}[\cite{Vinh_Lu_Olympic_Toan}, 3., p. 10]
-    Trong 1 kỳ t hi học sinh giỏi Toán, có vài thí sinh là bạn bè của nhau. Quan hệ bạn bè luôn là quan hệ $2$ chiều. Gọi 1 nhóm các thí sinh là {\rm nhóm bạn bè} nếu như $2$ người bất kỳ trong nhóm này đều là bạn bè của nhau. (1 nhóm tùy ý có $< 2$ thí sinh cũng vẫn được coi là 1 nhóm bạn bè). Số lượng các thí sinh của 1 nhóm bạn bè đươc gọi là {\rm cỡ} của nó. Cho biết trong kỳ thi này, cỡ của 1 nhóm bạn bè có nhiều người nhất là 1 số chẵn. Chứng minh: có thể xếp tất cả các thí sinh vào $2$ phòng sao cho cỡ của nhóm bạn bè có nhiều người nhất trong phòng này cũng bằng cỡ của nhóm bạn bè có nhiều người nhất trong phòng kia.
+\begin{baitoan}[\cite{Vinh_Lu_Olympic_Toan}, 3., p. 10, IMO2007P3]
+    Trong 1 kỳ thi học sinh giỏi Toán, có vài thí sinh là bạn bè của nhau. Quan hệ bạn bè luôn là quan hệ $2$ chiều. Gọi 1 nhóm các thí sinh là {\rm nhóm bạn bè} nếu như $2$ người bất kỳ trong nhóm này đều là bạn bè của nhau. (1 nhóm tùy ý có $< 2$ thí sinh cũng vẫn được coi là 1 nhóm bạn bè). Số lượng các thí sinh của 1 nhóm bạn bè đươc gọi là {\rm cỡ} của nó. Cho biết trong kỳ thi này, cỡ của 1 nhóm bạn bè có nhiều người nhất là 1 số chẵn. Chứng minh: có thể xếp tất cả các thí sinh vào $2$ phòng sao cho cỡ của nhóm bạn bè có nhiều người nhất trong phòng này cũng bằng cỡ của nhóm bạn bè có nhiều người nhất trong phòng kia.
 \end{baitoan}
+
+\begin{baitoan}[CP version of IMO2007P3]
+    Cho $n\in\mathbb{N}^\star$ người, được đánh số $1,2,\ldots,n$, tạo thành 1 đồ thị đơn vô hướng hữu hạn (finite undirected simple graph) $G = ([n],E)$. $e_{ij}\in E\Leftrightarrow$ người $i$ \& người $j$ quen lẫn nhau, $\forall i,j\in[n]$. 1 {\rm nhóm bạn bè} được định nghĩa là 1 đồ thị con đầy đủ (complete subgraph $G' = (V',E')$ với $V'\subset[n],|E'| = \frac{|V'|(|V'| - 1)}{2}$), i.e., 2 đỉnh bất kỳ của $G'$ được nối với nhau. Viết chương trình {\sf C{\tt/}C++, Pascal, Python} để tính bậc lớn nhất có thể có của 1 nhóm bạn bè. Sau đó tìm cách phân hoạch tập $[n]$ thành 2 tập con (tương ứng 2 phòng $R_1,R_2$) sao cho bậc lớn nhất của thể của 1 nhóm bạn bè trong mỗi phòng bằng nhau.
+    \item {\sf Input.} Dòng đầu tiên chứa số $n\in\mathbb{N}^\star$. Dòng thứ $i\in[n]$ trong $n$ dòng tiếp theo chứa các đỉnh nối với đỉnh $i$, i.e., tập láng giếng (neighborhood) của đỉnh $i$: $N(i)\coloneqq\{j\in[n];e_{ij}\in E\}$.
+    \item {\sf Output.} Xuất ra dòng đầu tiên gồm 1 số nguyên dương: cỡ lớn nhất của nhóm bạn. $2$ dòng tiếp theo chứa các đỉnh trong phòng $R_1,R_2$ thỏa mãn. Dòng cuối chứa cỡ lớn nhất chung của 2 phòng $R_1,R_2$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|IMO2007_P3.inp| & \verb|IMO2007_P3.out| \\
+            \hline
+            5 & 4 \\
+            2 3 4 & 1 3 \\
+            1 3 4 & 2 4 5 \\
+            1 2 4 5 & 2 \\
+            1 2 3 5 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{baitoan}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item DXH's C++: IMO2007 P3:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include<bits/stdc++.h>
+#define ll long long
+using namespace std;
+
+// Class đại diện cho từng sinh viên
+class sv {
+    protected:
+    int id;
+    vector<int> friends;
+    
+    public:
+    // Constructor
+    sv(int id) : id(id) {}
+    
+    // Phương thức thêm bạn bè
+    void addFriend(int friendId) {
+        friends.push_back(friendId);
+    }
+    
+    // Getter: để lấy id từ bên ngoài khi cần
+    int getId() const { return id; }
+    
+    // Getter: để lấy danh sách bạn bè
+    vector<int> getFriends() const { return friends; }
+};
+
+// Class quản lý toàn bộ hệ thống kết nối sinh viên
+class sodoketnoisv {
+    private:
+    map<int, sv*> students;
+    
+    public:
+    void addsv(int id) {
+        students[id] = new sv(id);
+    }
+    
+    void addbanbe(int id, int friendId) {
+        students[id]->addFriend(friendId);
+        students[friendId]->addFriend(id);
+    }
+    
+    // Getter để lấy toàn bộ danh sách sinh viên ra
+    map<int, sv*> getStudents() {
+        return students;
+    }
+};
+
+// Hàm chia phòng
+void chiaphong(sodoketnoisv &sinhvien) {
+    // Giả sử tìm được clique sẵn
+    vector<int> clique = {203, 204, 205, 206};
+    
+    vector<int> roomA, roomB;
+    
+    // Chia clique vào 2 phòng
+    for (int i = 0; i < static_cast<int>(clique.size()); i++) {
+        if (i < static_cast<int>(clique.size() / 2))
+        roomA.push_back(clique[i]);
+        else
+        roomB.push_back(clique[i]);
+    }
+    
+    // Tìm những sinh viên còn lại (vệ tinh)
+    map<int, sv*> allStudents = sinhvien.getStudents();
+    vector<int> others;
+    
+    for (auto pair : allStudents) {
+        int id = pair.first;
+        if (find(clique.begin(), clique.end(), id) == clique.end()) {
+            others.push_back(id);
+        }
+    }
+    
+    // Phân bổ vệ tinh vào 2 phòng
+    for (int id : others) {
+        int countA = 0, countB = 0;
+        vector<int> friends = sinhvien.getStudents()[id]->getFriends();
+        
+        for (int friendId : friends) {
+            if (find(roomA.begin(), roomA.end(), friendId) != roomA.end())
+            countA++;
+            if (find(roomB.begin(), roomB.end(), friendId) != roomB.end())
+            countB++;
+        }
+        
+        if (countA <= countB)
+        roomA.push_back(id);
+        else
+        roomB.push_back(id);
+    }
+    
+    // In kết quả chia phòng ra màn hình (kiểm tra)
+    cout << "Room A: ";
+    for (int id : roomA)
+    cout << id << " ";
+    cout << endl;
+    
+    cout << "Room B: ";
+    for (int id : roomB)
+    cout << id << " ";
+    cout << endl;
+}
+
+int main() {
+    ios::sync_with_stdio(0);
+    
+    sodoketnoisv sinhvien;
+    
+    // Thêm sinh viên
+    sinhvien.addsv(203);
+    sinhvien.addsv(204);
+    sinhvien.addsv(205);
+    sinhvien.addsv(206);
+    sinhvien.addsv(207);
+    sinhvien.addsv(208);
+    
+    // Thêm các cặp bạn bè (ví dụ)
+    sinhvien.addbanbe(203, 204);
+    sinhvien.addbanbe(204, 205);
+    sinhvien.addbanbe(205, 206);
+    sinhvien.addbanbe(203, 205);
+    sinhvien.addbanbe(203, 206);
+    sinhvien.addbanbe(204, 206);
+    sinhvien.addbanbe(207, 203);
+    sinhvien.addbanbe(208, 204);
+    
+    // Gọi hàm chia phòng
+    chiaphong(sinhvien);
+}
+        \end{Verbatim}
+        \item DAK's C++: IMO2007 P3:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 65;
+int n;
+bool adj[N][N];
+vector<int> best_clique_so_far;
+
+void find_max_clique_recursive(const vector<int>& potential_nodes, vector<int> current_clique) {
+    if (current_clique.size() > best_clique_so_far.size())
+    best_clique_so_far = current_clique;
+    
+    for (size_t i = 0; i < potential_nodes.size(); ++i) {
+        int v = potential_nodes[i];
+        if (current_clique.size() + (potential_nodes.size() - i) <= best_clique_so_far.size())
+        return;
+        
+        vector<int> new_potential_nodes;
+        for (size_t j = i + 1; j < potential_nodes.size(); ++j)
+        if (adj[v][potential_nodes[j]])
+        new_potential_nodes.push_back(potential_nodes[j]);
+        
+        vector<int> next_clique = current_clique;
+        next_clique.push_back(v);
+        find_max_clique_recursive(new_potential_nodes, next_clique);
+    }
+}
+
+vector<int> get_max_clique(const vector<int>& nodes) {
+    if (nodes.empty())
+    return {};
+    best_clique_so_far.clear();
+    find_max_clique_recursive(nodes, {});
+    return best_clique_so_far;
+}
+
+void print_vector(const vector<int>& vec) {
+    for (size_t i = 0; i < vec.size(); ++i)
+    cout << vec[i] << (i == vec.size() - 1 ? "" : " ");
+    cout << '\n';
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cin >> n;
+    cin.ignore();
+    
+    for (int i = 1; i <= n; ++i) {
+        string line;
+        getline(cin, line);
+        stringstream ss(line);
+        int neighbor;
+        while (ss >> neighbor)
+        adj[i][neighbor] = true;
+    }
+    
+    vector<int> all_nodes(n);
+    iota(all_nodes.begin(), all_nodes.end(), 1);
+    
+    vector<int> C = get_max_clique(all_nodes);
+    cout << C.size() << '\n';
+    
+    vector<int> room1 = C;
+    vector<int> room2;
+    
+    sort(C.begin(), C.end());
+    sort(all_nodes.begin(), all_nodes.end());
+    
+    set_difference(all_nodes.begin(), all_nodes.end(),
+    C.begin(), C.end(),
+    back_inserter(room2));
+    
+    for (size_t i = 0; i <= C.size(); ++i) {
+        sort(room1.begin(), room1.end());
+        sort(room2.begin(), room2.end());
+        
+        int size1 = get_max_clique(room1).size();
+        int size2 = get_max_clique(room2).size();
+        
+        if (size1 == size2) {
+            print_vector(room1);
+            print_vector(room2);
+            cout << size1 << '\n';
+            return 0;
+        }
+        
+        if (i < C.size()) {
+            int node_to_move = C[i];
+            
+            room1.erase(remove(room1.begin(), room1.end(), node_to_move), room1.end());
+            room2.push_back(node_to_move);
+        }
+    }
+    
+    return 1;
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
 
 %------------------------------------------------------------------------------%
 
@@ -4326,6 +4584,168 @@ Codes:
 %------------------------------------------------------------------------------%
 
 \chapter{Number Theory -- Lý Thuyết Số}
+
+%------------------------------------------------------------------------------%
+
+\section{Divisor -- Ước Số}
+
+\begin{problem}[IMO2007P5]
+    Let $a,b\in\mathbb{N}^\star$. Show that if $4ab - 1|(4a^2 - 1)^2$, then $a = b$.
+\end{problem}
+
+\begin{baitoan}[CP version of IMO2007P5]
+    Cho $m,n\in\mathbb{N}^\star$. Đếm số phần tử của tập hợp
+    \begin{equation*}
+        S = \{(a,b)\in[m]\times[n];4ab - 1|(4a^2 - 1)^2\} = \{(a,b)\in[m]\times[n];(4a^2 - 1)^2\divby4ab - 1\}.
+    \end{equation*}
+    \item {\sf Input.} Chỉ 1 dòng chứa $m,n\in\mathbb{N}^\star$.
+    \item {\sf Output}. $|S|$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|IMO2007_P5.inp| & \verb|IMO2007_P5.out| \\
+            \hline
+            5 3 & 3 \\
+            \hline
+            10 15 & 10 \\
+            \hline
+        \end{tabular}
+    \end{table} 
+\end{baitoan}
+
+\begin{proof}[Solution]
+    Theo lời giải bài toán IMO2007P5 trước đó, đáp số bài toán này đơn giản chỉ là $\min\{m,n\}$. Nhưng đó là về mặt chứng minh toán học, sau đây ta sẽ dùng vòng lặp để kiểm tra.
+    
+    C++:
+    \begin{enumerate}
+        \item DPAK's C++: IMO2007P5:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+int m, n;
+const double oo = 1e9 + 7;
+
+int main() {
+    cin >> m >> n;
+    int cnt = 0;
+    for (int a = 1; a <= m; ++a) {
+        int num = 4 * a * a - 1;
+        num = num * num;
+        for (int b = 1; b <= n; ++b) {
+            int divisor = 4 * a * b - 1;
+            if (num % divisor == 0) ++cnt;
+        }
+    }
+    cout << cnt;
+}
+        \end{Verbatim}
+        
+        \item TQS's \& DNDK's C++: IMO2007P5:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+
+int main() {
+    int m, n, count = 0;
+    cin >> m >> n;
+    for (int i = 1; i <= m; ++i)
+        for (int j = 1; j <= n; ++j)
+            if (((4 * i * i - 1) * (4 * i * i - 1)) % (4 * i * j - 1) == 0) ++count;
+    cout << count;
+}
+        \end{Verbatim}
+        
+        \begin{remark}
+            Dù code này không cần dùng tới 2 biến phụ {\tt num, divisor} như code của DPAK, nhưng sẽ tính nhiều lần hơn do đoạn code {\tt(4 * i * i - 1) * (4 * i * i - 1)} lặp lại phép tính {\tt(4 * i * i - 1)} 2 lần (unnecessary duplication).
+        \end{remark}
+        
+        
+    \end{enumerate}
+    
+\end{proof}
+
+\begin{problem}[IMO2008P3]
+    Prove that there exists infinitely many positive integers $n$ s.t. $n^2 + 1$ has a prime divisor which is $> 2n + \sqrt{2n}$.
+\end{problem}
+
+\begin{baitoan}[\cite{Vinh_Lu_Olympic_Toan}, p. 12, IMO2008P3]
+    Chứng minh tồn tại vô hạn $n\in\mathbb{N}^\star$ sao cho $n^2 + 1$ có ước nguyên tố lớn hơn $2n + \sqrt{2n}$.
+\end{baitoan}
+
+\begin{baitoan}[CP version of IMO2008P3]
+    Đếm số số $n\in\mathbb{N}^\star$ sao cho $n^2 + 1$ có ước nguyên tố lớn hơn $2n + \sqrt{2n}$ trong phạm vi $n\in[a,b]$ với $a,b\in\mathbb{N}^\star$ cho trước.
+    \item {\sf Input.} 2 số $a,b\in\mathbb{N}^\star$.
+    \item {\sf Output.} Số số $n\in[a,b]$ thỏa mãn.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    
+    
+    C++:
+    \begin{enumerate}
+        \item DPAK's C++: IMO2008P3:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <cmath>
+using namespace std;
+long long a, b;
+const double oo = 1e9 + 7;
+
+int main() {
+    long long cnt = 0;
+    cin >> a >> b;
+    for (long long i = a; i <= b; ++i) {
+        long long new_num = i * i + 1;
+        double limit = 2.0 * i + sqrt(2 * i);
+        long long temp = new_num;
+        bool ok = false;
+        for (long long j = 2; j * j <= new_num; ++j)
+        if (temp % j == 0) {
+            while (temp % j == 0) temp /= j;
+            if (j > limit) {
+                ok = true;
+                break;
+            }
+        }
+        if (!ok && temp > 1 && temp > limit) ok = true;
+        if (ok) ++cnt;
+    }
+    cout << cnt;
+}
+        \end{Verbatim}
+        
+        \item DNDK's C++: IMO2008P3:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+bool check(long long n) {
+    long long x = n * n + 1, X = x;
+    long long y = 2 * n + sqrtl(2 * n);
+    for (long long i = 2; i * i <= X; ++i)
+        if (x % i == 0) {
+            while (x % i == 0) x /= i;
+            if (i > y) return true;
+        }
+    if (x > 1 and x > y) return true;
+    return false;
+}
+
+int main() {
+    long long a, b;
+    cin >> a >> b;
+    long long count = 0;
+    for (long long i = a; i <= b; ++i)
+        if (check(i)) ++count;
+    cout << count;
+}
+        \end{Verbatim}
+        
+    \end{enumerate}
+\end{proof}
 
 %------------------------------------------------------------------------------%
 
@@ -5013,6 +5433,16 @@ The sliding window technique is 1 of common techniques in digital image processi
 %------------------------------------------------------------------------------%
 
 \chapter{Counting Problems -- Các Bài Toán Đếm}
+
+\begin{problem}[IMO2008P5]
+    Let $n,k\in\mathbb{N}^\star$, $k\ge n$, $k - n\divby2$. Let $2n$ lamps labeled $1,2,\ldots,2n$ be given, each of which can be either on or off. Initially all the lamps are off. We consider sequences of {\rm steps}: at each step $1$ of the lamps is switched (from on to off or from off to on). Let $N$ be the number of such sequences consisting of $k$ steps \& resulting in the state where lamps $1$ through $n$ are all on, \& laps $n + 1$ through $2n$ are all off. Let $M$ be the number of such sequences consisting of $k$ steps, resulting in the state where lamps $1$ through $n$ are all on, \& lamps $n + 1$ through $2n$ are all off, but where none of the lamps $n + 1$ through $2n$ is ever switched on. Determine the ratio $\frac{M}{N}$.
+\end{problem}
+
+\begin{baitoan}[\cite{Vinh_Lu_Olympic_Toan}, p. 12, IMO2008P5]
+    Giả sử $n,k\in\mathbb{N}^\star$, $k\ge n$, $k - n\divby2$.  Cho $2n$ bóng đèn được đánh số từ $1$ đến $2n$; mỗi bóng có thể sáng hoặc tắt. Tại thời điểm ban đầu mỗi bóng đều tắt. Xét các dãy gồm các bước: tại mỗi bước, công tắc của 1 trong các bóng đèn được bật (từ sáng chuyển thành tắt hoặc từ tắt chuyển thành sáng). Giả sử $N$ là số các dãy mà mỗi dãy gồm $k$ bước \& kết thúc ở trạng thái: các bóng đèn từ $1$ đến $n$ sáng, các bóng từ $n + 1$ đến $2n$ tắt. Giả sử $M$ là số các dãy mà mỗi dãy gồm $k$ bước \& cũng kết thúc ở trạng thái: các bóng đèn từ $1$ đến $n$ sáng, các bóng từ $n + 1$ đến $2n$ tắt, nhưng trong quá trình đó không 1 công tắc nào của các bóng từ $n + 1$ đến $2n$ được bật. Tính tỷ số $\frac{M}{N}$.
+    \item {\sf Input.} Chỉ chứa 1 dòng gồm 2 số $n,k\in\mathbb{N}^\star$, $k\ge n$, $k - n\divby2$ (viết {\tt if else} để kiểm tra điều kiện này).
+    \item {\sf Output.} Tỷ số $\frac{M}{N}$.
+\end{baitoan}
 
 %------------------------------------------------------------------------------%
 

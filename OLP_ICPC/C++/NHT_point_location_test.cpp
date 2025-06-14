@@ -20,6 +20,4 @@ int main() {
 		else
 			cout << "TOUCH\n";
 	}
-
-	return 0;
 }

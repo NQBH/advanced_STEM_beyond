@@ -3400,6 +3400,290 @@ Zarankiewicz's lemma is the main step in the proof of Turan's theorem -- a famou
 %------------------------------------------------------------------------------%
 
 \chapter{Algorithms on Graphs -- Các Thuật Toán Trên Đồ Thị}
+\minitoc
+
+%------------------------------------------------------------------------------%
+
+\section{Basic Graph Theory: Coding \& Programming Aspects -- Lý Thuyết Đồ Thị Cơ Bản: Các Khía Cạnh Mã Hóa \& Lập Trình}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item VNTA's basic Graph Theory -- coding: \url{https://github.com/vntanh1406/Graph_SUM2025/tree/main/BasicGraphTheory}.
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Graph representation -- Biểu diễn đồ thị}
+
+\begin{baitoan}[Graph representation -- Biểu diễn đồ thị]
+    Cho đồ thị đơn vô hướng hữu hạn $G = (V,E)$. Có $3$ dạng biểu diễn đồ thị chính: adjacency list (abbr., al) -- danh sách kề, adjacency matrix (abbr., am) -- ma trận kề, edge list (abbr., el) -- danh sách cạnh. Viết $C_3^2 = 6$ thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python}  chuyển đổi (converter programs among graph representations) giữa các dạng biểu diễn này.
+\end{baitoan}
+
+\begin{baitoan}[Adjacency list $\mapsto$ adjacency matrix converter -- chuyển đổi danh sách kề $\mapsto$ ma trận kề]
+    Cho đồ thị đơn vô hướng hữu hạn $G = (V,E)$. Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để chuyển đổi dạng biểu diễn của đồ thị $G$ từ dạng danh sách kề sang dạng ma trận kề.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item VNTA's C++: adjacency list $\mapsto$ adjacency matrix converter: {\sc url}:
+        \begin{itemize}
+            \item \url{https://github.com/vntanh1406/Graph_SUM2025/blob/main/BasicGraphTheory/AdjacencyListToAdjacencyMatrix.cpp}.
+            \item \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/C%2B%2B/VNTA_adjacency_list_to_adjacency_matrix.cpp}.
+        \end{itemize}
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+/*
+Cho đồ thị vô hướng G = <V,E> được biểu diễn dưới dạng danh sách kề.
+Chuyển đổi biểu diễn đồ thị dưới dạng ma trận kề
+*/
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n;
+    cin >> n;
+    cin.ignore();
+    int a[n + 1][n + 1];
+    
+    for (int i = 1; i <= n; ++i)
+        for (int j = 1; j <= n; ++j) a[i][j] = 0;
+    
+    for (int i = 1; i <= n; ++i) {
+        string s, num;
+        getline(cin, s);
+        stringstream ss(s);
+        while (ss >> num) a[i][stoi(num)] = 1;
+    }
+    
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= n; ++j) cout << a[i][j] << ' ';
+        cout << '\n';
+    }
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{baitoan}[Adjacency matrix $\mapsto$ adjacency list converter -- chuyển đổi ma trận kề $\mapsto$ danh sách kề]
+    Cho đồ thị đơn vô hướng hữu hạn $G = (V,E)$. Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để chuyển đổi dạng biểu diễn của đồ thị $G$ từ dạng ma trận kề sang dạng danh sách kề.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item VNTA's C++: adjacency matrix $\mapsto$ adjacency list converter: {\sc url}:
+        \begin{itemize}
+            \item \url{https://github.com/vntanh1406/Graph_SUM2025/blob/main/BasicGraphTheory/AdjacencyMatrixToAdjacencyList.cpp}.
+            \item \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/C%2B%2B/VNTA_adjacency_matrix_to_adjacency_list.cpp}.
+        \end{itemize}
+        
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+/*
+Cho đồ thị vô hướng G = <V,E> được biểu diễn dưới dạng ma trận kề.
+Chuyển đổi biểu diễn đồ thị dưới dạng danh sách cạnh
+*/
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n;
+    cin >> n;
+    int a[n + 1][n + 1];
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j) cin >> a[i][j];
+    vector<int> adj[n + 1];
+    vector<pair<int, int>> edges;
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+            if (a[i][j] == 1) edges.push_back({i + 1, j + 1});
+    
+    for (int i = 0; i < n; ++i)
+        for (auto e : edges) if (e.first == i + 1) adj[i + 1].push_back(e.second);
+    
+    for (int i = 0; i < n; ++i) {
+        cout << i + 1 << " : ";
+        for (auto a : adj[i + 1]) cout << a << ' ';
+        cout << '\n';
+    }
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{baitoan}[Edge list $\mapsto$ adjacency matrix converter -- chuyển đổi danh sách cạnh $\mapsto$ ma trận kề]
+    Cho đồ thị đơn vô hướng hữu hạn $G = (V,E)$. Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để chuyển đổi dạng biểu diễn của đồ thị $G$ từ dạng danh sách cạnh sang dạng ma trận kề.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item VNTA's C++: edge list $\mapsto$ adjacent matrix: {\sc url}:
+        \begin{itemize}
+            \item \url{https://github.com/vntanh1406/Graph_SUM2025/blob/main/BasicGraphTheory/EdgeListToAdjacencyMatrix.cpp}.
+        \end{itemize}
+        
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+/*
+Cho đồ thị vô hướng G = <V,E> được biểu diễn dưới dạng danh sách cạnh.
+Chuyển đổi biểu diễn đồ thị dưới dạng ma trận kề
+*/
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n, m, u, v;
+    cin >> n >> m;
+    int a[n][n];
+    for (int i = 0; i < n; ++i)
+    for (int j = 0; j < n; ++j) a[i][j] = 0;
+    
+    for (int e = 0; e < m; e++) {
+        cin >> u >> v;
+        a[u - 1][v - 1] = 1;
+        a[v - 1][u - 1] = 1;
+    }
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) cout << a[i][j] << ' ';
+        cout << '\n';
+    }
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{baitoan}[Edge list $\mapsto$ adjacency list converter -- chuyển đổi danh sách cạnh $\mapsto$ danh sách kề]
+    Cho đồ thị đơn vô hướng hữu hạn $G = (V,E)$. Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để chuyển đổi dạng biểu diễn của đồ thị $G$ từ dạng danh sách cạnh sang dạng danh sách kề.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item VNTA's C++: edge list $\mapsto$ adjacent list:
+        \begin{itemize}
+            \item \url{https://github.com/vntanh1406/Graph_SUM2025/blob/main/BasicGraphTheory/EdgeListToAdjacencyList.cpp}.
+        \end{itemize}
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+/*
+Cho đồ thị vô hướng G = <V,E> được biểu diễn dưới dạng danh sách cạnh.
+Chuyển đổi biểu diễn đồ thị dưới dạng danh sách kề
+*/
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n, m, u, v;
+    cin >> n >> m;
+    vector<int> adj[n + 1];
+    for (int i = 0; i < m; ++i) {
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    for (int i = 1; i <= n; ++i) {
+        cout << i << " : ";
+        for (int x : adj[i]) cout << x << ' ';
+        cout << '\n';
+    }
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{baitoan}[Adjacency list $\mapsto$ adjacency matrix converter -- chuyển đổi danh sách kề $\mapsto$ ma trận kề]
+    Cho đồ thị đơn vô hướng hữu hạn $G = (V,E)$. Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để chuyển đổi dạng biểu diễn của đồ thị $G$ từ dạng danh sách kề sang dạng ma trận kề.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item VNTA's C++: adjacency list $\mapsto$ adjacency matrix converter: {\sc url}:
+        \begin{itemize}
+            \item \url{https://github.com/vntanh1406/Graph_SUM2025/blob/main/BasicGraphTheory/AdjacencyListToAdjacencyMatrix.cpp}.
+            \item 
+        \end{itemize}
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+/*
+Cho đồ thị vô hướng G = <V,E> được biểu diễn dưới dạng danh sách kề.
+Chuyển đổi biểu diễn đồ thị dưới dạng ma trận kề
+*/
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n;
+    cin >> n;
+    cin.ignore();
+    int a[n + 1][n + 1];
+    
+    for (int i = 1; i <= n; ++i)
+        for (int j = 1; j <= n; ++j) a[i][j] = 0;
+    
+    for (int i = 1; i <= n; ++i) {
+        string s, num;
+        getline(cin, s);
+        stringstream ss(s);
+        while (ss >> num) a[i][stoi(num)] = 1;
+    }
+    
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= n; ++j) cout << a[i][j] << ' ';
+        cout << '\n';
+    }
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{baitoan}[Adjacency list $\mapsto$ edge list converter -- chuyển đổi danh sách kề $\mapsto$ danh sách cạnh]
+    Cho đồ thị đơn vô hướng hữu hạn $G = (V,E)$. Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để chuyển đổi dạng biểu diễn của đồ thị $G$ từ dạng danh sách kề sang dạng danh sách cạnh.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item VNTA's C++: adjacency list $\mapsto$ edge list: {\sc url}:
+        \begin{itemize}
+            \item \url{https://github.com/vntanh1406/Graph_SUM2025/blob/main/BasicGraphTheory/AdjacencyListToEdgeList.cpp}.
+            \item 
+        \end{itemize}
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+/*
+Cho đồ thị vô hướng G = <V,E> được biểu diễn dưới dạng danh sách kề.
+Chuyển đổi biểu diễn đồ thị dưới dạng danh sách cạnh
+*/
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n;
+    cin >> n;
+    cin.ignore();
+    vector<pair<int, int>> edges;
+    for (int i = 1; i <= n; ++i) {
+        string s, num;
+        getline(cin, s);
+        stringstream ss(s);
+        while (ss >> num)
+            if (i < stoi(num)) edges.push_back({i, stoi(num)});
+    }
+    for (auto e : edges) cout << e.first << ' ' << e.second << '\n';
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{baitoan}[Course project: Graph representations  converters -- Đồ án môn học: chuyển đổi giữa các dạng biểu diễn đồ thị]
+    Viết các thuật toán \& chương trình chuyển đổi giữa $\ge3$ dạng biểu diễn (adjacency list, adjacency matrix, edge list, extended edge list, etc.) của đồ thị G gồm tổ hợp của các loại đồ thị đã học: vô hướng vs. có hướng, đồ thị đơn vs. đa vs. tổng quát. Tạo cấu trúc dữ liệu struct hoặc class để mỗi vertex có thể chứa thêm m giá trị thực, còn mỗi cạnh edge có thể chứa thêm n giá trị thực để sẵn sàng làm toán tối ưu trên kiểu dữ liệu đã được tự định dạng.
+\end{baitoan}
 
 %------------------------------------------------------------------------------%
 

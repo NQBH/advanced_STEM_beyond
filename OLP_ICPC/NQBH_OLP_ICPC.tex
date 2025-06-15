@@ -1960,6 +1960,11 @@ Unlike mechanism analysis, statistical analysis begins with a partial solution t
 \end{equation*}
 nên thay vì xét $i = 1,\ldots,n-1$, chỉ cần xét $i = 1,\ldots,\lfloor\frac{n}{2}\rfloor$ là đủ.
 
+Codes:
+\begin{itemize}
+    \item C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C++/gcd_Pascal_triangle.cpp}.
+\end{itemize}
+
 \begin{theorem}
 	\begin{equation*}
 		\gcd\{C_n^i\}_{i=1}^{n-1} = \left\{\begin{split}
@@ -4251,30 +4256,884 @@ int main() {
 
 %------------------------------------------------------------------------------%
 
-\begin{problem}[CSES{\tt/}Josephus Queries, \url{https://cses.fi/problemset/task/2164}]
+\begin{problem}[\href{https://cses.fi/problemset/task/2164}{CSES{\tt/}Josephus queries}]
     Consider a game where there are $n\in\mathbb{N}^\star$ children, numbered $1,2,\ldots,n$, in a circle. During the game, every 2nd child is removed from circle, until there are no children left. Task: process $q$ queries of the form: ``when there are $n$ children, who is the $k$th child that will be removed?''
     \begin{itemize}
         \item {\sf Input.} The 1st input line has an integer $q$: the number of queries. After this, there are $q$ lines that describe the queries. Each line has 2 integers $n,k$: the number of children \& the position of the child.
         \item {\sf Output.} Print $q$ integers: the answer for each query.
     \end{itemize}
 \end{problem}
-It seems to me that {\sf Jack97} (nickname: \verb|abortion_grandmaster|) proposed this problem.
 
-Codes:
-\begin{itemize}
-    \item C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C++/gcd_Pascal_triangle.cpp}.
-\end{itemize}
+\begin{note}
+    It seems to me that {\sf Jack97} (nickname: \verb|abortion_grandmaster|) (?) proposed this problem.
+\end{note}
 
-\begin{problem}[CSES{\tt/}Dice Probability, \url{https://cses.fi/problemset/task/1725}]
-    Throw a dice $n\in\mathbb{N}^\star$ times, \& every throw produces an outcome between $1$ \& $6$. What is the probability that the sum of outcomes is between $a,b\in\mathbb{Z}$?
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item VNTA's C++: Josephus Queries:
+        
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+long long solve(long long n, long long k) {
+    if (n == 3 && k == 2) return 1;
+    if (n == 1) return 1;
+    if (k <= n / 2) return (2 * k);
+    long long new_n = n / 2;
+    long long new_k = k - (n + 1) / 2;
+    long long res = solve(new_n, new_k);
+    if (n % 2 == 0) return 2 * res - 1;
+    else return 2 * res + 1;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    int q;
+    cin >> q;
+    long long n, k;
+    while (q--) {
+        cin >> n >> k;
+        cout << solve(n, k) << "\n";
+    }
+}
+        \end{Verbatim}
+        \item NLDK's C++: Josephus Queries:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include<bits/stdc++.h>
+#pragma GCC optimize ("O3")
+#pragma GCC optimize ("unroll-loops")
+#define Sanic_speed ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL);
+#define Ret return 0;
+#define ret return;
+#define all(x) x.begin(), x.end()
+#define el "\n";
+#define elif else if
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define pops pop_back
+#define cYES cout << "YES" << "\n";
+#define cNO cout << "NO" << "\n";
+#define cYes cout << "Yes" << "\n";
+#define cNo cout << "No" << "\n";
+#define frs(i, a, b) for(int i = a; i < b; ++i)
+#define fre(i, a, b) for(int i = a; i <= b; ++i)
+#define wh(t) while (t--)
+#define SORAI int main()
+using namespace std;
+typedef unsigned long long ull;
+
+int Looping(int n, int k) {
+    if (n == 1) {return 1;}
+    if ((n + 1) / k >= 2) {
+        if (k * 2 > n) {return 2 * k % n;}
+        else {return 2 * k;}
+    }
+    int temp = Looping(n / 2, k - (n + 1) / 2);
+    if (n & 1) {return 2 * temp + 1;}
+    else {return 2 * temp - 1;}
+}
+
+void solve() {
+    int n, k;
+    cin >> n >> k;
+    cout << Looping(n, k) << el
+}
+
+SORAI {
+    Sanic_speed
+    int t; cin >> t;
+    wh(t) {solve();}
+}
+        \end{Verbatim}
+        \item NHT's C++: Josephus Queries:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+
+ll fix(ll n, ll k) {
+    if (n == 1) return 1;
+    if (k <= ((n + 1) / 2)) {
+        if (2 * k > n) return (2 * k) % n;
+        else return 2 * k;
+    }        
+    ll tmp = fix(n / 2, k - (n + 1) / 2);
+    if (n % 2 == 1) return 2 * tmp + 1;
+    else return 2 * tmp - 1;
+}
+
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    int q;
+    cin >> q;
+    while (q--) {
+        ll n, k;
+        cin >> n >> k;
+        cout << fix(n, k) << "\n";
+    }
+    return 0;
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1095}{CSES Problem Set{\tt/}exponentiation}]
+    Efficiently calculate values $a^b\mod10^9 + 7$. Assume $0^0 = 1$.
+    \item {\sf Input.} The 1st input line contains an integer $n\in\mathbb{N}^\star$: the number of calculations. After this, there are $n$ lines, each containing $2$ integers $a,b\in\mathbb{N}^\star$.
+    \item {\sf Output.} Print each value $a^b\mod10^9 + 7$.
+    \item {\sf Constraints.} $n\in[2\cdot10^5],a,b\in\overline{0,10^9}$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|exponentiation.inp| & \verb|exponentiation.out| \\
+            \hline
+            3 & 81 \\
+            3 4 & 256 \\
+            2 8 & \\
+            123 123 & 921450052 \\           
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1712}{CSES Problem Set{\tt/}exponentiation II}]
+    Efficiently calculate values $a^{b^c}\mod10^9 + 7$. Assume $0^0 = 1$.
+    \item {\sf Input.} The 1st input line contains an integer $n\in\mathbb{N}^\star$: the number of calculations. After this, there are $n$ lines, each containing $3$ integers $a,b,c\in\mathbb{N}^\star$.
+    \item {\sf Output.} Print each value $a^{b^c}\mod10^9 + 7$.
+    \item {\sf Constraints.} $n\in[2\cdot10^5],a,b,c\in\overline{0,10^9}$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|exponentiation_II.inp| & \verb|exponentiation_II.out| \\
+            \hline
+            3 & 2187 \\
+            3 7 1 & 50625 \\
+            15 2 2 & 763327764 \\
+            3 4 5 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1713}{CSES Problem Set{\tt/}counting divisors}]
+    Given $n\in\mathbb{N}^\star$, report for each integer the number of its divisors, e.g., if $x = 18$, the correct answer is $6$ because its divisors are $1,2,3,6,9,18$.
+    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the number of integers. After this, there are $n$ lines, each containing an integer $x$
+    \item {\sf Output.} For each integer, print the number of its divisors.
+    \item {\sf Constraints.} $n\in[10^5],x\in[10^6]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|counting_divisor.inp| & \verb|counting_divisor.out| \\
+            \hline
+            3 & 5 \\
+            16 & 2 \\
+            17 & 6 \\
+            18 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1081}{CSES Problem Set{\tt/}common divisors}]
+    Given array of $n\in\mathbb{N}^\star$ positive integers. Find $2$ integers s.t. their greatest common divisor is as large as possible.
+    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the size of the array. The 2nd line has $n$ integers $x_1,x_2,\ldots,x_n$: the contents of the array.
+    \item {\sf Output.} Print the maximum greatest common divisor.
+    \item {\sf Constraints.} $n\in\overline{2,2\cdot10^5},x_i\in[10^6]$, $\forall i\in[n]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|common_divisor.inp| & \verb|common_divisor.out| \\
+            \hline
+            5 & 7 \\
+            3 14 15 7 9 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1082}{CSES Problem Set{\tt/}sum of divisors}]
+    Let $\sigma(n)$ denote the sum of divisors of an integer $n\in\mathbb{N}^\star$, e.g., $\sigma(12) = 1 + 2 + 3 + 4 + 6 + 12 = 28$. Calculate the sum $\sum_{i=1}^n \sigma(i)\mod10^9 + 7$.
+    \item {\sf Input.} The only input line has an integer $n\in\mathbb{N}^\star$.
+    \item {\sf Output.} Print $\sum_{i=1}^n \sigma(i)\mod10^9 + 7$.
+    \item {\sf Constraints.} $n\in[10^{12}]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|sum_divisor.inp| & \verb|sum_divisor.out| \\
+            \hline
+            5 & 21 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/2182}{CSES Problem Set{\tt/}divisor analysis}]
+    Given an integer, find the number, sum, \& product of its divisors, e.g., consider the number $12$:
     \begin{itemize}
-        \item {\sf Input.} The only input line contains 3 integers $n,a,b\in\mathbb{N}^\star$.
+        \item the number of divisors is $6$ (they are $1,2,3,4,6,12$)
+        \item the sum of divisors is $1 + 2 + 3 + 4 + 6 + 12 = 28$
+        \item the product of divisors is $1\cdot2\cdot3\cdot4\cdot6\cdot12 = 1728$.
+    \end{itemize}
+    Since the input number may be large, it is given as a prime factorization.
+    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the number of parts in the prime factorization. After this, there are $n$ lines that describe the factorization. Each line has $2$ integers $x,k\in\mathbb{N}^\star$ where $x$ is a prime \& $k$ is its power.
+    \item {\sf Output.} Print $3$ integers modulo $10^9 + 7$: the number, sum, \& product of the divisors.
+    \item {\sf Constraints.} $n\in[10^5],x\in\overline{2,10^6},k\in[10^9]$, each $x$ is a distinct prime.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|divisor_analysis.inp| & \verb|divisor_analysis.out| \\
+            \hline
+            2 & 6 28 1728 \\
+            2 2 & \\
+            3 1 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/2185}{CSES Problem Set{\tt/}prime multiples}]
+    Given $k\in\mathbb{N}^\star$ distinct prime numbers $a_1,a_2,\ldots,a_k$ \& an integer $n\in\mathbb{N}^\star$. Calculate how many of the 1st $n$ positive integers are divisible by at least $1$ of the given prime numbers.
+    \item {\sf Input.} The 1st input line has $2$ integers $n,k\in\mathbb{N}^\star$. The 2nd line has $k$ prime numbers $a_1,a_2,\ldots,a_k$.
+    \item {\sf Output.} Print $1$ integer: the number integers $\in[n]$ that are divisible by at least $1$ of the prime numbers.
+    \item {\sf Constraints.} $n\in[10^{18}],k\in[20],a_i\in\overline{2,n}$, $\forall i\in[n]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|prime_multiple.inp| & \verb|prime_multiple.out| \\
+            \hline
+            20 2 & 12 \\
+            2 5 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \item {\sf Explanation.}: The $12$ numbers are $2,4,5,6,8,10,12,14,15,16,18,20$.
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/2417}{CSES Problem Set{\tt/}couting coprime pairs}]
+    Given a list of $n\in\mathbb{N}^\star$ positive integers, count the number of pairs of integers that are coprime (i.e., their greatest common divisor is $1$).
+    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the number of elements. The next line has $n$ integers $x_1,x_2,\ldots,x_n\in\mathbb{N}^\star$: the contents of the list.
+    \item {\sf Output.} Print $1$ integer: the answer for the task.
+    \item {\sf Constraints.} $n\in[10^5],x_i\in[10^6]$, $\forall i\in[n]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|couting_coprime_pair.inp| & \verb|couting_coprime_pair.out| \\
+            \hline
+            8 & 19 \\
+            5 4 20 1 16 17 5 15 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/3396}{CSES Problem Set{\tt/}next prime}]
+    Given a positive integer $n\in\mathbb{N}^\star$, find the next prime number after it.
+    \item {\sf Input.} The 1st input line has an integer $t\in\mathbb{N}^\star$: the number of tests. After that, each line has a positive integer$n\in\mathbb{N}^\star$. 
+    \item {\sf Output.} For each test, print the next prime after $n$.
+    \item {\sf Constraints.} $t\in[20],n\in[10^{12}]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|next_prime.inp| & \verb|next_prime.out| \\
+            \hline
+            5 & 2 \\
+            1 & 3 \\
+            2 & 5 \\
+            3 & 43 \\
+            42 & 1361 \\
+            1337 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1079}{CSES Problem Set{\tt/}binomial coefficients}]
+    Calculate $n\in\mathbb{N}^\star$ binomial coefficients modulo $10^9 + 7$. A binomial coefficient $\binom{a}{b}$ can be calculated using the formula $\frac{a!}{b!(b - a)!}$. We assume that $a,b\in\mathbb{N},0\le b\le a$.
+    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the number of calculations. After this, there are $n$ lines, each of which contains two integers $a,b\in\mathbb{N}$.
+    \item {\sf Output.} Print each binomial coefficient modulo $10^9 + 7$.
+    \item {\sf Constraints.} $n\in[10^5],0\le b\le a\le10^6$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|binomial_coefficient.inp| & \verb|binomial_coefficient.out| \\
+            \hline
+            3 & 10 \\
+            5 3 & 8 \\
+            8 1 & \\
+            9 5 & 126 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1715}{CSES Problem Set{\tt/}create strings II}]
+    Given a string, calculate the number of different strings that can be created using its characters.
+    \item {\sf Input.} The only input line has a string of length $n,m\in\mathbb{N}^\star$. Each character is between {\tt a--z} .
+    \item {\sf Output.} Print the number of different strings modulo $10^9 + 7$.
+    \item {\sf Constraints.} $n\in[10^6]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|create_string_II.inp| & \verb|create_string_II.out| \\
+            \hline
+            aabac & 20 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1716}{CSES Problem Set{\tt/}distributing apples}]
+    There are $n\in\mathbb{N}^\star$ children \& $m\in\mathbb{N}^\star$ apples that will be distributed to them. Count the number of ways this can be done. E.g., if $n = 3,m = 2$, there are $6$ ways: $[0,0,2],[0,1,1],[0,2,0],[1,0,1],[1,1,0],[2,0,0]$.
+    \item {\sf Input.} The only input line has $2$ integers $n,m\in\mathbb{N}^\star$.
+    \item {\sf Output.} Print the number of ways modulo $10^9 + 7$.
+    \item {\sf Constraints.} $m,n\in[10^6]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|distributing_apple.inp| & \verb|distributing_apple.out| \\
+            \hline
+            3 2 & 6 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1717}{CSES Problem Set{\tt/}Christmas party}]
+    There are $n\in\mathbb{N}^\star$ children at a Christmas party, \& each of them has brought a gift. The idea is that everybody will get a gift brought by someone else. In how many ways can the gifts be distributed?    
+    \item {\sf Input.} The only input line has an integer $n\in\mathbb{N}^\star$: the number of children.
+    \item {\sf Output.} Print the number of ways modulo $10^9 + 7$.
+    \item {\sf Constraints.} $n\in[10^6]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|Christmas_party.inp| & \verb|Christmas_party.out| \\
+            \hline
+            4 & 9 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/3397}{CSES Problem Set{\tt/}permutation order}]
+    Let $p(n,k)$ denote the $k$th permutation (in lexicographical order) of $[n]$, e.g., $p(4,1) = [1,2,3,4],p(4,2) = [1,2,4,3]$. Process $2$ types of tests:
+    \begin{enumerate}
+        \item Given $n,k$, find $p(n,k)$
+        \item Given $n,p(n,k)$, find $k$.
+    \end{enumerate}
+    \item {\sf Input.} The 1st input line has an integer $t\in\mathbb{N}^\star$: the number of tests. Each test is either ``$1$ $n$ $k$'' or ``$2$ $n$ $p(n,k)$''.
+    \item {\sf Output.} For each test, print the answer according to the example.
+    \item {\sf Constraints.} $t\in[10^3],n\in[20],k\in[n!]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|permutation_order.inp| & \verb|permutation_order.out| \\
+            \hline
+            6 & 1 2 3 4 \\
+            1 4 1 & 1 2 4 3 \\
+            1 4 2 & 1 \\
+            2 4 1 2 3 4 & 2 \\
+            2 4 1 2 4 3 & 2 4 5 3 1 \\
+            1 5 42 & 42 \\
+            2 5 2 4 5 3 1 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/3398}{CSES Problem Set{\tt/}permutation rounds}]
+    There is a sorted array $[1,2,\ldots,n]$ \& a permutation $p_1,p_2,\ldots,p_n$. On each round, all elements move according to the permutation: the element at position $i$ moves to position $p_i$. After how many rounds is the array sorted again for the 1st time?
+    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$. The next line contains $n$ integers $p_1,p_2,\ldots,p_n$.
+    \item {\sf Output.} Print the number of rounds modulo $10^9 + 7$.
+    \item {\sf Constraints.} $n\in[2\cdot10^5]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|permutation_round.inp| & \verb|permutation_round.out| \\
+            \hline
+            8 & 4 \\
+            5 3 2 6 4 1 8 7 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/2064}{CSES Problem Set{\tt/}bracket sequences I}]
+    Calculate the number of valid bracket sequences of length $n\in\mathbb{N}^\star$, e.g, when $n = 6$, there are $5$ sequences: $()()(),()(()),(())(),((())),(()())$.
+    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$.
+    \item {\sf Output.} Print the number of rounds modulo $10^9 + 7$.
+    \item {\sf Constraints.} $n\in[10^6]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|bracket_sequence_I.inp| & \verb|bracket_sequence_I.out| \\
+            \hline
+            6 & 5 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/2187}{CSES Problem Set{\tt/}bracket sequences II}]
+    Calculate the number of valid bracket sequences of length $n\in\mathbb{N}^\star$ when a {\rm prefix}of the sequence is given. 
+    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$. The 2nd line has a string of $k\in\mathbb{N}^\star$ characters: the prefix of the sequence.
+    \item {\sf Output.} Print the number of rounds modulo $10^9 + 7$.
+    \item {\sf Constraints.} $1\le k\le n\le10^6$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|bracket_sequence_II.inp| & \verb|bracket_sequence_II.out| \\
+            \hline
+            6 & 2 \\
+            (() & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \item {\sf Explanation.} There are $2$  possible sequences: $(())(),(()())$.
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/2209}{CSES Problem Set{\tt/}counting necklaces}]
+    Count the number of different necklaces that consist of $n\in\mathbb{N}^\star$ pearls \& each pearl has $m\in\mathbb{N}^\star$ possible colors. $2$ necklaces are considered to be different if it is not possible to rotate $1$ of them so that they look the same.
+    \item {\sf Input.} The only input line has $2$ integers $n,m\in\mathbb{N}^\star$: the number of pearls \& colors.
+    \item {\sf Output.} Print $1$ integer: the number of different necklaces modulo $10^9 + 7$.
+    \item {\sf Constraints.} $m,n\in[10^6]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|count_necklace.inp| & \verb|count_necklace.out| \\
+            \hline
+            4 3 & 24 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/2210}{CSES Problem Set{\tt/}couting grids}]
+    Count the number of different $n\times n$ grids whose each square is black or white. $2$ grids are considered to be different if it is not possible to rotate one of them so that they look the same.
+    \item {\sf Input.} The only input line has an integer $n\in\mathbb{N}^\star$: the size of the grid.
+    \item {\sf Output.} Print $1$ integer: the number of grids modulo $10^9 + 7$.
+    \item {\sf Constraints.} $n\in[10^9]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|count_grid.inp| & \verb|count_grid.out| \\
+            \hline
+            4 & 16456 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[CSES Problem Set{\tt/}Fibonacci numbers]
+    The Fibonacci numbers can be defined as follows: $F_0 = F_1 = 1$, $F_n = F_{n - 1} + F_{n - 2}$. Calculate the value of $F_n$ for a given $n\in\mathbb{N}^\star$.
+    \item {\sf Input.} The only input line has an integer $n\in\mathbb{N}^\star$.
+    \item {\sf Output.} Print the value of $F_n\mod10^9 + 7$.
+    \item {\sf Constraints.} $n\in\overline{0,10^{18}}$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|Fibonacci_number.inp| & \verb|Fibonacci_number.out| \\
+            \hline
+            10 & 55 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[CSES Problem Set{\tt/}throwing dice]
+    Calculate the number of ways to get a sum $n\in\mathbb{N}^\star$ by throwing dice. Each throw yields an integer $\in[6]$, e.g., if $n = 10$, some possible ways are $3 + 3 + 4,1 + 4 + 1 + 4,1 + 1 + 6 + 1 + 1$.
+    \item {\sf Input.} The only input line has an integer $n\in\mathbb{N}^\star$.
+    \item {\sf Output.} Print the value of $F_n\mod10^9 + 7$.
+    \item {\sf Constraints.} $n\in[10^{18}]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|throw_dice.inp| & \verb|throw_dice.out| \\
+            \hline
+            8 & 125 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1723}{CSES Problem Set{\tt/}graph paths I}]
+    Consider a directed graph that has $n\in\mathbb{N}^\star$ nodes \& $m\in\mathbb{N}^\star$ edges. Count the number of paths from node $1$ to node $n$ with exactly $k$ edges.
+    \item {\sf Input.} The 1st input line has $3$ integers $n,m,k\in\mathbb{N}^\star$: the number of nodes \& edges, \& the length of the path. The nodes are numbered $1,2,\ldots,n$. Then, there are $m$ lines describing the edges. Each line contains $2$ integers $a,b\in\mathbb{N}^\star$: there is an edge from node $a$ to node $b$.
+    \item {\sf Output.} Print the value of $F_n\mod10^9 + 7$.
+    \item {\sf Constraints.} $n\in[100],m\in[n(n - 1)],k\in[10^9],1\le a\le b\le n$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|graph_path_I.inp| & \verb|graph_path_I.out| \\
+            \hline
+            3 4 8 & 2 \\
+            1 2 & \\
+            2 3 & \\
+            3 1 & \\
+            3 2 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \item {\sf Explanation.} The paths are $1\to2\to3\to1\to2\to3\to1\to2\to3$ \& $1\to2\to3\to2\to3\to2\to3\to2\to3$.
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1724}{CSES Problem Set{\tt/}graph paths II}]
+    Consider a directed weighted graph having $n\in\mathbb{N}^\star$ nodes \& $m\in\mathbb{N}^\star$ edges. Calculate the minimum path length from node $1$ to node $n$ with exactly $k\in\mathbb{N}^\star$ edges.
+    \item {\sf Input.} The 1st input line has $3$ integers $n,m,k\in\mathbb{N}^\star$: the number of nodes \& edges, \& the length of the path. The nodes are numbered $1,2,\ldots,n$. Then, there are $m$ lines describing the edges. Each line contains $3$ integers $a,b,c\in\mathbb{N}^\star$: there is an edge from node $a$ to node $b$ with weight $c$.
+    \item {\sf Output.} Print the minimum path length. If there are no such paths, print $-1$.
+    \item {\sf Constraints.} $n\in[100],m\in[n(n - 1)],c,k\in[10^9],a,b\in[n]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|graph_path_II.inp| & \verb|graph_path_II.out| \\
+            \hline
+            3 4 8 & 27 \\
+            1 2 5 & \\
+            2 3 4 & \\
+            3 1 1 & \\
+            3 2 2 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/3154}{CSES Problem Set{\tt/}system of linear equations}]
+    Given $n(m + 1)$ coefficients $a_{ij},b_i$ which form the following $n\in\mathbb{N}^\star$ linear equations:
+    \begin{equation*}
+        \left\{\begin{split}
+            a_{11}x_1 + a_{12}x_2 + \cdots + a_{1m}x_m &= b_1\mod10^9 + 7,\\
+            a_{21}x_1 + a_{22}x_2 + \cdots + a_{2m}x_m &= b_2\mod10^9 + 7,\\
+            &\ldots\\
+            a_{n1}x_1 + a_{n2}x_2 + \cdots + a_{nm}x_m &= b_n\mod10^9 + 7.
+        \end{split}\right.
+    \end{equation*}
+    Find any $m$ integers $x_1,x_2,\ldots,x_m$ that satisfy the given equations.
+    \item {\sf Input.} The 1st input line has $2$ integers $n,m\in\mathbb{N}^\star$: the number of  equations \& variables. The next $n$ lines each have $m + 1$ integers $a_{i1},a_{i2},\ldots,a_{im},b_i$: the coefficients of the $i$th equation.
+    \item {\sf Output.} Print $m$ integers $x_1,x_2,\ldots,x_m$: the values of the variables that satisfy the equations. The values must also satisfy $0\le x_i< 10^9 + 7$. You can print any valid solution. If no solution exists print only $-1$.
+    \item {\sf Constraints.} $m,n\in[500],a_{ij},b_i\in\overline{0,10^9 + 6}$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|system_linear_eqn.inp| & \verb|system_linear_eqn.out| \\
+            \hline
+            3 3 & 2 1000000006 3
+             \\
+            2 0 1 7 & \\
+            1 2 0 0 & \\
+            1 3 1 2 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/3355}{CSES Problem Set{\tt/}sum of 4 squares}]
+        A well known result in number theory is that every non-negative integer can be represented as the sum of four squares of non-negative integers. Given $n\in\mathbb{N}$. Find $4$ nonnegative integers $a,b,c,d\in\mathbb{N}$ s.t. $n = a^2 + b^2 + c^2 + d^2$.
+        \item {\sf Input.} The 1st input line has an integer $t\in\mathbb{N}^\star$: the number of test cases. Each of the next $t$ lines has an integer $n$.
+        \item {\sf Output.} For each test case, print $4$ nonnegative integers $a,b,c,d\in\mathbb{N}$ satisfying $n = a^2 + b^2 + c^2 + d^2$.
+        \item {\sf Constraints.} $t\in[10^3],n\in\overline{0,10^7}$, the sum of all $n$ is at most $10^7$.
+        \item {\sf Sample.}
+        \begin{table}[H]
+            \centering
+            \begin{tabular}{|l|l|}
+                \hline
+                \verb|sum_4_square.inp| & \verb|sum_4_square.out| \\
+                \hline
+                3 & 2 1 0 0 \\
+                5 & 1 2 3 4 \\
+                30 & 314 159 265 358 \\
+                322266 & \\
+                \hline
+            \end{tabular}
+        \end{table}
+    \end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/3406}{CSES Problem Set{\tt/}triangle number sums}]
+    A triangle number is a positive integer of the form $\sum_{i=1}^n i = \frac{n(n + 1)}{2}$. The 1st  triangle numbers are $1,3,6,10,15$. Every positive integer can be represented as a sum of triangle numbers, e.g., $42 = 21 + 21$ \& $1337 = 1326 + 10 + 1$. Given $n\in\mathbb{N}$, determine the smallest number of triangle numbers that sum to $n$.
+    \item {\sf Input.} The 1st input line has an integer $t\in\mathbb{N}^\star$: the number of test cases. After that, each line has a positive integer $n\in\mathbb{N}$.
+    \item {\sf Output.} For each test, print the smallest number of triangle numbers.
+    \item {\sf Constraints.} $t\in[100],n\in[10^{12}]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|triangle_number_sum.inp| & \verb|triangle_number_sum.out| \\
+            \hline
+            5 & 1 \\
+            1 & 2 \\
+            2 & 1 \\
+            3 & 2 \\
+            42 & 3 \\
+            1337 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1725}{CSES{\tt/}Dice Probability}]
+    You throw a dice $n\in\mathbb{N}^\star$ times, \& every throw produces an outcome between $1$ \& $6$. What is the probability that the sum of outcomes is between $a,b\in\mathbb{N}^\star$?
+    \begin{itemize}
+        \item {\sf Input.} The only input line contains $3$ integers $n,a,b\in\mathbb{N}^\star$.
         \item {\sf Output.} Print probability rounded to 6 decimal places (rounding half to even).
-        \item {\sf Constraints.} $1\le n\le100,1\le a\le b\le6n$.
-        \item {\sf Example.} Input: {\tt2 9 10}. Output: {\tt0.194444}.
+        \item {\sf Constraints.} $n\in[100],1\le a\le b\le6n$.
+        \item {\sf Sample.}
+        \begin{table}[H]
+            \centering
+            \begin{tabular}{|l|l|}
+                \hline
+                \verb|dice_probability.inp| & \verb|dice_probability.out| \\
+                \hline
+                2 9 10 & 0.194444 \\
+                \hline
+            \end{tabular}
+        \end{table}
     \end{itemize}
 \end{problem}
 {\it Phân tích.} Gọi $n$ outcomes là $a_1,\ldots,a_n\in\{1,\ldots,6\}$. Sum of outcomes: $S\coloneqq\sum_{i=1}^n a_i\in\{n,\ldots,6n\}$.
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1726}{CSES Problem Set{\tt/}moving robots}]
+    Each square of an $8\times8$ chessboard has a robot. Each robot independently moves $k\in\mathbb{N}^\star$, \& there can be many robots on the same square. On each turn, a robot moves one step left, right, up or down, but not outside the board. It randomly chooses a direction among those where it can move. Calculate the expected number of empty squares after $k$ turns.
+    \item {\sf Input.} The only input line has an integer $k\in\mathbb{N}^\star$. 
+    \item {\sf Output.} Print the expected number of empty squares rounded to six decimal places (rounding half to even).
+    \item {\sf Constraints.} $k\in[100]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|moving_robot.inp| & \verb|moving_robot.out| \\
+            \hline
+            10 & 23.120740 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1727}{CSES Problem Set{\tt/}candy lottery}]
+    There are $n\in\mathbb{N}^\star$ children, \& each of them independently gets a random integer number of candies $\in[k]$. What is the expected maximum number of candies a child gets?
+    \item {\sf Input.} The only input line has $2$ integers $n,k\in\mathbb{N}^\star$.
+    \item {\sf Output.} Print the expected number rounded to six decimal places (rounding half to even).
+    \item {\sf Constraints.} $n,k\in[100]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|candy_lottery.inp| & \verb|candy_lottery.out| \\
+            \hline
+            2 3 & 2.444444 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1728}{CSES Problem Set{\tt/}inversion probability}]
+    An array has $n\in\mathbb{N}^\star$ integers $x_1,x_2,\ldots,x_n$, \& each of them has been randomly chosen between $1$ \& $r_i$. An inversion is a pair $(a,b)$ where $a < b$ \& $x_a > x_b$. What is the expected number of inversions in the array?
+    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the size of the array. The 2nd line contains $n$ integers $r_1,r_2,\ldots,r_n$: the range of possible values for each array position.
+    \item {\sf Output.} Print the expected number of inversions rounded to six decimal places (rounding half to even).
+    \item {\sf Constraints.} $n,r_i\in[100],m\in[100]$, $\forall i\in[n]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|inversion_probability.inp| & \verb|inversion_probability.out| \\
+            \hline
+            3 & 1.057143 \\
+            5 2 7 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1729}{CSES Problem Set{\tt/}stick game}]
+    Consider a game where $2$ players remove sticks from a heap. The players move alternately, \& the player who removes the last stick wins the game. A set $P = \{p_1,p_2,\ldots,p_k\}$ determines the allowed moves, e.g., if $P = \{1,3,4\}$, a player may remove $1,3$, or $4$ sticks. Find out for each number of sticks $1,2,\ldots,n$ if the 1st player has a winning or losing position.
+    \item {\sf Input.} The 1st input line has $2$ integers $n,k\in\mathbb{N}^\star$: the number of sticks \& moves. The next line has $k$ integers $p_1,p_2,\ldots,p_k$ that describe the allowed moves. All integers are distinct, \& 1 of them is $1$.
+    \item {\sf Output.} Print a string containing $n$ characters: {\tt W} means a winning position, \& {\tt L} means a losing position.
+    \item {\sf Constraints.} $n\in[10^6],k\in[100],p_i\in[n]$, $\forall i\in[n]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|stick_game.inp| & \verb|stick_game.out| \\
+            \hline
+            10 3 & WLWWWWLWLW \\
+            1 3 4 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[CSES Problem Set{\tt/}nim game I]
+    There are $n\in\mathbb{N}^\star$ heaps of sticks \& $2$ players who move alternately. On each move, a player chooses a nonempty heap \& removes any number of sticks. The player who removes the last stick wins the game. Find out who wins if both players play optimally.
+    \item {\sf Input.} The 1st input line has an integer $t\in\mathbb{N}^\star$: the number of tests. After this, $t$ test cases are described: The 1st line contains an integer $n\in\mathbb{N}^\star$: the number of heaps. The next line has $n$ integers $x_1,x_2,\ldots,x_n$: the number of sticks in each heap.
+    \item {\sf Output.} For each test case, print {\tt first} if the 1st player wins the game \& {\tt second} if the 2nd player wins the game.
+    \item {\sf Constraints.} $t,n\in[2\cdot10^5],x_i\in[10^9]$, $\forall i\in[n]$, the sum of all $n$ is at most $2\cdot10^5$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|nim_game_I.inp| & \verb|nim_game_I.out| \\
+            \hline
+            3 & first \\
+            4 & first \\
+            5 7 2 5 & second \\
+            2 & \\
+            4 1 & \\
+            3 & \\
+            3 5 6 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1098}{CSES Problem Set{\tt/}nim game II}]
+    There are $n\in\mathbb{N}^\star$ heaps of sticks \& $2$ players who move alternately. On each move, a player chooses a nonempty heap \& removes $1,2$, or $3$ sticks. The player who removes the last stick wins the game. Find out who wins if both players play optimally.
+    \item {\sf Input.} The 1st input line has an integer $t\in\mathbb{N}^\star$: the number of tests. After this, $t$ test cases are described: The 1st line contains an integer $n\in\mathbb{N}^\star$: the number of heaps. The next line has $n$ integers $x_1,x_2,\ldots,x_n$: the number of sticks in each heap.
+    \item {\sf Output.} For each test case, print {\tt first} if the 1st player wins the game \& {\tt second} if the 2nd player wins the game.
+    \item {\sf Constraints.} $t,n\in[2\cdot10^5],x_i\in[10^9]$, $\forall i\in[n]$, the sum of all $n$ is at most $2\cdot10^5$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|nim_game_II.inp| & \verb|nim_game_II.out| \\
+            \hline
+            3 & first \\
+            4 & first \\
+            5 7 2 5 & second \\
+            2 & \\
+            4 1 & \\
+            3 & \\
+            4 4 4 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1099}{CSES Problem Set{\tt/}stair game}]
+    There is a staircase consisting of $n\in\mathbb{N}^\star$ stairs, numbered $1,2,\ldots,n$. Initially, each stair has some number of balls. There are $2$ players who move alternately. On each move, a player chooses a stair $k\ne1$ \& it has at least $1$ ball. Then,, the player moves any number of balls from stair $k$ to stair $k - 1$.  The player who moves last wins the game. Find out who wins the game when both players play optimally. Note that if there are no possible moves at all, the 2nd player wins.
+    \item {\sf Input.} The 1st input line has an integer $t\in\mathbb{N}^\star$: the number of tests. After this, $t$ test cases are described: The 1st line contains an integer $n\in\mathbb{N}^\star$: the number of stairs. The next line has $n$ integers $p_1,p_2,\ldots,p_n$: the initial number of balls on each stair.
+    \item {\sf Output.} For each test case, print {\tt first} if the 1st player wins the game \& {\tt second} if the 2nd player wins the game.
+    \item {\sf Constraints.} $t,n\in[2\cdot10^5],p_i\in[10^9]$, $\forall i\in[n]$, the sum of all $n$ is at most $2\cdot10^5$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|stair_game.inp| & \verb|stair_game.out| \\
+            \hline
+            3 & first \\
+            3 & second \\
+            0 2 1 & first \\
+            4 & \\
+            1 1 1 1 & \\
+            2 & \\
+            5 3 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/2207}{CSES Problem Set{\tt/}Grundy's game}]
+    There is a heap of $n\in\mathbb{N}^\star$ coins \& $2$ players who move alternately. On each move, a player chooses a heap and divides into $2$ nonempty heaps that have a different number of coins. The player who makes the last move wins the game. Find out who wins if both players play optimally.
+    \item {\sf Input.} The 1st input line has an integer $t\in\mathbb{N}^\star$: the number of tests. After this, there are $t$ lines that describes the tests. Each line has an integer $n\in\mathbb{N}^\star$: the number of coins in the initial heap.
+    \item {\sf Output.} For each test case, print {\tt first} if the 1st player wins the game \& {\tt second} if the 2nd player wins the game.
+    \item {\sf Constraints.} $t\in[10^5],n\in[10^6]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|Grundy_game.inp| & \verb|Grundy_game.out| \\
+            \hline
+            3 & first \\
+            6 & second \\
+            7 & first \\
+            8 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/2208}{CSES Problem Set{\tt/}another game}]
+    There is a heap of $n\in\mathbb{N}^\star$ coins \& $2$ players who move alternately. On each move, a player selects some of the nonempty heaps \& removes $1$ coin from each heap. The player who removes the last coin wins the game. Fnd out who wins if both players play optimally.
+    \item {\sf Input.} The 1st input line has an integer $t\in\mathbb{N}^\star$: the number of tests. After this, $t$ test cases are described. The 1st line contains an integer $n\in\mathbb{N}^\star$: the number of heaps. The next line has $n$ integers $x_1,x_2,\ldots,x_n\in\mathbb{N}^\star$: the number of coins in each heap.
+    \item {\sf Output.} For each test case, print {\tt first} if the 1st player wins the game \& {\tt second} if the 2nd player wins the game.
+    \item {\sf Constraints.} $t,n\in[2\cdot10^5],x_i\in[10^9]$, $\forall i\in[n]$, the sum of all $n$ is at most $2\cdot10^5$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|another_game.inp| & \verb|another_game.out| \\
+            \hline
+            3 & first \\
+            3 & second \\
+            1 2 3 & first \\
+            2 & \\
+            2 2 & \\
+            4 & \\
+            5 5 4 5 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
 
 %------------------------------------------------------------------------------%
 

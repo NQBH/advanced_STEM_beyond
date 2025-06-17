@@ -2581,124 +2581,9 @@ int main() {
 %------------------------------------------------------------------------------%
 
 \chapter{Basic Graph Theory -- Lý Thuyết Đồ Thị Cơ Bản}
+\minitoc
 
 %------------------------------------------------------------------------------%
-
-\section{Preliminaries}
-
-\subsection{Search problems -- Bài toán tìm kiếm}
-\textbf{\textsf{Resources -- Tài nguyên.}}
-\begin{enumerate}
-	\item \href{https://en.wikipedia.org/wiki/Search_problem}{Wikipedia{\tt/}search problem}.
-\end{enumerate}
-In \href{https://en.wikipedia.org/wiki/Computational_complexity_theory}{computational complexity theory} \& \href{https://en.wikipedia.org/wiki/Computability_theory}{computability theory}, a {\it search problem} is a \href{https://en.wikipedia.org/wiki/Computational_problem}{computational problem} of finding an {\it admissible} answer for a given input value, provided that such an answer exists. In fact, a search problem is specified by a \href{https://en.wikipedia.org/wiki/Binary_relation}{binary relation} $R$ where $xRy$ iff ``$y$ is an admissible answer given $x$''. Search problems frequently occur in graph theory \& \href{https://en.wikipedia.org/wiki/Combinatorial_optimization}{combinatorial optimization}, e.g. searching for \href{https://en.wikipedia.org/wiki/Matching_(graph_theory)}{matchings}, optional \href{https://en.wikipedia.org/wiki/Clique_(graph_theory)}{cliques}, \& \href{https://en.wikipedia.org/wiki/Independent_set_(graph_theory)}{stable sets} in a given undirected graph.
-
--- Trong lý thuyết độ phức tạp tính toán \& lý thuyết khả năng tính toán, 1 bài toán tìm kiếm là 1 bài toán tính toán tìm 1 câu trả lời có thể chấp nhận được cho 1 giá trị đầu vào nhất định, với điều kiện là câu trả lời như vậy tồn tại. Trên thực tế, 1 bài toán tìm kiếm được chỉ định bởi 1 quan hệ nhị phân R trong đó xRy nếu \& chỉ nếu ``$y$ là 1 câu trả lời có thể chấp nhận được cho $x$''. Các bài toán tìm kiếm thường xảy ra trong lý thuyết đồ thị \& tối ưu hóa tổ hợp, ví dụ như tìm kiếm các phép khớp, các nhóm tùy chọn \& các tập ổn định trong 1 đồ thị vô hướng nhất định.
-
-An algorithm is said to solve a search problem if, for every input value $x$, it returns an admissible answer $y$ for $x$ when such an answer exists; otherwise, it returns any appropriate output, e.g., ``not found'' for $x$ with no such answer.
-
-\begin{definition}[Search problem]
-	If $R$ is a binary relation s.t. ${\rm field}(R)\subseteq\Gamma^+$ \& $T$ is a \href{https://en.wikipedia.org/wiki/Turing_machine}{Turing machine}, then $T$ calculates $f$ if:
-	\begin{itemize}
-		\item if $x$ is s.t. there is some $y$ s.t. $R(x,y)$ then $T$ accepts $x$ with output $z$ s.t. $R(x,z)$ (there may be multiple $y$, \& $T$ need only find 1 of them).
-		\item If $x$ is s.t. there is no $y$ s.t. $R(x,y)$ then $T$ rejects $x$.
-	\end{itemize}
-\end{definition}
-The graph of a \href{https://en.wikipedia.org/wiki/Partial_function}{partial function} is a binary relation, \& if $T$ calculates a partial function then there is at most 1 possible output.
-
-A $R$ can be viewed as a {\it search problem}, \& a Turing machine which calculates $R$ is also said to solve it. Every search problem has a corresponding \href{https://en.wikipedia.org/wiki/Decision_problem}{decision problem}, namely $L(R) = \{x;\exists y,\ R(x,y)\}$. This definition can be generalized to $n$-ary relations by any suitable encoding which allows multiple strings to be compressed into 1 string (e.g., by listing them consecutively with a \href{https://en.wikipedia.org/wiki/Delimiter}{delimiter}).
-
-%------------------------------------------------------------------------------%
-
-\subsection{Search algorithms -- Các thuật toán tìm kiếm}
-\textbf{\textsf{Resources -- Tài nguyên.}}
-\begin{enumerate}
-	\item \href{https://en.wikipedia.org/wiki/Search_algorithm}{Wikipedia{\tt/}search algorithm}.
-\end{enumerate}
-In CS, a {\it search algorithm} is an algorithm designed to solve a \href{https://en.wikipedia.org/wiki/Search_problem}{search problem}. Search algorithms work to retrieve information stored within particular \href{https://en.wikipedia.org/wiki/Data_structure}{data structure}, or calculated in the \href{https://en.wikipedia.org/wiki/Feasible_region}{search space{\tt/}feasible region} of a problem domain, with \href{https://en.wikipedia.org/wiki/Continuous_or_discrete_variable}{either discrete or continuous values}.
-
--- Trong khoa học máy tính, thuật toán tìm kiếm là thuật toán được thiết kế để giải quyết vấn đề tìm kiếm. Thuật toán tìm kiếm hoạt động để truy xuất thông tin được lưu trữ trong cấu trúc dữ liệu cụ thể hoặc được tính toán trong không gian tìm kiếm của miền vấn đề, với các giá trị rời rạc hoặc liên tục.
-
-Although \href{https://en.wikipedia.org/wiki/Search_engine_(computing)}{search engines} use search algorithms, they belong to the study of \href{https://en.wikipedia.org/wiki/Information_retrieval}{information retrieval}, not algorithmics.
-
--- Mặc dù công cụ tìm kiếm sử dụng thuật toán tìm kiếm nhưng chúng thuộc về lĩnh vực nghiên cứu về truy xuất thông tin chứ không phải thuật toán.
-
-The appropriate search algorithm to use often depends on the data structure being searched, \& may also include prior knowledge about the data. Search algorithms can be made faster or more efficient by specially constructed database structures, e.g. \href{https://en.wikipedia.org/wiki/Search_tree}{search trees}, \href{https://en.wikipedia.org/wiki/Hash_map}{hash maps}, \& \href{https://en.wikipedia.org/wiki/Database_index}{database indexes}.
-
--- Thuật toán tìm kiếm phù hợp để sử dụng thường phụ thuộc vào cấu trúc dữ liệu đang được tìm kiếm \& cũng có thể bao gồm kiến thức trước đó về dữ liệu. Thuật toán tìm kiếm có thể được thực hiện nhanh hơn hoặc hiệu quả hơn bằng các cấu trúc cơ sở dữ liệu được xây dựng đặc biệt, chẳng hạn như cây tìm kiếm, bản đồ băm \& chỉ mục cơ sở dữ liệu.
-
-Search algorithms can be classified based on their mechanism of searching into 3 types of algorithms: linear, binary, \& hashing. \href{https://en.wikipedia.org/wiki/Linear_search}{Linear search} algorithms check every record for the one associated with a target key in a linear fashion. \href{https://en.wikipedia.org/wiki/Binary_search_algorithm}{Binary, or half-interval, searches} repeatedly target the center of the search structure \& divide the search space in half. Comparison search algorithms improve on linear searching by successively eliminating records based on comparisons of the keys until the target record is found, \& can be applied on data structures with a defined order. Digital search algorithms work based on the properties of digits in data structures by using numerical keys. Finally, \href{https://en.wikipedia.org/wiki/Hash_table}{hashing} directly maps keys to records based on a \href{https://en.wikipedia.org/wiki/Hash_function}{hash function}.
-
--- Thuật toán tìm kiếm có thể được phân loại dựa trên cơ chế tìm kiếm của chúng thành ba loại thuật toán: tuyến tính, nhị phân, \& băm. Thuật toán tìm kiếm tuyến tính kiểm tra mọi bản ghi để tìm bản ghi được liên kết với khóa mục tiêu theo cách tuyến tính. Tìm kiếm nhị phân hoặc nửa khoảng, liên tục nhắm mục tiêu vào tâm của cấu trúc tìm kiếm \& chia đôi không gian tìm kiếm. Thuật toán tìm kiếm so sánh cải thiện tìm kiếm tuyến tính bằng cách loại bỏ liên tiếp các bản ghi dựa trên các phép so sánh khóa cho đến khi tìm thấy bản ghi mục tiêu \& có thể được áp dụng trên các cấu trúc dữ liệu có thứ tự được xác định. Thuật toán tìm kiếm kỹ thuật số hoạt động dựa trên các thuộc tính của chữ số trong cấu trúc dữ liệu bằng cách sử dụng các khóa số. Cuối cùng, băm trực tiếp ánh xạ khóa thành các bản ghi dựa trên hàm băm.
-
-Algorithms are often evaluated by their \href{https://en.wikipedia.org/wiki/Computational_complexity}{computational complexity}, or maximum theoretical run time. Binary search functions, e.g., have a maximum complexity of $O(\log n)$, or logarithmic time. In simple terms, the maximum number of operations needed to find the search target is a logarithmic function of the size of the search space.
-
--- Thuật toán thường được đánh giá theo độ phức tạp tính toán hoặc thời gian chạy lý thuyết tối đa. E.g., hàm tìm kiếm nhị phân có độ phức tạp tối đa là $O(\log n)$ hoặc thời gian logarith. Nói 1 cách đơn giản, số lượng thao tác tối đa cần thiết để tìm mục tiêu tìm kiếm là hàm logarit của kích thước không gian tìm kiếm.
-
-%------------------------------------------------------------------------------%
-
-\subsubsection{Applications of search algorithms -- Ứng dụng của thuật toán tìm kiếm}
-Specific applications of search algorithms include:
-\begin{itemize}
-	\item Problems in \href{https://en.wikipedia.org/wiki/Combinatorial_optimization}{combinatorial optimization}, e.g.:
-	\begin{itemize}
-		\item The \href{https://en.wikipedia.org/wiki/Vehicle_routing_problem}{vehicle routing problem}, a form of \href{https://en.wikipedia.org/wiki/Shortest_path_problem}{shortest path problem}
-		\item The \href{https://en.wikipedia.org/wiki/Knapsack_problem}{knapsack problem}: Given a set of items, each with a weight \& a value, determine the number of each item to include in a collection so that the total weight is $\le$ a given limit \& the total value is as large as possible.
-		\item The \href{https://en.wikipedia.org/wiki/Nurse_scheduling_problem}{nurse scheduling problem}
-	\end{itemize}
-	\item Problems in \href{https://en.wikipedia.org/wiki/Constraint_satisfaction}{constraint satisfaction}, e.g.:
-	\begin{itemize}
-		\item The \href{https://en.wikipedia.org/wiki/Map_coloring_problem}{map coloring problem}
-		\item Filling in a \href{https://en.wikipedia.org/wiki/Sudoku}{sudoku} or \href{https://en.wikipedia.org/wiki/Crossword_puzzle}{crossword puzzle}
-	\end{itemize}
-	\item In \href{https://en.wikipedia.org/wiki/Game_theory}{game theory} \& especially \href{https://en.wikipedia.org/wiki/Combinatorial_game_theory}{combinatorial game theory}, choosing the best move to make next (e.g. with the \href{https://en.wikipedia.org/wiki/Minmax}{minmax} algorithm)
-	\item Finding a combination or password from the whole set of possibilities
-	\item \href{https://en.wikipedia.org/wiki/Factorization}{Factoring} an integer (an important problem in \href{https://en.wikipedia.org/wiki/Cryptography}{cryptography})
-	\item Search engine optimization (SEO) \& content optimization for web crawlers
-	\item Optimizing an industrial process, e.g. a \href{https://en.wikipedia.org/wiki/Chemical_reaction}{chemical reaction}, by changing the parameters of the process (like temperature, pressure, \& pH)
-	\item Retrieving a record from a \href{https://en.wikipedia.org/wiki/Database}{database}
-	\item Finding the maximum or minimum value in a \href{https://en.wikipedia.org/wiki/List_(abstract_data_type)}{list} or \href{https://en.wikipedia.org/wiki/Array_data_structure}{array}
-	\item Checking to see if a given value is present in a set of values
-\end{itemize}
-
-%------------------------------------------------------------------------------%
-
-\subsubsection{Classes of search algorithms}
-
-\begin{enumerate}
-	\item {\bf For virtual search spaces.} Algorithms for searching virtual spaces are used in the \href{https://en.wikipedia.org/wiki/Constraint_satisfaction_problem}{constraint satisfaction problem}, where the goal is to find a set of value assignments to certain varieties that will satisfy specific mathematical equations \& inequations{\tt/}equalities. They are also used when the goal is to find a variable assignment that will \href{https://en.wikipedia.org/wiki/Discrete_optimization}{maximize or minimize} a certain function of those variables. Algorithms for these problems include the basic \href{https://en.wikipedia.org/wiki/Brute-force_search}{brute-force search} (also called ``na\"ive'' or ``uninformed'' search), \& a variety of \href{https://en.wikipedia.org/wiki/Heuristic_function}{heuristics} that try to exploit partial knowledge about the structure of this space, e.g. linear relaxation, constraint generation, \& \href{https://en.wikipedia.org/wiki/Local_consistency}{constraint propagation}.
-	
-	-- Các thuật toán tìm kiếm không gian ảo được sử dụng trong bài toán thỏa mãn ràng buộc, trong đó mục tiêu là tìm 1 tập hợp các phép gán giá trị cho các biến nhất định sẽ thỏa mãn các phương trình \& bất phương trình toán học/bằng nhau cụ thể. Chúng cũng được sử dụng khi mục tiêu là tìm 1 phép gán biến sẽ tối đa hóa hoặc tối thiểu hóa 1 hàm nhất định của các biến đó. Các thuật toán cho các bài toán này bao gồm tìm kiếm brute-force cơ bản (còn gọi là tìm kiếm ``ngây thơ'' hoặc ``không có thông tin''), \& nhiều phương pháp tìm kiếm khác nhau cố gắng khai thác kiến thức 1 phần về cấu trúc của không gian này, chẳng hạn như thư giãn tuyến tính, tạo ràng buộc \& truyền ràng buộc.
-	
-	An important subclass are the \href{https://en.wikipedia.org/wiki/Local_search_(optimization)}{local search} methods, that view the elements of the search space as the vertices of a graph, with edges defined by a set of heuristics applicable to the case; \& scan the space by moving from item to item along the edges, e.g. according to the \href{https://en.wikipedia.org/wiki/Gradient_descent}{steepest descent} or \href{https://en.wikipedia.org/wiki/Best-first_search}{best 1st} criterion, or in a \href{https://en.wikipedia.org/wiki/Stochastic_optimization}{stochastic search}. This category includes a great variety of general \href{https://en.wikipedia.org/wiki/Metaheuristic}{metaheuristic} methods, e.g. \href{https://en.wikipedia.org/wiki/Simulated_annealing}{simulated annealing}, \href{https://en.wikipedia.org/wiki/Tabu_search}{tabu search}, A-teams, \& \href{https://en.wikipedia.org/wiki/Genetic_programming}{general programming}, that combine arbitrary heuristics in specific ways. The opposite of local search would be global search methods. This method is applicable when the search space is not limited \& all aspects of the given network are available to the entity running the search algorithm.
-	
-	-- 1 phân lớp quan trọng là các phương pháp tìm kiếm cục bộ, xem các phần tử của không gian tìm kiếm như các đỉnh của 1 đồ thị, với các cạnh được xác định bởi 1 tập hợp các phương pháp tìm kiếm áp dụng cho trường hợp này; \& quét không gian bằng cách di chuyển từ mục này sang mục khác dọc theo các cạnh, ví dụ theo tiêu chí dốc nhất hoặc tiêu chí tốt nhất đầu tiên, hoặc trong tìm kiếm ngẫu nhiên. Thể loại này bao gồm nhiều phương pháp siêu tìm kiếm chung, chẳng hạn như ủ mô phỏng, tìm kiếm tabu, nhóm A \& lập trình di truyền, kết hợp các phương pháp tìm kiếm tùy ý theo những cách cụ thể. Ngược lại với tìm kiếm cục bộ sẽ là các phương pháp tìm kiếm toàn cục. Phương pháp này có thể áp dụng khi không gian tìm kiếm không bị giới hạn \& tất cả các khía cạnh của mạng đã cho đều khả dụng đối với thực thể chạy thuật toán tìm kiếm.
-	
-	This class also includes various \href{https://en.wikipedia.org/wiki/Tree_traversal}{tree search algorithms}, that view the elements as vertices of a \href{https://en.wikipedia.org/wiki/Tree_(graph_theory)}{tree}, \& traverse that tree in some special order. Examples of the latter include the exhaustive methods e.g. \href{https://en.wikipedia.org/wiki/Depth-first_search}{depth-1st search} \& \href{https://en.wikipedia.org/wiki/Breadth-first_search}{breadth-1st search}, as well as various heuristic-based \href{https://en.wikipedia.org/wiki/Pruning_(decision_trees)}{search tree pruning} methods e.g. \href{https://en.wikipedia.org/wiki/Backtracking}{backtracking} \& \href{https://en.wikipedia.org/wiki/Branch\_and\_bound}{branch \& bound}. Unlike general metaheuristics, which at best work only in a probabilistic scene, many of these tree-search methods are guaranteed to find the exact or optimal solution, if given enough time. This is called ``\href{https://en.wikipedia.org/wiki/Completeness_(logic)}{completeness}''.
-	
-	-- Lớp này cũng bao gồm nhiều thuật toán tìm kiếm cây khác nhau, xem các phần tử như các đỉnh của 1 cây \& duyệt cây đó theo 1 thứ tự đặc biệt nào đó. Ví dụ về thứ tự sau bao gồm các phương pháp đầy đủ như tìm kiếm theo chiều sâu \& tìm kiếm theo chiều rộng, cũng như nhiều phương pháp cắt tỉa cây tìm kiếm dựa trên phương pháp heuristic như quay lui \& rẽ nhánh \& giới hạn. Không giống như các siêu phương pháp heuristic chung, tốt nhất chỉ hoạt động theo nghĩa xác suất, nhiều phương pháp tìm kiếm cây này được đảm bảo tìm ra giải pháp chính xác hoặc tối ưu, nếu có đủ thời gian. Điều này được gọi là ``hoàn chỉnh''.
-	
-	Another important subclass consists of algorithms for exploring the \href{https://en.wikipedia.org/wiki/Game_tree}{game tree} of multiple-player games, e.g. chess or \href{https://en.wikipedia.org/wiki/Backgammon}{backgammon}, whose nodes consist of all possible game situations that could result from the current situation. The goal in these problems is to find the move that provides the best chance of a win, taking into account all possible moves of the opponent(s). Similar problems occur when humans or machines have to make successive decisions whose outcomes are not entirely under one's control, e.g. in robot guidance or in marketing, financial, or military strategy planning. This kind of problem -- \href{https://en.wikipedia.org/wiki/Combinatorial_search}{combinatorial search} -- has been extensively studied in the context of AI. Examples of algorithms for this class are the \href{https://en.wikipedia.org/wiki/Minimax}{minimax algorithm}, \href{https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning}{alpha--beta pruning}, \& the \href{https://en.wikipedia.org/wiki/A*_search_algorithm}{$\rm A^\star$ algorithm} \& its variants.
-	
-	-- 1 phân lớp quan trọng khác bao gồm các thuật toán để khám phá cây trò chơi của các trò chơi nhiều người chơi, chẳng hạn như cờ vua hoặc cờ cá ngựa, có các nút bao gồm tất cả các tình huống trò chơi có thể xảy ra do tình huống hiện tại. Mục tiêu của các bài toán này là tìm ra nước đi mang lại cơ hội chiến thắng cao nhất, có tính đến tất cả các nước đi có thể có của đối thủ. Các bài toán tương tự xảy ra khi con người hoặc máy móc phải đưa ra các quyết định liên tiếp mà kết quả không hoàn toàn nằm trong tầm kiểm soát của mình, chẳng hạn như trong hướng dẫn rô-bốt hoặc trong lập kế hoạch chiến lược tiếp thị, tài chính hoặc quân sự. Loại bài toán này -- tìm kiếm kết hợp -- đã được nghiên cứu rộng rãi trong bối cảnh trí tuệ nhân tạo. Các ví dụ về thuật toán cho lớp này là thuật toán minimax, cắt tỉa alpha–beta \& thuật toán A* cùng các biến thể của nó.
-	\item {\bf For sub-structures of a given structure.} An important \& extensively studied subclass are the \href{https://en.wikipedia.org/wiki/List_of_algorithms#Graph_algorithms}{graph algorithms}, in particular \href{https://en.wikipedia.org/wiki/Graph_traversal}{graph traversal} algorithms, for finding specific sub-structures in a given graph -- e.g. \href{https://en.wikipedia.org/wiki/Glossary_of_graph_theory#Subgraphs}{subgraphs}, paths, circuits, etc. Examples include \href{https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm}{Dijkstra's algorithm}, \href{https://en.wikipedia.org/wiki/Kruskal%27s_algorithm}{Kruskal's algorithm}, the \href{https://en.wikipedia.org/wiki/Nearest_neighbour_algorithm}{nearest neighbor algorithm}, \& \href{https://en.wikipedia.org/wiki/Prim%27s_algorithm}{Prim's algorithm}.
-	
-	-- {\it Đối với các cấu trúc con của 1 cấu trúc nhất định.} 1 phân lớp quan trọng \& được nghiên cứu rộng rãi là các thuật toán đồ thị, đặc biệt là các thuật toán duyệt đồ thị, để tìm các cấu trúc con cụ thể trong 1 đồ thị nhất định — chẳng hạn như các đồ thị con, đường dẫn, mạch, etc. Các ví dụ bao gồm thuật toán Dijkstra, thuật toán Kruskal, thuật toán hàng xóm gần nhất \& thuật toán Prim.
-	
-	Another important subclass of this category are the \href{https://en.wikipedia.org/wiki/String_searching_algorithm}{string searching algorithms}, that search for patterns within strings. 2 famous examples are the \href{https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string-search_algorithm}{Boyer--Moore} \& \href{https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm}{Knuth--Morris--Pratt algorithms}, \& several algorithms based on the \href{https://en.wikipedia.org/wiki/Suffix_tree}{suffix tree} data structure.
-	
-	-- 1 phân lớp quan trọng khác của thể loại này là các thuật toán tìm kiếm chuỗi, tìm kiếm các mẫu trong chuỗi. Hai ví dụ nổi tiếng là các thuật toán Boyer--Moore \& Knuth--Morris--Pratt, \& 1 số thuật toán dựa trên cấu trúc dữ liệu cây hậu tố.
-	\item {\bf Search for the maximum of a function.} In 1953, American statistician \href{https://en.wikipedia.org/wiki/Jack_Kiefer_(statistician)}{\sc Jack Kiefer} devised \href{https://en.wikipedia.org/wiki/Fibonacci_search_technique}{Fibonacci search} which can be used to find the maximum of a unimodal function \& has many other applications in CS.
-	
-	-- {\it Tìm kiếm giá trị lớn nhất của 1 hàm số.} Vào năm 1953, nhà thống kê người Mỹ Jack Kiefer đã phát minh ra thuật toán tìm kiếm Fibonacci có thể được sử dụng để tìm giá trị lớn nhất của 1 hàm số đơn thức \& có nhiều ứng dụng khác trong khoa học máy tính.
-	\item {\bf For quantum computers.} There are also search methods designed for \href{https://en.wikipedia.org/wiki/Quantum_computing}{quantum computers}, like \href{https://en.wikipedia.org/wiki/Grover%27s_algorithm}{Grover's algorithm}, that are theoretically faster than linear or brute-force search even without the help of data structures or heuristics. While the ideas \& applications behind quantum computers are still entirely theoretical, studies have been conducted with algorithms like Grover's that accurately replicate the hypothetical physical versions of quantum computing systems.
-	
-	-- {\it Đối với máy tính lượng tử}: Cũng có những phương pháp tìm kiếm được thiết kế cho máy tính lượng tử, như thuật toán Grover, về mặt lý thuyết nhanh hơn tìm kiếm tuyến tính hoặc tìm kiếm bằng vũ lực ngay cả khi không có sự trợ giúp của cấu trúc dữ liệu hoặc phương pháp tìm kiếm. Trong khi các ý tưởng \& ứng dụng đằng sau máy tính lượng tử vẫn hoàn toàn là lý thuyết, các nghiên cứu đã được tiến hành với các thuật toán như thuật toán Grover sao chép chính xác các phiên bản vật lý giả định của hệ thống máy tính lượng tử.
-\end{enumerate}
-
-%------------------------------------------------------------------------------%
-
-\section{Basic Graph Theory -- Lý Thuyết Đồ Thị Cơ Bản}
 
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
@@ -2859,12 +2744,16 @@ A basic relationship between the size of a graph \& the degree of its vertices, 
 
 -- Mối quan hệ cơ bản giữa kích thước của đồ thị \& bậc của các đỉnh, sẽ rất hữu ích trong việc phân tích độ phức tạp tính toán của các thuật toán trên đồ thị:
 
-\begin{theorem}
+\begin{theorem}[\cite{Valiente2021}, Thm. 1.1, p. 4]
 	Let $G = (V,E)$ be a graph with $n$ vertices \& $m$ edges, \& let $V = \{v_1,\ldots,v_n\}$. Then
 	\begin{equation*}
 		\sum_{i=1}^n {\rm indeg}(v_i) = \sum_{i=1}^n {\rm outdeg}(v_i) = m.
 	\end{equation*}
 \end{theorem}
+
+\begin{proof}[Proof]
+    Let $G = (V,E$ be a graph. Every edge $(v_i,v_j)\in E$ contributes 1 to ${\rm indeg}(v_i)$ \& 1 to ${\rm outdeg}(v_i)$.
+\end{proof}
 A few oft-used terms to graph vocabularies.
 
 \begin{definition}[Isolated vertex, leaf, \cite{Shahriari2022}, Def. 10.2, p. 362]
@@ -2887,6 +2776,201 @@ In mathematical notation:
 Walks, trails, \& paths in a graph are alternating sequences of vertices \& edges in the graph s.t. each edge in the sequence is preceded by its source vertex \& followed by its target vertex. Trails are walks having no repeated edges, \& paths are trails having no repeated vertices.
 
 -- Đường đi bộ, đường mòn, \& đường đi trong đồ thị là chuỗi xen kẽ các đỉnh \& cạnh trong đồ thị, tức là mỗi cạnh trong chuỗi được đi trước bởi đỉnh nguồn \& theo sau bởi đỉnh đích. Đường mòn là đường đi không có cạnh lặp lại, \& đường đi là đường mòn không có đỉnh lặp lại.
+
+\begin{definition}[Walk, trail, path, \cite{Valiente2021}, Def. 1.3]
+    A {\rm walk} from vertex $v_i$ to vertex $v_j$ in a graph is an alternating sequence $[v_i,e_{i+1},v_{i+1},e_{i+2},\ldots,v_{j-1},e_j,v_j]$ of vertices \& edges in the graph, s.t. $e_k = (v_{k-1},v_k)$ for $k = i + 1,\ldots,j$. A {\rm trail} is a walk with no repeated edges, \& a {\rm path} is a trail with no repeated vertices (except, possibly, the initial \& final vertices). The length of a walk, trail, or path is the number of edges in the sequence.
+\end{definition}
+
+\begin{dinhnghia}[Đường đi dạo, đường mòn, đường đi]
+    1 {\rm đường đi dạo} từ đỉnh $v_i$ đến đỉnh $v_j$ trong 1 đồ thị là 1 chuỗi xen kẽ $[v_i,e_{i+1},v_{i+1},e_{i+2},\ldots,v_{j-1},e_j,v_j]$ các đỉnh \& cạnh trong đồ thị, s.t. $e_k = (v_{k-1},v_k)$ với $k = i + 1,\ldots,j$. 1 {\rm đường mòn} là 1 cuộc đi bộ không có cạnh nào lặp lại, \& 1 {\rm đường đi} là 1 cuộc đi bộ không có đỉnh nào lặp lại (ngoại trừ, có thể là, các đỉnh đầu \& cuối). Độ dài của 1 cuộc đi bộ, trail hoặc path là số cạnh trong chuỗi.	
+\end{dinhnghia}
+Since an edge in a graph is uniquely determined by its source \& target vertices, a walk, trail, or path can be abbreviated by just enumerating either the vertices $[v_i,v_{i+1},\ldots,v_{j-1},v_j]$ or the edges $[e_{i+1},e_{i+2},\ldots,e_j]$ in the alternating sequence $[v_i,e_{i+1},v_{i+1},e_{i+2},\ldots,v_{j-1},e_j,v_j]$ of vertices \& edges.
+
+-- Vì 1 cạnh trong đồ thị được xác định duy nhất bởi các đỉnh nguồn \& đích của nó, nên 1 đường đi, đường mòn hoặc đường dẫn có thể được rút gọn chỉ bằng cách liệt kê các đỉnh $[v_i,v_{i+1},\ldots,v_{j-1},v_j]$ hoặc các cạnh $[e_{i+1},e_{i+2},\ldots,e_j]$ trong chuỗi xen kẽ $[v_i,e_{i+1},v_{i+1},e_{i+2},\ldots,v_{j-1},e_j,v_j]$ các đỉnh \& cạnh.
+
+Walks are closed if their initial \& final vertices coincide. -- Đường đi sẽ khép lại nếu đỉnh đầu \& đỉnh cuối trùng nhau.
+
+\begin{definition}[Cycle, \cite{Valiente2021}, Def. 1.4]
+    A walk, trail, or path $[v_i,e_{i+1},v_{i+1},e_{i+2},\ldots,v_{j-1},e_i,v_j]$ is said to be {\rm closed} if $v_i = v_j$. A {\rm cycle} is a closed path of length at least $1$.
+\end{definition}
+The combinatorial structure of a graph encompasses 2 notions of the substructure. A subgraph of a graph is just a graph whose vertex \& edge sets are contained in the vertex \& edge sets of the given graph, resp. The subgraph of a graph induced by a subset of its vertices has as edges the set of edges in the given graph whose source \& target belong to the subset of vertices.
+
+-- Cấu trúc tổ hợp của 1 đồ thị bao gồm 2 khái niệm về cấu trúc con. 1 đồ thị con của 1 đồ thị chỉ là 1 đồ thị có tập đỉnh \& cạnh được chứa trong tập đỉnh \& cạnh của đồ thị đã cho, tương ứng. Đồ thị con của 1 đồ thị được tạo ra bởi 1 tập con các đỉnh của nó có các cạnh là tập các cạnh trong đồ thị đã cho có nguồn \& đích thuộc về tập con các đỉnh.
+
+\begin{definition}[Subgraph, \cite{Valiente2021}, Def. 1.5, p. 6]
+    Let $G = (V,E)$ be a graph, \& let $W\subseteq V$. A graph $(W,S)$ is a {\rm subgraph} of $G$ if $S\subseteq E$. The subgraph of $G$ {\rm induced} by $W$ is the graph $(W,E\cap W\times W)$.
+\end{definition}
+
+\begin{dinhnghia}[Đồ thị con]
+    Cho $G = (V,E)$ là 1 đồ thị, \& cho $W\subseteq V$. 1 đồ thị $(W,S)$ là 1 {\rm đồ thị con} của $G$ nếu $S\subseteq E$. Đồ thị con của $G$ {\rm được tạo ra} bởi $W$ là đồ thị $(W,E\cap W\times W)$.
+\end{dinhnghia}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Undirected graphs -- Đồ thị vô hướng}
+The notion of graph which is most often found in mathematics is that of an undirected graph. Unlike the directed edges or edges of a graph, edges of an undirected graph have no direction association with them \& therefore, no distinction is made between the source \& target vertices of an edge. In a mathematical sense, an undirected graph consists of a set of vertices \& a finite set of undirected edges, where each edge has a set of 1 or 2 vertices associated with it. In the computer science view of undirected graphs, though, an undirected graph is the particular case of a directed graph in which for every edge $(v,w)$ of the graph, the reversed edge $(w,v)$ also belongs to the graph. Undirected graphs are also called {\it bidirected}.
+
+-- Khái niệm đồ thị thường thấy nhất trong toán học là đồ thị vô hướng. Không giống như các cạnh hoặc cạnh có hướng của đồ thị, các cạnh của đồ thị vô hướng không có liên kết hướng nào với chúng \& do đó, không có sự phân biệt nào được tạo ra giữa các đỉnh nguồn \& đích của 1 cạnh. Theo nghĩa toán học, đồ thị vô hướng bao gồm 1 tập hợp các đỉnh \& 1 tập hợp hữu hạn các cạnh vô hướng, trong đó mỗi cạnh có 1 tập hợp gồm 1 hoặc 2 đỉnh được liên kết với nó. Tuy nhiên, theo quan điểm khoa học máy tính về đồ thị vô hướng, đồ thị vô hướng là trường hợp cụ thể của đồ thị có hướng trong đó đối với mọi cạnh $(v,w)$ của đồ thị, cạnh đảo ngược $(w,v)$ cũng thuộc về đồ thị. Đồ thị vô hướng cũng được gọi là {\it song hướng}.
+
+\begin{definition}[Undirected graph, \cite{Valiente2021}, Def. 1.6, p. 6]
+    A graph $G = (V,E)$ is {\rm undirected} if $(v,w)\in E\Rightarrow(w,v)\in E$, $\forall v,w\in V$.
+\end{definition}
+
+\begin{dinhnghia}[Đồ thị vô hướng]
+    Đồ thị $G = (V,E)$ là {\rm vô hướng} nếu $(v,w)\in E\Rightarrow(w,v)\in E$, $\forall v,w\in V$.
+\end{dinhnghia}
+Undirected graphs are often drawn as a set of points in the plane \& a set of line segments, each of which joins 2 (not necessarily different) points. In a drawing of an undirected graph $G = (V,E)$, each vertex $v\in V$ is drawn as a point or a small circle \& each pair of counter-parallel edges $(v,w),(w,v)\in E$ is drawn as a line segment between the points or circles corresponding to vertices $v$ \& $w$.
+
+-- Đồ thị vô hướng thường được vẽ như một tập hợp các điểm trên mặt phẳng \& một tập hợp các đoạn thẳng, mỗi đoạn thẳng nối 2 điểm (không nhất thiết phải khác nhau). Trong bản vẽ đồ thị vô hướng $G = (V,E)$, mỗi đỉnh $v\in V$ được vẽ như một điểm hoặc một đường tròn nhỏ \& mỗi cặp cạnh đối song song $(v,w),(w,v)\in E$ được vẽ như một đoạn thẳng giữa các điểm hoặc đường tròn tương ứng với các đỉnh $v$ \& $w$.
+
+The terminology of directed graphs carries over to undirected graphs, although a few differences deserve mention. 1st of all, since an edge in an undirected graph is understood as a pair of counter-parallel edges in the corresponding bidirected graph, the number of edges coming into a given vertex \& the number of edges going out of the vertex coincide \& therefore, no distinction is made between the indegree \& the outdegree of a vertex. I.e., the {\it degree} of a vertex in an undirected graph is equal to the indegree \& the outdegree of the vertex in the corresponding bidirected graph. For the same reason, the size of an undirected graph is half the size of the corresponding bidirected graph.
+
+-- Thuật ngữ đồ thị có hướng được áp dụng cho đồ thị vô hướng, mặc dù có một số điểm khác biệt đáng được đề cập. Trước hết, vì một cạnh trong đồ thị vô hướng được hiểu là một cặp cạnh đối song song trong đồ thị hai hướng tương ứng, nên số cạnh đi vào một đỉnh nhất định \& số cạnh đi ra khỏi đỉnh trùng nhau \& do đó, không có sự phân biệt nào giữa bậc vào \& bậc ra của một đỉnh. Tức là, {\it bậc} của một đỉnh trong đồ thị vô hướng bằng với bậc vào \& bậc ra của đỉnh trong đồ thị hai hướng tương ứng. Vì lý do tương tự, kích thước của đồ thị vô hướng bằng một nửa kích thước của đồ thị hai hướng tương ứng.
+
+\begin{definition}[Degree, degree sequence, \cite{Valiente2021}, Def. 1.7, p. 7]
+    The {\rm degree} of a vertex $v$ in an undirected graph $G = (V,E)$ is the number of edges in $G$ that are incident with $v$. The {\rm degree sequence} of $G$ is the sequence of $n$ nonnegative integers obtained by arranging the vertex degrees in nondecreasing order.
+\end{definition}
+
+\begin{dinhnghia}[Bậc, dãy bậc của đồ thị]
+    {\rm Bậc} của đỉnh $v$ trong đồ thị vô hướng $G = (V,E)$ là số cạnh trong $G$ liên quan đến $v$. {\rm Dãy bậc} của $G$ là dãy $n$ số nguyên không âm thu được bằng cách sắp xếp các bậc đỉnh theo thứ tự không giảm.
+\end{dinhnghia}
+A walk, trail, or path in an undirected graph is a walk, trail, or path, respectively, in the corresponding bidirected graph. Another important graph-theoretical notion is that of connected \& disconnected graphs. An undirected graph is {\it connected} if every pair of its vertices is joined by some walk, \& an undirected graph that is not connected is said to be {\it disconnected}. On the other hand, a directed graph is connected if for all vertices $v,w$ in the graph, there is a walk from $v$ to $w$, \& it is {\it strongly connected} if there are walks from $v$ to $w$ \& from $w$ back to $v$, for all vertices $v,w$ in the graph.
+
+-- 1 walk, trail hoặc path trong một đồ thị vô hướng lần lượt là một walk, trail hoặc path trong đồ thị hai hướng tương ứng. Một khái niệm quan trọng khác về lý thuyết đồ thị là đồ thị liên thông \& không liên thông. Một đồ thị vô hướng là {\it liên thông} nếu mọi cặp đỉnh của nó được nối bằng một walk nào đó, \& một đồ thị vô hướng không liên thông được gọi là {\it không liên thông}. Mặt khác, một đồ thị có hướng là liên thông nếu với mọi đỉnh $v,w$ trong đồ thị, có một walk từ $v$ đến $w$, \& nó là {\it liên thông mạnh} nếu có các walk từ $v$ đến $w$ \& từ $w$ trở lại $v$, với mọi đỉnh $v,w$ trong đồ thị.
+
+\begin{definition}[Connected undirected graph, connected directed graph, strongly connected directed graph, \cite{Valiente2021}, Def. 1.8, p. 8]
+    An undirected graph $G = (V,E)$ is {\rm connected} if for every pair of vertices $v,w\in E$, there is a walk between $v,w$. A directed graph is {\rm connected} if the underlying undirected graph is connected. Graph $G$ is {\rm strongly connected} if for every pair of vertices $v,w\in E$, there are walks from $v$ to $w$ \& from $w$ to $v$.
+\end{definition}
+
+\begin{dinhnghia}[Đồ thị vô hướng liên thông, đồ thị có hướng liên thông, đồ thị có hướng liên thông mạnh]
+    1 đồ thị vô hướng $G = (V,E)$ là {\rm liên thông} nếu với mọi cặp đỉnh $v,w\in E$, có một đường đi giữa $v,w$. Một đồ thị có hướng là {\rm liên thông} nếu đồ thị vô hướng cơ sở là liên thông. Đồ thị $G$ là {\rm liên thông mạnh} nếu với mọi cặp đỉnh $v,w\in E$, có các đường đi từ $v$ đến $w$ \& từ $w$ đến $v$.
+\end{dinhnghia}
+Connectivity is an equivalence relation on the vertex set of a graph, which induces a partition of the graph into subgraphs induced by connected vertices, called {\it connected components} or just {\it components}.
+
+-- Kết nối{\tt/}liên thông là một quan hệ tương đương trên tập đỉnh của một đồ thị, tạo ra sự phân hoạch của đồ thị thành các đồ thị con được tạo ra bởi các đỉnh được kết nối, được gọi là {\it thành phần được kết nối} hoặc chỉ là {\it thành phần}.
+
+\begin{definition}[Component of undirected graphs, strong component of directed graphs, \cite{Valiente2021}, Def. 1.9, p. 8]
+    A {\rm component} of an undirected graph $G$ is a connected subgraph of $G$ which is not properly contained in any other connected subgraph of $G$. A {\rm strong component} of a directed graph $G$ is a strongly connected subgraph of $G$ which is not properly contained in any other strongly connected subgraph of $G$.
+\end{definition}
+
+\begin{dinhnghia}[Thành phần của đồ thị vô hướng, thành phần mạnh của đồ thị có hướng]
+    1 {\rm thành phần} của một đồ thị vô hướng $G$ là một đồ thị con liên thông của $G$ không được chứa đúng trong bất kỳ đồ thị con liên thông nào khác của $G$. Một {\rm thành phần mạnh} của một đồ thị có hướng $G$ là một đồ thị con liên thông mạnh của $G$ không được chứa đúng trong bất kỳ đồ thị con liên thông mạnh nào khác của $G$.
+\end{dinhnghia}
+Some common families of undirected graphs are the trees, the complete graphs, the path graphs, the cycle graphs, the wheel graphs, the biparite graphs, \& the regular graphs. A {\it tree} is a connected graph having no cycles.
+
+-- 1 số họ phổ biến của đồ thị vô hướng là cây, đồ thị đầy đủ, đồ thị đường đi, đồ thị chu trình, đồ thị bánh xe, đồ thị hai đỉnh, \& đồ thị đều. Một {\it tree} là đồ thị liên thông không có chu trình.
+
+\begin{definition}[Undirected tree of undirected graph, \cite{Valiente2021}, Def. 1.10, p. 8]
+    An undirected graph $G = (V,E)$ is said to be an {\rm undirected tree} if it is connected \& has no cycles.
+\end{definition}
+
+\begin{dinhnghia}[Cây vô hướng của đồ thị vô hướng]
+    1 đồ thị vô hướng $G = (V,E)$ được gọi là {\rm cây vô hướng} nếu nó liên thông \& không có chu trình.
+\end{dinhnghia}
+See \cite[Fig. 1.8: The 1st 14 undirected trees -- 14 cây vô hướng đầu tiên]{Valiente2021}.
+
+In a {\it complete} graph, every pair of distinct vertices is joined by an edge.
+
+-- Trong 1 đồ thị {\it hoàn chỉnh}, mỗi cặp đỉnh riêng biệt được nối với nhau bằng một cạnh.
+
+\begin{definition}[Complete graph, \cite{Valiente2021}, Def. 1.11, p. 9]
+    An undirected graph $G = (V,E)$ is said to be a {\rm complete graph} if $(v,w)\in E$, $\forall v,w\in V$ with $v\ne w$. The complete graph on $n\in\mathbb{N}^\star$ vertices is denoted by $K_n$.
+\end{definition}
+See \cite[ \& Fig. 1.9: The 1st 6 complete graphs -- 6 đồ thị đầy đủ đầu tiên]{Valiente2021}.
+
+\begin{dinhnghia}[Đồ thị đầy đủ]
+    1 đồ thị vô hướng $G = (V,E)$ được gọi là {\rm đồ thị đầy đủ} nếu $(v,w)\in E$, $\forall v,w\in V$ với $v\ne w$. Đồ thị đầy đủ trên $n\in\mathbb{N}^\star$ đỉnh được ký hiệu là $K_n$.
+\end{dinhnghia}
+A {\it path} graph can be drawn s.t. all vertices lie on a straight line.
+
+-- 1 đồ thị {\it path} có thể được vẽ sao cho tất cả các đỉnh đều nằm trên một đường thẳng.
+
+\begin{definition}[Path graph, \cite{Valiente2021}, Def. 1.12, p. 9]
+    A connected undirected graph $G = (V,E)$ with $|V| = |E| + 1$ is said to be a {\rm path graph} if it can be drawn s.t. all vertices lie on a straight line. The path graph on $n$ vertices is denoted by $P_n$.
+\end{definition}
+
+\begin{dinhnghia}[Đồ thị đường đi]
+    1 đồ thị vô hướng liên thông $G = (V,E)$ với $|V| = |E| + 1$ được gọi là {\rm path graph} nếu nó có thể được vẽ sao cho tất cả các đỉnh nằm trên một đường thẳng. Đồ thị đường đi trên $n$ đỉnh được ký hiệu là $P_n$.
+\end{dinhnghia}
+See \cite[Fig. 1.10: The 1st 6 path graphs -- 6 đồ thị đường đi đầu tiên]{Valiente2021}.
+
+A {\it cycle} graph can be drawn s.t. all vertices lie on a circle.
+
+-- 1 đồ thị {\it cycle} có thể được vẽ bằng cách tất cả các đỉnh nằm trên một đường tròn.
+
+\begin{definition}[Cycle graph, \cite{Valiente2021}, Def. 1.13, p. 10]
+    A connected undirected graph $G = (V,E)$ with $|V| = |E|$ is said to be a {\rm cycle graph} if it can be drawn s.t. all vertices lie on a circle. The cycle graph on $n\in\mathbb{N}^\star$ vertices is denoted by $C_n$.
+\end{definition}
+
+\begin{dinhnghia}[Đồ thị chu kỳ]
+    1 đồ thị vô hướng liên thông $G = (V,E)$ với $|V| = |E|$ được gọi là {\rm cycle graph} nếu nó có thể được vẽ sao cho mọi đỉnh đều nằm trên một đường tròn. Đồ thị chu trình trên $n\in\mathbb{N}^\star$ đỉnh được ký hiệu là $C_n$.
+\end{dinhnghia}
+See \cite[Fig. 1.11: The 1st 6 cycle graphs -- 6 đồ thị chu kỳ đầu tiên]{Valiente2021}.
+
+A {\it wheel} graph has a distinguished (inner) vertex that is connected to all other (outer) vertices, \& it can be drawn s.t. all outer vertices lie on a circle centered at the inner vertex.
+
+-- Đồ thị {\it wheel} có một đỉnh (bên trong) riêng biệt được kết nối với tất cả các đỉnh (bên ngoài) khác và có thể vẽ nó sao cho tất cả các đỉnh bên ngoài nằm trên một đường tròn có tâm tại đỉnh bên trong.
+
+\begin{definition}[Wheel graph, \cite{Valiente2021}, Def. 1.14, p. 10]
+    A connected undirected graph $G = (V,E)$ is said to be a {\rm wheel graph} if it can be drawn s.t. all but a single vertex lie on a circle centered at the single vertex, which is connected to all other vertices. The wheel graph with $n\in\mathbb{N}^\star$ outer vertices is denoted by $W_{n+1}$.
+\end{definition}
+
+\begin{dinhnghia}[Đồ thị bánh xe]
+    1 đồ thị vô hướng liên thông $G = (V,E)$ được gọi là {\rm wheel graph} nếu nó có thể được vẽ sao cho tất cả trừ một đỉnh nằm trên một đường tròn có tâm tại đỉnh duy nhất, được kết nối với tất cả các đỉnh khác. Đồ thị bánh xe có $n\in\mathbb{N}^\star$ đỉnh ngoài được ký hiệu là $W_{n+1}$.
+\end{dinhnghia}
+See \cite[Fig. 1.12: The 1st 6 wheel graphs -- 6 đồ thị bánh xe đầu tiên]{Valiente2021}.
+
+Another common family of undirected graphs is the {\it bipartite} graphs. The vertex set of a bipartite graph can be partitioned into 2 subsets in such a way that every edge of the graph joins a vertex of 1 subset with a vertex of the other subset. In a {\it complete bipartite} graph, every vertex of 1 subset is joined by some edge with every vertex of the other subset.
+
+-- 1 họ phổ biến khác của đồ thị vô hướng là đồ thị {\it bipartite}. Tập đỉnh của đồ thị bipartite có thể được phân chia thành 2 tập con theo cách mà mọi cạnh của đồ thị nối một đỉnh của 1 tập con với một đỉnh của tập con khác. Trong đồ thị {\it full bipartite}, mọi đỉnh của 1 tập con được nối bằng một cạnh với mọi đỉnh của tập con khác.
+
+\begin{definition}[Bipartite graph, complete bipartite graph, \cite{Valiente2021}, Def. 1.15, p. 11]
+    An undirected graph $G = (V,E)$ is said to be a {\rm bipartite graph} if $V$ can be partitioned into $2$ disjoint subsets $X,Y$ s.t. $\forall(x,y)\in E$, either $x\in X$ \& $y\in Y$, or $x\in Y$ \& $y\in X$, \& it is said to be a {\rm complete bipartite graph} if, furthermore, $(x,y),(y,x)\in E$, $\forall x\in X,\forall y\in Y$. The complete bipartite graph on $p + q$ vertices, where subset $X$ has $p$ vertices \& subset $Y$ has $q$ vertices, is denoted by $K_{p,q}$.
+\end{definition}
+
+\begin{dinhnghia}[Đồ thị 2 phía, đồ thị 2 phía đầy đủ]
+    1 đồ thị vô hướng $G = (V,E)$ được gọi là {\rm đồ thị hai phía} nếu $V$ có thể phân hoạch thành $2$ tập con rời rạc $X,Y$ s.t. $\forall(x,y)\in E$, hoặc $x\in X$ \& $y\in Y$, hoặc $x\in Y$ \& $y\in X$, \& nó được gọi là {\rm đồ thị hai phía đầy đủ} nếu, hơn nữa, $(x,y),(y,x)\in E$, $\forall x\in X, \forall y\in Y$. Đồ thị hai phía đầy đủ trên $p + q$ đỉnh, trong đó tập con $X$ có $p$ đỉnh \& tập con $Y$ có $q$ đỉnh, được ký hiệu là $K_{p,q}$.
+\end{dinhnghia}
+See \cite[Fig. 1.13: The 1st 12 complete bipartite graphs -- 12 đồ thị 2 phía đầy đủ đầu tiên]{Valiente2021}.
+
+\begin{definition}[Matching, maximal matching, \& maximum matching, perfect matching of bipartite graphs, \cite{Valiente2021}, Def. 1.16, p. 12]
+    Let $G = (X\cup Y,E)$ be a bipartite graph with $E\subseteq X\times Y$ \& $X\cap Y = \emptyset$. A {\rm matching} in $G$ is a set of edges $M\subseteq E$ s.t. $x_1\ne x_2,y_1\ne y_2$ for all distinct edges $(x_1,y_1),(x_2,y_2)\in M$. A matching $M$ in a bipartite graph $G$ is {\rm maximal} if there is no matching $M'$ in $G$ s.t. $M\subsetneq M'$, \& it is {\rm maximum} if there is no matching in $G$ with more edges than $M$. Further, a matching $M$ in a bipartite graph $G$ is {\rm perfect} if $|M| = \min(|X|,|Y|)$.
+\end{definition}
+
+\begin{dinhnghia}[Ghép cặp, ghép cặp cực đại, ghép cặp lớn nhất của độ thị 2 phía]
+    Cho $G = (X\cup Y,E)$ là một đồ thị hai phía với $E\subseteq X\times Y$ \& $X\cap Y = \emptyset$. Một {\rm ghép} trong $G$ là một tập các cạnh $M\subseteq E$ s.t. $x_1\ne x_2,y_1\ne y_2$ với mọi cạnh phân biệt $(x_1,y_1),(x_2,y_2)\in M$. Một $M$ ghép trong một đồ thị hai phía $G$ là {\rm cực đại} nếu không có $M'$ ghép trong $G$ s.t. $M\subsetneq M'$, \& nó là {\rm cực đại} nếu không có phép ghép nào trong $G$ có nhiều cạnh hơn $M$. Hơn nữa, một $M$ ghép trong một đồ thị hai phía $G$ là {\rm hoàn hảo} nếu $|M| = \min(|X|,|Y|)$.
+\end{dinhnghia}
+See \cite[Fig. 1.14: Maximal \& maximum matching in a bipartite graph -- Ghép cặp cực đại \& tối đa trong đồ thị hai phần \& Fig. 1.15: Maximum cardinality \& maximum weight matching in a bipartite graph with weighted edges -- Số lượng tối đa \& khớp trọng số tối đa trong đồ thị hai phần với các cạnh có trọng số.]{Valiente2021}.
+
+A maximum matching in a bipartite graph is also called a {\it maximum cardinality bipartite matching}, in order to distinguish it from a {\it maximum weight bipartite matching} in a bipartite graph with weighted edges, where the weight of a matching is the total weight of the edges in the matching.
+
+-- 1 phép ghép tối đa trong đồ thị hai phần cũng được gọi là {\it phép ghép hai phần có số lượng cực đại}, để phân biệt với {\it phép ghép hai phần có trọng số cực đại} trong đồ thị hai phần có các cạnh có trọng số, trong đó trọng số của phép ghép là tổng trọng số của các cạnh trong phép ghép đó.
+
+A natural generalization of bipartite graphs is the {\it$k$-partite} graphs. The vertex set of a $k$-partite graph can be partitioned into $k$ subsets in such a way that every edge of the graph joins a vertex of 1 subset with a vertex of another subset.
+
+-- 1 tổng quát hóa tự nhiên của đồ thị hai phần là đồ thị {\it$k$-partite}. Tập đỉnh của đồ thị $k$-partite có thể được phân vùng thành $k$ tập con theo cách mà mỗi cạnh của đồ thị nối một đỉnh của 1 tập con với một đỉnh của một tập con khác.
+
+\begin{definition}[$k$-partite graph, \cite{Valiente2021}, Def. 1.17, p. 13]
+    An undirected graph $G = (V,E$ is said to be a {\rm$k$-partite graph} if $V$ can be partitioned into $k\ge2$ subsets $V_1,V_2,\ldots,V_k$ s.t. $\forall(v,w)\in E$ with $v\in V_i,w\in V_j$, it holds that $i\ne j$.
+\end{definition}
+
+\begin{dinhnghia}[Đồ thị ghép $k$ thành phần]
+    Đồ thị vô hướng $G = (V,E$ được gọi là đồ thị {\rm$k$-partite} nếu $V$ có thể phân hoạch thành $k\ge2$ tập con $V_1,V_2,\ldots,V_k$ s.t. $\forall(v,w)\in E$ với $v\in V_i,w\in V_j$, ta có $i\ne j$.
+\end{dinhnghia}
+Complete graphs \& cycle graphs are trivial examples of {\it regular} graphs. In a regular graph, all vertices have the same degree.
+
+-- Đồ thị hoàn chỉnh \& đồ thị chu trình là những ví dụ đơn giản về đồ thị {\it chính quy}. Trong đồ thị chính quy, tất cả các đỉnh đều có cùng bậc.
+
+\begin{definition}[Regular graph, \cite{Valiente2021}, Def. 1.18, p. 13]
+    An undirected graph $G = (V,E$ is said to be a {\rm regular graph} if $\deg v = \deg w$, $\forall v,w\in V$.
+\end{definition}
+
+\begin{dinhnghia}[Đồ thị chính quy]
+    Đồ thị vô hướng $G = (V,E$ được gọi là {\rm đồ thị chính quy} nếu $\deg v = \deg w$, $\forall v,w\in V$.
+\end{dinhnghia}
+Any regular graph $G$ will have its degree sequence as $[k,k,\ldots,k]$ ($n$ times) with $\deg v = k$, $\forall v\in V(G)$.
+
+-- Bất kỳ đồ thị chính quy $G$ nào cũng sẽ có chuỗi bậc của nó là $[k,k,\ldots,k]$ ($n$ lần) với $\deg v = k$, $\forall v\in V(G)$.
 
 \begin{example}[Paths or Chains, \cite{Shahriari2022}, Example 2.25, p. 55]
     Let $n\in\mathbb{N}^\star$ \& let $V = [n]$, \& let $E = \{\{1,2\},\{2,3\},\ldots,\{n - 1,n\}\}$ be the set of consecutive pairs of elements of $[n]$. A {\rm path} (or a {\rm chain}) of length $n - 1$, denoted often by $P_{n-1}$, is the graph that has $V$ as its vertices \& $E$ as its edges. The graph $P_{n-1}$ has order $n$ (i.e., it has $n$ vertices, $|V(P_{n-1})| = n$) \& $n - 1$ edges, i.e., $|E(P_{n-1})| = n - 1$. Note that the subscript in $P_k$ refers to the length of the path, which is the same as the number of edges in the path. This is $1$ less than the number of vertices in the graph. (When appropriate, we make a distinction between the length \& the size of an object. In graph theory, length refers to the number of edges. While this is very common, it is not universal. There are authors who use the length of a path to mean the number of vertices. In addition, many authors use the notation $P_n$ to mean a path with $n$ vertices (as opposed to $n$ edges).)
@@ -2936,6 +3020,157 @@ More technically, in combinatorial graph theory -- as opposed to topological gra
 \begin{dinhnghia}[Đồng cấu đồ thị]
     Cho $G,H$ là đồ thị. Đồ thị $G$ là {\rm đẳng cấu} với đồ thị $H$ nếu tồn tại 1-1, trên ánh xạ $f:V(G)\to V(H)$ s.t. $\{x,y\}$ là 1 cạnh của $G$ khi \& chỉ khi $\{f(x),f(y)\}$ là 1 cạnh của $H$. Một ánh xạ $f$ như vậy được gọi là {\rm đẳng cấu} giữa $G$ \& $H$.
 \end{dinhnghia}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Labeled graphs -- Đồ thị có nhãn}
+Most applications of graphs in computer science involve {\it labeled} graphs, where vertices \& edges have additional attributes e.g. color or weight. For a labeled graph $G = (V,E)$, the label of a vertex $v\in V$ is denoted by ${\rm label}[v]$, \& the label of an edge $(v,w) = e\in E$ is denoted by ${\rm label}[e]$ or just by ${\rm label}[v,w]$.
+
+-- Hầu hết các ứng dụng của đồ thị trong khoa học máy tính đều liên quan đến đồ thị {\it có nhãn}, trong đó các đỉnh \& cạnh có các thuộc tính bổ sung, ví dụ như màu sắc hoặc trọng số. Đối với đồ thị có nhãn $G = (V,E)$, nhãn của đỉnh $v\in V$ được ký hiệu là ${\rm label}[v]$, \& nhãn của cạnh $(v,w) = e\in E$ được ký hiệu là ${\rm label}[e]$ hoặc chỉ là ${\rm label}[v,w]$.
+
+\begin{example}[\cite{Valiente2021}, Example 1.18, p. 13]
+    An undirected graph of the geographical adjacencies between some of the 1st European states to adopt the European currency is shown in {\sf Fig. 1.17: A labeled undirected graph of geographical adjacencies between some European states}. Vertices represent European states \& are labeled with a standard abbreviation for the name of the state. There is an edge between $2$ vertices if the corresponding states share a border. Edges are labeled with the distance in kilometers between the capital cities of the states they join.
+    
+    -- 1 đồ thị vô hướng về các vùng lân cận địa lý giữa một số quốc gia châu Âu đầu tiên áp dụng đồng tiền chung châu Âu được thể hiện trong {\sf Hình 1.17: Đồ thị vô hướng có nhãn về các vùng lân cận địa lý giữa một số quốc gia châu Âu}. Các đỉnh biểu diễn các quốc gia châu Âu \& được gắn nhãn bằng chữ viết tắt chuẩn cho tên của quốc gia đó. Có một cạnh giữa $2$ đỉnh nếu các quốc gia tương ứng có chung đường biên giới. Các cạnh được gắn nhãn bằng khoảng cách tính bằng kilômét giữa các thủ đô của các quốc gia mà chúng tham gia.
+\end{example}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Ordered graphs -- Đồ thị có thứ tự}
+An ordered graph is a graph in which the relative order of the adjacent vertices is fixed for each vertex. Ordered graphs arise when a graph is drawn or {\it embedded} on a certain surface, e.g., in the Euclidean plane.
+
+-- Đồ thị có thứ tự là đồ thị trong đó thứ tự tương đối của các đỉnh liền kề được cố định cho mỗi đỉnh. Đồ thị có thứ tự phát sinh khi đồ thị được vẽ hoặc {\it nhúng} trên một bề mặt nhất định, ví dụ, trên mặt phẳng Euclid.
+
+See \cite[Fig. 1.18: An ordered undirected graph. The relative order of the vertices adjacent with a given vertex reflects the counter-clockwise ordering of the outgoing edges of the vertex in the drawing]{Valiente2021}.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Trees -- Cây}
+The families of undirected graphs introduced above have a directed graph counterpart. In particular, while the notion of tree most often found in discrete mathematics is that of an undirected tree, the notion of the tree which is most useful in computer science is that of the rooted directed tree or just tree. A tree is the particular case of a graph in which there is a distinguished vertex, called the {\it root} of the tree, s.t. there is a unique walk from the root to any vertex of the tree. The vertices of a tree are called {\it nodes}.
+
+-- Các họ đồ thị vô hướng được giới thiệu ở trên có một đồ thị có hướng tương ứng. Đặc biệt, trong khi khái niệm cây thường được tìm thấy nhất trong toán học rời rạc là khái niệm cây vô hướng, thì khái niệm cây hữu ích nhất trong khoa học máy tính là khái niệm cây có hướng có gốc hoặc chỉ là cây. Cây là trường hợp cụ thể của đồ thị trong đó có một đỉnh phân biệt, được gọi là {\it root} của cây, tức là có một đường đi duy nhất từ gốc đến bất kỳ đỉnh nào của cây. Các đỉnh của cây được gọi là các {\it nút}.
+
+\begin{definition}[Tree, \cite{Valiente2021}, Def. 1.19, p. 15]
+    A connected graph $G = (V,E)$ is said to be a {\rm tree} if the underlying undirected graph has no cycles \& there is a distinguished node $r\in V$, called the {\rm root} of the tree \& denoted by ${\rm root}[T]$ s.t. for all nodes $v\in V$, there is a path in $G$ from the root $r$ to node $v$.
+\end{definition}
+
+\begin{dinhnghia}[Cây]
+    1 đồ thị liên thông $G = (V,E)$ được gọi là một {\rm cây} nếu đồ thị vô hướng cơ sở không có chu trình \& có một nút phân biệt $r\in V$, được gọi là {\rm gốc} của cây \& được ký hiệu là ${\rm gốc}[T]$ .t. đối với mọi nút $v\in V$, có một đường đi trong $G$ từ gốc $r$ đến nút $v$.
+\end{dinhnghia}
+The existence of a unique path in a tree from the root to any other node imposes a hierarchical structure in the tree. The root lies at the top, \& nodes can be partitioned in hierarchical levels according to their distance from the root of the tree.
+
+-- Sự tồn tại của một đường dẫn duy nhất trong một cây từ gốc đến bất kỳ nút nào khác áp đặt một cấu trúc phân cấp trong cây. Gốc nằm ở trên cùng, \& các nút có thể được phân vùng theo các cấp phân cấp theo khoảng cách của chúng từ gốc của cây.
+
+\begin{definition}[Depth of node in a tree, \cite{Valiente2021}, Def. 1.20, p. 15]
+    Let $T = (V,E)$ be a tree. The {\rm depth} of node $v\in V$, denoted by ${\rm depth}[v]$, is the length of the unique path from the root node ${\rm root}[T]$ to node $v$, for all nodes $v\in V$. The depth of $T$ is the maximum among the depth of all node $v\in V$.
+\end{definition}
+
+\begin{dinhnghia}[Độ sâu của nút trong cây]
+    Cho $T = (V,E)$ là một cây. {\rm depth} của nút $v\in V$, được biểu thị bằng ${\rm depth}[v]$, là độ dài của đường dẫn duy nhất từ nút gốc ${\rm root}[T]$ đến nút $v$, đối với mọi nút $v\in V$. Độ sâu của $T$ là độ sâu lớn nhất trong số các độ sâu của mọi nút $v\in V$.
+\end{dinhnghia}
+The hierarchical structure embodied in a tree leads to further distinguishing among the nodes of the tree: {\it parent} nodes are joined by edges to their {\it children} nodes, nodes sharing the same parent are called {\it sibling}, \& nodes having no children are called {\it leaves}.
+
+-- Cấu trúc phân cấp thể hiện trong cây dẫn đến sự phân biệt sâu hơn giữa các nút của cây: các nút cha được nối với các nút con bằng các cạnh, các nút chia sẻ cùng một nút cha được gọi là anh em, \& các nút không có con được gọi là lá.
+
+\begin{definition}[Parent, child, children, sibling, binary tree, complete binary tree, \cite{Valiente2021}, Def. 1.21, p. 15]
+    Let $T = (V,E)$ be a tree. Node $v\in V$ is said to be the {\rm parent} of node $w\in V$, denoted by ${\rm parent}[w]$, if $(v,w)\in E$ \&, in such a case, node $w$ is said to be a {\rm child} of node $v$. The {\rm children} of node $v\in V$ are the set of nodes $W\subseteq V$ s.t. $(v,w)\in E$, $\forall w\in W$. A node having no children is said to be a {\rm leaf} node. Non-root nodes $v,w\in V$ are said to be {\rm sibling} nodes if ${\rm parent}[v] = {\rm parent}[w]$. The number of children of node $v\in V$ is denoted by ${\rm children}[v]$. The tree is said to be a {\rm binary tree} if $|{\rm children}[v]|\le2$ for every node $v\in V$, \& a {\rm complete binary tree} if, furthermore, it has $\lfloor\frac{n}{2}\rfloor$ non-leaf nodes, where $n = |V|$, \& at most $1$ node $v\in V$ with $|{\rm children}[v]| = 1$, whose only child is a leaf node.
+\end{definition}
+
+\begin{dinhnghia}[Cha mẹ, con cái, con cái, anh chị em ruột, cây nhị phân, cây nhị phân hoàn chỉnh]
+    Cho $T = (V,E)$ là một cây. Nút $v\in V$ được gọi là {\rm cha} của nút $w\in V$, ký hiệu là ${\rm cha}[w]$, nếu $(v,w)\in E$ \&, trong trường hợp như vậy, nút $w$ được gọi là {\rm con} của nút $v$. {\rm con} của nút $v\in V$ là tập các nút $W\subseteq V$ sao cho $(v,w)\in E$, $\forall w\in W$. Một nút không có con nào được gọi là nút {\rm lá}. Các nút không phải gốc $v,w\in V$ được gọi là nút {\rm anh chị em} nếu ${\rm cha}[v] = {\rm cha}[w]$. Số lượng con của nút $v\in V$ được ký hiệu là ${\rm children}[v]$. Cây được gọi là {\rm cây nhị phân} nếu $|{\rm children}[v]|\le2$ với mọi nút $v\in V$, \& một {\rm cây nhị phân hoàn chỉnh} nếu, ngoài ra, nó có $\lfloor\frac{n}{2}\rfloor$ các nút không phải lá, trong đó $n = |V|$, \& nhiều nhất là $1$ nút $v\in V$ với $|{\rm children}[v]| = 1$, mà con duy nhất của nó là một nút lá.
+\end{dinhnghia}
+One can prefer to consider the hierarchical structure of a tree the other way around. The leaves constitute the 1st level of height zero, their parents form the 2nd level of height 1, \& so on. I.e., nodes can be partitioned in levels according to their height.
+
+-- Người ta có thể thích xem xét cấu trúc phân cấp của cây theo cách ngược lại. Các lá tạo thành cấp độ thứ nhất có chiều cao bằng không, các cha mẹ của chúng tạo thành cấp độ thứ hai có chiều cao bằng 1, \& v.v. Tức là, các nút có thể được phân vùng thành các cấp độ theo chiều cao của chúng.
+
+\begin{definition}[Height of nodes in trees, \cite{Valiente2021}, Def. 1.22, p. 16]
+    Let $T = (V,E)$ be a tree. The {\rm height} of node $v\in V$, denoted by ${\rm height}[v]$, is the length of a longest path from node $v$ to any node in the subtree of $T$ rooted at node $v$, for all nodes $v\in V$. The height of $T$ is the maximum among the height of all nodes $v\in V$.
+\end{definition}
+
+\begin{dinhnghia}[Chiều cao của nút trong cây]
+    Cho $T = (V,E)$ là một cây. {\rm height} của nút $v\in V$, được ký hiệu là ${\rm height}[v]$, là độ dài của đường đi dài nhất từ nút $v$ đến bất kỳ nút nào trong cây con của $T$ có gốc tại nút $v$, đối với mọi nút $v\in V$. Chiều cao của $T$ là chiều cao lớn nhất trong số các nút $v\in V$.
+\end{dinhnghia}
+In a tree $T = (V,E)$, ${\rm depth}[v]\ge0$, $\forall v\in V$, \& ${\rm depth}[v] = 0$ iff $v = {\rm root}[T]$. Further, ${\rm height}[v]\ge0$, $\forall v\in V$, \& ${\rm height}[v] = 0$ iff $v$ is a leaf node.
+
+-- Trong một cây $T = (V,E)$, ${\rm depth}[v]\ge0$, $\forall v\in V$, \& ${\rm depth}[v] = 0$ nếu và chỉ nếu $v = {\rm root}[T]$. Hơn nữa, ${\rm height}[v]\ge0$, $\forall v\in V$, \& ${\rm height}[v] = 0$ nếu và chỉ nếu $v$ là một nút lá.
+
+Trees are, indeed, the least connected graphs. The number of edges in a tree is 1 less than the number of nodes in the tree.
+
+-- Cây thực sự là đồ thị ít kết nối nhất. Số cạnh trong cây ít hơn 1 so với số nút trong cây.
+
+\begin{theorem}[\cite{Valiente2021}, Thm. 1.2, p. 16]
+    \label{thm: E = V - 1 in tree}
+    Let $T = (V,E)$ be a tree. Then $|E| = |V| - 1$.
+\end{theorem}
+
+\begin{proof}[Proof]
+    By induction on the number of nodes $n$ in the tree. For $n = 1$, a tree with 1 node has no edges, i.e., $|E| = 0$. Assume, then, that every tree with $n = |V|\ge1$ nodes has $n - 1$ edges. Let $T = (V,E)$ be a tree with $n + 1$ nodes, \& let $v\in V$ by any leaf node of $T$. The subgraph of $T$ induced by $V\backslash\{v\}$ is a tree with $n$ nodes \& has, by induction hypothesis, $n - 1$ edges. Now, since there is only 1 edge $(v,w)\in E$ (namely, with $w$ the parent in $T$ of node $v$), it follows that the subgraph of $T$ induced by $V\backslash\{v\}$ has 1 edge less than $T$. Therefore, $T$ has $n + 1$ nodes \& $n$ edges.
+    
+    -- Bằng quy nạp theo số nút $n$ trong cây. Với $n = 1$, một cây có 1 nút không có cạnh nào, tức là $|E| = 0$. Khi đó, giả sử rằng mọi cây có $n = |V|\ge1$ nút đều có $n - 1$ cạnh. Cho $T = (V,E)$ là một cây có $n + 1$ nút, \& cho $v\in V$ bởi bất kỳ nút lá nào của $T$. Đồ thị con của $T$ sinh ra bởi $V\backslash\{v\}$ là một cây có $n$ nút \& có, theo giả thuyết quy nạp, $n - 1$ cạnh. Bây giờ, vì chỉ có 1 cạnh $(v,w)\in E$ (cụ thể là, với $w$ là cạnh cha trong $T$ của nút $v$), nên suy ra đồ thị con của $T$ sinh ra bởi $V\backslash\{v\}$ có 1 cạnh nhỏ hơn $T$. Do đó, $T$ có $n + 1$ nút \& $n$ cạnh.
+\end{proof}
+As with graphs, there is also a basic relationship between the number of nodes in a tree \& the number of children of the nodes of the tree, which will prove to be very useful in analyzing the computational complexity of algorithms on trees.
+
+-- Tương tự như đồ thị, cũng có một mối quan hệ cơ bản giữa số lượng nút trong một cây \& số lượng nút con của các nút đó trên cây, điều này sẽ rất hữu ích trong việc phân tích độ phức tạp tính toán của các thuật toán trên cây.
+
+\begin{lemma}
+    Let $T = (V,E)$ be a tree on $n\in\mathbb{N}^\star$ nodes, \& let $V = \{v_1,\ldots,v_n\}$. Then,
+    \begin{equation*}
+        \sum_{i=1}^n {\rm children}[v_i] = n - 1.
+    \end{equation*}
+\end{lemma}
+
+\begin{proof}[Proof]
+    Let $T = (V,E)$ be a tree. Since every non-root node $w\in V$ is the target of a different edge $(v,w)\in E$, it holds $\sum_{i=1}^n {\rm children}[v_i] = \sum_{i=1}^n {\rm outdeg}(v_i) = m$ \& then, by Thm. \ref{thm: E = V - 1 in tree}, $\sum_{i=1}^n {\rm children}[v_i] = n - 1$.
+    
+    -- Cho $T = (V,E)$ là một cây. Vì mọi nút không phải gốc $w\in V$ là mục tiêu của một cạnh khác $(v,w)\in E$, nên nó giữ $\sum_{i=1}^n {\rm children}[v_i] = \sum_{i=1}^n {\rm outdeg}(v_i) = m$ \& sau đó, theo Thm. \ref{thm: E = V - 1 trong cây}, $\sum_{i=1}^n {\rm children}[v_i] = n - 1$.
+\end{proof}
+Given that trees are a particular case of graphs, it is natural to consider trees as subgraphs of a given graph \&, those trees that span all the vertices of a graph arise in several graph algorithms. A {\it spanning tree} of a graph is a subgraph that contains all the vertices of the graph \& is a tree.
+
+-- Vì cây là một trường hợp cụ thể của đồ thị, nên việc coi cây là đồ thị con của một đồ thị nhất định \& là điều tự nhiên, những cây trải dài tất cả các đỉnh của đồ thị sẽ xuất hiện trong một số thuật toán đồ thị. Một {\it cây trải dài} của đồ thị là đồ thị con chứa tất cả các đỉnh của đồ thị \& là một cây.
+
+\begin{definition}[Spanning tree of graph, \cite{Valiente2021}, Def. 1.23, p. 17]
+    Let $G = (V,E)$ be a graph. A subgraph $(W,S)$ of $G$ is a {\rm spanning tree} of graph $G$ if $W = V$ \& $(W,S)$ is a tree.
+\end{definition}
+
+\begin{dinhnghia}[Cây khung của đồ thị]
+    Cho $G = (V,E)$ là một đồ thị. Một đồ thị con $(W,S)$ của $G$ là một {\rm cây khung} của đồ thị $G$ nếu $W = V$ \& $(W,S)$ là một cây.
+\end{dinhnghia}
+
+\begin{example}[Generalization of \cite{Valiente2021}, Example 1.23, p. 17]
+    A graph $G = (V,E)$ has $n = |V|$ vertices \& $m = |E|$ edges, \& thus $\binom{m}{n - 1}$ subgraphs $G' = (V,E')$ with $n$ vertices \& $n - 1$ edges, $|E'| = n - 1$. But only some of these $\binom{m}{n - 1}$ subgraphs are trees, which are exactly the number of spanning trees of $G$.
+    
+    -- 1 đồ thị $G = (V,E)$ có $n = |V|$ đỉnh \& $m = |E|$ cạnh, \& do đó $\binom{m}{n - 1}$ đồ thị con $G' = (V,E')$ với $n$ đỉnh \& $n - 1$ cạnh, $|E'| = n - 1$. Nhưng chỉ một số trong những đồ thị con $\binom{m}{n - 1}$ này là cây, chính xác là số cây khung của $G$.
+\end{example}
+Not every graph has a spanning tree, though, but every graph has a {\it spanning forest}, i.e., an ordered set of pairwise-disjoint subgraphs that are trees \& which, together, span all the vertices of the graph.
+
+-- Tuy nhiên, không phải mọi đồ thị đều có cây khung, nhưng mọi đồ thị đều có một {\it spanning forest}, tức là một tập hợp có thứ tự các đồ thị con rời rạc từng cặp là các cây \&, cùng nhau trải dài tất cả các đỉnh của đồ thị.
+
+\begin{definition}[Spanning forest, \cite{Valiente2021}, Def. 1.24, p. 18]
+    Let $G = (V,E)$ be a graph. A sequence $[(W_1,S_1),\ldots,(W_k,S_k)]$ of $k\in\mathbb{N}^\star$ subgraphs of $G$ is a {\rm spanning forest} of graph $G$ if $W_1\cup\cdots\cup W_k = V$, $W_i\cap W_j = \emptyset$, $\forall i,j\in[k]$, $i\ne j$, \& $(W_i,S_i)$ is a tree, $\forall i\in[k]$.
+\end{definition}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Ordered trees -- Cây có thứ tự}
+An ordered tree is a tree in which the relative order of the children is fixed for each node. As a particular case of ordered graphs, ordered trees arise when a tree is drawn or {\it embedded} in the Euclidean plane.
+
+-- Cây có thứ tự là cây trong đó thứ tự tương đối của các con được cố định cho mỗi nút. Là một trường hợp cụ thể của đồ thị có thứ tự, cây có thứ tự phát sinh khi một cây được vẽ hoặc {\it nhúng} trong mặt phẳng Euclid.
+
+The relative order of children nodes leads to further distinguishing among the nodes of an ordered tree: children nodes are ordered from the {\it 1st} up to the {\it last}, non-1st children nodes have a {\it previous sibling}, \& non-last children nodes have a {\it next sibling}. For sibling nodes $v,w$, let $v < w$ denote that $v$ precedes $w$ in the ordered tree.
+
+-- Thứ tự tương đối của các nút con dẫn đến sự phân biệt sâu hơn giữa các nút của một cây có thứ tự: các nút con được sắp xếp từ {\it 1st} đến {\it last}, các nút con không phải thứ nhất có {\it anh chị em trước}, \& các nút con không phải cuối cùng có {\it anh chị em tiếp theo}. Đối với các nút anh chị em $v,w$, hãy để $v < w$ biểu thị rằng $v$ đứng trước $w$ trong cây có thứ tự.
+
+\begin{definition}[1st child, last child, next sibling, previous sibling, \cite{Valiente2021}, Def. 1.25, p. 19]
+    Let $T = (V,E)$ be an ordered tree, \& let $(v,w)\in E$. Node $w\in V$ is said to be the {\rm1st child} of node $v\in V$, denoted by ${\rm first}[v]$, if there is no node $z\in V$ s.t. $(v,z)\in E,z < w$. Node $w\in V$ is said to be the {\rm last child} of node $v\in V$, denoted by ${\rm last}[v]$, if there is no node $z\in V$ s.t. $(v,z)\in E$ \& $w < z$. Node $z\in V$ is said to be the {\rm next sibling} of node $w\in V$, denoted by ${\rm next}[w]$, if $(v,z)\in E$, $w < z$, \& there is no node $x\in V$ s.t. $(v,x)\in E$ \& $w < x < z$. Node $w\in V$ is said to be the {\rm previous sibling} of node $z\in V$, denoted by ${\rm previous}[z]$, if ${\rm next}[w] = z$.
+\end{definition}
+
+\begin{dinhnghia}[Con thứ nhất, con út, anh chị em tiếp theo, anh chị em trước]
+    Cho $T = (V,E)$ là một cây có thứ tự, \& cho $(v,w)\in E$. Nút $w\in V$ được gọi là {\rm1st child} của nút $v\in V$, ký hiệu là ${\rm first}[v]$, nếu không có nút $z\in V$ s.t. $(v,z)\in E,z < w$. Nút $w\in V$ được gọi là {\rm last child} của nút $v\in V$, ký hiệu là ${\rm last}[v]$, nếu không có nút $z\in V$ s.t. $(v,z)\in E$ \& $w < z$. Nút $z\in V$ được gọi là {\rm anh chị em tiếp theo} của nút $w\in V$, ký hiệu là ${\rm next}[w]$, nếu $(v,z)\in E$, $w < z$, \& không có nút $x\in V$ s.t. $(v,x)\in E$ \& $w < x < z$. Nút $w\in V$ được gọi là {\rm anh chị em trước} của nút $z\in V$, ký hiệu là ${\rm previous}[z]$, nếu ${\rm next}[w] = z$.
+\end{dinhnghia}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Problem: Basic graphs -- Bài tập: Đồ thị cơ bản}
 
 \begin{example}[\cite{Shahriari2022}, Example 2.30, p. 57]
     Consider $C_4$, a cycle of length $4$, \& label its vertices around the cycle has $1,2,3,4$. Now, vertices $1,3$ are not adjacent, but each is adjacent to both $2,4$. As such $C_4$ is isomorphic to the bipartite graph $K_{2,2}$.
@@ -3028,45 +3263,6 @@ More technically, in combinatorial graph theory -- as opposed to topological gra
 \begin{problem}[\cite{Shahriari2022}, P2.2.15, p. 60]
     Which pairs of graphs in {\sf Fig. 2.11} are isomorphic?
 \end{problem}
-
-\begin{definition}[Walk, trail, path, \cite{Valiente2021}, Def. 1.3]
-	A {\rm walk} from vertex $v_i$ to vertex $v_j$ in a graph is an alternating sequence $[v_i,e_{i+1},v_{i+1},e_{i+2},\ldots,v_{j-1},e_j,v_j]$ of vertices \& edges in the graph, s.t. $e_k = (v_{k-1},v_k)$ for $k = i + 1,\ldots,j$. A {\rm trail} is a walk with no repeated edges, \& a {\rm path} is a trail with no repeated vertices (except, possibly, the initial \& final vertices). The length of a walk, trail, or path is the number of edges in the sequence.
-\end{definition}
-
-\begin{dinhnghia}[Đường đi dạo, đường mòn, đường đi]
-	1 {\rm đường đi dạo} từ đỉnh $v_i$ đến đỉnh $v_j$ trong 1 đồ thị là 1 chuỗi xen kẽ $[v_i,e_{i+1},v_{i+1},e_{i+2},\ldots,v_{j-1},e_j,v_j]$ các đỉnh \& cạnh trong đồ thị, s.t. $e_k = (v_{k-1},v_k)$ với $k = i + 1,\ldots,j$. 1 {\rm đường mòn} là 1 cuộc đi bộ không có cạnh nào lặp lại, \& 1 {\rm đường đi} là 1 cuộc đi bộ không có đỉnh nào lặp lại (ngoại trừ, có thể là, các đỉnh đầu \& cuối). Độ dài của 1 cuộc đi bộ, trail hoặc path là số cạnh trong chuỗi.	
-\end{dinhnghia}
-Since an edge in a graph is uniquely determined by its source \& target vertices, a walk, trail, or path can be abbreviated by just enumerating either the vertices $[v_i,v_{i+1},\ldots,v_{j-1},v_j]$ or the edges $[e_{i+1},e_{i+2},\ldots,e_j]$ in the alternating sequence $[v_i,e_{i+1},v_{i+1},e_{i+2},\ldots,v_{j-1},e_j,v_j]$ of vertices \& edges.
-
--- Vì 1 cạnh trong đồ thị được xác định duy nhất bởi các đỉnh nguồn \& đích của nó, nên 1 đường đi, đường mòn hoặc đường dẫn có thể được rút gọn chỉ bằng cách liệt kê các đỉnh $[v_i,v_{i+1},\ldots,v_{j-1},v_j]$ hoặc các cạnh $[e_{i+1},e_{i+2},\ldots,e_j]$ trong chuỗi xen kẽ $[v_i,e_{i+1},v_{i+1},e_{i+2},\ldots,v_{j-1},e_j,v_j]$ các đỉnh \& cạnh.
-
-Walks are closed if their initial \& final vertices coincide. -- Đường đi sẽ khép lại nếu đỉnh đầu \& đỉnh cuối trùng nhau.
-
-\begin{definition}[Cycle, \cite{Valiente2021}, Def. 1.4]
-	A walk, trail, or path $[v_i,e_{i+1},v_{i+1},e_{i+2},\ldots,v_{j-1},e_i,v_j]$ is said to be {\rm closed} if $v_i = v_j$. A {\rm cycle} is a closed path of length at least $1$.
-\end{definition}
-The combinatorial structure of a graph encompasses 2 notions of the substructure. A subgraph of a graph is just a graph whose vertex \& edge sets are contained in the vertex \& edge sets of the given graph, resp. The subgraph of a graph induced by a subset of its vertices has as edges the set of edges in the given graph whose source \& target belong to the subset of vertices.
-
--- Cấu trúc tổ hợp của 1 đồ thị bao gồm 2 khái niệm về cấu trúc con. 1 đồ thị con của 1 đồ thị chỉ là 1 đồ thị có tập đỉnh \& cạnh được chứa trong tập đỉnh \& cạnh của đồ thị đã cho, tương ứng. Đồ thị con của 1 đồ thị được tạo ra bởi 1 tập con các đỉnh của nó có các cạnh là tập các cạnh trong đồ thị đã cho có nguồn \& đích thuộc về tập con các đỉnh.
-
-\begin{definition}[Subgraph, \cite{Valiente2021}, Def. 1.5, p. 6]
-	Let $G = (V,E)$ be a graph, \& let $W\subseteq V$. A graph $(W,S)$ is a {\rm subgraph} of $G$ if $S\subseteq E$. The subgraph of $G$ {\rm induced} by $W$ is the graph $(W,E\cap W\times W)$.
-\end{definition}
-
-\begin{dinhnghia}[Đồ thị con]
-	Cho $G = (V,E)$ là 1 đồ thị, \& cho $W\subseteq V$. 1 đồ thị $(W,S)$ là 1 {\rm đồ thị con} của $G$ nếu $S\subseteq E$. Đồ thị con của $G$ {\rm được tạo ra} bởi $W$ là đồ thị $(W,E\cap W\times W)$.
-\end{dinhnghia}
-The notion of graph which is most often found in mathematics is that of an undirected graph. Unlike the directed edges or edges of a graph, edges of an undirected graph have no direction association with them \& therefore, no distinction is made between the source \& target vertices of an edge. In a mathematical sense, an undirected graph consists of a set of vertices \& a finite set of undirected edges, where each edge has a set of 1 or 2 vertices associated with it. In the computer science view of undirected graphs, though, an undirected graph is the particular case of a directed graph in which for every edge $(v,w)$ of the graph, the reversed edge $(w,v)$ also belongs to the graph. Undirected graphs are also called {\it bidirected}.
-
--- Khái niệm đồ thị thường thấy nhất trong toán học là đồ thị vô hướng. Không giống như các cạnh hoặc cạnh có hướng của đồ thị, các cạnh của đồ thị vô hướng không có liên kết hướng nào với chúng \& do đó, không có sự phân biệt nào được tạo ra giữa các đỉnh nguồn \& đích của 1 cạnh. Theo nghĩa toán học, đồ thị vô hướng bao gồm 1 tập hợp các đỉnh \& 1 tập hợp hữu hạn các cạnh vô hướng, trong đó mỗi cạnh có 1 tập hợp gồm 1 hoặc 2 đỉnh được liên kết với nó. Tuy nhiên, theo quan điểm khoa học máy tính về đồ thị vô hướng, đồ thị vô hướng là trường hợp cụ thể của đồ thị có hướng trong đó đối với mọi cạnh $(v,w)$ của đồ thị, cạnh đảo ngược $(w,v)$ cũng thuộc về đồ thị. Đồ thị vô hướng cũng được gọi là {\it song hướng}.
-
-\begin{definition}[Undirected graph, \cite{Valiente2021}, Def. 1.5, p. 6]
-	A graph $G = (V,E)$ is {\rm undirected} if $(v,w)\in E\Rightarrow(w,v)\in E$, $\forall v,w\in V$.
-\end{definition}
-
-\begin{dinhnghia}[Đồ thị vô hướng]
-	Đồ thị $G = (V,E)$ là {\rm vô hướng} nếu $(v,w)\in E\Rightarrow(w,v)\in E$, $\forall v,w\in V$.
-\end{dinhnghia}
 
 \begin{baitoan}[\cite{Shahriari2022}, p. 361]
 	A soccer ball is often tiled with $12$ pentagons \& $20$ hexagons. Is there anything special about those numbers? If you tile a soccer ball with pentagons \& hexagons, what are the possibilities for the number of pentagons \& the number of hexagons?
@@ -3208,7 +3404,7 @@ Because of this theorem, if you are given a sequence of nonnegative integers \& 
 \end{problem}
 
 \begin{goal}[Tính khả dĩ của dãy bậc của đồ thị]
-	Tìm vài dấu hiệu hoặc vài điều kiện cần \& đủ để có thể quyết định liệu 1 dãy số nguyên dương $(a_i)_{i=1}^n\subset\mathbb{N}$ cho trươc có  thể thể là dãy bậc của đồ thị mà không phải vẽ biểu đồ.
+	Tìm vài dấu hiệu hoặc vài điều kiện cần \& đủ để có thể quyết định liệu 1 dãy số nguyên dương $(a_i)_{i=1}^n\subset\mathbb{N}$ cho trước có  thể thể là dãy bậc của đồ thị mà không phải vẽ biểu đồ.
 \end{goal}
 
 \begin{dinhnghia}[\cite{Ha_Thanh_to_hop}, Def. 7.6, p. 249, Dãy bậc của đồ thị, chuỗi đồ thị]
@@ -3401,6 +3597,123 @@ Zarankiewicz's lemma is the main step in the proof of Turan's theorem -- a famou
 
 \chapter{Algorithms on Graphs -- Các Thuật Toán Trên Đồ Thị}
 \minitoc
+
+%------------------------------------------------------------------------------%
+
+\section{Preliminaries}
+Phần này nêu sơ lược 1 số khái niệm cơ bản \& bài toán cơ bản trong lý thuyết đồ thị.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Search problems -- Bài toán tìm kiếm}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/Search_problem}{Wikipedia{\tt/}search problem}.
+\end{enumerate}
+In \href{https://en.wikipedia.org/wiki/Computational_complexity_theory}{computational complexity theory} \& \href{https://en.wikipedia.org/wiki/Computability_theory}{computability theory}, a {\it search problem} is a \href{https://en.wikipedia.org/wiki/Computational_problem}{computational problem} of finding an {\it admissible} answer for a given input value, provided that such an answer exists. In fact, a search problem is specified by a \href{https://en.wikipedia.org/wiki/Binary_relation}{binary relation} $R$ where $xRy$ iff ``$y$ is an admissible answer given $x$''. Search problems frequently occur in graph theory \& \href{https://en.wikipedia.org/wiki/Combinatorial_optimization}{combinatorial optimization}, e.g. searching for \href{https://en.wikipedia.org/wiki/Matching_(graph_theory)}{matchings}, optional \href{https://en.wikipedia.org/wiki/Clique_(graph_theory)}{cliques}, \& \href{https://en.wikipedia.org/wiki/Independent_set_(graph_theory)}{stable sets} in a given undirected graph.
+
+-- Trong lý thuyết độ phức tạp tính toán \& lý thuyết khả năng tính toán, 1 bài toán tìm kiếm là 1 bài toán tính toán tìm 1 câu trả lời có thể chấp nhận được cho 1 giá trị đầu vào nhất định, với điều kiện là câu trả lời như vậy tồn tại. Trên thực tế, 1 bài toán tìm kiếm được chỉ định bởi 1 quan hệ nhị phân R trong đó xRy nếu \& chỉ nếu ``$y$ là 1 câu trả lời có thể chấp nhận được cho $x$''. Các bài toán tìm kiếm thường xảy ra trong lý thuyết đồ thị \& tối ưu hóa tổ hợp, ví dụ như tìm kiếm các phép khớp, các nhóm tùy chọn \& các tập ổn định trong 1 đồ thị vô hướng nhất định.
+
+An algorithm is said to solve a search problem if, for every input value $x$, it returns an admissible answer $y$ for $x$ when such an answer exists; otherwise, it returns any appropriate output, e.g., ``not found'' for $x$ with no such answer.
+
+\begin{definition}[Search problem]
+    If $R$ is a binary relation s.t. ${\rm field}(R)\subseteq\Gamma^+$ \& $T$ is a \href{https://en.wikipedia.org/wiki/Turing_machine}{Turing machine}, then $T$ calculates $f$ if:
+    \begin{itemize}
+        \item if $x$ is s.t. there is some $y$ s.t. $R(x,y)$ then $T$ accepts $x$ with output $z$ s.t. $R(x,z)$ (there may be multiple $y$, \& $T$ need only find 1 of them).
+        \item If $x$ is s.t. there is no $y$ s.t. $R(x,y)$ then $T$ rejects $x$.
+    \end{itemize}
+\end{definition}
+The graph of a \href{https://en.wikipedia.org/wiki/Partial_function}{partial function} is a binary relation, \& if $T$ calculates a partial function then there is at most 1 possible output.
+
+A $R$ can be viewed as a {\it search problem}, \& a Turing machine which calculates $R$ is also said to solve it. Every search problem has a corresponding \href{https://en.wikipedia.org/wiki/Decision_problem}{decision problem}, namely $L(R) = \{x;\exists y,\ R(x,y)\}$. This definition can be generalized to $n$-ary relations by any suitable encoding which allows multiple strings to be compressed into 1 string (e.g., by listing them consecutively with a \href{https://en.wikipedia.org/wiki/Delimiter}{delimiter}).
+
+%------------------------------------------------------------------------------%
+
+\subsection{Search algorithms -- Các thuật toán tìm kiếm}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/Search_algorithm}{Wikipedia{\tt/}search algorithm}.
+\end{enumerate}
+In CS, a {\it search algorithm} is an algorithm designed to solve a \href{https://en.wikipedia.org/wiki/Search_problem}{search problem}. Search algorithms work to retrieve information stored within particular \href{https://en.wikipedia.org/wiki/Data_structure}{data structure}, or calculated in the \href{https://en.wikipedia.org/wiki/Feasible_region}{search space{\tt/}feasible region} of a problem domain, with \href{https://en.wikipedia.org/wiki/Continuous_or_discrete_variable}{either discrete or continuous values}.
+
+-- Trong khoa học máy tính, thuật toán tìm kiếm là thuật toán được thiết kế để giải quyết vấn đề tìm kiếm. Thuật toán tìm kiếm hoạt động để truy xuất thông tin được lưu trữ trong cấu trúc dữ liệu cụ thể hoặc được tính toán trong không gian tìm kiếm của miền vấn đề, với các giá trị rời rạc hoặc liên tục.
+
+Although \href{https://en.wikipedia.org/wiki/Search_engine_(computing)}{search engines} use search algorithms, they belong to the study of \href{https://en.wikipedia.org/wiki/Information_retrieval}{information retrieval}, not algorithmics.
+
+-- Mặc dù công cụ tìm kiếm sử dụng thuật toán tìm kiếm nhưng chúng thuộc về lĩnh vực nghiên cứu về truy xuất thông tin chứ không phải thuật toán.
+
+The appropriate search algorithm to use often depends on the data structure being searched, \& may also include prior knowledge about the data. Search algorithms can be made faster or more efficient by specially constructed database structures, e.g. \href{https://en.wikipedia.org/wiki/Search_tree}{search trees}, \href{https://en.wikipedia.org/wiki/Hash_map}{hash maps}, \& \href{https://en.wikipedia.org/wiki/Database_index}{database indexes}.
+
+-- Thuật toán tìm kiếm phù hợp để sử dụng thường phụ thuộc vào cấu trúc dữ liệu đang được tìm kiếm \& cũng có thể bao gồm kiến thức trước đó về dữ liệu. Thuật toán tìm kiếm có thể được thực hiện nhanh hơn hoặc hiệu quả hơn bằng các cấu trúc cơ sở dữ liệu được xây dựng đặc biệt, chẳng hạn như cây tìm kiếm, bản đồ băm \& chỉ mục cơ sở dữ liệu.
+
+Search algorithms can be classified based on their mechanism of searching into 3 types of algorithms: linear, binary, \& hashing. \href{https://en.wikipedia.org/wiki/Linear_search}{Linear search} algorithms check every record for the one associated with a target key in a linear fashion. \href{https://en.wikipedia.org/wiki/Binary_search_algorithm}{Binary, or half-interval, searches} repeatedly target the center of the search structure \& divide the search space in half. Comparison search algorithms improve on linear searching by successively eliminating records based on comparisons of the keys until the target record is found, \& can be applied on data structures with a defined order. Digital search algorithms work based on the properties of digits in data structures by using numerical keys. Finally, \href{https://en.wikipedia.org/wiki/Hash_table}{hashing} directly maps keys to records based on a \href{https://en.wikipedia.org/wiki/Hash_function}{hash function}.
+
+-- Thuật toán tìm kiếm có thể được phân loại dựa trên cơ chế tìm kiếm của chúng thành ba loại thuật toán: tuyến tính, nhị phân, \& băm. Thuật toán tìm kiếm tuyến tính kiểm tra mọi bản ghi để tìm bản ghi được liên kết với khóa mục tiêu theo cách tuyến tính. Tìm kiếm nhị phân hoặc nửa khoảng, liên tục nhắm mục tiêu vào tâm của cấu trúc tìm kiếm \& chia đôi không gian tìm kiếm. Thuật toán tìm kiếm so sánh cải thiện tìm kiếm tuyến tính bằng cách loại bỏ liên tiếp các bản ghi dựa trên các phép so sánh khóa cho đến khi tìm thấy bản ghi mục tiêu \& có thể được áp dụng trên các cấu trúc dữ liệu có thứ tự được xác định. Thuật toán tìm kiếm kỹ thuật số hoạt động dựa trên các thuộc tính của chữ số trong cấu trúc dữ liệu bằng cách sử dụng các khóa số. Cuối cùng, băm trực tiếp ánh xạ khóa thành các bản ghi dựa trên hàm băm.
+
+Algorithms are often evaluated by their \href{https://en.wikipedia.org/wiki/Computational_complexity}{computational complexity}, or maximum theoretical run time. Binary search functions, e.g., have a maximum complexity of $O(\log n)$, or logarithmic time. In simple terms, the maximum number of operations needed to find the search target is a logarithmic function of the size of the search space.
+
+-- Thuật toán thường được đánh giá theo độ phức tạp tính toán hoặc thời gian chạy lý thuyết tối đa. E.g., hàm tìm kiếm nhị phân có độ phức tạp tối đa là $O(\log n)$ hoặc thời gian logarith. Nói 1 cách đơn giản, số lượng thao tác tối đa cần thiết để tìm mục tiêu tìm kiếm là hàm logarit của kích thước không gian tìm kiếm.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Applications of search algorithms -- Ứng dụng của thuật toán tìm kiếm}
+Specific applications of search algorithms include:
+\begin{itemize}
+    \item Problems in \href{https://en.wikipedia.org/wiki/Combinatorial_optimization}{combinatorial optimization}, e.g.:
+    \begin{itemize}
+        \item The \href{https://en.wikipedia.org/wiki/Vehicle_routing_problem}{vehicle routing problem}, a form of \href{https://en.wikipedia.org/wiki/Shortest_path_problem}{shortest path problem}
+        \item The \href{https://en.wikipedia.org/wiki/Knapsack_problem}{knapsack problem}: Given a set of items, each with a weight \& a value, determine the number of each item to include in a collection so that the total weight is $\le$ a given limit \& the total value is as large as possible.
+        \item The \href{https://en.wikipedia.org/wiki/Nurse_scheduling_problem}{nurse scheduling problem}
+    \end{itemize}
+    \item Problems in \href{https://en.wikipedia.org/wiki/Constraint_satisfaction}{constraint satisfaction}, e.g.:
+    \begin{itemize}
+        \item The \href{https://en.wikipedia.org/wiki/Map_coloring_problem}{map coloring problem}
+        \item Filling in a \href{https://en.wikipedia.org/wiki/Sudoku}{sudoku} or \href{https://en.wikipedia.org/wiki/Crossword_puzzle}{crossword puzzle}
+    \end{itemize}
+    \item In \href{https://en.wikipedia.org/wiki/Game_theory}{game theory} \& especially \href{https://en.wikipedia.org/wiki/Combinatorial_game_theory}{combinatorial game theory}, choosing the best move to make next (e.g. with the \href{https://en.wikipedia.org/wiki/Minmax}{minmax} algorithm)
+    \item Finding a combination or password from the whole set of possibilities
+    \item \href{https://en.wikipedia.org/wiki/Factorization}{Factoring} an integer (an important problem in \href{https://en.wikipedia.org/wiki/Cryptography}{cryptography})
+    \item Search engine optimization (SEO) \& content optimization for web crawlers
+    \item Optimizing an industrial process, e.g. a \href{https://en.wikipedia.org/wiki/Chemical_reaction}{chemical reaction}, by changing the parameters of the process (like temperature, pressure, \& pH)
+    \item Retrieving a record from a \href{https://en.wikipedia.org/wiki/Database}{database}
+    \item Finding the maximum or minimum value in a \href{https://en.wikipedia.org/wiki/List_(abstract_data_type)}{list} or \href{https://en.wikipedia.org/wiki/Array_data_structure}{array}
+    \item Checking to see if a given value is present in a set of values
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Classes of search algorithms}
+
+\begin{enumerate}
+    \item {\bf For virtual search spaces.} Algorithms for searching virtual spaces are used in the \href{https://en.wikipedia.org/wiki/Constraint_satisfaction_problem}{constraint satisfaction problem}, where the goal is to find a set of value assignments to certain varieties that will satisfy specific mathematical equations \& inequations{\tt/}equalities. They are also used when the goal is to find a variable assignment that will \href{https://en.wikipedia.org/wiki/Discrete_optimization}{maximize or minimize} a certain function of those variables. Algorithms for these problems include the basic \href{https://en.wikipedia.org/wiki/Brute-force_search}{brute-force search} (also called ``na\"ive'' or ``uninformed'' search), \& a variety of \href{https://en.wikipedia.org/wiki/Heuristic_function}{heuristics} that try to exploit partial knowledge about the structure of this space, e.g. linear relaxation, constraint generation, \& \href{https://en.wikipedia.org/wiki/Local_consistency}{constraint propagation}.
+    
+    -- Các thuật toán tìm kiếm không gian ảo được sử dụng trong bài toán thỏa mãn ràng buộc, trong đó mục tiêu là tìm 1 tập hợp các phép gán giá trị cho các biến nhất định sẽ thỏa mãn các phương trình \& bất phương trình toán học/bằng nhau cụ thể. Chúng cũng được sử dụng khi mục tiêu là tìm 1 phép gán biến sẽ tối đa hóa hoặc tối thiểu hóa 1 hàm nhất định của các biến đó. Các thuật toán cho các bài toán này bao gồm tìm kiếm brute-force cơ bản (còn gọi là tìm kiếm ``ngây thơ'' hoặc ``không có thông tin''), \& nhiều phương pháp tìm kiếm khác nhau cố gắng khai thác kiến thức 1 phần về cấu trúc của không gian này, chẳng hạn như thư giãn tuyến tính, tạo ràng buộc \& truyền ràng buộc.
+    
+    An important subclass are the \href{https://en.wikipedia.org/wiki/Local_search_(optimization)}{local search} methods, that view the elements of the search space as the vertices of a graph, with edges defined by a set of heuristics applicable to the case; \& scan the space by moving from item to item along the edges, e.g. according to the \href{https://en.wikipedia.org/wiki/Gradient_descent}{steepest descent} or \href{https://en.wikipedia.org/wiki/Best-first_search}{best 1st} criterion, or in a \href{https://en.wikipedia.org/wiki/Stochastic_optimization}{stochastic search}. This category includes a great variety of general \href{https://en.wikipedia.org/wiki/Metaheuristic}{metaheuristic} methods, e.g. \href{https://en.wikipedia.org/wiki/Simulated_annealing}{simulated annealing}, \href{https://en.wikipedia.org/wiki/Tabu_search}{tabu search}, A-teams, \& \href{https://en.wikipedia.org/wiki/Genetic_programming}{general programming}, that combine arbitrary heuristics in specific ways. The opposite of local search would be global search methods. This method is applicable when the search space is not limited \& all aspects of the given network are available to the entity running the search algorithm.
+    
+    -- 1 phân lớp quan trọng là các phương pháp tìm kiếm cục bộ, xem các phần tử của không gian tìm kiếm như các đỉnh của 1 đồ thị, với các cạnh được xác định bởi 1 tập hợp các phương pháp tìm kiếm áp dụng cho trường hợp này; \& quét không gian bằng cách di chuyển từ mục này sang mục khác dọc theo các cạnh, ví dụ theo tiêu chí dốc nhất hoặc tiêu chí tốt nhất đầu tiên, hoặc trong tìm kiếm ngẫu nhiên. Thể loại này bao gồm nhiều phương pháp siêu tìm kiếm chung, chẳng hạn như ủ mô phỏng, tìm kiếm tabu, nhóm A \& lập trình di truyền, kết hợp các phương pháp tìm kiếm tùy ý theo những cách cụ thể. Ngược lại với tìm kiếm cục bộ sẽ là các phương pháp tìm kiếm toàn cục. Phương pháp này có thể áp dụng khi không gian tìm kiếm không bị giới hạn \& tất cả các khía cạnh của mạng đã cho đều khả dụng đối với thực thể chạy thuật toán tìm kiếm.
+    
+    This class also includes various \href{https://en.wikipedia.org/wiki/Tree_traversal}{tree search algorithms}, that view the elements as vertices of a \href{https://en.wikipedia.org/wiki/Tree_(graph_theory)}{tree}, \& traverse that tree in some special order. Examples of the latter include the exhaustive methods e.g. \href{https://en.wikipedia.org/wiki/Depth-first_search}{depth-1st search} \& \href{https://en.wikipedia.org/wiki/Breadth-first_search}{breadth-1st search}, as well as various heuristic-based \href{https://en.wikipedia.org/wiki/Pruning_(decision_trees)}{search tree pruning} methods e.g. \href{https://en.wikipedia.org/wiki/Backtracking}{backtracking} \& \href{https://en.wikipedia.org/wiki/Branch\_and\_bound}{branch \& bound}. Unlike general metaheuristics, which at best work only in a probabilistic scene, many of these tree-search methods are guaranteed to find the exact or optimal solution, if given enough time. This is called ``\href{https://en.wikipedia.org/wiki/Completeness_(logic)}{completeness}''.
+    
+    -- Lớp này cũng bao gồm nhiều thuật toán tìm kiếm cây khác nhau, xem các phần tử như các đỉnh của 1 cây \& duyệt cây đó theo 1 thứ tự đặc biệt nào đó. Ví dụ về thứ tự sau bao gồm các phương pháp đầy đủ như tìm kiếm theo chiều sâu \& tìm kiếm theo chiều rộng, cũng như nhiều phương pháp cắt tỉa cây tìm kiếm dựa trên phương pháp heuristic như quay lui \& rẽ nhánh \& giới hạn. Không giống như các siêu phương pháp heuristic chung, tốt nhất chỉ hoạt động theo nghĩa xác suất, nhiều phương pháp tìm kiếm cây này được đảm bảo tìm ra giải pháp chính xác hoặc tối ưu, nếu có đủ thời gian. Điều này được gọi là ``hoàn chỉnh''.
+    
+    Another important subclass consists of algorithms for exploring the \href{https://en.wikipedia.org/wiki/Game_tree}{game tree} of multiple-player games, e.g. chess or \href{https://en.wikipedia.org/wiki/Backgammon}{backgammon}, whose nodes consist of all possible game situations that could result from the current situation. The goal in these problems is to find the move that provides the best chance of a win, taking into account all possible moves of the opponent(s). Similar problems occur when humans or machines have to make successive decisions whose outcomes are not entirely under one's control, e.g. in robot guidance or in marketing, financial, or military strategy planning. This kind of problem -- \href{https://en.wikipedia.org/wiki/Combinatorial_search}{combinatorial search} -- has been extensively studied in the context of AI. Examples of algorithms for this class are the \href{https://en.wikipedia.org/wiki/Minimax}{minimax algorithm}, \href{https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning}{alpha--beta pruning}, \& the \href{https://en.wikipedia.org/wiki/A*_search_algorithm}{$\rm A^\star$ algorithm} \& its variants.
+    
+    -- 1 phân lớp quan trọng khác bao gồm các thuật toán để khám phá cây trò chơi của các trò chơi nhiều người chơi, chẳng hạn như cờ vua hoặc cờ cá ngựa, có các nút bao gồm tất cả các tình huống trò chơi có thể xảy ra do tình huống hiện tại. Mục tiêu của các bài toán này là tìm ra nước đi mang lại cơ hội chiến thắng cao nhất, có tính đến tất cả các nước đi có thể có của đối thủ. Các bài toán tương tự xảy ra khi con người hoặc máy móc phải đưa ra các quyết định liên tiếp mà kết quả không hoàn toàn nằm trong tầm kiểm soát của mình, chẳng hạn như trong hướng dẫn rô-bốt hoặc trong lập kế hoạch chiến lược tiếp thị, tài chính hoặc quân sự. Loại bài toán này -- tìm kiếm kết hợp -- đã được nghiên cứu rộng rãi trong bối cảnh trí tuệ nhân tạo. Các ví dụ về thuật toán cho lớp này là thuật toán minimax, cắt tỉa alpha–beta \& thuật toán A* cùng các biến thể của nó.
+    \item {\bf For sub-structures of a given structure.} An important \& extensively studied subclass are the \href{https://en.wikipedia.org/wiki/List_of_algorithms#Graph_algorithms}{graph algorithms}, in particular \href{https://en.wikipedia.org/wiki/Graph_traversal}{graph traversal} algorithms, for finding specific sub-structures in a given graph -- e.g. \href{https://en.wikipedia.org/wiki/Glossary_of_graph_theory#Subgraphs}{subgraphs}, paths, circuits, etc. Examples include \href{https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm}{Dijkstra's algorithm}, \href{https://en.wikipedia.org/wiki/Kruskal%27s_algorithm}{Kruskal's algorithm}, the \href{https://en.wikipedia.org/wiki/Nearest_neighbour_algorithm}{nearest neighbor algorithm}, \& \href{https://en.wikipedia.org/wiki/Prim%27s_algorithm}{Prim's algorithm}.
+    
+    -- {\it Đối với các cấu trúc con của 1 cấu trúc nhất định.} 1 phân lớp quan trọng \& được nghiên cứu rộng rãi là các thuật toán đồ thị, đặc biệt là các thuật toán duyệt đồ thị, để tìm các cấu trúc con cụ thể trong 1 đồ thị nhất định — chẳng hạn như các đồ thị con, đường dẫn, mạch, etc. Các ví dụ bao gồm thuật toán Dijkstra, thuật toán Kruskal, thuật toán hàng xóm gần nhất \& thuật toán Prim.
+    
+    Another important subclass of this category are the \href{https://en.wikipedia.org/wiki/String_searching_algorithm}{string searching algorithms}, that search for patterns within strings. 2 famous examples are the \href{https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string-search_algorithm}{Boyer--Moore} \& \href{https://en.wikipedia.org/wiki/Knuth%E2%80%93Morris%E2%80%93Pratt_algorithm}{Knuth--Morris--Pratt algorithms}, \& several algorithms based on the \href{https://en.wikipedia.org/wiki/Suffix_tree}{suffix tree} data structure.
+    
+    -- 1 phân lớp quan trọng khác của thể loại này là các thuật toán tìm kiếm chuỗi, tìm kiếm các mẫu trong chuỗi. Hai ví dụ nổi tiếng là các thuật toán Boyer--Moore \& Knuth--Morris--Pratt, \& 1 số thuật toán dựa trên cấu trúc dữ liệu cây hậu tố.
+    \item {\bf Search for the maximum of a function.} In 1953, American statistician \href{https://en.wikipedia.org/wiki/Jack_Kiefer_(statistician)}{\sc Jack Kiefer} devised \href{https://en.wikipedia.org/wiki/Fibonacci_search_technique}{Fibonacci search} which can be used to find the maximum of a unimodal function \& has many other applications in CS.
+    
+    -- {\it Tìm kiếm giá trị lớn nhất của 1 hàm số.} Vào năm 1953, nhà thống kê người Mỹ Jack Kiefer đã phát minh ra thuật toán tìm kiếm Fibonacci có thể được sử dụng để tìm giá trị lớn nhất của 1 hàm số đơn thức \& có nhiều ứng dụng khác trong khoa học máy tính.
+    \item {\bf For quantum computers.} There are also search methods designed for \href{https://en.wikipedia.org/wiki/Quantum_computing}{quantum computers}, like \href{https://en.wikipedia.org/wiki/Grover%27s_algorithm}{Grover's algorithm}, that are theoretically faster than linear or brute-force search even without the help of data structures or heuristics. While the ideas \& applications behind quantum computers are still entirely theoretical, studies have been conducted with algorithms like Grover's that accurately replicate the hypothetical physical versions of quantum computing systems.
+    
+    -- {\it Đối với máy tính lượng tử}: Cũng có những phương pháp tìm kiếm được thiết kế cho máy tính lượng tử, như thuật toán Grover, về mặt lý thuyết nhanh hơn tìm kiếm tuyến tính hoặc tìm kiếm bằng vũ lực ngay cả khi không có sự trợ giúp của cấu trúc dữ liệu hoặc phương pháp tìm kiếm. Trong khi các ý tưởng \& ứng dụng đằng sau máy tính lượng tử vẫn hoàn toàn là lý thuyết, các nghiên cứu đã được tiến hành với các thuật toán như thuật toán Grover sao chép chính xác các phiên bản vật lý giả định của hệ thống máy tính lượng tử.
+\end{enumerate}
 
 %------------------------------------------------------------------------------%
 

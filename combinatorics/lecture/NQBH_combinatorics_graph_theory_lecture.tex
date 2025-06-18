@@ -3628,7 +3628,7 @@ Some of the basic data structures needed for the description of algorithms on tr
     \item Blocks of statements are shown by means of indention.
     
     -- Các khối câu lệnh được hiển thị bằng cách thụt lề.
-    \begin{verbatim}
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
 if ... then
     ...
 else
@@ -3646,7 +3646,7 @@ while ... do
 repeat
     ...
 until ...
-    \end{verbatim}
+    \end{Verbatim}
 \end{itemize}
 The collection of abstract operations on arrays, matrices, lists, stacks, queues, priority queues, sets, \& dictionaries is presented next by way of examples.
 
@@ -3834,6 +3834,200 @@ The choice of abstract operations to be included in a graph representation depen
     
     -- \verb|G.new_vertex()| chèn một đỉnh mới vào đồ thị $G$, \& \verb|G.new_edge(v, w)| chèn một cạnh mới vào đồ thị $G$ đi ra khỏi đỉnh $v$ \& đi vào đỉnh $w$. Hơn nữa, \verb|G.del_vertex(v)| xóa đỉnh $v$ khỏi đồ thị $G$, cùng với tất cả các cạnh đi ra khỏi hoặc đi vào đỉnh $v$, \& \verb|G.del_edge(e)| xóa cạnh $e$ khỏi đồ thị $G$. Các phép toán này hỗ trợ đồ thị động.
 \end{enumerate}
+Some of these operations are actually defined in terms of a smaller set of 10 abstract operations on graphs::
+\begin{verbatim}
+G.vertices(), G.edges(), G.incoming(v), G.outgoing(v), G.source(e), G.target(e), G.new_vertex(), G.new_edge(v, w), G.del_vertex(v), G.del_edge(e)
+\end{verbatim}
+using the abstract operations on basic data structures presented as follows:
+\begin{enumerate}
+    \item \verb|G_number_of_vertices()| is given by \verb|G.vertices().size()|.
+    \item \verb|G_number_of_edges()| is given by \verb|G.edges().size()|.
+    \item {\tt G.indeg(v)} is given by {\tt G.incoming(v).size()}.
+    \item {\tt G.outdeg(v)} is given by {\tt G.outcoming(v).size()}.
+    \item {\tt G.adjacent(v, w)} is true if there is an edge $e\in{\tt G.outing}(v)$ s.t. $G.{\tt target}(e) = w$, \& it is false otherwise.
+    \item {\tt G.opposite(v, e)} is given by {\tt G.target(e)} if {\tt G.source(e) = v}, \& it is given by {\tt G.source(e)} otherwise, i.e., if {\tt G.target(e) = v}.
+    \item \verb|G.first_vertex()| is given by \verb|G.vertices().front()|.
+    \item \verb|G.last_vertex()| is given by \verb|G.vertices().back()|.
+    \item \verb|G.pred_vertex(v)| is given by \verb|G.vertices().prev(v)|.
+    \item \verb|G.succ_vertex(v)| is given by \verb|G.vertices().next(v)|.
+    \item \verb|G.first_edge()| is given by {\tt G.edges().front()}.
+    \item \verb|G.last_edge()| is given by {\tt G.edges().back()}.
+    \item \verb|G.pred_edge(e)| is given by {\tt G.edges().prev(e)}.
+    \item \verb|G.succ_edge(e)| is given by {\tt G.edges().next(e)}.
+    \item \verb|G.first_in_edge(v)| is given by {\tt G.incoming(v).front()}.
+    \item \verb|G.last_in_edge(v)| is given by {\tt G.incoming(v).back()}.
+    \item \verb|G.in_pred(e)| is given by {\tt G.incoming(v).prev(e)}.
+    \item \verb|G.in_succ(e)| is given by {\tt G.incoming(v).next(e)}.
+    \item \verb|G.first_adj_edge(v)| is given by {\tt G.outgoing(v).front()}.
+    \item \verb|G.last_adj_edge(v)| is given by {\tt G.outgoing(v).back()}.
+    \item \verb|G.adj_pred(e)| is given by {\tt G.outgoing(v).prev(e)}.
+    \item \verb|G.adj_succ(e)| is given by {\tt G.outgoing(v).next(e)}.
+\end{enumerate}
+Together with the abstract operations on the underlying basic data structures, these operations support iteration over the vertices \& edges of a graph. E.g., in the following procedure, variable $v$ is assigned each of the vertices of graph $G$ in turn,
+\begin{verbatim}
+for all vertices v of G do // v in G.vertices()
+    ...
+\end{verbatim}
+\& in the following procedure, all those vertices of graph $G$ which are adjacent with vertex $v$ are assigned in turn to variable $w$.
+\begin{verbatim}
+for all vertices w adjacent with vertex v in G do // e in G.outgoing(v)
+    ... // w = G.target(e)
+\end{verbatim}
+Together, they provide for a simple traversal of a graph, in which vertices \& edges are visited in the order fixed by the representation of the graph.
+\begin{verbatim}
+for all vertices v of G do // v in G.vertices()
+    for all vertices w adjacent with vertex v in G do // e in G.outgoing(v)
+        ... // w = G.target(e)
+\end{verbatim}
+-- Cùng với các phép toán trừu tượng trên các cấu trúc dữ liệu cơ bản bên dưới, các phép toán này hỗ trợ phép lặp qua các đỉnh \& cạnh của đồ thị. Ví dụ, trong quy trình sau, biến $v$ được gán lần lượt cho từng đỉnh của đồ thị $G$,
+\begin{verbatim}
+for all vertices v of G do // v in G.vertices()
+    ...
+\end{verbatim}
+\& trong quy trình sau, tất cả các đỉnh của đồ thị $G$ kề với đỉnh $v$ thì lần lượt được gán cho biến $w$.
+\begin{verbatim}
+for all vertices w adjacent with vertex v in G do // e in G.outgoing(v)
+    ... // w = G.target(e)
+\end{verbatim}
+Cùng nhau, chúng cung cấp một phép duyệt đơn giản trên đồ thị, trong đó các đỉnh \& cạnh được truy cập theo thứ tự cố định theo biểu diễn của đồ thị.
+\begin{verbatim}
+for all vertices v of G do // v in G.vertices()
+    for all vertices w adjacent with vertex v in G do // e in G.outgoing(v)
+        ... // w = G.target(e)
+\end{verbatim}
+
+%------------%------------------------------------------------------------------------------%------------------------------------------------------------------%
+
+\subsubsection{Adjacency matrix -- Ma trận kề}
+The data structures most often used for representing graphs are adjacency matrices \& adjacency lists. The adjacency matrix representation of a graph is a Boolean matrix, with an entry for each ordered pair of vertices in the graph, where the entry corresponding to vertices $v,w$ has the value {\tt true} if there is an edge in the graph going out of vertex $v$ \& coming into vertex $w$, \& it has the value {\tt false} otherwise.
+
+-- Cấu trúc dữ liệu thường được sử dụng nhất để biểu diễn đồ thị là ma trận kề \& danh sách kề. Biểu diễn ma trận kề của đồ thị là ma trận Boolean, với một mục nhập cho mỗi cặp đỉnh có thứ tự trong đồ thị, trong đó mục nhập tương ứng với các đỉnh $v,w$ có giá trị {\tt true} nếu có một cạnh trong đồ thị đi ra khỏi đỉnh $v$ \& đi vào đỉnh $w$, \& có giá trị {\tt false} nếu không.
+
+\begin{definition}[Adjacency matrix, \cite{Valiente2021}, Def. 1.26, p. 26]
+    Let $G = (V,E)$ be a graph with $n\in\mathbb{N}^\star$ vertices. The {\rm adjacency matrix} representation of $G$ is an $n\times n$ Boolean matrix with an entry for each ordered pair of vertices of $G$, where the entry corresponding to vertices $v,w$ is equal to {\tt true} if $(v,w)\in E$ \& is equal to {\tt false} otherwise, for all vertices $v,w\in V$.
+\end{definition}
+
+\begin{dinhnghia}[Ma trận kề]
+    Cho $G = (V,E)$ là một đồ thị có $n\in\mathbb{N}^\star$ đỉnh. Biểu diễn {\rm adjacency matrix} của $G$ là một ma trận Boolean $n\times n$ với một mục nhập cho mỗi cặp đỉnh có thứ tự của $G$, trong đó mục nhập tương ứng với các đỉnh $v,w$ bằng {\tt true} nếu $(v,w)\in E$ \& bằng {\tt false} nếu không, đối với mọi đỉnh $v,w\in V$.
+\end{dinhnghia}
+With most data structures used for representing graphs, there is an order on the vertices fixed by the representation. In the case of the adjacency matrix representation $A$ of a graph $G = (V,E)$, vertex $v$ precedes vertex $w$ iff the row of $A$ corresponding to $v$ lies above the row of $A$ corresponding to $w$ or, in an equivalent formulation, the column of $A$ corresponding to $v$ lies to the left of the column of $A$ corresponding to $w$, for all vertices $v,w\in V$.
+
+-- Với hầu hết các cấu trúc dữ liệu được sử dụng để biểu diễn đồ thị, có một thứ tự trên các đỉnh được cố định bởi biểu diễn. Trong trường hợp biểu diễn ma trận kề $A$ của đồ thị $G = (V,E)$, đỉnh $v$ đứng trước đỉnh $w$ nếu/nếu hàng của $A$ tương ứng với $v$ nằm phía trên hàng của $A$ tương ứng với $w$ hoặc, theo một công thức tương đương, cột của $A$ tương ứng với $v$ nằm bên trái cột $A$ tương ứng với $w$, đối với mọi đỉnh $v,w\in V$.
+
+Since the edges are implicit in the adjacency matrix representation of a graph, those operations having an edge as argument or giving an edge as result cannot be implemented using an adjacency matrix representation. These operations are: {\tt G.edges(), G.incoming(v), G.outgoing(v), G.source(e), G.target(e)}, \& \verb|G.del_edge(e)|. Furthermore, \verb|G.new_vertex(), G.del_vertex()| cannot be implemented unless the adjacency matrix can be dynamically resized, \& \verb|G.new_edge(v, w)| can be implemented by setting to {\tt true} the entry of $A$ at the row corresponding to vertex $v$ \& the column corresponding to vertex $w$, \& takes $O(1)$ time, but the operation cannot give the new edge as result.
+
+-- Vì các cạnh được ngầm định trong biểu diễn ma trận kề của đồ thị, nên các phép toán có cạnh làm đối số hoặc đưa ra cạnh làm kết quả không thể được triển khai bằng cách sử dụng biểu diễn ma trận kề. Các phép toán này là: {\tt G.edges(), G.incoming(v), G.outgoing(v), G.source(e), G.target(e)}, \& \verb|G.del_edge(e)|. Hơn nữa, \verb|G.new_vertex(), G.del_vertex()| không thể được triển khai trừ khi ma trận kề có thể được thay đổi kích thước động, \& \verb|G.new_edge(v, w)| có thể được triển khai bằng cách đặt thành {\tt true} mục nhập của $A$ tại hàng tương ứng với đỉnh $v$ \& cột tương ứng với đỉnh $w$, \& mất $O(1)$ thời gian, nhưng phép toán không thể đưa ra cạnh mới làm kết quả.
+
+Let $G = (V,E)$ be a graph with $n\in\mathbb{N}^\star$ vertices, assume the vertices are numbered $1,2,\ldots,n$ in some arbitrary manner \& their number is stored in the attribute {\it index}, \& let $A$ be the adjacency matrix representation of $G$. The only remaining operation, {\tt G.vertices()}, is just the sequence of all vertices $v\in V$ ordered by the {\it index} attribute.
+
+-- Giả sử $G = (V,E)$ là một đồ thị có $n\in\mathbb{N}^\star$ đỉnh, giả sử các đỉnh được đánh số $1,2,\ldots,n$ theo một cách tùy ý \& số của chúng được lưu trữ trong thuộc tính {\it index}, \& giả sử $A$ là biểu diễn ma trận kề của $G$. Phép toán duy nhất còn lại, {\tt G.vertices()}, chỉ là chuỗi của tất cả các đỉnh $v\in V$ được sắp xếp theo thuộc tính {\it index}.
+
+The adjacency matrix representation of a graph $G = (V,E)$ with $n\in\mathbb{N}^\star$ vertices takes $\Theta(n^2)$ space. Therefore, no graph algorithm can be implemented using an adjacency matrix representation to run in $O(n)$ time. The main advantage of the adjacency matrix representation is the support of the adjacency test in $O(1)$ time.
+
+-- Biểu diễn ma trận kề của đồ thị $G = (V,E)$ với $n\in\mathbb{N}^\star$ đỉnh chiếm không gian $\Theta(n^2)$. Do đó, không có thuật toán đồ thị nào có thể được triển khai bằng cách sử dụng biểu diễn ma trận kề để chạy trong thời gian $O(n)$. Ưu điểm chính của biểu diễn ma trận kề là hỗ trợ kiểm tra kề trong thời gian $O(1)$.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Adjacency list -- Danh sách kề}
+The adjacency list representation of a graph, on the other hand, is an array of lists, 1 for each vertex in the graph, where the list corresponding to vertex $v$ contains the target vertices of the edges coming out of vertex $v$.
+
+-- Mặt khác, biểu diễn danh sách kề của đồ thị là một mảng các danh sách, 1 cho mỗi đỉnh trong đồ thị, trong đó danh sách tương ứng với đỉnh $v$ chứa các đỉnh mục tiêu của các cạnh đi ra từ đỉnh $v$.
+
+\begin{definition}[Adjacency list, \cite{Valiente2021}, Def. 1.27, p. 28]
+    Let $G = (V,E)$ be a graph with $n\in\mathbb{N}^\star$ vertices \& $m\in\mathbb{N}^\star$ edges. The {\rm adjacency list} representation of $G$ consists of a list of $n$ elements (the vertices of the graph) \& a list of $n$ lists with a total of $m$ elements (the target vertices for the edges of the graph). The list corresponding to vertex $v$ contains all vertices $w\in V$ with $(v,w)\in E$, for all vertices $v\in V$.
+\end{definition}
+
+\begin{dinhnghia}[Danh sách kề]
+    Cho $G = (V,E)$ là một đồ thị có $n\in\mathbb{N}^\star$ đỉnh \& $m\in\mathbb{N}^\star$ cạnh. Biểu diễn {\rm adjacency list} của $G$ bao gồm một danh sách $n$ phần tử (các đỉnh của đồ thị) \& một danh sách $n$ danh sách với tổng cộng $m$ phần tử (các đỉnh mục tiêu cho các cạnh của đồ thị). Danh sách tương ứng với đỉnh $v$ chứa tất cả các đỉnh $w\in V$ với $(v,w)\in E$, đối với mọi đỉnh $v\in V$.
+\end{dinhnghia}
+Adjacency lists are not necessarily arranged in any particular order although there is, as a matter of fact, an order on the vertices \& edges fixed by the adjacency list representation of the graph. Given the adjacency list representation of a graph $G = (V,E)$, vertex precedence is given by the order of the corresponding entries in the list of lists, \& edge $(v,w)$ precedes edge $(v,z)$ iff vertex $w$ precedes vertex $z$ in the list corresponding to vertex $v$, for all edges $(v,w),(v,z)\in E$.
+
+-- Danh sách kề không nhất thiết được sắp xếp theo bất kỳ thứ tự cụ thể nào mặc dù trên thực tế, có một thứ tự trên các đỉnh \& cạnh được cố định bởi biểu diễn danh sách kề của đồ thị. Với biểu diễn danh sách kề của đồ thị $G = (V,E)$, thứ tự ưu tiên của đỉnh được đưa ra theo thứ tự của các mục tương ứng trong danh sách các danh sách, \& cạnh $(v,w)$ đi trước cạnh $(v,z)$ khi và chỉ khi đỉnh $w$ đi trước đỉnh $z$ trong danh sách tương ứng với đỉnh $v$, đối với mọi cạnh $(v,w),(v,z)\in E$.
+
+As in the case of adjacency matrices, edges are implicit in the adjacency list representation of a graph, \& those operations having an edge as argument for giving an edge as result cannot be implemented using an adjacency list representation. These operations are {\tt G.edges(), G.incoming(v), G.outgoing(v), G.source(e), G.target(e)}, \& \verb|G.del_edge(e)|. Furthermore, \verb|G.new_vertex(), G.del_vertex()| cannot be implemented unless the list of lists can be dynamically resized, \& \verb|G.new_edge(v, w)| can be implemented by appending vertex $w$ to the list corresponding to vertex $v$, \& takes $O(1)$ time, but the operation cannot give the new edge as result. The only remaining operation, {\tt G.adjacent(v, w)}, can be implemented by scanning the list corresponding to vertex $v$ \& takes $O({\rm outdeg}(v))$ time.
+
+-- Giống như trong trường hợp của ma trận kề, các cạnh được ngầm định trong biểu diễn danh sách kề của đồ thị, \& các phép toán có cạnh làm đối số để đưa ra cạnh làm kết quả không thể được triển khai bằng cách sử dụng biểu diễn danh sách kề. Các phép toán này là {\tt G.edges(), G.incoming(v), G.outgoing(v), G.source(e), G.target(e)}, \& \verb|G.del_edge(e)|. Hơn nữa, \verb|G.new_vertex(), G.del_vertex()| không thể được triển khai trừ khi danh sách các danh sách có thể được thay đổi kích thước động, \& \verb|G.new_edge(v, w)| có thể được triển khai bằng cách thêm đỉnh $w$ vào danh sách tương ứng với đỉnh $v$, \& mất $O(1)$ thời gian, nhưng phép toán không thể đưa ra cạnh mới làm kết quả. Hoạt động duy nhất còn lại, {\tt G.adjacent(v, w)}, có thể được thực hiện bằng cách quét danh sách tương ứng với đỉnh $v$ \& mất $O({\rm outdeg}(v))$ thời gian.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Extended adjacency list -- Danh sách kề mở rộng}
+The adjacency list representation can be extended by making edges explicit. The extended adjacency list representation of a graph consists of a list of vertices \& a list of edges. Associated with each vertex are 2 lists of incoming \& outgoing edges. Associated with each edge are its source \& target vertices.
+
+-- Biểu diễn danh sách kề có thể được mở rộng bằng cách làm cho các cạnh trở nên rõ ràng. Biểu diễn danh sách kề mở rộng của đồ thị bao gồm một danh sách các đỉnh \& một danh sách các cạnh. Liên kết với mỗi đỉnh là 2 danh sách các cạnh đến \& đi. Liên kết với mỗi cạnh là các đỉnh nguồn \& đích của nó.
+
+\begin{definition}[Extended adjacency list, \cite{Valiente2021}, Def. 1.28, pp. 29--30]
+    Let $G = (V,E)$ be a graph with $n\in\mathbb{N}^\star$ vertices \& $m\in\mathbb{N}$ edges. The {\rm extended adjacency list} representation of $G$ consists of a list of $n$ elements (the vertices of the graph), a list of $m$ elements (the edges of the graph), \& $2$ lists of $n$ lists of a total of $m$ elements (the edges of the graph). The {\rm incoming} list corresponding to vertex $v$ contains all edges $(u,v)\in E$ coming into vertex $v$, for all vertices $v\in V$. The {\rm outgoing} list corresponding to vertex $v$ contains all edges $(v,w)\in E$ going out of vertex $v$, for all vertices $v\in V$. The source vertex $v$ \& the target vertex $w$ are associated with each edge $(v,w)\in E$.
+\end{definition}
+
+\begin{dinhnghia}[Danh sách kề mở rộng]
+    Cho $G = (V,E)$ là một đồ thị có $n\in\mathbb{N}^\star$ đỉnh \& $m\in\mathbb{N}$ cạnh. Biểu diễn {\rm danh sách kề mở rộng} của $G$ bao gồm một danh sách $n$ phần tử (các đỉnh của đồ thị), một danh sách $m$ phần tử (các cạnh của đồ thị), \& $2$ danh sách gồm $n$ danh sách có tổng cộng $m$ phần tử (các cạnh của đồ thị). Danh sách {\rm đến} tương ứng với đỉnh $v$ chứa tất cả các cạnh $(u,v)\in E$ đi vào đỉnh $v$, với mọi đỉnh $v\in V$. Danh sách {\rm đi} tương ứng với đỉnh $v$ chứa tất cả các cạnh $(v,w)\in E$ đi ra khỏi đỉnh $v$, với mọi đỉnh $v\in V$. Đỉnh nguồn $v$ \& đỉnh đích $w$ được liên kết với mỗi cạnh $(v,w)\in E$.
+\end{dinhnghia}
+Edges are explicit in the extended adjacency list graph representation. Therefore, all of the previous operations can be implemented using the extended adjacency list representation \& take $O(1)$ time, with the exception of \verb|G.del_model(v)|, which takes $O(\deg v)$ time. The operations can be implemented as follows:
+\begin{enumerate}
+    \item {\tt G.vertices(), G.edges()} are, resp., the list of vertices \& the list of edges of graph $G$.
+    
+    -- {\tt G.vertices(), G.edges()} tương ứng là danh sách các đỉnh \& danh sách các cạnh của đồ thị $G$.
+    \item {\tt G.incoming(v), G.outgoing(v)} are, resp., the list of edges coming into vertex $v$ \& the list of edges going out of vertex $v$.
+    
+    -- {\tt G.incoming(v), G.outgoing(v)} tương ứng là danh sách các cạnh đi vào đỉnh $v$ \& danh sách các cạnh đi ra khỏi đỉnh $v$.
+    \item {\tt G.source(e), G.target(e)} are, resp., the source \& the target vertex associated with edge $e$.
+    
+    -- {\tt G.source(e), G.target(e)} tương ứng là đỉnh nguồn \& đỉnh đích được liên kết với cạnh $e$.
+    \item \verb|G.new_vertex()| is implemented by appending a new vertex $v$ to the list of vertices of graph $G$ \& returning vertex $v$.
+    
+    -- \verb|G.new_vertex()| được thực hiện bằng cách thêm một đỉnh mới $v$ vào danh sách các đỉnh của đồ thị $G$ \& trả về đỉnh $v$.
+    \item \verb|G.new_edge(v, w)| is implemented by appending a new edge $e$ to the list of edges of graph $G$, setting to $v$ the source vertex associated with edge $e$, setting to $w$ the target vertex associated with edge $e$, appending $e$ to the list of edges going out of vertex $v$ \& to the list of edges coming into vertex $w$, \& returning edge $e$.
+    
+    -- \verb|G.new_edge(v, w)| được triển khai bằng cách thêm một cạnh mới $e$ vào danh sách các cạnh của đồ thị $G$, đặt $v$ là đỉnh nguồn được liên kết với cạnh $e$, đặt $w$ là đỉnh đích được liên kết với cạnh $e$, thêm $e$ vào danh sách các cạnh đi ra khỏi đỉnh $v$ \& vào danh sách các cạnh đi vào đỉnh $w$, \& trả về cạnh $e$.
+    \item \verb|G.del_vertex()| is implemented by performing \verb|G.del_edge(e)| for each edge $e$ in the list of edges coming into vertex $v$ \& for each edge $e$ in the list of edges going out of vertex $v$ \& then deleting vertex $v$ from the list of vertices of graph $G$.
+    
+    -- \verb|G.del_vertex()| được thực hiện bằng cách thực hiện \verb|G.del_edge(e)| cho mỗi cạnh $e$ trong danh sách các cạnh đi vào đỉnh $v$ \& cho mỗi cạnh $e$ trong danh sách các cạnh đi ra khỏi đỉnh $v$ \& sau đó xóa đỉnh $v$ khỏi danh sách các đỉnh của đồ thị $G$.
+    \item \verb|G.del_edge(e)| is implemented by deleting edge $e$ from the list of edges of graph $G$, from the list of edges coming into vertex {\tt G.target(e)}, \& from the list of edges going out of vertex {\tt G.source(e)}.
+    
+    -- \verb|G.del_edge(e)| được thực hiện bằng cách xóa cạnh $e$ khỏi danh sách các cạnh của đồ thị $G$, khỏi danh sách các cạnh đi vào đỉnh {\tt G.target(e)}, \& khỏi danh sách các cạnh đi ra khỏi đỉnh {\tt G.source(e)}.
+\end{enumerate}
+The extended adjacency list representation of a graph $G = (V,E)$ with $n$ vertices \& $m$ edges takes $\Theta(m + n)$ space.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Adjacency map -- Bản đồ kề}
+The adjacency list representation can also be extended by making edges explicit in a different way. The lists of incoming \& outgoing edges can be replaced with dictionaries of source vertices to incoming edges \& target vertices to outgoing edges. This allows for a more efficient adjacency test, although adding a logarithmic factor to the cost to all of the operations (when dictionaries are implemented using balanced trees) or turning the worst-case cost for all of the operations into the expected cost (when dictionaries are implemented using hashing).
+
+-- Biểu diễn danh sách kề cũng có thể được mở rộng bằng cách làm cho các cạnh rõ ràng theo một cách khác. Danh sách các cạnh đến \& đi có thể được thay thế bằng các từ điển của các đỉnh nguồn đến các cạnh đến \& các đỉnh đích đến các cạnh đi. Điều này cho phép kiểm tra kề hiệu quả hơn, mặc dù thêm một hệ số logarit vào chi phí cho tất cả các hoạt động (khi các từ điển được triển khai bằng cách sử dụng cây cân bằng) hoặc biến chi phí trường hợp xấu nhất cho tất cả các hoạt động thành chi phí dự kiến (khi các từ điển được triển khai bằng cách sử dụng băm).
+
+The adjacency map representation of a graph consists of a dictionary $D$ of vertices to a pair of dictionaries of vertices to edges: a 1st dictionary $I$ of source vertices to incoming edges, \& a 2nd dictionary $O$ target vertices to outgoing edges.
+
+-- Biểu diễn danh sách kề cũng có thể được mở rộng bằng cách làm cho các cạnh rõ ràng theo một cách khác. Danh sách các cạnh đến \& đi có thể được thay thế bằng các từ điển của các đỉnh nguồn đến các cạnh đến \& các đỉnh đích đến các cạnh đi. Điều này cho phép kiểm tra kề hiệu quả hơn, mặc dù thêm một hệ số logarit vào chi phí cho tất cả các hoạt động (khi các từ điển được triển khai bằng cách sử dụng cây cân bằng) hoặc biến chi phí trường hợp xấu nhất cho tất cả các hoạt động thành chi phí dự kiến (khi các từ điển được triển khai bằng cách sử dụng băm).
+
+\begin{definition}[Adjacency map, \cite{Valiente2021}, Def. 1.29, p. 31]
+    Let $G = (V,E)$ be a graph with $n\in\mathbb{N}^\star$ \& $m\in\mathbb{N}$ edges. The {\rm adjacency map} representation of $G$ consists of a dictionary of $n$ elements (the vertices of the graph) to a pair of dictionaries of $m$ elements (the source \& target vertices for the edges of the graph, resp.). The {\rm incoming} dictionary corresponding to vertex $v$ contains the mappings $(u,(u,v))$ for all edges $(u,v)\in E$ coming into vertex $v$, for all vertex $v\in V$. The {\rm outgoing} dictionary corresponding to vertex $v$ contains the mappings $(v,(v,w))$ for all edges $(v,w)\in E$ going out of vertex $v$, for all vertices $v\in V$.
+\end{definition}
+
+\begin{dinhnghia}[Bản đồ kề]
+    Cho $G = (V,E)$ là một đồ thị có $n\in\mathbb{N}^\star$ \& $m\in\mathbb{N}$ cạnh. Biểu diễn {\rm adjacency map} của $G$ bao gồm một từ điển gồm $n$ phần tử (các đỉnh của đồ thị) tới một cặp từ điển gồm $m$ phần tử (các đỉnh nguồn \& đích cho các cạnh của đồ thị, tương ứng). Từ điển {\rm incoming} tương ứng với đỉnh $v$ chứa các ánh xạ $(u,(u,v))$ cho mọi cạnh $(u,v)\in E$ đi vào đỉnh $v$, cho mọi đỉnh $v\in V$. Từ điển {\rm outgoing} tương ứng với đỉnh $v$ chứa các ánh xạ $(v,(v,w))$ cho mọi cạnh $(v,w)\in E$ đi ra khỏi đỉnh $v$, cho mọi đỉnh $v\in V$.
+\end{dinhnghia}
+Both vertices \& edges are explicit in the adjacency map representation of a graph. The vertices are the keys of the dictionary. The edges are the values in the dictionary of outgoing edges, \& also the values in the dictionary of incoming edges, for all vertices of the graph. Therefore, all of the previous abstract operations can be implemented using the adjacency map representation \& take expected $O(1)$ time, with the exception of \verb|G.del_vertex()|, which takes $O(\deg v)$ expected time. The operations can be implemented as follows:
+
+-- Cả hai đỉnh \& cạnh đều được nêu rõ trong biểu diễn bản đồ kề của đồ thị. Các đỉnh là các khóa của từ điển. Các cạnh là các giá trị trong từ điển của các cạnh đi ra, \& cũng là các giá trị trong từ điển của các cạnh đến, cho mọi đỉnh của đồ thị. Do đó, tất cả các phép toán trừu tượng trước đó có thể được triển khai bằng cách sử dụng biểu diễn bản đồ kề \& mất thời gian dự kiến là $O(1)$, ngoại trừ \verb|G.del_vertex()|, mất thời gian dự kiến là $O(\deg v)$. Các phép toán có thể được triển khai như sau:
+\begin{enumerate}
+    \item {\tt G.vertices()} are the keys in dictionary $D$.
+    
+    -- {\tt G.vertices()} là các khóa trong từ điển $D$.
+    \item {\tt G.edges()} are the values $D[v].O[w]$ for all keys $v$ in dictionary $D$ \& for all keys $w$ in dictionary $D[v].O$.
+    
+    -- {\tt G.edges()} là các giá trị $D[v].O[w]$ cho tất cả các khóa $v$ trong từ điển $D$ \& cho tất cả các khóa $w$ trong từ điển $D[v].O$.
+    \item {\tt G.incoming(v)} are the values $D[v].I[u]$ for all keys $u$ in dictionary $D[v].I$.
+    
+    -- {\tt G.incoming(v)} là các giá trị $D[v].I[u]$ cho tất cả các khóa $u$ trong từ điển $D[v].I$.
+    \item {\tt G.outgoing(v)} are the values $D[v].O[w]$ for all keys $w$ in dictionary $D[v].O$.
+    
+    -- {\tt G.outgoing(v)} là các giá trị $D[v].O[w]$ cho tất cả các khóa $w$ trong từ điển $D[v].O$.
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Representation of trees -- Biểu diễn cây}
+
 
 %------------------------------------------------------------------------------%
 

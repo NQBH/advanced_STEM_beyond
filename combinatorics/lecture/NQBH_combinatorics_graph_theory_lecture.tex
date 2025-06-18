@@ -4022,12 +4022,265 @@ Both vertices \& edges are explicit in the adjacency map representation of a gra
     \item {\tt G.outgoing(v)} are the values $D[v].O[w]$ for all keys $w$ in dictionary $D[v].O$.
     
     -- {\tt G.outgoing(v)} là các giá trị $D[v].O[w]$ cho tất cả các khóa $w$ trong từ điển $D[v].O$.
+    \item {\tt G.source(e), G.target(e)} are, resp., the source \& the target vertex associated with edge $e$.
+    
+    -- {\tt G.source(e), G.target(e)} tương ứng là đỉnh nguồn \& đỉnh đích được liên kết với cạnh $e$.
+    \item \verb|G.new_vertex()| is implemented by inserting an entry in dictionary $D$, with key a new vertex $v$ \& value a pair of empty dictionaries $D[v].I,D[v].O$, \& returning vertex $v$.
+    
+    -- \verb|G.new_vertex()| được thực hiện bằng cách chèn một mục vào từ điển $D$, với khóa là một đỉnh mới $v$ \& giá trị là một cặp từ điển rỗng $D[v].I,D[v].O$, \& trả về đỉnh $v$.
+    \item \verb|G.new_edge(v, w)| is implemented by setting to $v$ the source vertex associated with a new edge $e$, setting to $w$ the target vertex associated with edge $e$, inserting an entry in dictionary $D[v].O$ with key $w$ \& value $e$, inserting an entry in dictionary $D[w].I$ with key $v$ \& value $e$, \& returning edge $e$.
+    
+    -- \verb|G.new_edge(v, w)| được triển khai bằng cách đặt $v$ là đỉnh nguồn được liên kết với cạnh mới $e$, đặt $w$ là đỉnh đích được liên kết với cạnh $e$, chèn một mục vào từ điển $D[v].O$ với khóa $w$ \& giá trị $e$, chèn một mục vào từ điển $D[w].I$ với khóa $v$ \& giá trị $e$, \& trả về cạnh $e$.
+    \item \verb|G.del_vertex(v)| is implemented by performing \verb|G.del_edge(e)| for each entry with key $u$ \& value $e$ in dictionary $D[v].I$ \& for each entry with key $w$ \& value $e$ in dictionary $D[v].O$ \& then deleting the entry with key $v$ from dictionary $D$.
+    
+    -- \verb|G.del_vertex(v)| được thực hiện bằng cách thực hiện \verb|G.del_edge(e)| cho mỗi mục có khóa $u$ \& giá trị $e$ trong từ điển $D[v].I$ \& cho mỗi mục có khóa $w$ \& giá trị $e$ trong từ điển $D[v].O$ \& sau đó xóa mục có khóa $v$ khỏi từ điển $D$.
+    \item \verb|G.del_edge(e)| is implemented by deleting the entry with key $w$ from dictionary $D[w].I$, where $v = G.source(e),w = G.target(e)$.
+    
+    -- \verb|G.del_edge(e)| được thực hiện bằng cách xóa mục có khóa $w$ khỏi từ điển $D[w].I$, trong đó $v = G.source(e),w = G.target(e)$.
 \end{enumerate}
+The adjacency test {\tt G.adjacent(v,w)} can be defined in terms of the small set of abstract operations on graphs, using the abstract operations on basic data structures, by scanning the list of outgoing edges $G.outgoing(v)$ for an edge $e$ s.t. $G.target(e) = w$. Now, besides the low space requirement, the main advantage of the adjacency map representation is the support of adjacency test in expected $O(1)$ time, when dictionaries are implemented using hashing, as follows:
+
+-- Kiểm tra kề {\tt G.adjacent(v,w)} có thể được định nghĩa theo tập hợp nhỏ các phép toán trừu tượng trên đồ thị, sử dụng các phép toán trừu tượng trên các cấu trúc dữ liệu cơ bản, bằng cách quét danh sách các cạnh đi ra $G.outgoing(v)$ cho một cạnh $e$ s.t. $G.target(e) = w$. Bây giờ, bên cạnh yêu cầu không gian thấp, lợi thế chính của biểu diễn bản đồ kề là hỗ trợ kiểm tra kề trong thời gian $O(1)$ dự kiến, khi các từ điển được triển khai bằng cách sử dụng băm, như sau:
+\begin{itemize}
+    \item $G.adjacent(v, w)$ is true if $(w,e)\in D[v].O$ (where $e = D[v].O[w]$), \& false otherwise.
+    
+    -- $G.adjacent(v, w)$ là đúng nếu $(w,e)\in D[v].O$ (với $e = D[v].O[w]$), \& false nếu không.
+\end{itemize}
+The adjacency map representation of a graph $G = (V,E)$ with $n$ vertices \& $m$ edges takes $\Theta(m + n)$ space.
+
+-- Biểu diễn bản đồ kề của đồ thị $G = (V,E)$ với $n$ đỉnh \& $m$ cạnh chiếm không gian $\Theta(m + n)$.
 
 %------------------------------------------------------------------------------%
 
 \subsection{Representation of trees -- Biểu diễn cây}
+As in the case of graphs, a tree representation consists of a collection of abstract operations, a concrete representation of trees by appropriate data structures, \& implementation of the abstract operations using the concrete data structures.
 
+-- Giống như trong trường hợp đồ thị, biểu diễn cây bao gồm một tập hợp các phép toán trừu tượng, một biểu diễn cụ thể của cây theo các cấu trúc dữ liệu thích hợp và triển khai các phép toán trừu tượng bằng cách sử dụng các cấu trúc dữ liệu cụ thể.
+
+The following collection of 13 abstract operations covers the needs of most of the algorithms on trees presented in \cite{Valiente2021}.
+
+-- Bộ sưu tập 13 phép toán trừu tượng sau đây đáp ứng nhu cầu của hầu hết các thuật toán trên cây được trình bày trong \cite{Valiente2021}.
+\begin{enumerate}
+    \item \verb|T.number_of_nodes()| gives the number of nodes $|V|$ of tree $T = (V,E)$.
+    
+    -- \verb|T.number_of_nodes()| cho biết số nút $|V|$ của cây $T = (V,E)$.
+    \item {\tt T.root()} gives {\tt root[T]}.
+    \item \verb|T.is_root(v)| is true if node $v = root[T]$, \& false otherwise.
+    \item \verb|T.number_of_children(v)| gives {\tt children[v]}, i.e., the number of nodes $w\in V$ s.t. $(v,w)\in E$.
+    \item $T.parent(v)$ gives $parent[v]$, i.e., the parent in $T$ of node $v$.
+    \item $T.children(v)$ gives a list of the children of node $v$ in $T$.
+    \item \verb|T.is_leaf(v)| is true if node $v$ is a leaf of $T$, \& false otherwise.
+    \item \verb|T.first_child(v), T.last_child(v)| give, resp., the 1st \& the last of the children of node $v$, according to the order on the children of $v$ fixed by the representation of $T$, or $nil$ if $v$ is a leaf node of $T$.
+    
+    -- \verb|T.first_child(v), T.last_child(v)| trả về, tương ứng, con thứ nhất \& con cuối cùng của nút $v$, theo thứ tự các con của $v$ được xác định bởi biểu diễn của $T$, hoặc $nil$ nếu $v$ là nút lá của $T$.
+    \item \verb|T.previous_sibling(v), T.next_sibling(v)| give, resp., the previous child of $T.parent(v)$ before vertex $v$ \& the next child of $T.parent(v)$ after vertex $v$, according to the order on the children of $T.parent(v)$ fixed by the representation of $T$, or $nil$ if $v$ is a 1st child or a last child, resp.
+    
+    -- \verb|T.previous_sibling(v), T.next_sibling(v)| trả về, tương ứng, con trước của $T.parent(v)$ trước đỉnh $v$ \& con tiếp theo của $T.parent(v)$ sau đỉnh $v$, theo thứ tự các con của $T.parent(v)$ được cố định bởi biểu diễn của $T$, hoặc $nil$ nếu $v$ là con đầu tiên hoặc con cuối cùng, tương ứng.
+    \item \verb|T.is_first_child(v), T.is_last_child(v)| are true if node $v$ is, resp., the 1st \& the last of the children of node $T.parent(v)$, according to the order on the children of $T.parent(v)$ fixed by the representation of $T$, \& false otherwise.
+    
+    -- \verb|T.is_first_child(v), T.is_last_child(v)| là đúng nếu nút $v$ là nút con thứ nhất \& là nút con cuối cùng của nút $T.parent(v)$, theo thứ tự các nút con của $T.parent(v)$ được xác định bởi biểu diễn của $T$, \& false nếu không.
+\end{enumerate}
+The previous operations support iteration over the children of a node in a tree, much in the same way that the graph operations support iteration over the vertices \& edges of a graph. In the following procedure, the children of node $v$ in tree $T$ are assigned in turn to variable $w$.
+
+-- Các hoạt động trước đó hỗ trợ lặp lại trên các con của một nút trong cây, tương tự như cách các hoạt động đồ thị hỗ trợ lặp lại trên các đỉnh \& cạnh của đồ thị. Trong quy trình sau, các con của nút $v$ trong cây $T$ lần lượt được gán cho biến $w$.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+let w be the 1st child of node v in T // w = T.first_child(v)
+while w != nil do
+    process node w
+    let w be the next sibling of node w in T // w = T.next_sibling(w)
+\end{Verbatim}
+The following procedure is an alternative form of iteration over the children $w$ of a node $v$ in a tree $T$.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+if v is not a leaf node of T then // not T.is_leaf(v)
+    let w be the 1st child of node v in T // w = T.first_child(v)
+    process node w
+    while w is not the last child of node v in T do // w != T.last_child(v)
+        let w be the next sibling of node w in T // w = T.next_sibling(w)
+        process node w
+\end{Verbatim}
+The following procedure is still another, more compact form of iteration over the children $w$ of a node $v$ in a tree $T$.
+\begin{verbatim}
+for all children w of node v in T do // w in T.children(v)
+    process node w
+\end{verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Array of parents -- Mảng cha mẹ}
+The data structures most often used for representing trees are the array-of-parents representation \& the 1st-child, next-sibling representation. The array-of-parents representation of a tree is an array of nodes, with an entry for each node in the tree, where the entry corresponding to node $v$ has the value $parent[v]$ if $v$ is not the root of the tree, \& it has the value $nil$ otherwise.
+
+-- Cấu trúc dữ liệu thường được sử dụng nhất để biểu diễn cây là biểu diễn mảng cha mẹ \& biểu diễn con thứ nhất, anh chị em kế tiếp. Biểu diễn mảng cha mẹ của cây là một mảng các nút, với một mục nhập cho mỗi nút trong cây, trong đó mục nhập tương ứng với nút $v$ có giá trị $parent[v]$ nếu $v$ không phải là gốc của cây, \& nó có giá trị $nil$ nếu không.
+
+\begin{definition}[Array-of-parents representation of trees, \cite{Valiente2021}, Def. 1.30, p. 34]
+    Let $T = (V,E)$ be a tree with $n$ nodes. The {\rm array-of-parents} representation of $T$ is an array $P$ of $n$ nodes, indexed by the nodes of the tree, where $P[v] = parent[v]$ if $v\ne root[T]$, \& $P[v] = nil$ otherwise, for all nodes $v\in V$.
+\end{definition}
+
+\begin{dinhnghia}[Biểu diễn mảng cha mẹ của cây]
+    Cho $T = (V,E)$ là một cây có $n$ nút. Biểu diễn {\rm array-of-parents} của $T$ là một mảng $P$ gồm $n$ nút, được lập chỉ mục theo các nút của cây, trong đó $P[v] = parent[v]$ nếu $v\ne root[T]$, \& $P[v] = nil$ nếu không, đối với tất cả các nút $v\in V$.
+\end{dinhnghia}
+The array of parent nodes is not necessarily arranged in any particular order although there is, as a matter of fact, an order on the nodes fixed by the representation. Given the array-of-parents representation of a tree, node precedence is given by the order of the nodes as array indices, \& precedence between sibling nodes is also given by the order of array indices.
+
+-- Mảng các nút cha không nhất thiết phải được sắp xếp theo bất kỳ thứ tự cụ thể nào mặc dù trên thực tế, có một thứ tự trên các nút được cố định bởi biểu diễn. Với biểu diễn mảng cha của một cây, thứ tự ưu tiên của nút được đưa ra theo thứ tự của các nút dưới dạng chỉ số mảng, \& thứ tự ưu tiên giữa các nút anh chị em cũng được đưa ra theo thứ tự của chỉ số mảng.
+
+Let $T = (V,E)$ be a tree with $n$ nodes, \& let $P$ be the array-of-parents representation of $T$. Operations
+\begin{verbatim}
+T.root(), T.number_of_children(v), T.children(v), T.is_leaf(v), T.first_child(v), T.last_child(v),
+T.previous_sibling(v), T.next_sibling(v), T.is_first_child(v), T.is_last_child(v)
+\end{verbatim}
+require scanning the whole array \& thus take $O(n)$ time. The remaining operations can be implemented to take $O(1)$ time as follows:
+\begin{itemize}
+    \item \verb|T.number_of_nodes()| is the size of array $P$.
+    \item \verb|T.is_root(v)| is true if $P[v] = nil$, \& false otherwise.
+    \item $T.parent(v)$ is equal to $P[v]$.
+\end{itemize}
+-- Cho $T = (V,E)$ là một cây có $n$ nút, \& cho $P$ là biểu diễn mảng cha mẹ của $T$. Các phép toán
+\begin{verbatim}
+T.root(), T.number_of_children(v), T.children(v), T.is_leaf(v), T.first_child(v), T.last_child(v),
+T.previous_sibling(v), T.next_sibling(v), T.is_first_child(v), T.is_last_child(v)
+\end{verbatim}
+yêu cầu quét toàn bộ mảng \& do đó mất $O(n)$ thời gian. Các phép toán còn lại có thể được triển khai để mất $O(1)$ thời gian như sau:
+\begin{itemize}
+    \item \verb|T.number_of_nodes()| là kích thước của mảng $P$.
+    \item \verb|T.is_root(v)| là đúng nếu $P[v] = nil$, \& false nếu không.
+    \item $T.parent(v)$ bằng $P[v]$.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{1st-child, next-sibling -- Con thứ nhất, anh chị em ruột tiếp theo}
+The 1st-child, next-sibling representation, on the other hand, consists of 2 arrays of nodes, each of them with an entry for each node in the tree, where the entries corresponding to node $v$ have, resp., the value $first[v]$, or $nil$ if $v$ is a leaf node, \& $next[v]$, or $nil$ if $v$ is a last sibling.
+
+-- Mặt khác, biểu diễn con thứ nhất, anh chị em kế cận bao gồm 2 mảng các nút, mỗi mảng có một mục cho mỗi nút trong cây, trong đó các mục tương ứng với nút $v$ có giá trị tương ứng là $first[v]$ hoặc $nil$ nếu $v$ là nút lá, \& $next[v]$ hoặc $nil$ nếu $v$ là anh chị em cuối cùng.
+
+\begin{definition}[1st-child next-sibling representation of trees, \cite{Valiente2021}, Def. 1.31, p. 35]
+    Let $T = (V,E)$ be a tree with $n$ nodes. The {\rm1st-child next-sibling} representation of $T$ is a pair $(F,N)$ of arrays of $n$ nodes, indexed by the nodes of the tree, where $F[v] = first[v]$ if $v$ is not a leaf node, $F[v] = nil$ otherwise, $N[v] = next[v]$ if $v$ is not a last child node, \& $N[v] = nil$ otherwise, for all nodes $v\in V$.
+\end{definition}
+
+\begin{dinhnghia}[Biểu diễn cây của con thứ nhất \& anh chị em tiếp theo]
+    Cho $T = (V,E)$ là một cây có $n$ nút. Biểu diễn {\rm1st-child next-sibling} của $T$ là một cặp $(F,N)$ mảng của $n$ nút, được lập chỉ mục theo các nút của cây, trong đó $F[v] = first[v]$ nếu $v$ không phải là nút lá, $F[v] = nil$ nếu không, $N[v] = next[v]$ nếu $v$ không phải là nút con cuối cùng, \& $N[v] = nil$ nếu không, đối với mọi nút $v\in V$.
+\end{dinhnghia}
+As with the array-of-parents representation, the arrays of 1st children \& next siblings are not necessarily arranged in any particular order, as long as they are arranged in the same order. Anyway, there is an order on the nodes fixed by the representation. Given the 1st-child, next-sibling representation of a tree, node precedence is given by the order to the nodes as array indices, \& precedence between sibling nodes is also given by the order of array indices.
+
+-- Giống như biểu diễn mảng cha mẹ, các mảng con thứ nhất \& anh chị em tiếp theo không nhất thiết phải được sắp xếp theo bất kỳ thứ tự cụ thể nào, miễn là chúng được sắp xếp theo cùng thứ tự. Dù sao thì, có một thứ tự trên các nút được cố định bởi biểu diễn. Với biểu diễn con thứ nhất, anh chị em tiếp theo của một cây, thứ tự ưu tiên của nút được đưa ra theo thứ tự cho các nút như các chỉ số mảng, \& thứ tự ưu tiên giữa các nút anh chị em cũng được đưa ra theo thứ tự của các chỉ số mảng.
+
+Let $T = (V,E)$ be a tree with $n$ nodes, \& let $(F,N)$ be the 1st-child, next-sibling representation of $T$. Operations \verb|T.root(), T.is_root(v), T.parent(v), T.children(v)| require scanning both of arrays $F,N$, \& \verb|T.previous_sibling(v), T.is_first_child(v)| require scanning array $N$, \& thus take $O(n)$ time. Further, \verb|T.number_of_children(v), T.last_child(v)| require following up to $children[v]$ next-sibling links, where the former also requires following a 1st-child link, \& take $O(children[v])$ time. The remaining operations can be implemented to take $O(1)$ time as follows:
+\begin{enumerate}
+    \item \verb|T.number_of_nodes()| is the size of array $F$, or the size of array $N$.
+    \item \verb|T.is_leaf(v)| is true if $F[v] = nil$, \& false otherwise.
+    \item \verb|T.first_child(v)| is given by $F[v]$.
+    \item \verb|T.next_sibling(v)| is given by $N[v]$.
+    \item \verb|T.is_last_child(v)| is true if $N[v] = nil$, \& false otherwise.
+\end{enumerate}
+-- 
+Cho $T = (V,E)$ là một cây có $n$ nút, \& cho $(F,N)$ là biểu diễn con thứ nhất, anh chị em kế cận của $T$. Các thao tác \verb|T.root(), T.is_root(v), T.parent(v), T.children(v)| yêu cầu quét cả hai mảng $F,N$, \& \verb|T.previous_sibling(v), T.is_first_child(v)| yêu cầu quét mảng $N$, \& do đó mất $O(n)$ thời gian. Hơn nữa, \verb|T.number_of_children(v), T.last_child(v)| yêu cầu theo dõi tới $children[v]$ liên kết anh chị em kế cận, trong khi thao tác trước cũng yêu cầu theo dõi một liên kết con thứ nhất, \& mất $O(children[v])$ thời gian. Các phép toán còn lại có thể được triển khai để mất $O(1)$ thời gian như sau:
+\begin{enumerate}
+    \item \verb|T.number_of_nodes()| là kích thước của mảng $F$ hoặc kích thước của mảng $N$.
+    \item \verb|T.is_leaf(v)| là true nếu $F[v] = nil$, \& false nếu không.
+    \item \verb|T.first_child(v)| được chỉ định bởi $F[v]$.
+    \item \verb|T.next_sibling(v)| được chỉ định bởi $N[v]$.
+    \item \verb|T.is_last_child(v)| là true nếu $N[v] = nil$, \& false nếu không.
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Graph-based representation of trees}
+Trees can also be represented using the small set of abstract operations on graphs, which can be implemented using either the extended adjacency list representation or the adjacency map representation. The following operations are defined in terms of the graph representation, using the abstract operations on basic data structures presented as follows:
+\begin{enumerate}
+    \item \verb|T.number_of_nodes()| is given by $T.vertices().size()$.
+    \item $T.root()$ requires following the path of parent nodes starting off with any node of the tree \& then storing the root of the tree in the attribute {\it root}.
+    
+    $T.root()$ yêu cầu phải theo đường dẫn của các nút cha bắt đầu bằng bất kỳ nút nào của cây \& sau đó lưu trữ gốc của cây trong thuộc tính {\it root}.
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+function root(T)
+    if T.root != nil then
+        return T.root
+    if T is empty then
+        return nil
+    v <= T.vertices().front()
+    while T.incoming(v) is not empty do
+        v <- T.parent(v)
+    T.root <- v
+    return v
+    \end{Verbatim}
+    \item \verb|T.is_root(v)| is given by $T.incoming(v).empty()$.
+    \item \verb|T.number_of_children(v)| is given by $T.outgoing(v).size()$.
+    \item $T.parent(v)$ is given by $T.incoming(v).front().source()$.
+    \item $T.children(v)$ is given by the list $[T.target(e):e\in T.outgoing(v)]$.
+    \item \verb|T.is_leaf(v)|| is given by $T.outgoing(v).empty()$.
+    \item \verb|T.first_child(v)| is given by $T.outgoing(v).front(v).target()$.
+    \item \verb|T.last_child(v)| is given by $T.outgoing(v).back(v).target()$.
+    \item \verb|T.previous_sibling(v)| requires accessing the previous edge in the list of edges coming out of $parent[v]$.
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+function previous_sibling(T, v)
+    if T.is_root(v) then
+        return nil
+    e <- T.incoming(v).front(v)
+    u <- T.source(e)
+    if T.outgoing(u).prev(e) = nil then
+        return nil
+    else
+        return T.outgoing(u).prev(e).target()
+    \end{Verbatim}
+    \item \verb|T.next_sibling(v)| requires accessing the next edge in the list of edges coming out of $parent[v]$.
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+function previous_sibling(T, v)
+    if T.is_root(v) then
+        return nil
+    e <- T.incoming(v).front()
+    u <- T.source(e)
+    if T.outgoing(u).next(e) = nil then
+        return nil
+    else
+        return T.outgoing(u).next(e).target()
+    \end{Verbatim}
+    \item \verb|T.is_first_child(v)| is true if \verb|T.previous_sibling(v)| is equal to $nil$, \& false otherwise.
+    \item \verb|T.is_last_child(v)|| is true if \verb|T.next_sibling(v)| is equal to $nil$, \& false otherwise.
+\end{enumerate}
+All of the operations take $O(1)$ time with the only exception of $T.root()$, which takes time linear in depth or height of the tree. These are worst-case time bounds when using extended adjacency lists, \& expected time bounds when using adjacency maps. The representation uses $O(n)$ space.
+
+-- Tất cả các hoạt động đều mất $O(1)$ thời gian ngoại trừ $T.root()$, mất thời gian tuyến tính theo chiều sâu hoặc chiều cao của cây. Đây là giới hạn thời gian trường hợp xấu nhất khi sử dụng danh sách kề mở rộng, \& giới hạn thời gian dự kiến khi sử dụng bản đồ kề. Biểu diễn sử dụng không gian $O(n)$.
+
+\begin{note}
+    Ordered or embedded graphs are the subject of topological graph theory. Adjacency matrices are most often used in combinatorics \& graph theory. Adjacency lists are the preferred graph representation in computer science, though, because a large number of graph algorithms can be implemented to run in time linear in the number of vertices \& edges in the graph using an adjacency list representation, while no graph algorithm can be implemented to run in linear time using an adjacency matrix representation. The adjacency map representation was adopted in the NetworkX package for complex network analysis in Python. Implicit representations of static trees include the Prüfer sequences, which are used for counting \& generating trees.
+    
+    -- Đồ thị có thứ tự hoặc nhúng là chủ đề của lý thuyết đồ thị tôpô. Ma trận kề thường được sử dụng nhất trong tổ hợp \& lý thuyết đồ thị. Tuy nhiên, danh sách kề là biểu diễn đồ thị được ưa chuộng trong khoa học máy tính, vì có thể triển khai nhiều thuật toán đồ thị để chạy tuyến tính theo thời gian theo số đỉnh \& cạnh trong đồ thị bằng cách sử dụng biểu diễn danh sách kề, trong khi không có thuật toán đồ thị nào có thể được triển khai để chạy tuyến tính theo thời gian bằng cách sử dụng biểu diễn ma trận kề. Biểu diễn bản đồ kề được áp dụng trong gói NetworkX để phân tích mạng phức tạp trong Python. Các biểu diễn ngầm định của cây tĩnh bao gồm chuỗi Prüfer, được sử dụng để đếm \& tạo cây.
+\end{note}
+
+\begin{problem}[\cite{Valiente2021}, 1.1., p. 39]
+    Determine the size of the complete graph $K_n$ on $n$ vertices \& the complete bipartite graph $K_{p,q}$ on $p + q$ vertices.
+    
+    -- Xác định kích thước của đồ thị đầy đủ $K_n$ trên $n$ đỉnh \& đồ thị hai phần đầy đủ $K_{p,q}$ trên $p + q$ đỉnh.
+\end{problem}
+
+\begin{problem}[\cite{Valiente2021}, 1.2., p. 39]
+    Determine the values of $n$ for which the circle graph $C_n$ on $n$ vertices is bipartite, \& also the values of $n$ for which the complete graph $K_n$ is bipartite.
+    
+    -- Xác định các giá trị của $n$ để đồ thị tròn $C_n$ trên $n$ đỉnh là 2 phần, \& các giá trị của $n$ để đồ thị hoàn chỉnh $K_n$ là 2 phần.
+\end{problem}
+
+\begin{problem}[\cite{Valiente2021}, 1.3., p. 39]
+    Give all the spanning trees of the graph in {\sf Fig. 1.30}, \& also the number of spanning trees of the underlying undirected graph.
+    
+    -- Cung cấp tất cả các cây khung của đồ thị trong {\sf Fig. 1.30}, \& số lượng cây khung của đồ thị vô hướng cơ bản.
+\end{problem}
+
+\begin{problem}[\cite{Valiente2021}, 1.4., p. 39]
+    Extended the adjacency matrix graph representation by replacing those operations having an edge as argument or giving an edge or a list of edges as result, by corresponding operations having as argument or giving as result the source \& target vertices of the edge or edges: \verb|G.del_edge(v, w)|, $G.edges(),G.incoming(v),G.outgoing(v),G.source(v,w),G.target(v,w)$.
+    
+    -- Mở rộng biểu diễn đồ thị ma trận kề bằng cách thay thế các phép toán có một cạnh làm đối số hoặc đưa ra một cạnh hoặc danh sách các cạnh làm kết quả bằng các phép toán tương ứng có đối số hoặc đưa ra kết quả là các đỉnh nguồn \& đích của cạnh hoặc các cạnh: \verb|G.del_edge(v, w)|, $G.edges(),G.incoming(v),G.outgoing(v),G.source(v,w),G.target(v,w)$.
+\end{problem}
+
+\begin{problem}[\cite{Valiente2021}, 1.5., p. 39]
+    Extended the 1st-child, next-sibling tree representation, in order to support the collection of basic operations but \verb|T.root(), T.number_of_children(v), T.children(v)| in $O(1)$ time.
+    
+    -- Mở rộng biểu diễn cây con thứ nhất, anh chị em tiếp theo, nhằm hỗ trợ việc thu thập các phép toán cơ bản nhưng \verb|T.root(), T.number_of_children(v), T.children(v)| trong thời gian $O(1)$.
+\end{problem}
+
+\begin{problem}[\cite{Valiente2021}, 1.6., p. 39]
+    Show how to double check that the graph-based representation of a tree is indeed a tree, in time linear in the size of the tree.
+    
+    -- Hiển thị cách kiểm tra lại xem biểu diễn dựa trên đồ thị của một cây có thực sự là một cây hay không, theo thời gian tuyến tính với kích thước của cây.
+\end{problem}
 
 %------------------------------------------------------------------------------%
 

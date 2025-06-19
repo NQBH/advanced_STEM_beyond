@@ -4406,6 +4406,102 @@ Specific applications of search algorithms include:
 
 %------------------------------------------------------------------------------%
 
+\section{Algorithmic Techniques -- Các Kỹ Thuật Thuật Toán}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \cite{Valiente2002, Valiente2021}. {\sc Gabriel Valiente}. {\it Algorithms on Trees \& Graphs With Python Code}. 2e. Chap. 2: Algorithmic Techniques.
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Tree Edit Distance Problem -- Bài Toán Khoảng Cách Chỉnh Sửa cây }
+The problem of transforming or {\it editing} trees is a primary means of tree comparison, with practical applications in combinatorial pattern matching, pattern recognition, chemical structure search, computational molecular biology, \& other areas of engineering \& life sciences. In the most general sense, trees can be transformed by the application of elementary edit operations, which have a certain cost or weight associated with them, \& the edit distance between 2 trees is the cost of a least-cost sequence of elementary edit operations, or the length of the shortest sequence of elementary edit operations, that allows to transform 1 of the trees into the other.
+
+-- Vấn đề biến đổi hoặc chỉnh sửa cây là phương tiện chính để so sánh cây, với các ứng dụng thực tế trong việc khớp mẫu tổ hợp, nhận dạng mẫu, tìm kiếm cấu trúc hóa học, sinh học phân tử tính toán, \& các lĩnh vực kỹ thuật khác \& khoa học sự sống. Theo nghĩa chung nhất, cây có thể được biến đổi bằng cách áp dụng các thao tác chỉnh sửa cơ bản, có một chi phí hoặc trọng số nhất định liên quan đến chúng, \& khoảng cách chỉnh sửa giữa 2 cây là chi phí của chuỗi thao tác chỉnh sửa cơ bản có chi phí thấp nhất hoặc độ dài của chuỗi thao tác chỉnh sửa cơ bản ngắn nhất, cho phép biến đổi 1 trong các cây thành cây kia.
+
+Rooted ordered trees are considered in \cite[Chap. 2]{Valiente2021}, with the following elementary edit operations: deletion of a leaf node from a tree, insertion of a new leaf node into a tree, \& substitution or replacement of a node in a tree with a node in another tree.
+
+-- Cây có thứ tự có gốc được xem xét trong \cite[Chap. 2]{Valiente2021}, với các hoạt động chỉnh sửa cơ bản sau: xóa một nút lá khỏi cây, chèn một nút lá mới vào cây, \& thay thế hoặc thay thế một nút trong cây bằng một nút trong cây khác.
+
+\begin{definition}[Elementary edit operation: deletion, substitution, insertion, \cite{Valiente2021}, Def. 2.1, p. 45]
+    Let $T_1 = (V_1,E_1),T_2 = (V_2,E_2)$ be ordered trees. An {\rm elementary edit operation} on $T_1,T_2$ is either the {\rm deletion} from $T_1$ of a leaf node $v\in V_1$, denoted by $v\mapsto\lambda$ or $(v,\lambda)$; the {\rm substitution} or replacement of a node $v\in V_1$ with a node $w\in V_2$, denoted by $v\mapsto w$ or $(v,w)$; or the {\rm insertion} into $T_2$ of a node $w\notin V_2$ as a new leaf, denoted by $\lambda\mapsto w$ or $(\lambda,w)$. Deletion of a non-root node $v\in V_1$ implies the deletion of the edge $(parent[v],v)\in E_1$, \& insertion of a non-root node $w\notin V_2$ as a child of a leaf node $parent[w]\in V_2$ implies insertion of an edge $(parent[w],w\notin E_2)$.
+\end{definition}
+
+\begin{dinhnghia}[Thao tác chỉnh sửa cơ bản: xóa, thay thế, chèn]
+    Cho $T_1 = (V_1,E_1),T_2 = (V_2,E_2)$ là các cây có thứ tự. Một {\rm thao tác chỉnh sửa cơ bản} trên $T_1,T_2$ là {\rm xóa} khỏi $T_1$ một nút lá $v\in V_1$, ký hiệu là $v\mapsto\lambda$ hoặc $(v,\lambda)$; {\rm thay thế} hoặc thay thế một nút $v\in V_1$ bằng một nút $w\in V_2$, ký hiệu là $v\mapsto w$ hoặc $(v,w)$; hoặc {\rm chèn} vào $T_2$ của một nút $w\notin V_2$ như một nút lá mới, ký hiệu là $\lambda\mapsto w$ hoặc $(\lambda,w)$. Việc xóa một nút không phải gốc $v\in V_1$ ngụ ý việc xóa cạnh $(parent[v],v)\in E_1$, \& việc chèn một nút không phải gốc $w\notin V_2$ làm nút con của một nút lá $parent[w]\in V_2$ ngụ ý việc chèn một cạnh $(parent[w],w\notin E_2)$.
+\end{dinhnghia}
+Deletion \& insertion operations are thus made on leaves only. The deletion of a non-leaf node requires 1st the deletion of the whole subtree rooted at the node, \& the same applies to the insertion of non-leaves.
+
+-- Do đó, các thao tác xóa \& chèn chỉ được thực hiện trên các lá. Việc xóa một nút không phải lá trước tiên yêu cầu xóa toàn bộ cây con có gốc tại nút, \& tương tự cũng áp dụng cho việc chèn các nút không phải lá.
+
+Now, a tree can be transformed into another tree by application of a sequence of elementary edit operations. Recall that a relation $R\subseteq A\times B$ is a set of ordered pairs $\{(a,b);a\in A,\ b\in B\}$. An {\it ordered relation} $R\subseteq A\times B$ is an ordered set, or sequence, of ordered pairs $[(a,b);a\in A,\ b\in B]$.
+
+-- Bây giờ, một cây có thể được chuyển đổi thành một cây khác bằng cách áp dụng một chuỗi các phép chỉnh sửa cơ bản. Nhớ lại rằng một quan hệ $R\subseteq A\times B$ là một tập hợp các cặp có thứ tự $\{(a,b);a\in A,\ b\in B\}$. Một {\it quan hệ có thứ tự} $R\subseteq A\times B$ là một tập hợp có thứ tự, hoặc chuỗi, các cặp có thứ tự $[(a,b);a\in A,\ b\in B]$.
+
+\begin{definition}[Transformation of trees, \cite{Valiente2021}, Def. 2.2, p. 46]
+    Let $T_1 = (V_1,E_1),T_2 = (V_2,E_2)$ be ordered trees. A {\rm transformation} of $T_1$ into $T_2$ is an ordered relation $E\subseteq(V_1\cup\{\lambda\})\times(V_2\cup\{\lambda\})$ s.t.
+    \begin{itemize}
+        \item $\{v\in V_1;(v,w)\in E,\ w\in V_2\cup\{\lambda\}\} = V_1$.
+        \item $\{v\in V_2;(v,w)\in E,\ w\in V_1\cup\{\lambda\}\} = V_2$.
+        \item $(v_1,w),(v_2,w)\in E\Leftarrow v_1 = v_2$, for all nodes $v_1,v_2\in V_1\cup\{\lambda\}$ \& $w\in V_2$.
+        \item $(v,w_1),(v,w_2)\in E\Rightarrow w_1 = w_2$, for all nodes $v\in V_1$ \& $w_1,w_2\in V_2\cup\{\lambda\}$.
+    \end{itemize}
+\end{definition}
+
+\begin{dinhnghia}[Phép biến đổi của cây]
+    Cho $T_1 = (V_1,E_1),T_2 = (V_2,E_2)$ là các cây có thứ tự. Một {\rm phép biến đổi} của $T_1$ thành $T_2$ là một quan hệ có thứ tự $E\subseteq(V_1\cup\{\lambda\})\times(V_2\cup\{\lambda\})$ s.t.
+    \begin{itemize}
+        \item $\{v\in V_1;(v,w)\in E,\ w\in V_2\cup\{\lambda\}\} = V_1$.
+        \item $\{v\in V_2;(v,w)\in E,\ w\in V_1\cup\{\lambda\}\} = V_2$.
+        \item $(v_1,w),(v_2,w)\in E\Leftarrow v_1 = v_2$, cho tất cả các nút $v_1,v_2\in V_1\cup\{\lambda\}$ \& $w\in V_2$.
+        \item $(v,w_1),(v,w_2)\in E\Rightarrow w_1 = w_2$, cho tất cả các nút $v\in V_1$ \& $w_1,w_2\in V_2\cup\{\lambda\}$.
+    \end{itemize}
+\end{dinhnghia}
+
+\begin{remark}[\cite{Valiente2021}, Rmk. 2.1, p. 46]
+    In a transformation $E\subset(V_1\cup\{\lambda\})\times(V_2\cup\{\lambda\})$ of an ordered tree $T_1 = (V_1,E_1)$ into an ordered tree $T_2 = (V_2,E_2)$, the relation $E\cap V_1\times V_2$ is a bijection. In fact, condition $(v_1,w),(v_2,w)\in E\Leftarrow v_1 = v_2$ establishes injectivity, \& $(v,w_1),(v,w_2)\in E$ implies $w_1 = w_2$ establishes the surjectivity of $E\cap V_1\times V_2$.
+    
+    -- Trong phép biến đổi $E\subset(V_1\cup\{\lambda\})\times(V_2\cup\{\lambda\})$ của một cây có thứ tự $T_1 = (V_1,E_1)$ thành một cây có thứ tự $T_2 = (V_2,E_2)$, quan hệ $E\cap V_1\times V_2$ là một song ánh. Trên thực tế, điều kiện $(v_1,w),(v_2,w)\in E\Leftarrow v_1 = v_2$ thiết lập tính đơn ánh, \& $(v,w_1),(v,w_2)\in E$ ngụ ý $w_1 = w_2$ thiết lập tính toàn ánh của $E\cap V_1\times V_2$.
+\end{remark}
+Not every sequence of elementary edit operations corresponds to a valid transformation between 2 ordered trees, though. On the 1 hand, deletions \& insertions must appear in a bottom-up order -- e.g., according to a postorder traversal of the trees -- in order to ensure that deletions \& insertions are indeed made on leaves. In the postorder traversal of an ordered tree, which will be introduced in Sect. 3.2, a postorder traversal of the subtree rooted in turn at each of the children of the root is performed 1st, \& the root of the tree is visited last, where the subtree rooted at the 1st child is traversed 1st, followed by the subtree rooted at the next sibling, etc.
+
+-- Tuy nhiên, không phải mọi trình tự của các thao tác chỉnh sửa cơ bản đều tương ứng với một phép biến đổi hợp lệ giữa 2 cây có thứ tự. Mặt khác, các phép xóa \& chèn phải xuất hiện theo thứ tự từ dưới lên -- ví dụ, theo phép duyệt hậu thứ tự các cây -- để đảm bảo rằng các phép xóa \& chèn thực sự được thực hiện trên các lá. Trong phép duyệt hậu thứ tự của một cây có thứ tự, sẽ được giới thiệu trong Mục 3.2, phép duyệt hậu thứ tự của cây con có gốc lần lượt tại mỗi con của gốc được thực hiện trước, \& gốc của cây được truy cập cuối cùng, trong đó cây con có gốc tại con thứ nhất được duyệt trước, tiếp theo là cây con có gốc tại anh chị em tiếp theo, v.v.
+
+On the other hand, for a tree transformation to be valid, both parent \& sibling order must be preserved by the transformation, in order to ensure that the result of the transformation is indeed an ordered tree. I.e., in a valid transformation of an ordered tree $T_1$ into another ordered tree $T_2$, the parent of a non-root node of $T_1$ which is substituted or replaced with a non-root node of $T_2$ must be substituted or replaced with the parent of the node of $T_2$. Further, whenever sibling nodes of $T_1$ are substituted or replaced with sibling nodes of $T_2$, the substitution must preserve their relative order.
+
+-- Mặt khác, để một phép biến đổi cây có hiệu lực, cả thứ tự cha \& anh chị em phải được bảo toàn bởi phép biến đổi, để đảm bảo rằng kết quả của phép biến đổi thực sự là một cây có thứ tự. Tức là, trong một phép biến đổi hợp lệ của một cây có thứ tự $T_1$ thành một cây có thứ tự khác $T_2$, cha của một nút không phải gốc của $T_1$ được thay thế hoặc thay thế bằng một nút không phải gốc của $T_2$ phải được thay thế hoặc thay thế bằng cha của nút $T_2$. Hơn nữa, bất cứ khi nào các nút anh chị em của $T_1$ được thay thế hoặc thay thế bằng các nút anh chị em của $T_2$, phép thay thế phải bảo toàn thứ tự tương đối của chúng.
+
+The latter requirement for a transformation between 2 ordered trees to be valid is formalized by the notion of {\it mapping}, also known as {\it trace}.
+
+-- Yêu cầu sau để phép biến đổi giữa 2 cây có thứ tự là hợp lệ được chính thức hóa bằng khái niệm ánh xạ, còn được gọi là theo dõi.
+
+\begin{definition}[Mapping, \cite{Valiente2021}, Def. 2.3, p. 47]
+    Let $T_1 = (V_1,E_1),T_2 = (V_2,E_2)$ be ordered trees, let $W_1\subseteq V_1,W_2\subseteq V_2$. A {\rm mapping} $M$ of $T_1$ to $T_2$ is a bijection $M\subseteq W_1\times W_2$ s.t.
+    \begin{itemize}
+        \item $(root[T_1],root[T_2])\in M$ if $M\ne\emptyset$.
+        \item $(v,w)\in M$ only if $(parent[v],parent[w])\in M$, for all non-root nodes $v\in W_1,w\in W_2$.
+        \item $v_1$ is a left sibling of $v_2$ iff $w_1$ is a left sibling of $w_2$, for all nodes $v_1,v_2\in W_1$ \& $w_1,w_2\in W2$ with $(v_1,w_1),(v_2,w_2)\in M$.
+    \end{itemize}
+\end{definition}
+
+\begin{dinhnghia}[Phép ánh xạ]
+    Cho $T_1 = (V_1,E_1),T_2 = (V_2,E_2)$ là các cây có thứ tự, cho $W_1\subseteq V_1,W_2\subseteq V_2$. Một {\rm mapping} $M$ của $T_1$ tới $T_2$ là một song ánh $M\subseteq W_1\times W_2$ s.t.
+    \begin{itemize}
+        \item $(root[T_1],root[T_2])\in M$ nếu $M\ne\emptyset$.
+        \item $(v,w)\in M$ chỉ nếu $(parent[v],parent[w])\in M$, đối với mọi nút không phải gốc $v\in W_1,w\in W_2$.
+        \item $v_1$ là một nút anh em bên trái của $v_2$ nếu và chỉ nếu $w_1$ là một nút anh em bên trái của $w_2$, đối với mọi nút $v_1,v_2\in W_1$ \& $w_1,w_2\in W2$ với $(v_1,w_1),(v_2,w_2)\in M$.
+    \end{itemize}
+\end{dinhnghia}
+
+\begin{lemma}[\cite{Valiente2021}, Lem. 2.1, p. 48]
+    Let $M$ be a mapping of an ordered tree $T_1 = (V_1,E_1)$ to another ordered tree $T_2 = (V_2,E_2)$. Then, $depth[v] = depth[w]$, $\forall(v,w)\in M$.
+\end{lemma}
+A transformation is thus valid if node deletions \& insertions are made on leaves only, \& node substitutions constitute a mapping.
+
+-- Do đó, một phép biến đổi là hợp lệ nếu việc xóa và chèn nút chỉ được thực hiện trên các nút lá, còn việc thay thế nút tạo thành một phép ánh xạ.
+
+%------------------------------------------------------------------------------%
+
 \section{Basic Graph Theory: Coding \& Programming Aspects -- Lý Thuyết Đồ Thị Cơ Bản: Các Khía Cạnh Mã Hóa \& Lập Trình}
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}

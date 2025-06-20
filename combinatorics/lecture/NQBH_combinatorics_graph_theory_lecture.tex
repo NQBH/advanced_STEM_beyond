@@ -67,6 +67,7 @@
 \allowdisplaybreaks
 \newtheorem{assumption}{Assumption}
 \newtheorem{baitoan}{Bài toán}
+\newtheorem{bode}{Bổ đề}
 \newtheorem{cauhoi}{Câu hỏi}
 \newtheorem{conjecture}{Conjecture}
 \newtheorem{corollary}{Corollary}
@@ -1539,9 +1540,36 @@ int main() {
 	\end{equation*}	
 \end{theorem}
 
+\begin{proof}[1st chứng minh]
+    (i) Viết $(a + b)^n = (a + b)(a + b)\cdots(a + b)$, trong mỗi nhân tử, chỉ có thể chọn $a$ hoặc $b$. Nên số cách chọn được $i\in\overline{0,n}$ biến $b$ từ $i$ nhân tử $(a + b)$ \& $n - i$ biến $a$ bằng $C_n^i = C_n^{n - i}$, nên hệ số của $a^{n - i}b^i$ bằng $C_n^i = C_n^{n - i}$. (ii) Cho $a = b = 1$ trong nhị thức Newton, được $2^n = (1 + 1)^n = \sum_{i=0}^n C_n^i$. (iii) Cho $a = 1,b = -1$ trong nhị thức Newton, được $0 = 0^n = (1 - 1)^n = \sum_{i=0}^n C_n^i(-1)^i$.
+\end{proof}
+
+\begin{proof}[2nd chứng minh]
+    Chứng minh bằng quy nạp toán học.
+    \item(a) Hiển nhiên đúng với $n = 0$: ${\rm RHS} = C_0^0a^{0 - 0}b^0 = 1 = (a + b)^0 = {\rm LHS}$, \& đúng với $n = 1$: ${\rm RHS} = C_1^0a^{1 - 0}b^0 + C_1^1a^{1 - 1}b^1 = a + b = (a + b)^1 = {\rm LHS}$. Giả sử $(a + b)^n = \sum_{i=0}^n C_n^ia^{n - i}b^i$, $\forall a,b\in\mathbb{R}$ với $n\in\mathbb{N}$ nào đó. Có:
+    \begin{align*}
+        (a + b)^{n + 1} &= (a + b)(a + b)^n = (a + b)\sum_{i=0}^n C_n^ia^{n - i}b^i = \sum_{i=0}^n C_n^ia^{n - i + 1}b^i + \sum_{i=0}^n C_n^ia^{n - i}b^{i + 1} = \sum_{i=0}^n C_n^ia^{n - i + 1}b^i + \sum_{i=1}^{n+1} C_n^{i - 1}a^{n - i + 1}b^i\\
+        &= C_n^0 a^{n + 1}b^0 + \sum_{i=1}^n (C_n^i + C_n^{i-1})a^{n-i+1}b^i + C_n^{n+1-1}a^0b^{n+1} = \sum_{i=0}^{n+1} C_{n+1}^ia^{n+1-i}b^i. 
+    \end{align*}
+    Theo nguyên lý quy nạp toán học, công thức nhị thức Newton đúng $\forall n\in\mathbb{N}$.
+\end{proof}
+
 \begin{baitoan}
 	Khai triển: (a) $(a + b + c)^n$, $\forall a,b,c\in\mathbb{R}$, $\forall n\in\mathbb{N}^\star$. (b) $(a + b + c + d)^n$, $\forall a,b,c,d\in\mathbb{R}$, $\forall n\in\mathbb{N}^\star$. (c) $\left(\sum_{i=1}^m a_i\right)^n$, $\forall m,n\in\mathbb{N}^\star$, $\forall a_i\in\mathbb{R}$, $\forall i = 1,\ldots,m$. (d) $z^n$, $\forall z\in\mathbb{C}$, $\forall n\in\mathbb{N}^\star$ với $z = a + bi$, $a\coloneqq\Re z$, $b\coloneqq\Im z$.
 \end{baitoan}
+
+\begin{proof}[Solution]
+    (a) Khai triển nhị thức 2 lần liên tiếp:
+    \begin{align*}
+        (a + b + c)^n = ((a + b) + c)^n = \sum_{i=0}^n C_n^i(a + b)^{n - i}c^i = \sum_{i=0}^n C_n^i\left(\sum_{j=0}^{n - i} C_{n - i}^ja^{n - i - j}b^j\right)c^i = \sum_{i=0}^n\sum_{j=0}^{n - i} C_n^iC_{n - i}^j a^{n - i - j}b^jc^i,
+    \end{align*}
+    với hệ số của $a^{n - i - j}b^jc^i$ bằng $C_n^iC_{n - i}^j = \dfrac{n!}{i!(n - i)!}\cdot\dfrac{(n - i)!}{j!(n - i - j)!} = \dfrac{n!}{i!j!(n - i - j)!}$, nên nếu đặt $k\coloneqq n - i - j$ thì $i + j + k = n$, \& suy ra
+    \begin{equation*}
+        (a + b + c)^n = \sum_{i=0}^n\sum_{j=0}^{n - i}\sum_{k=0}^{n - i - j} \frac{n!}{i!j!k!}a^kb^jc^i = \sum_{i,j,k\in[n],\,i + j + k = n} \frac{n!}{i!j!k!}a^ib^jc^k = \sum_{i,j,k\in[n],\,i + j + k = n} \binom{n}{i,j,k}a^ib^jc^k,
+    \end{equation*}
+    với hệ số multinomial $\binom{n}{i,j,k}\coloneqq\frac{n!}{i!j!k!}$. (Có thể khai triển bằng cách $(a + b + c)^n = (a + (b + c))^n = ((a + c) + b)^n$ vẫn sẽ thu được cùng kết quả.)
+    \item(b)
+\end{proof}
 
 \begin{proof}
 	Add PVT's proofs+++
@@ -4473,14 +4501,14 @@ On the other hand, for a tree transformation to be valid, both parent \& sibling
 
 The latter requirement for a transformation between 2 ordered trees to be valid is formalized by the notion of {\it mapping}, also known as {\it trace}.
 
--- Yêu cầu sau để phép biến đổi giữa 2 cây có thứ tự là hợp lệ được chính thức hóa bằng khái niệm ánh xạ, còn được gọi là theo dõi.
+-- Yêu cầu sau để phép biến đổi giữa 2 cây có thứ tự là hợp lệ được chính thức hóa bằng khái niệm ánh xạ, còn được gọi là vết.
 
 \begin{definition}[Mapping, \cite{Valiente2021}, Def. 2.3, p. 47]
     Let $T_1 = (V_1,E_1),T_2 = (V_2,E_2)$ be ordered trees, let $W_1\subseteq V_1,W_2\subseteq V_2$. A {\rm mapping} $M$ of $T_1$ to $T_2$ is a bijection $M\subseteq W_1\times W_2$ s.t.
     \begin{itemize}
         \item $(root[T_1],root[T_2])\in M$ if $M\ne\emptyset$.
         \item $(v,w)\in M$ only if $(parent[v],parent[w])\in M$, for all non-root nodes $v\in W_1,w\in W_2$.
-        \item $v_1$ is a left sibling of $v_2$ iff $w_1$ is a left sibling of $w_2$, for all nodes $v_1,v_2\in W_1$ \& $w_1,w_2\in W2$ with $(v_1,w_1),(v_2,w_2)\in M$.
+        \item $v_1$ is a left sibling of $v_2$ iff $w_1$ is a left sibling of $w_2$, for all nodes $v_1,v_2\in W_1$ \& $w_1,w_2\in W_2$ with $(v_1,w_1),(v_2,w_2)\in M$.
     \end{itemize}
 \end{definition}
 
@@ -4489,7 +4517,7 @@ The latter requirement for a transformation between 2 ordered trees to be valid 
     \begin{itemize}
         \item $(root[T_1],root[T_2])\in M$ nếu $M\ne\emptyset$.
         \item $(v,w)\in M$ chỉ nếu $(parent[v],parent[w])\in M$, đối với mọi nút không phải gốc $v\in W_1,w\in W_2$.
-        \item $v_1$ là một nút anh em bên trái của $v_2$ nếu và chỉ nếu $w_1$ là một nút anh em bên trái của $w_2$, đối với mọi nút $v_1,v_2\in W_1$ \& $w_1,w_2\in W2$ với $(v_1,w_1),(v_2,w_2)\in M$.
+        \item $v_1$ là một nút anh em bên trái của $v_2$ nếu và chỉ nếu $w_1$ là một nút anh em bên trái của $w_2$, đối với mọi nút $v_1,v_2\in W_1$ \& $w_1,w_2\in W_2$ với $(v_1,w_1),(v_2,w_2)\in M$.
     \end{itemize}
 \end{dinhnghia}
 
@@ -4499,6 +4527,38 @@ The latter requirement for a transformation between 2 ordered trees to be valid 
 A transformation is thus valid if node deletions \& insertions are made on leaves only, \& node substitutions constitute a mapping.
 
 -- Do đó, một phép biến đổi là hợp lệ nếu việc xóa và chèn nút chỉ được thực hiện trên các nút lá, còn việc thay thế nút tạo thành một phép ánh xạ.
+
+\begin{definition}[Valid transformation, \cite{Valiente2021}, Def. 2.4, p. 48]
+    Let $T_1 = (V_1,E_1),T_2 = (V_2,E_2)$ be ordered trees. A transformation $E\subseteq(V_1\cup\{\lambda\})\times(V_2\cup\{\lambda\})$ of $T_1$ into $T_2$ is said to be a {\rm valid transformation} if
+    \begin{itemize}
+        \item $(v_j,\lambda)$ occurs before $(v_i,\lambda)$ in $E$, for all $(v_i,\lambda),(v_j,\lambda)\in E\cap V_1\times\{\lambda\}$ s.t. node $v_j$ is a descendant of node $v_i$ in $T_1$.
+        \item $(\lambda,w_i)$ occurs before $(\lambda,w_j)$ in $E$, for all $(\lambda,w_i),(\lambda,w_j)\times E\cap\{\lambda\}\times V_2$ s.t. node $w_j$ is a descendant of node $w_i$ in $T_2$.
+        \item $E\cap V_1\times V_2$ is a mapping of $T_1$ to $T_2$.
+    \end{itemize}
+\end{definition}
+
+\begin{dinhnghia}[Biến đổi hợp lệ]
+    Cho $T_1 = (V_1,E_1),T_2 = (V_2,E_2)$ là các cây có thứ tự. Phép biến đổi $E\subseteq(V_1\cup\{\lambda\})\times(V_2\cup\{\lambda\})$ của $T_1$ thành $T_2$ được gọi là phép biến đổi {\rm hợp lệ} nếu
+    \begin{itemize}
+        \item $(v_j,\lambda)$ xảy ra trước $(v_i,\lambda)$ trong $E$, với mọi $(v_i,\lambda),(v_j,\lambda)\in E\cap V_1\times\{\lambda\}$ nút s. $v_j$ là con cháu của nút $v_i$ trong $T_1$.
+        \item $(\lambda,w_i)$ xảy ra trước $(\lambda,w_j)$ trong $E$, với mọi $(\lambda,w_i),(\lambda,w_j)\times E\cap\{\lambda\}\times V_2$ nút s. $w_j$ là con cháu của nút $w_i$ trong $T_2$.
+        \item $E\cap V_1\times V_2$ là ánh xạ của $T_1$ tới $T_2$.
+    \end{itemize}
+\end{dinhnghia}
+The elementary edit operations of deletion, substitution, and insertion are, as a matter of fact, sufficient for the transformation of any tree into any other tree.
+
+-- Các thao tác chỉnh sửa cơ bản như xóa, thay thế và chèn đã đủ để biến đổi bất kỳ cây nào thành bất kỳ cây nào khác.
+
+\begin{lemma}[\cite{Valiente2021}, Def. 2.4, p. 48]
+    Let $T_1 = (V_1,E_1),T_2 = (V_2,E_2)$ be ordered trees. Then, there is a sequence of elementary edit operations transforming $T_1$ into $T_2$.
+\end{lemma}
+
+\begin{proof}[Proof]
+    Let $[v_i,\ldots,v_j]$ be the set of nodes $V_1$ in the order in which they are 1st visited during a postorder traversal of $T_1$, \& let $[w_k,\ldots,w_l]$ be the set of nodes $V_2$ in the order in which they are 1st visited during a postorder traversal of $T_2$. Then, the sequence of elementary edit operations $[v_i\mapsto\lambda,\ldots,v_j\mapsto\lambda,\lambda\mapsto w_k,\ldots,\lambda\mapsto w_l]$ allows to transform $T_1$ into $T_2$.
+    
+    -- Giả sử $[v_i,\ldots,v_j]$ là tập hợp các nút $V_1$ theo thứ tự mà chúng được truy cập lần đầu tiên trong quá trình duyệt theo thứ tự sau của $T_1$, \& giả sử $[w_k,\ldots,w_l]$ là tập hợp các nút $V_2$ theo thứ tự mà chúng được truy cập lần đầu tiên trong quá trình duyệt theo thứ tự sau của $T_2$. Khi đó, trình tự các thao tác chỉnh sửa cơ bản $[v_i\mapsto\lambda,\ldots,v_j\mapsto\lambda,\lambda\mapsto w_k,\ldots,\lambda\mapsto w_l]$ cho phép biến đổi $T_1$ thành $T_2$.
+\end{proof}
++++
 
 %------------------------------------------------------------------------------%
 

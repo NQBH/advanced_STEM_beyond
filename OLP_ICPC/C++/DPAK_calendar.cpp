@@ -1,7 +1,7 @@
 /*
 Source: New Zealand Contest 1993.
 IDs for online judges: UVA 158. 
-Status: Wrong Answer
+Status: 
 */
 
 #include <iostream>
@@ -62,47 +62,42 @@ int main(){
             cin.ignore();
             getline(cin, name);
             a.push_back({day, month, important, name, indexInput});
-            indexInput++;
+            ++indexInput;
         }
         else if (c == 'D') {
             int day, month;
             cin >> day >> month;
-            cout << "Today is: " << day << " " << month << endl;
+            cout << "Today is: " << day << " " << month << '\n';
             sort(a.begin(), a.end(), compare);
             int idx = 0;
             while (idx < a.size()) {
-                if (a[idx].day == day && a[idx].month == month) {
+                if (a[idx].day == day && a[idx].month == month)
                     break;
-                }
-                idx++;
+                ++idx;
             }
             if (idx == a.size()) idx = 0;
 
-            for (int i = idx; i < a.size(); i++) {
-
+            for (int i = idx; i < a.size(); ++i) {
                 if (a[i].day == day && a[i].month == month) {
                     cout << a[i].day << " " << a[i].month << " ";
-                    cout << "*TODAY* " <<a[i].name << endl;
+                    cout << "*TODAY* " << a[i].name << '\n';
                 }
                 else {
-                    int day_diff = 0;
-                    
-                    for (int j = month; j < a[i].month; j++) {
+                    int day_diff = 0;                    
+                    for (int j = month; j < a[i].month; ++j)
                         day_diff += get_day_in_month(j,leap);
-                    }
                     day_diff += a[i].day;
                     day_diff -= day;
 
                     if (day_diff >= 1 && day_diff <= 7) {
-                        cout << "   " << a[i].day << " " << a[i].month << " ";
-                        for (int j = day_diff; j <= a[i].important; j++){
+                        cout << a[i].day << " " << a[i].month << " ";
+                        for (int j = day_diff; j <= a[i].important; ++j)
                             cout << "*";
-                        }
-                        cout << " " << a[i].name << endl;
+                        cout << " " << a[i].name << '\n';
                     }
                 }
             }
-            cout << endl;
+            cout << '\n';
         }
     }
 }

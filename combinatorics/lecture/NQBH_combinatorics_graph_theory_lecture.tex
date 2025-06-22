@@ -4898,6 +4898,90 @@ The solution to combinatorial problems on trees \& graphs often requires an exha
 
 -- Giải pháp cho các bài toán tổ hợp trên cây \& đồ thị thường đòi hỏi phải tìm kiếm toàn diện tập hợp tất cả các giải pháp khả thi. Trên thực tế, hầu hết các bài toán tổ hợp trên cây \& đồ thị có thể được nêu trong khuôn khổ chung của việc gán các giá trị của 1 miền hữu hạn cho mỗi biến trong 1 loạt các biến, trong đó giá trị cho mỗi biến phải được lấy từ 1 miền hữu hạn tương ứng. Một tập hợp các giá trị có thứ tự thỏa mãn 1 số ràng buộc cụ thể biểu diễn 1 giải pháp cho bài toán, \& tìm kiếm toàn diện cho 1 giải pháp phải xem xét các phần tử của tích Descartes của các miền biến như các giải pháp tiềm năng.
 
+Consider, e.g., the tree edit problem. Let $T_1 = (V_1,E_1),T_2 = (V_2,E_2)$ be ordered trees. A potential solution to the problem of finding a transformation of $T_1$ into $T_2$ is given by a bijection $M\subseteq W_1\times W_2$, where $W_1\subseteq V_1,W_2\subseteq V_2$, which can also be seen as an assignment of a node $w\in V_2\cup\{\lambda\}$ to each node $v\in V_1$. The dummy node $\lambda$ represents the deletion of a node from $T_1$, \& the insertion of a node into $T_2$ remains implicit, i.e., all nodes $w\in V_2\backslash W_2$ are inserted into $T_2$.
+
+-- Xem xét, e.g., bài toán chỉnh sửa cây. Giả sử $T_1 = (V_1,E_1),T_2 = (V_2,E_2)$ là các cây có thứ tự. Một giải pháp tiềm năng cho bài toán tìm phép biến đổi $T_1$ thành $T_2$ được đưa ra bởi một song ánh $M\subseteq W_1\times W_2$, trong đó $W_1\subseteq V_1,W_2\subseteq V_2$, cũng có thể được xem như là phép gán một nút $w\in V_2\cup\{\lambda\}$ cho mỗi nút $v\in V_1$. Nút giả $\lambda$ biểu diễn việc xóa một nút khỏi $T_1$, \& việc chèn một nút vào $T_2$ vẫn ngầm định, tức là, tất cả các nút $w\in V_2\backslash W_2$ đều được chèn vào $T_2$.
+
+However, not every assignment of a node $w\in V_2\backslash\{\lambda\}$ to each node $v\in V_1$ corresponds to a valid transformation of $T_1$ into $T_2$. The bijection $M\subseteq W_1\times W_2\subseteq V_1\times V_2$ must be a mapping of $T_1$ to $T_2$, according to Def. 2.4. Notice that in such a case, a valid transformation of $T_1$ into $T_2$ can be obtained be 1st deleting from $T_1$ all those nodes of $T_1$ which were assigned to the dummy node $\lambda$, in the order given by a preorder traversal of $T_1$; substituting or replacing all nodes of $T_1$ which were assigned to a non-dummy node of $T_2$ with the node they were assigned to; \& inserting into $T_2$ all those nodes of $T_2$ which were not assigned to any node of $T_1$, in the order given by a preorder traversal of $T_2$.
+
+-- Tuy nhiên, không phải mọi phép gán một nút $w\in V_2\backslash\{\lambda\}$ cho mỗi nút $v\in V_1$ đều tương ứng với một phép biến đổi hợp lệ của $T_1$ thành $T_2$. Song ánh $M\subseteq W_1\times W_2\subseteq V_1\times V_2$ phải là một phép ánh xạ của $T_1$ thành $T_2$, theo Định nghĩa 2.4. Lưu ý rằng trong trường hợp như vậy, có thể thu được một phép biến đổi hợp lệ của $T_1$ thành $T_2$ bằng cách đầu tiên xóa khỏi $T_1$ tất cả các nút của $T_1$ đã được gán cho nút giả $\lambda$, theo thứ tự được chỉ ra bởi phép duyệt trước của $T_1$; thay thế hoặc thay thế tất cả các nút của $T_1$ đã được gán cho một nút không phải giả của $T_2$ bằng nút mà chúng đã được gán; \& chèn vào $T_2$ tất cả các nút của $T_2$ không được gán cho bất kỳ nút nào của $T_1$, theo thứ tự được chỉ định bởi phép duyệt trước của $T_2$.
+
+Backtracking is a general technique for organizing the exhaustive search for a solution to a combinatorial problem. Roughly, the technique consists of repeatedly extending a partial solution to the problem -- represented as an assignment of values of a finite domain, satisfying certain constraints, to an ordered finite set of variables -- to a complete solution to the problem, by extending the representation of the partial solution 1 variable at a time \& shrinking the representation of the partial solution (backtracking) whenever a partial solution cannot be further extended.
+
+-- Quay lui là một kỹ thuật chung để tổ chức tìm kiếm toàn diện cho một giải pháp cho một bài toán tổ hợp. Về cơ bản, kỹ thuật này bao gồm việc mở rộng liên tục một giải pháp cục bộ cho bài toán -- được biểu diễn dưới dạng phép gán các giá trị của một miền hữu hạn, thỏa mãn một số ràng buộc nhất định, thành một tập hợp hữu hạn các biến có thứ tự -- thành một giải pháp hoàn chỉnh cho bài toán, bằng cách mở rộng biểu diễn của giải pháp cục bộ 1 biến tại một thời điểm \& thu hẹp biểu diễn của giải pháp cục bộ (quay lui) bất cứ khi nào một giải pháp cục bộ không thể mở rộng thêm.
+
+The backtracking technique can be applied to those problems that exhibit the {\it domino principle}, i.e., if a constraint is not satisfied by any extension of the partial solution at all. The domino principle allows to stop extending a partial solution as soon as it can be established that the extension will not lead to a solution to the problem, because the partial solution already violates some constraint.
+
+-- Kỹ thuật quay lui có thể được áp dụng cho những bài toán thể hiện {\it nguyên lý domino}, tức là nếu một ràng buộc không được thỏa mãn bởi bất kỳ phần mở rộng nào của giải pháp một phần. Nguyên lý domino cho phép dừng việc mở rộng một giải pháp một phần ngay khi có thể xác định rằng phần mở rộng sẽ không dẫn đến giải pháp cho bài toán, vì giải pháp một phần đã vi phạm một số ràng buộc.
+
+The procedure of extending a partial solution toward a complete solution to the problem \& shrinking a partial solution that cannot be further extended can be better understood in terms of a {\it backtracking tree} of possible assignments of values to the variables that represent the problem. The root of the backtracking tree is a dummy node, the nodes at level 1 represent the possible values which the 2nd variable can be assigned to, given the value which the 1st variable was assigned to, the nodes at level 3 represent the possible values which the 3rd variable can be assigned to, given the values which the 1st \& 2nd variables were assigned to, \& so on.
+
+-- Quy trình mở rộng một giải pháp một phần thành một giải pháp hoàn chỉnh cho vấn đề \& thu hẹp một giải pháp một phần không thể mở rộng thêm nữa có thể được hiểu rõ hơn theo thuật ngữ của một {\it cây quay lui} của các phép gán giá trị có thể cho các biến biểu diễn vấn đề. Gốc của cây quay lui là một nút giả, các nút ở cấp độ 1 biểu diễn các giá trị có thể mà biến thứ 2 có thể được gán cho, cho giá trị mà biến thứ 1 được gán cho, các nút ở cấp độ 3 biểu diễn các giá trị có thể mà biến thứ 3 có thể được gán cho, cho các giá trị mà biến thứ 1 \& biến thứ 2 được gán cho, \& cứ như vậy.
+
+The domino principle allows {\it pruning} the backtracking tree at those nodes representing partial solutions that violate some constraint of the problem.
+
+-- Nguyên lý domino cho phép cắt tỉa cây quay lui tại các nút biểu diễn các giải pháp một phần vi phạm một số ràng buộc của bài toán.
+
+Finding a solution to a tree edit problem by backtracking means finding a node in the backtracking tree for which all the constraints of the problem are satisfied, \& finding all solutions to the tree edit problem means finding all such nodes in the backtracking tree. These solution nodes will be leaves in the backtracking tree for a tree edit problem, because of the problem formulation, but this is not always the case.
+
+-- Tìm giải pháp cho bài toán chỉnh sửa cây bằng cách quay lui có nghĩa là tìm một nút trong cây quay lui mà tất cả các ràng buộc của bài toán đều được thỏa mãn, \& tìm tất cả các giải pháp cho bài toán chỉnh sửa cây có nghĩa là tìm tất cả các nút như vậy trong cây quay lui. Các nút giải pháp này sẽ là các nút lá trong cây quay lui cho bài toán chỉnh sửa cây, do cách xây dựng bài toán, nhưng không phải lúc nào cũng vậy.
+
+The backtracking tree for a combinatorial problem is not explicit but remains implicit in the formulation of the problem. Further, the size of the backtracking tree is often exponential in the number of variables \& possible values. Therefore, it is crucial for a backtracking procedure to build only that portion of the backtracking tree that is needed at each stage, during the search for 1 or more solutions to the problem.
+
+-- Cây quay lui cho một bài toán tổ hợp không phải là rõ ràng nhưng vẫn ngầm định trong việc xây dựng bài toán. Hơn nữa, kích thước của cây quay lui thường theo cấp số nhân trong số các biến \& các giá trị có thể. Do đó, điều quan trọng đối với một quy trình quay lui là chỉ xây dựng phần cây quay lui cần thiết ở mỗi giai đoạn, trong quá trình tìm kiếm 1 hoặc nhiều giải pháp cho bài toán.
+
+The following backtracking algorithm for enumerating node assignments that correspond to valid tree transformations extends an (initially empty) mapping $M$ in all possible ways, in order to enumerate all assignments $M\subseteq V_1\times V_2\cup\{\lambda\}$ of nodes of an ordered tree $T_2 = (V_2,E_2)$, including a dummy node $\lambda$, to the nodes of an ordered tree $T_1 = (V_1,E_1)$. The node assignments found are collected in a list $L$ of dictionaries of nodes (of tree $T_1$) to nodes (of tree $T_2$).
+
+-- Thuật toán quay lui sau đây để liệt kê các phép gán nút tương ứng với các phép biến đổi cây hợp lệ mở rộng một ánh xạ (ban đầu là rỗng) $M$ theo mọi cách có thể, để liệt kê tất cả các phép gán $M\subseteq V_1\times V_2\cup\{\lambda\}$ của các nút của một cây có thứ tự $T_2 = (V_2,E_2)$, bao gồm một nút giả $\lambda$, tới các nút của một cây có thứ tự $T_1 = (V_1,E_1)$. Các phép gán nút được tìm thấy được thu thập trong một danh sách $L$ các từ điển của các nút (của cây $T_1$) tới các nút (của cây $T_2$).
+
+Further, the preorder number {\it order} \& depth {\it depth} of the nodes in the trees will be used for testing the constraints at each stage, \& the candidate nodes which each node can be mapped to are represented by a dictionary $C$ of nodes (of tree $T_1$) to lists of nodes (of tree $T_2$).
+
+-- Hơn nữa, số thứ tự trước {\it order} \& độ sâu {\it depth} của các nút trong cây sẽ được sử dụng để kiểm tra các ràng buộc ở mỗi giai đoạn, \& các nút ứng viên mà mỗi nút có thể được ánh xạ tới được biểu diễn bằng một từ điển $C$ gồm các nút (của cây $T_1$) tới danh sách các nút (của cây $T_2$).
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+function backtracking_tree_edit(T1, T2)
+    preordered_tree_traversal(T1)
+    preordered_tree_traversal(T2)
+    let M be an empty dictionary (of nodes to nodes)
+    let L be an empty list (of dictionaries of nodes to nodes)
+    C <-- set_up_candidate_nodes(T1, T2)
+    let v be the 1st node of T1 in preorder
+    (M, L) <-- extend_tree_edit(T1, T2, M, L, C, v)
+    return L
+\end{Verbatim}
+The candidate nodes which a node of $T_1$ can be mapped to are just those nodes of $T_2$ of same depth as the node of $T_1$, together with the dummy node $\lambda$ representing the deletion of the node from $T_1$. I.e., $C[v] = \{w\in V_2;{\rm depth}[v] = {\rm depth}[w]\}\cup\{\lambda\}$.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+function set_up_candidate_nodes(T1, T2)
+    preorder_tree_depth(T1)
+    preorder_tree_depth(T2)
+    add a new node T2.dummy to T2
+    let C be an empty dictionary (of nodes to lists of nodes)
+    for all nodes v of T1 do
+        let C[v] be an empty list (of nodes)
+        append T2.dummy to C[v]
+        for all nodes w of T2 do
+            if w != T2.dummy & v.depth = w.depth then
+                append w to C[v]
+    return C
+\end{Verbatim}
+p. 59+++
+
+%------------------------------------------------------------------------------%
+
+\section{Branch-\&-Bound --  Phân Nhánh \& Giới hạn}
+The backtracking technique can be used for finding either 1 solution or all solutions to a combinatorial problem. When a cost can be associated with each partial solution, a least-cost solution can be found in a more efficient way by a simple variation of backtracking, called {\it branch-\&-bound}. The technique consists of remembering the lowest-cost solution found at each stage of the backtracking search for a solution \& using the cost of the lowest-cost solution found so far as a lower bound on the cost of a least-cost solution to the problem, in order to discard partial solution as soon as it can be established that they will not improve on the lowest-cost solution found so far.
+
+-- Kỹ thuật quay lui có thể được sử dụng để tìm 1 giải pháp hoặc tất cả các giải pháp cho một bài toán tổ hợp. Khi có thể liên kết chi phí với mỗi giải pháp một phần, giải pháp có chi phí thấp nhất có thể được tìm thấy theo cách hiệu quả hơn bằng một biến thể đơn giản của quay lui, được gọi là {\it nhánh-\&-bound}. Kỹ thuật này bao gồm việc ghi nhớ giải pháp có chi phí thấp nhất được tìm thấy ở mỗi giai đoạn của quá trình tìm kiếm quay lui cho một giải pháp \& sử dụng chi phí của giải pháp có chi phí thấp nhất được tìm thấy cho đến nay làm giới hạn dưới của chi phí của giải pháp có chi phí thấp nhất cho bài toán, để loại bỏ giải pháp một phần ngay khi có thể xác định rằng chúng sẽ không cải thiện giải pháp có chi phí thấp nhất được tìm thấy cho đến nay.
+
+The branch-\&-bound technique can be applied to those problems that exhibit an extension of the {\it domino principle}, meaning not only that if a constraint is not satisfied by a given partial solution, the constraint will not be satisfied by any extension of the partial solution at all -- as in the case of backtracking -- but also that the cost of any extension of a partial solution will be $\ge$ the cost of the partial solution itself. Such an extended domino principle allows to stop extending a partial solution as soon as it can be established that the extension will not lead to a solution to the problem, because the partial solution already violates some constraint, \& also as soon as it can be established that the extension will not lead to a least-cost solution to the problem, because the cost of the partial solution already reaches or exceeds the cost of the lowest-cost solution found so far.
+
+-- Kỹ thuật nhánh-\&-bound có thể được áp dụng cho những bài toán thể hiện sự mở rộng của {\it nguyên lý domino}, nghĩa là không chỉ nếu một ràng buộc không được thỏa mãn bởi một giải pháp một phần nhất định, ràng buộc đó sẽ không được thỏa mãn bởi bất kỳ sự mở rộng nào của giải pháp một phần -- như trong trường hợp quay lui -- mà còn có nghĩa là chi phí của bất kỳ sự mở rộng nào của một giải pháp một phần sẽ là $\ge$ chi phí của chính giải pháp một phần đó. Một nguyên lý domino mở rộng như vậy cho phép dừng việc mở rộng một giải pháp một phần ngay khi có thể xác định rằng việc mở rộng sẽ không dẫn đến một giải pháp cho bài toán, vì giải pháp một phần đã vi phạm một số ràng buộc, \& cũng ngay khi có thể xác định rằng việc mở rộng sẽ không dẫn đến một giải pháp có chi phí thấp nhất cho bài toán, vì chi phí của giải pháp một phần đã đạt hoặc vượt quá chi phí của giải pháp có chi phí thấp nhất đã tìm thấy cho đến nay.
+
+As in the case of backtracking, the procedure of extending a partial solution toward a least-cost solution to the problem \& shrinking a partial solution that cannot be further extended to a solution of lesser cost can be better understood in terms of a {\it branch-\&-bound tree} of possible assignments of values to the variables that represent the problem. The root of the branch-\&-bound tree is a dummy node of zero cost, the nodes at level 1 represent the possible values which the 1st variable can be assigned to, the nodes at level 2 represent the possible values which the 2nd variable can be assigned to, given the value which the 1st variable was assigned to, the nodes at level 3 represent the possible values which the 3rd variable can be assigned to, given the values which the 1st \& 2nd variables were assigned to, \& so on. Further, ${\rm cost}[v]\ge{\rm cost}[w]$ for all leaves $v\in V_1$ \& all successor nodes $w$ of node $v$ in a preorder traversal of the branch-\&-bound tree. I.e., subtrees in the backtracking tree rooted at nodes of cost greater than the cost of a previous leaf node are pruned off the branch-\&-bound tree.
+
+-- Giống như trong trường hợp quay lui, quy trình mở rộng một giải pháp một phần thành một giải pháp có chi phí thấp nhất cho vấn đề \& thu hẹp một giải pháp một phần không thể mở rộng thêm thành một giải pháp có chi phí thấp hơn có thể được hiểu rõ hơn theo thuật ngữ của một {\it nhánh-\&-bound tree} của các phép gán giá trị có thể có cho các biến biểu diễn vấn đề. Gốc của cây nhánh-\&-bound tree là một nút giả có chi phí bằng không, các nút ở cấp độ 1 biểu diễn các giá trị có thể có mà biến thứ 1 có thể được gán cho, các nút ở cấp độ 2 biểu diễn các giá trị có thể có mà biến thứ 2 có thể được gán cho, với giá trị mà biến thứ 1 được gán cho, các nút ở cấp độ 3 biểu diễn các giá trị có thể có mà biến thứ 3 có thể được gán cho, với giá trị mà biến thứ 1 \& thứ 2 được gán cho, \& cứ như vậy. Hơn nữa, ${\rm cost}[v]\ge{\rm cost}[w]$ cho tất cả các lá $v\in V_1$ \& tất cả các nút kế thừa $w$ của nút $v$ trong một phép duyệt trước của cây liên kết nhánh. Tức là, các cây con trong cây quay lui có gốc tại các nút có chi phí lớn hơn chi phí của một nút lá trước đó sẽ bị cắt khỏi cây liên kết nhánh.
+
+p. 62+++
+
 %------------------------------------------------------------------------------%
 
 \section{Basic Graph Theory: Coding \& Programming Aspects -- Lý Thuyết Đồ Thị Cơ Bản: Các Khía Cạnh Mã Hóa \& Lập Trình}

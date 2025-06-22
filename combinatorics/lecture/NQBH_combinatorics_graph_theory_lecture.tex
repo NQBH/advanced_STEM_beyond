@@ -502,62 +502,57 @@ The way in which the elements of a permutation group permute the elements of the
 	
 	C++:
 	\begin{verbatim}
-		#include<bits/stdc++.h>
-		using namespace std;
-		
-		long long total = 0;
-		
-		long long nCk(int n, int k) {
-			if (k>n||k<0) return 0;
-			long long res=1;
-			for(int i=1; i<=k; i++) {
-				res*=(n-i+1);
-				res/=i;
-			}
-			return res;
-		}
-		
-		void generateSeq(int n, int m, int pos, int last, vector<int>& seq, int cnt0, int cnt1) {
-			if (cnt0>m || cnt1>n-m) return;
-			if (pos==n) {
-				if(cnt0==m && cnt1==n-m) {
-					for(int x:seq) cout<<x<<" ";
-					cout<<"\n";
-					total++;
-				}
-			}
-			
-			seq.push_back(1);
-			generateSeq(n, m, pos+1, 1, seq, cnt0, cnt1+1);
-			seq.pop_back();
-			
-			if(last!=0) {
-				seq.push_back(0);
-				generateSeq(n, m, pos+1, 0, seq, cnt0+1, cnt1);
-				seq.pop_back();
-			}
-		}
-		
-		
-		int main() {
-			ios_base::sync_with_stdio(0);
-			cin.tie(0); cout.tie(0);
-			int n, m;
-			cin>>n>>m;
-			vector<int> seq;
-			generateSeq(n, m, 0, -1, seq, 0, 0);
-			cout<<"Tong so day hop le: "<<total<<"\n";
-			cout<<"(n-m+1)Cm = "<<nCk(n-m+1, m);
-		}
+#include<bits/stdc++.h>
+using namespace std;
+
+long long total = 0;
+
+long long nCk(int n, int k) {
+    if (k>n||k<0) return 0;
+    long long res=1;
+    for(int i=1; i<=k; ++i) {
+        res*=(n-i+1);
+        res/=i;
+    }
+    return res;
+}
+
+void generateSeq(int n, int m, int pos, int last, vector<int>& seq, int cnt0, int cnt1) {
+    if (cnt0>m || cnt1>n-m) return;
+    if (pos==n) {
+        if(cnt0==m && cnt1==n-m) {
+            for(int x:seq) cout<<x<<" ";
+            cout<<"\n";
+            total++;
+        }
+    }
+    
+    seq.push_back(1);
+    generateSeq(n, m, pos+1, 1, seq, cnt0, cnt1+1);
+    seq.pop_back();
+    
+    if(last!=0) {
+        seq.push_back(0);
+        generateSeq(n, m, pos+1, 0, seq, cnt0+1, cnt1);
+        seq.pop_back();
+    }
+}
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n, m;
+    cin>>n>>m;
+    vector<int> seq;
+    generateSeq(n, m, 0, -1, seq, 0, 0);
+    cout<<"Tong so day hop le: "<<total<<"\n";
+    cout<<"(n-m+1)Cm = "<<nCk(n-m+1, m);
+}
 	\end{verbatim}
 \end{proof}
 
 \begin{problem}[\cite{Shahriari2022}, p. 3]
 	Let $f(n)$ be the number of subsets of $[n]$. Prove that $f(n) = 2^n$, $\forall n\in\mathbb{N}^\star$.
-\end{problem}
-
-\begin{problem}[\cite{Shahriari2022}, p. 3]
-	Assume $n\in\mathbb{N}$, $n\ge2$, people given their $n$ hats to a hat-check person. Let $f(n)$ be the number of ways that the hats can be returned, so that everyone has 1 hat, but no one has their own hat. Prove: (a) $f(n) = n!\sum_{i=0}^n \dfrac{(-1)^i}{i!}$, $\forall n\in\mathbb{N}^\star$. (b) $f(n)$ is the nearest integer to $\dfrac{n!}{e}$.
 \end{problem}
 
 \begin{problem}[\cite{Shahriari2022}, p. 3]
@@ -1359,7 +1354,6 @@ There are many counting problems in combinatorics whos solution is given by the 
 	\item Re-interpreting the symbol X as an open parenthesis \& Y as close parenthesis, $C_n$ counts the number of expressions containing $n$ pairs of parentheses which are correctly matched: ((())), (()()), (())(), ()(()), ()()().
 \end{enumerate}
 
-
 %------------------------------------------------------------------------------%
 
 \subsection{Problems: Catalan numbers -- Bài tập: Số Catalan}
@@ -1371,8 +1365,8 @@ There are many counting problems in combinatorics whos solution is given by the 
 	\end{equation*}
 \end{baitoan}
 
-\begin{proof}[VNTA's proof by using strong induction]
-	Số Catalan thỏa hệ thức truy hồi \eqref{Catalan: recurrence}. Gọi $D_n$ là số chuỗi đúng đắn gồm $n$ dấu ngoặc mở \& $n$ dấu ngoặc đóng. Cần chứng minh $D_n = C_n = \frac{1}{n + 1}\binom{2n}{n}$, $\forall n\in\mathbb{N}^\star$. Khi $n = 0$, chỉ có 1 cách (chuỗi rỗng) nên $D_0 = C_0 = 1$. Giả sử $D_i = C_i = \frac{1}{i + 1}\binom{2i}{i}$ đúng $\forall i\in[n]$. Cần chứng minh $D_{n+1} = C_{n+1}$. Thật vậy, mỗi chuỗi ngoặc đúng có thể viết thành dạng $(S_1)S_2$, trong đó: $S_1$ là chuỗi ngoặc đúng với $i$ cặp ngoặc, $S_2$ là chuỗi ngoặc dúng với $n - i$ cặp ngoặc. Khi đó, tổng số cặp ngoặc trong chuỗi $(S_1)S_2$ là $i + (n - i) + 1 = n + 1$ cặp ngoặc nên số chuỗi $n + 1$ cặp ngoặc đúng có thể được biểu diễn thành $D_{n+1} = \sum_{i=0}^n D_iD_{n - i} = \sum_{i=0}^n C_iC_{n - i} = C_{n+1}$. Theo nguyên lý quy nạp mạnh, suy ra $D_n = C_n$, $\forall n\in\mathbb{N}^\star$.
+\begin{proof}[Proof]
+    (VNTA's proof by using strong induction) Số Catalan thỏa hệ thức truy hồi \eqref{Catalan: recurrence}. Gọi $D_n$ là số chuỗi đúng đắn gồm $n$ dấu ngoặc mở \& $n$ dấu ngoặc đóng. Cần chứng minh $D_n = C_n = \frac{1}{n + 1}\binom{2n}{n}$, $\forall n\in\mathbb{N}^\star$. Khi $n = 0$, chỉ có 1 cách (chuỗi rỗng) nên $D_0 = C_0 = 1$. Giả sử $D_i = C_i = \frac{1}{i + 1}\binom{2i}{i}$ đúng $\forall i\in[n]$. Cần chứng minh $D_{n+1} = C_{n+1}$. Thật vậy, mỗi chuỗi ngoặc đúng có thể viết thành dạng $(S_1)S_2$, trong đó: $S_1$ là chuỗi ngoặc đúng với $i$ cặp ngoặc, $S_2$ là chuỗi ngoặc dúng với $n - i$ cặp ngoặc. Khi đó, tổng số cặp ngoặc trong chuỗi $(S_1)S_2$ là $i + (n - i) + 1 = n + 1$ cặp ngoặc nên số chuỗi $n + 1$ cặp ngoặc đúng có thể được biểu diễn thành $D_{n+1} = \sum_{i=0}^n D_iD_{n - i} = \sum_{i=0}^n C_iC_{n - i} = C_{n+1}$. Theo nguyên lý quy nạp mạnh, suy ra $D_n = C_n$, $\forall n\in\mathbb{N}^\star$.
 \end{proof}
 C++:
 \begin{enumerate}
@@ -1392,7 +1386,7 @@ void validParentheses(int open, int close, string cur, vector<string>& res) {
 
 long long catalan(int n) {
     long long res = 1;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; ++i) {
         res *= 2 * (2 * i + 1);
         res /= (i + 2);
     }
@@ -1414,21 +1408,24 @@ int main() {
 \end{enumerate}
 
 \begin{baitoan}
-	Cho $n\in\mathbb{N}^\star$, $k\in\mathbb{N}$, $0\le k\le n$. Viết chương trình {\sf C{\tt/}C++, Pascal, Python} để tính \& cho biết giá trị nhỏ nhất của $n$ gặp lỗi overflow: (a) $P_n = n!$. (b) $A_n^k$. (c) $C_n^k$. (d) Số Catalan thứ $n$.	
+	Cho $n\in\mathbb{N}^\star$, $k\in\mathbb{N}$, $0\le k\le n$. Viết chương trình {\sf C{\tt/}C++, Pascal, Python} để tính \& cho biết giá trị nhỏ nhất của $n$ gặp lỗi overflow: (a) $P_n = n!$. (b) $A_n^k = \dfrac{n!}{(n - k)!} = n(n - 1)\cdots(n - k + 1)$. (c) $C_n^k = \dfrac{n!}{k!(n - k)!}$. (d) Số Catalan thứ $n$ $C_n = \dfrac{(2n)!}{n!(n + 1)!}$.	
 \end{baitoan}
 C++:
 \begin{enumerate}
-	\item VNTA's: \url{https://github.com/vntanh1406/Graph_SUM2025/blob/main/Combinatorics/CalculateP_A_C_Catalan.cpp}.
+	\item VNTA's:
+    \begin{itemize}
+        \item \url{https://github.com/vntanh1406/Graph_SUM2025/blob/main/Combinatorics/CalculateP_A_C_Catalan.cpp}.
+        \item \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/C++/VNTA_calculate_P_A_C_Catalan.cpp}.
+    \end{itemize}
 	
-	\url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/C++/VNTA_calculate_P_A_C_Catalan.cpp}.
 	\begin{Verbatim}[numbers=left,xleftmargin=5mm]
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 
 // n_max = 20
 long long Pn(int n) {
     long long res = 1;
-    for (int i = 2; i <= n; i++) res *= i;
+    for (int i = 2; i <= n; ++i) res *= i;
     return res;
 }
 
@@ -1455,7 +1452,7 @@ int main() {
     cin.tie(0); cout.tie(0);
     int n, k;
     cin >> n >> k;
-    cout << Pn(n) << endl << nAk(n, k) << endl << nCk(n, k) << endl << catalan_n(n);
+    cout << Pn(n) << '\n' << nAk(n, k) << '\n' << nCk(n, k) << '\n' << catalan_n(n);
 }
 	\end{Verbatim}
 	\item ST's C++: PAC Catalan: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/C++/ST_calculate_P_A_C_Catalan.cpp}.
@@ -1502,23 +1499,89 @@ int main() {
     cin >> n;
     cout << "Nhap k (0 <= k <= n): ";
     cin >> k;
-	
+    
     cout << "\n=== Ket qua ===\n";
-	
+    
     unsigned long long fn = factorial(n);
-    if (fn != 0) cout << "Pn = " << fn << endl;
-	
+    if (fn != 0) cout << "Pn = " << fn << '\n';
+    
     unsigned long long Ank = permutation(n, k);
-    if (Ank != 0) cout << "A^k_n = " << Ank << endl;
-	
+    if (Ank != 0) cout << "A^k_n = " << Ank << '\n';
+    
     unsigned long long Cnk = combination(n, k);
-    if (Cnk != 0) cout << "C^k_n = " << Cnk << endl;
-	
+    if (Cnk != 0) cout << "C^k_n = " << Cnk << '\n';
+    
     unsigned long long Catn = catalan(n);
-    if (Catn != 0) cout << "Catalan(n) = " << Catn << endl;
+    if (Catn != 0) cout << "Catalan(n) = " << Catn << '\n';
     return 0;
 }
 	\end{Verbatim}
+\end{enumerate}
+Python:
+\begin{enumerate}
+    \item NQBH's PAC Catalan: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/Python/NQBH_P_A_C_Catalan.py}.
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+# compute permutation P_n = n!
+def P(n):
+    P = 1 # P_0 = P_1 = 1
+    for i in range(2, n + 1):
+        P *= i
+    return P
+# compute arrangement A_n^k = n! / (n - k)! = n(n - 1)...(n - k + 1)
+def A(n, k):
+    A = 1
+    for i in range(n - k + 1, n + 1):
+        A *= i
+    return A
+# compute combination C_n^k = n! / (k!(n - k)!) = A_n^k / k!
+def C(n, k):
+    return A(n, k) // P(k)
+# compute Catalan number
+def Catalan(n): # C_n = C_{2n}^n / (n + 1)
+    return C(2 * n, n) // (n + 1)
+
+def Catalan_1(n): # C_n = (2n)! / (n!(n + 1)!)
+    return P(2 * n) // (P(n) * P(n + 1))
+
+def Catalan_2(n): # C_n = C_{2n}^n - C_{2n}^{n + 1}
+    return C(2 * n, n) - C(2 * n, n + 1)
+
+def Catalan_3(n): # C_n = C_{2n + 1}^n / (2n + 1)
+    return C(2 * n + 1, n) // (2 * n + 1)
+
+def Catalan_4(n): # C_0 = 1, C_n = 2(2n - 1)/(n + 1) * C_{n-1}
+    if n == 0:
+        return 1
+    else:
+        return 2 * (2 * n - 1) * Catalan_4(n - 1) // (n + 1)
+'''
+def Catalan_5(n): # C_0 = 1, C_n = \sum_{i=1}^n C_{i-1}C_{n-i}
+    if n == 0:
+        return 1
+    else:
+        ans = 0
+        for i in range(n + 1):
+            ans += Catalan_5(i - 1) * Catalan_5(n - i)
+        return ans
+
+def Catalan_5(n): # C_0 = 1, C_n = \sum_{i=1}^n C_{i-1}C_{n-i}
+    if n == 0:
+        return 1
+    else:
+        arr = [0] * (n + 2)
+        for i in range(n + 1):
+            for j in range(i + 1):
+                arr[i] += Catalan_5(j - 1) * Catalan_5(i - j)
+    return arr[n]
+[Previous line repeated 996 more times]
+RecursionError: maximum recursion depth exceeded
+'''
+n, k = map(int, input().split())
+print(f'P_{n} = {P(n)}')
+print(f'A_{n}^{k} = {A(n, k)}')
+print(f'C_{n}^{k} = {C(n, k)}')
+print(f'C_{n} = {Catalan(n)} = {Catalan_1(n)} = {Catalan_2(n)} = {Catalan_3(n)} = {Catalan_4(n)}')
+    \end{Verbatim}
 \end{enumerate}
 
 %------------------------------------------------------------------------------%
@@ -1727,11 +1790,55 @@ In mathematics, the {\it multinomial theorem} describes how to expand a power of
         &= \sum_{i,j,k,l\in[n],\,i + j + k + l = n} \binom{n}{i,j,k,l}a^ib^jc^kd^l.
     \end{align*}
     (có thể khai triển bằng cách $(a + b + c + d)^n = ((a + b + d) + c)^n = ((a + c + d) + b)^n = (a + (b + c + d))^n$ vẫn sẽ thu được cùng kết quả).
-    \item(c)
+    \item(c) Số hoán vị chiều dài $n$ từ $m$ số $a_1,\ldots,a_m$ sao cho có đúng $n_i$ số $a_i$, $\forall i\in[m]$, với $\sum_{i=1}^m a_i = n$ đúng bằng $\dfrac{n!}{\prod_{i=1}^m n_i!}$. Suy ra
+    \begin{equation*}
+        \left(\sum_{i=1}^m a_i\right)^n = \sum_{n_i\in[m],\,\forall i\in[m],\,\sum_{i=1}^m n_i = n} \dfrac{n!}{\prod_{i=1}^m n_i!}\prod_{i=1}^m a_i^{n_i} = \sum_{n_i\in[m],\,\forall i\in[m],\,\sum_{i=1}^m n_i = n} \binom{n}{n_1,n_2,\ldots,n_m}\prod_{i=1}^m a_i^{n_i},
+    \end{equation*}
+    với hệ số multinomial $\binom{n}{n_1,n_2,\ldots,n_m}\coloneqq\dfrac{n!}{\prod_{i=1}^m n_i!} = \dfrac{n!}{n_1!n_2!\cdots n_m!}$.
+    \item(d) Mấu chốt là dãy $\{i^n\}_{n=0}^\infty$ là dãy tuần hoàn chu kỳ 4:
+    \begin{equation*}
+        i^n = \left\{\begin{split}
+            &1&&\mbox{if } n\divby4,\\
+            &i&&\mbox{if } n\equiv1\mod4,\\
+            -&1&&\mbox{if } n\equiv2\mod4,\\
+            -&i&&\mbox{if } n\equiv3\mod4.
+        \end{split}\right.
+    \end{equation*}
+    nên
+    \begin{align*}
+        z^n &= (a + bi)^n = \sum_{k=0}^n C_n^ka^{n-k}(bi)^k = \sum_{k=0}^n C_n^ka^{n-k}b^ki^k\\
+        &= \sum_{k\in\overline{0,n},\,k\divby4} C_n^ka^{n-k}b^k - \sum_{k\in\overline{0,n},\,k\equiv2\,{\rm mod}\,4} C_n^ka^{n-k}b^k + \left(\sum_{k\in\overline{0,n},\,k\equiv1\,{\rm mod}\,4} C_n^ka^{n-k}b^k - \sum_{k\in\overline{0,n},\,k\equiv3\,{\rm mod}\,4} C_n^ka^{n-k}b^k\right)i.
+    \end{align*}
+    $\Re z^n =\sum_{k\in\overline{0,n},\,k\divby4} C_n^ka^{n-k}b^k - \sum_{k\in\overline{0,n},\,k\equiv2\,{\rm mod}\,4} C_n^ka^{n-k}b^k$, $\Im z^n = \sum_{k\in\overline{0,n},\,k\equiv1\,{\rm mod}\,4} C_n^ka^{n-k}b^k - \sum_{k\in\overline{0,n},\,k\equiv3\,{\rm mod}\,4} C_n^ka^{n-k}b^k$.
 \end{proof}
 
 \begin{proof}
-	Add PVT's proofs+++
+    PVT's solution: (a) \& (b)
+    \begin{align*}
+        (a + b + c)^n &= (a + (b + c))^n = \sum_{i=0}^n \binom{n}{i}a^{n - i}(b + c)^i = \sum_{i=0}^n \binom{n}{i}a^{n - i}\left(\sum_{j=0}^i \binom{i}{j}b^{i - j}c^j\right) = \sum_{i=0}^n\sum_{j=0}^i \binom{i}{j}a^{n - i}b^{i - j}c^j,\\
+        (a + b + c + d)^n &= (a + (b + c + d))^n = \sum_{i=0}^n \binom{n}{i}a^{n - i}(b + c + d)^i = \sum_{i=0}^n \binom{n}{i}a^{n - i}\left(\sum_{j=0}^i\sum_{k=0}^j \binom{i}{j}\binom{j}{k}b^{i - j}c^{j - k}d^k\right)\\
+        &= \sum_{i=0}^n\sum_{j=0}^i\sum_{k=0}^j \binom{n}{i}\binom{i}{j}\binom{j}{k}a^{n - i}b^{i - j}c^{j - k}d^k
+    \end{align*}
+    \item(c) Ta sẽ chứng minh bằng quy nạp theo $m$:
+    \begin{equation}
+        \label{multinomial thm PVT}
+        \left(\sum_{i=1}^m a_i\right)^n = \sum_{i_1=0}^n\sum_{i_2=0}^{i_1}\cdots\sum_{i_{m-1}=0}^{i_{m-2}} \binom{n}{i_1}\binom{i_1}{i_2}\cdots\binom{i_{m-2}}{i_{m-1}}a_1^{n - i_1}a_2^{i_1 - i_2}\cdots a_{m-1}^{i_{m-2} - i_{m-1}}a_m^{i_{m-1}}.
+    \end{equation}
+    Với $m = 1,2,3$ thì đẳng thức này đúng. Giả sử \eqref{multinomial thm PVT} đúng tới $m = M$, i.e.,
+    \begin{equation*}
+        \left(\sum_{i=1}^M a_i\right)^n = \sum_{i_1=0}^n\sum_{i_2=0}^{i_1}\cdots\sum_{i_{M-1}=0}^{i_{M-2}} \binom{n}{i_1}\binom{i_1}{i_2}\cdots\binom{i_{M-2}}{i_{M-1}}a_1^{n - i_1}a_2^{i_1 - i_2}\cdots a_{M-1}^{i_{M-2} - i_{M-1}}a_M^{i_{M-1}}.
+    \end{equation*}
+    Ta cần chứng minh \eqref{multinomial thm PVT} cũng đúng với $m = M + 1$, i.e., cần chứng minh
+    \begin{equation*}
+        \left(\sum_{i=1}^{M+1} a_i\right)^n = \sum_{i_1=0}^n\sum_{i_2=0}^{i_1}\cdots\sum_{i_M=0}^{i_{M-1}} \binom{n}{i_1}\binom{i_1}{i_2}\cdots\binom{i_{M-1}}{i_M}a_1^{n - i_1}a_2^{i_1 - i_2}\cdots a_M^{i_{M-1} - i_M}a_{M+1}^{i_M}.
+    \end{equation*}
+    Thật vậy, áp dụng nhị thức Newton \& giả thiết quy nạp, được
+    \begin{align*}
+         \left(\sum_{i=1}^{M+1} a_i\right)^n &= \left(a_1 + \sum_{i=2}^{M+1} a_i\right)^n = \sum_{i_1=0}^n \binom{n}{i_1}a_1^{n - i_1}\left(\sum_{i=2}^{M+1} a_i\right)^{i_1}\\
+         &= \sum_{i_1=0}^n \binom{n}{i_1}a_1^{n - i_1}\left(\sum_{i_2=0}^{i_1}\sum_{i_3=0}^{i_2}\cdots\sum_{i_M=0}^{i_{M-1}} \binom{i_1}{i_2}\binom{i_2}{i_3}\cdots\binom{i_{M-1}}{i_M}a_2^{i_1 - i_2}a_3^{i_2 - i_3}\cdots a_M^{i_{M-1} - i_M}a_{M+1}^{i_M}\right)\\
+         &= \sum_{i_1=0}^n\sum_{i_2=0}^{i_1}\sum_{i_3=0}^{i_2}\cdots\sum_{i_M=0}^{i_{M-1}} \binom{n}{i_1}\binom{i_1}{i_2}\binom{i_2}{i_3}\cdots\binom{i_{M-1}}{i_M}a_1^{n - i_1}a_2^{i_1 - i_2}a_3^{i_2 - i_3}\cdots a_M^{i_{M-1} - i_M}a_{M+1}^{i_M}.
+    \end{align*}
+    Nên \eqref{multinomial thm PVT} cũng đúng với $m = M + 1$. Theo nguyên lý quy nạp toán học, ta có điều phải chứng minh.
 \end{proof}
 C++:
 \begin{enumerate}
@@ -1741,13 +1848,13 @@ C++:
 		\item \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/C++/VNTA_Pascal_triangle_multinomial.cpp}.
 	\end{itemize}
 	\begin{Verbatim}[numbers=left,xleftmargin=5mm]
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 
 unsigned long long Pn(int n) {
     if (n == 0) return 1;
     unsigned long long res = 1;
-    for (int i = 2; i <= n; i++)res *= i;
+    for (int i = 2; i <= n; ++i) res *= i;
     return res;
 }
 
@@ -1758,10 +1865,9 @@ unsigned long long nCk(int n, int k) {
 
 void pascalTriangle(int n) {
     cout << "1st " << n + 1 << " lines of the Pascal triangle: \n";
-    for (int i = 0; i <= n; i++) {
-        for (int j = 0; j <= i; j++) {
-            cout << nCk(i, j) << " ";
-        }
+    for (int i = 0; i <= n; ++i) {
+        for (int j = 0; j <= i; ++j)
+        cout << nCk(i, j) << " ";
         cout << '\n';
     }
     cout << "\n========================================\n";
@@ -1773,7 +1879,7 @@ void generatePartitions(int n, int m, int idx, vector<int>& cur, vector<vector<i
         res.push_back(cur);
         return;
     }
-    for (int i = 0; i <= n; i++) {
+    for (int i = 0; i <= n; ++i) {
         cur[idx] = i;
         generatePartitions(n - i, m, idx + 1, cur, res);
     }
@@ -1784,12 +1890,12 @@ double multinomialExpansion(int n, const vector<double>& a) {
     vector<vector<int>> partitions;
     vector<int> cur(m, 0);
     generatePartitions(n, m, 0, cur, partitions);
-	
+    
     double res = 0;
     for (const auto& k : partitions) {
         unsigned long long coeff = Pn(n);
         double term = 1;
-        for (int i = 0; i < m; i++) {
+        for (int i = 0; i < m; ++i) {
             coeff /= Pn(k[i]);
             term *= pow(a[i], k[i]);
         }
@@ -1803,13 +1909,13 @@ int main() {
     cin.tie(0); cout.tie(0);
     int n, m;
     cin >> n >> m;
-	
+    
     pascalTriangle(n);
-	
-    vector<double> a(m);
-    for (int i = 0; i < m; i++) cin >> a[i];
+    
+    vector<double>a(m);
+    for (int i = 0; i < m; ++i) cin >> a[i];
     double result = multinomialExpansion(n, a);
-    if (m > 2) cout << "(a1 +... + a" << m << ")^" << n << " = " << result << "\n";
+    if (m > 2) cout << "(a1 + ... + a" << m << ")^" << n << " = " << result << "\n";
     else cout <<  "(a1 + a2)^" << n << " = " << result << "\n";
 }
 	\end{Verbatim}
@@ -2359,19 +2465,22 @@ For a general \href{https://en.wikipedia.org/wiki/Measure_space}{measure space} 
 		g(A) = \sum_{S\subset A} f(S)\Rightarrow f(A) = \sum_{S\subset A} (-1)^{|A| - |S|}g(S).
 	\end{equation*}
 \end{theorem}
-The combinatorial version Thm. \ref{thm: inclusion-exclusion: combinatorial version} \& the probabilistic version Thm. \ref{thm: inclusion-exclusion: probabilistic version} of the inclusion-exclusion principle are instances of \ref{thm: inclusion-exclusion: general form}.
+The combinatorial- Thm. \ref{thm: inclusion-exclusion: combinatorial version} \& the probabilistic versions Thm. \ref{thm: inclusion-exclusion: probabilistic version} of the inclusion-exclusion principle are instances of \ref{thm: inclusion-exclusion: general form}.
 
 %------------------------------------------------------------------------------%
 
 \section{Problems on inclusion--exclusion principle}
 
-\begin{problem}[\cite{Shahriari2022}, p. 261]
-	You compose 10 different emails, each to a different friend. The prank-ware on your email server permutes the recipients' email addresses \& randomly sends each of the messages to 1 of the individuals on your list. What is the probability that none of your fiends receives the email intended for them? Would this probability go up or down if instead of 10 emails, you had written $10000$ emails?
+\begin{problem}
+	A coffee company spent $m = 10$ cents per person to question patrons about their coffee preferences. Of the persons interviewed, $a = 250$ liked latte, $b = 200$ liked cappuccino, $c = 80$ liked both, \& $d = 100$ did not like either choice. What was the total amount of money the company had to pay?
+    
+    -- 1 công ty cà phê đã chi $m = 10$ xu cho mỗi người để hỏi khách hàng về sở thích cà phê của họ. Trong số những người được phỏng vấn, $a = 250$ thích latte, $b = 200$ thích cappuccino, $c = 80$ thích cả 2, \& $d = 100$ không thích bất kỳ lựa chọn nào. Tổng số tiền mà công ty phải trả là bao nhiêu?
 \end{problem}
 
-\begin{problem}
-	A coffee company spent 10 cents per person to question patrons about their coffee preferences. Of the persons interviewed, $a = 250$ liked latte, $b = 200$ liked cappuccino, $c = 80$ liked both, \& $100$ did not like either choice. What was the total amount of money the company had to pay?
-\end{problem}
+\begin{proof}[Solution]
+    Let $A$ be the set of people who like latter, $|A| = a = 250$, $B$ be the set of people who like cappuccino, $|B| = b = 200$. We have $|A\cap B| = c = 80$ (the number of people who like both latter \& cappuccino), $\overline{A\cup B}$ is the set of people who like neither, $|\overline{A\cup B}| = d = 100$. Using the inclusion--exclusion principle: $|A\cup B| = |A| + |B| - |A\cap B| = a + b - c = 250 + 200 - 80 = 370$. The total number of people interviewed is $|A\cup B| + |\overline{A\cup B}| = a + b - c + d = 370 + 100 = 470$, so the total cost is $m(a + b - c + d) = 10\cdot470 = 4700$ cents = \$47.
+\end{proof}
+
 
 %------------------------------------------------------------------------------%
 
@@ -2563,6 +2672,53 @@ It is \href{https://en.wikipedia.org/wiki/NP-complete}{NP-complete} to determine
 
 \subsection{Problems: Derangement -- Bài tập: Hoán vị sai vị trí}
 
+\begin{problem}[\cite{Shahriari2022}, p. 261]
+    You compose $n = 10$ different emails, each to a different friend. The prank-ware on your email server permutes the recipients' email addresses \& randomly sends each of the messages to $1$ of the individuals on your list. What is the probability that none of your fiends receives the email intended for them? Would this probability go up or down if instead of $10$ emails, you had written $10000$ emails?
+    
+    -- Bạn soạn $10$ email khác nhau, mỗi email gửi cho một người bạn khác nhau. Phần mềm chơi khăm trên máy chủ email của bạn sẽ hoán đổi địa chỉ email của người nhận \& gửi ngẫu nhiên từng tin nhắn đến $1$ trong những cá nhân trong danh sách của bạn. Xác suất không có ai trong số những người bạn của bạn nhận được email dành cho họ là bao nhiêu? Xác suất này sẽ tăng hay giảm nếu thay vì $10$ email, bạn đã viết $10000$ email?
+\end{problem}
+
+\begin{proof}
+    VNTA's proof: Tổng quát, ta thay $10$ bởi $n\in\mathbb{N}$.     Tổng số cách gửi email $n!$, tổng số cách sao cho không ai nhận đúng email của mình: $!n = n!\sum_{i=0}^n \dfrac{(-1)^i}{i!}$, nên xác suất không có ai trong $n$ người nhận được email dành cho họ bằng $P(n) = \dfrac{!n}{n!} = \sum_{i=0}^n \dfrac{(-1)^i}{i!}$, $\forall n\in\mathbb{N}^\star$. In particular, $P(10) = \sum_{i=0}^{10} \dfrac{(-1)^i}{i!}\approx0.3678794642857144$. Xét khai triển Taylor $e^x = \sum_{i=0}^\infty \dfrac{x^i}{i!}$, $\forall x\in\mathbb{R}$. Thay $x = -1$ được $\frac{1}{e} = e^{-1} = \sum_{i=0}^\infty \dfrac{(-1)^i}{i!}$, nên $\lim_{n\to\infty} P(n) = \lim_{n\to\infty} \sum_{i=0}^n \dfrac{(-1)^i}{i!} = \dfrac{1}{e}$, i.e., khi $n$ càng lớn, e.g., $n = 10^4$, thì $P(n)$ càng tiến đến $\dfrac{1}{e}\approx0.36787944117144233$.
+    
+    Ta chứng minh $P(10) > P(10000)$ bằng cách chứng minh kết quả tổng quát hơn: $P(2n) < P(2n - 2)$, $\forall n\in\mathbb{N}^\star$. Thật vậy
+    \begin{equation*}
+        P(2n) = \sum_{i=0}^{2n} \dfrac{(-1)^i}{i!} = \sum_{i=0}^{2n - 2} \dfrac{(-1)^i}{i!} - \frac{1}{(2n - 1)!} + \frac{1}{(2n)!} = P(2n - 2) - \frac{2n - 1}{(2n)!} = P(2n - 2) - \frac{1}{2n(2n - 2)!} < P(2n - 2),\ \forall n\in\mathbb{N}^\star,
+    \end{equation*}
+    nên $1 = P(0) > P(2) > P(4) > \cdots > P(2n) > \cdots$, nói riêng $P(10) > P_(12) > \cdots > P(10000)$, nên xác suất sẽ giảm nếu thay vì gửi 10 email, viết 10000 email.
+\end{proof}
+
+\begin{remark}
+    Ta cũng có: $P(2n + 1) > P(2n - 1)$, $\forall n\in\mathbb{N}^\star$. Thật vậy, $\forall n\in\mathbb{N}^\star$,
+    \begin{equation*}
+        P(2n + 1) = \sum_{i=0}^{2n + 1} \dfrac{(-1)^i}{i!} = \sum_{i=0}^{2n - 1} \dfrac{(-1)^i}{i!} + \frac{1}{(2n)!} - \frac{1}{(2n + 1)!} = P(2n - 1) + \frac{2n}{(2n + 1)!} = P(2n - 1) + \frac{1}{(2n + 1)(2n - 1)!} > P(2n - 1),
+    \end{equation*}
+    nên $P(1) > P(3) > P(5) > \cdots > P(2n + 1) > \cdots$.
+\end{remark}
+Python:
+\begin{enumerate}
+    \item NQBH's derangement: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/Python/NQBH_derangement.py}.
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+n = int(input())
+P = 0 # probability of derangement P(n) = !n / n! = \sum_{i=0}^n (-1)^i / i!
+factorial = 1 # store i!
+for i in range(2, n + 1):
+    factorial *= i # i!
+    P += (-1) ** (i % 2) / factorial
+print(P)
+    \end{Verbatim}
+\end{enumerate}
+
+\begin{problem}[\cite{Shahriari2022}, p. 3]
+    Assume $n\in\mathbb{N}$, $n\ge2$, people given their $n$ hats to a hat-check person. Let $f(n)$ be the number of ways that the hats can be returned, so that everyone has 1 hat, but no one has their own hat. Prove: (a) $f(n) = n!\sum_{i=0}^n \dfrac{(-1)^i}{i!}$, $\forall n\in\mathbb{N}^\star$. (b) $f(n)$ is the nearest integer to $\dfrac{n!}{e}$.
+    
+    -- Giả sử $n\in\mathbb{N}$, $n\ge2$, mọi người đưa $n$ mũ của họ cho một người giữ mũ. Giả sử $f(n)$ là số cách trả lại mũ, sao cho mỗi người đều có 1 mũ, nhưng không ai có mũ riêng. Chứng minh: (a) $f(n) = n!\sum_{i=0}^n \dfrac{(-1)^i}{i!}$, $\forall n\in\mathbb{N}^\star$. (b) $f(n)$ là số nguyên gần nhất với $\dfrac{n!}{e}$.
+\end{problem}
+
+\begin{proof}[Proof]
+    Sử dụng nguyên lý bao hàm--loại trừ.
+\end{proof}
+
 \begin{problem}[\href{https://cses.fi/problemset/task/1717}{CSES Problem Set{\tt/}Christmas party}]
 	There are $n\in\mathbb{N}^\star$ children at a Christmas party, \& each of them has brought a gift. The idea is that everybody will get a gift brought by someone else. In how many ways can be gifts be distributed?
 	\item {\sf Input.} The only input line has an integer $n\in\mathbb{N}^\star$: the number of children.
@@ -2597,7 +2753,7 @@ int main() {
     cin >> n;
     vector<int>dp(n + 1);
     dp[0] = 1; dp[1] = 0; dp[2] = 1;
-    for (int i = 3; i <= n; i++) dp[i] = ((i - 1LL) * (dp[i - 1] + dp[i - 2])) % MOD;
+    for (int i = 3; i <= n; ++i) dp[i] = ((i - 1LL) * (dp[i - 1] + dp[i - 2])) % MOD;
     cout << dp[n];
 }
 	\end{Verbatim}
@@ -2706,13 +2862,13 @@ ll ncr(ll a, ll b) {
 }
 int main() {
     fac[0] = 1;
-    for (int i = 1; i <= 1000000; i++) {
+    for (int i = 1; i <= 1000000; ++i) {
         fac[i] = fac[i - 1] * i % mod;
     }
     ll n; cin >> n;
     ll add;
     ll count = 0;
-    for (int i = 1; i <= n; i++) {
+    for (int i = 1; i <= n; ++i) {
         add = ncr(n, i) * fac[n - i] % mod;
         if (i % 2 == 0) add = -add;
         count += add;
@@ -3173,7 +3329,7 @@ Any regular graph $G$ will have its degree sequence as $[k,k,\ldots,k]$ ($n$ tim
 \begin{example}[Cycles, \cite{Shahriari2022}, Example 2.26, p. 56]
     Let $n\in\mathbb{N}$, $n\ge3$. A {\rm cycle of length $n$} is a connected simple graph with $n$ vertices \& $n$ edges s.t. each vertex has degree $2$. We denote a cycle of length $n$ by $C_n$. The graph $C_n$ has $n$ vertices \& $n$ edges: $|V(C_n)| = |E(C_n) = n$. (Distinguish the notation $C_n$ for a cycle of length $n$ with the $n$th Catalan number.)
     
-    -- Cho $n\in\mathbb{N}$, $n\ge3$. Một {\rm chu trình có độ dài $n$} là 1 đồ thị đơn liên thông với $n$ đỉnh \& $n$ cạnh s.t. mỗi đỉnh có bậc $2$. Ta ký hiệu 1 chu trình có độ dài $n$ là $C_n$. Đồ thị $C_n$ có $n$ đỉnh \& $n$ cạnh: $|V(C_n)| = |E(C_n) = n$. (Phân biệt ký hiệu $C_n$ cho 1 chu trình có độ dài $n$ với số Catalan thứ $n$.)
+    -- Cho $n\in\mathbb{N}$, $n\ge3$. 1 {\rm chu trình có độ dài $n$} là 1 đồ thị đơn liên thông với $n$ đỉnh \& $n$ cạnh s.t. mỗi đỉnh có bậc $2$. Ta ký hiệu 1 chu trình có độ dài $n$ là $C_n$. Đồ thị $C_n$ có $n$ đỉnh \& $n$ cạnh: $|V(C_n)| = |E(C_n) = n$. (Phân biệt ký hiệu $C_n$ cho 1 chu trình có độ dài $n$ với số Catalan thứ $n$.)
     
 \end{example}
 
@@ -3728,7 +3884,7 @@ bool check(vector<int>&d) {
         if (d[cur]==0) return false;
         d.erase(d.begin());
         if (cur > (int)d.size()) return false;
-        for (int i=0; i<cur; i++) d[i]--;
+        for (int i=0; i<cur; ++i) d[i]--;
         if (allZero(d)) {
             print(d);
             return true;
@@ -3743,7 +3899,7 @@ int main() {
     while (t--) {
         int n; cin>>n;
         vector<int>d(n);
-        for(int i=0; i<n; i++) cin>>d[i];
+        for(int i=0; i<n; ++i) cin>>d[i];
         cout<<"\n-----------------------------\n";
         if(check(d)) cout<<1<<'\n';
         else cout<<0<<'\n';

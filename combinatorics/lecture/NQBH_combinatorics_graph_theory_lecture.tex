@@ -112,6 +112,7 @@
 \newcommand{\stirlingII}[2]{\genstirlingII{}{#1}{#2}}
 \newcommand{\dstirlingII}[2]{\genstirlingII{0}{#1}{#2}}
 \newcommand{\tstirlingII}[2]{\genstirlingII{1}{#1}{#2}}
+\def\multiset#1#2{\ensuremath{\left(\kern-.3em\left(\genfrac{}{}{0pt}{}{#1}{#2}\right)\kern-.3em\right)}}
 
 \title{Lecture Note: Combinatorics {\it\&} Graph Theory\\Bài Giảng: Tổ Hợp {\it\&} Lý Thuyết Đồ Thị}
 \author{Nguyễn Quản Bá Hồng\footnote{A scientist- {\it\&} creative artist wannabe, a mathematics {\it\&} computer science lecturer of Department of Artificial Intelligence {\it\&} Data Science (AIDS), School of Technology (SOT), UMT Trường Đại học Quản lý {\it\&} Công nghệ TP.HCM, Hồ Chí Minh City, Việt Nam.\\E-mail: {\sf nguyenquanbahong@gmail.com} {\it\&} {\sf hong.nguyenquanba@umt.edu.vn}. Website: \url{https://nqbh.github.io/}. GitHub: \url{https://github.com/NQBH}.}}
@@ -564,13 +565,103 @@ int main() {
 
 %------------------------------------------------------------------------------%
 
-\section{Euler candy problem -- Bài toán chia kẹo Euler}
+\section{Star \& Bar{\tt/}Euler candy problem -- Bài toán chia kẹo Euler}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/Stars_and_bars_(combinatorics)}{Wikipedia{\tt/}stars \& bars (combinatorics)}.
+    
+    \item \href{https://tex.stackexchange.com/questions/5816/multiset-notation-in-latex}{\TeX\ Stack Exchange{\tt/}multiset notation in \LaTeX}.
+\end{enumerate}
+In combinatorics, {\it stars \& bars} (also called ``sticks \& stones'', ``balls \& balls'', \& ``dots \& dividers'') is a graphical aid for deriving certain combinatorial theorems. It can be used to solve a variety of \href{https://en.wikipedia.org/wiki/Combinatorial_enumeration}{counting problems}, e.g. how many ways there are to put $n$ indistinguishable balls into $k$ distinguishable bins. The solution to this particular problem is given by the binomial coefficient $\binom{n + k - 1}{k - 1}$, which is the number of subsets of size $k - 1$ that can be formed from a set of size $n + k - 1$.
+
+-- Trong tổ hợp, {\it stars \& bars} (còn được gọi là ``sticks \& stones'', ``balls \& balls'', \& ``dots \& dividers'') là một công cụ hỗ trợ đồ họa để suy ra một số định lý tổ hợp. Nó có thể được sử dụng để giải quyết nhiều bài toán đếm khác nhau, ví dụ như có bao nhiêu cách để đặt $n$ quả bóng không phân biệt được vào $k$ thùng phân biệt được. Giải pháp cho bài toán cụ thể này được đưa ra bởi hệ số nhị thức $\binom{n + k - 1}{k - 1}$, là số tập hợp con có kích thước $k - 1$ có thể được tạo thành từ một tập hợp có kích thước $n + k - 1$.
+
+The stars \& bars method is often introduced specifically to prove the following 2 theorems of elementary combinatorics concerning the number of solutions to an equation.
+
+\begin{theorem}
+    \label{thm: star bar positive}
+    For any $n,k\in\mathbb{N}^\star$, the number of $k$-tuples of positive integers whose sum is $n$ is equal to the number of $(k - 1)$-element subsets of a set with $n - 1$ elements, \& thus is equal to $\binom{n - 1}{k - 1} = \dfrac{(n - 1)!}{(k - 1)!(n - k)!}$.
+\end{theorem}
+
+\begin{dinhly}
+    Với bất kỳ $n,k\in\mathbb{N}^\star$ nào, số $k$-bộ các số nguyên dương có tổng là $n$ bằng số tập con $(k - 1)$-phần tử của một tập hợp có $n - 1$ phần tử, \& bằng $\binom{n - 1}{k - 1} = \dfrac{(n - 1)!}{(k - 1)!(n - k)!}$.
+\end{dinhly}
+This corresponds to compositions of an integer. -- Điều này tương ứng với các thành phần của 1 số nguyên.
+
+\begin{proof}[Proof]
+    The problem of enumerating $k$-tuples whose sum is $n$ is equivalent to the problem of counting configurations of the following kind: let there be $n$ objects to be placed into $k$ bins, so that all bins contain at least 1 object. The bins are distinguished (say they are numbered 1 to $k$) but the $n$ objects are not (so configurations are only distinguished by the {\it number of objects} present in each bin). A configuration is thus represented by a $k$-tuple of positive integers.
+    
+    -- Bài toán liệt kê $k$-tuples có tổng là $n$ tương đương với bài toán đếm các cấu hình có dạng sau: giả sử có $n$ đối tượng được đặt vào $k$ bins, sao cho tất cả các bins đều chứa ít nhất 1 đối tượng. Các bins được phân biệt (giả sử chúng được đánh số từ 1 đến $k$) nhưng $n$ đối tượng thì không (do đó các cấu hình chỉ được phân biệt bởi {\it số lượng đối tượng} có trong mỗi bins). Do đó, một cấu hình được biểu diễn bằng một $k$-tuples gồm các số nguyên dương.
+    
+    The $n$ objects are now represented as a row of $n$ stars; adjacent bins are separated by bars. The configuration will be specified by indicating the boundary between the 1st \& 2nd bin, the boundary between the 2nd \& 3rd bin, \& so on. Hence $k - 1$ bars need to be placed between stars. Because no bin is allowed to be empty, there is at most 1 bar between any pair of stars. There are $n - 1$ gaps between stars \& hence $n - 1$ positions in which a bar may be placed. A configuration is obtained by choosing $k - 1$ of these gaps to contain a bar; therefore there are $\binom{n - 1}{k - 1}$ configurations.
+    
+    -- $n$ đối tượng bây giờ được biểu diễn như một hàng $n$ ngôi sao; các thùng liền kề được phân cách bằng các thanh. Cấu hình sẽ được chỉ định bằng cách chỉ ra ranh giới giữa thùng thứ nhất \& thứ 2, ranh giới giữa thùng thứ 2 \& thứ 3, \& v.v. Do đó, cần đặt $k - 1$ thanh giữa các ngôi sao. Vì không có thùng nào được phép để trống, nên chỉ có nhiều nhất 1 thanh giữa bất kỳ cặp ngôi sao nào. Có $n - 1$ khoảng trống giữa các ngôi sao \& do đó có $n - 1$ vị trí mà một thanh có thể được đặt. Một cấu hình thu được bằng cách chọn $k - 1$ trong số các khoảng trống này để chứa một thanh; do đó, có $\binom{n - 1}{k - 1}$ cấu hình.
+\end{proof}
+
+\begin{example}
+    If $n = 10,k = 4$, the number of solutions to $x_1 + x_2 + x_3 + x_4 = 10$ with $x_i\in\mathbb{N}^\star$, $\forall i\in[4]$ is $\binom{n - 1}{k - 1} = \binom{10 - 1}{4 - 1} = \binom{9}{3} = 84$.
+    
+    -- Nếu $n = 10,k = 4$, số nghiệm của $x_1 + x_2 + x_3 + x_4 = 10$ với $x_i\in\mathbb{N}^\star$, $\forall i\in[4]$ là $\binom{n - 1}{k - 1} = \binom{10 - 1}{4 - 1} = \binom{9}{3} = 84$.
+\end{example}
+
+\begin{theorem}
+    \label{thm: star bar nonnegative}
+    For any $n,k\in\mathbb{N}^\star$, the number of $k$-tuples of nonnegative integers whose sum is $n$ is equal to the number of multisets of size $k - 1$ taken from a set of size $n + 1$, or equivalently, the number of multisets of size $n$ taken from a set of size $k$, \& is given by $\binom{n + k - 1}{k - 1} = \dfrac{(n + k - 1)!}{n!(k - 1)!}$.
+\end{theorem}
+
+\begin{dinhly}
+    Với mọi $n,k\in\mathbb{N}^\star$, số $k$-bộ các số nguyên không âm có tổng bằng $n$ bằng số các đa tập có kích thước $k - 1$ lấy từ một tập có kích thước $n + 1$, hoặc tương đương, số các đa tập có kích thước $n$ lấy từ một tập có kích thước $k$, \& được cho bởi $\binom{n + k - 1}{k - 1} = \dfrac{(n + k - 1)!}{n!(k - 1)!}$.
+\end{dinhly}
+This corresponds to \href{https://en.wikipedia.org/wiki/Composition_(combinatorics)}{weak compositions} of an integer. With $k$ fixed, the numbers for $n\in\mathbb{N}$ are those in the $(k - 1)$st diagonal of \href{https://en.wikipedia.org/wiki/Pascal%27s_triangle}{Pascal's triangle}. E.g., when $k = 3$ the $n$th number is the $(n + 1)$st \href{https://en.wikipedia.org/wiki/Triangular_number}{triangular number}, which falls on the 2nd diagonal, $1,3,6,10,\ldots$
+
+-- Điều này tương ứng với các thành phần yếu của một số nguyên. Với $k$ cố định, các số cho $n\in\mathbb{N}$ là các số trong đường chéo $(k - 1)$st của tam giác Pascal. Ví dụ, khi $k = 3$ thì số $n$th là số tam giác $(n + 1)$st, nằm trên đường chéo thứ 2, $1,3,6,10,\ldots$
+
+\begin{proof}[Proof]
+    The weakened restriction of nonnegativity instead of positivity means that we can place multiple bars between stars \& that 1 or more bars also be placed before the 1st stars \& after the last star. In terms of configurations involving objects \& bins, bins are now allowed to be empty.
+    
+    -- Hạn chế yếu hơn của tính không âm thay vì tính dương có nghĩa là chúng ta có thể đặt nhiều thanh giữa các ngôi sao \& 1 hoặc nhiều thanh cũng được đặt trước ngôi sao đầu tiên \& sau ngôi sao cuối cùng. Về mặt cấu hình liên quan đến các đối tượng \& thùng, các thùng hiện được phép để trống.
+    
+    Rather than a $(k - 1)$-set of bar positions taken from a set of size $n - 1$ as in the proof of Thm. \ref{thm: star bar positive}, we now have a $(k - 1)$-multiset of bar positions taken from a set of size $n + 1$ (since bar positions may repeat \& since the ends are now allowed bar positions). An alternative interpretation in terms of multisets is the following: there is a set of $k$ bin labels from which a multiset of size $n$ is to be chosen, the multiplicity of a bin label in this multiset indicating the number of objects placed in that bin. The equality $\multiset{n + 1}{k - 1} = \multiset{k}{n}$ can also be understood as an equivalence of different counting problems: the number of $k$-tuples of nonnegative integers whose sum is $n$ equals the number of $(n + 1)$-tuples of nonnegative integers whose sum is $k - 1$, which follows by interchanging the roles of bars \& stars in the diagrams representing configurations.
+    
+    -- Thay vì một tập hợp $(k - 1)$ các vị trí thanh được lấy từ một tập hợp có kích thước $n - 1$ như trong bằng chứng của Thm. \ref{thm: star bar positive}, giờ đây chúng ta có một tập hợp $(k - 1)$ các vị trí thanh được lấy từ một tập hợp có kích thước $n + 1$ (vì các vị trí thanh có thể lặp lại \& vì các đầu bây giờ được phép là các vị trí thanh). 1 cách giải thích thay thế theo thuật ngữ tập hợp như sau: có một tập hợp $k$ nhãn bin mà từ đó một tập hợp có kích thước $n$ sẽ được chọn, bội số của một nhãn bin trong tập hợp này biểu thị số lượng các đối tượng được đặt trong thùng đó. Phép toán $\multiset{n + 1}{k - 1} = \multiset{k}{n}$ cũng có thể được hiểu là sự tương đương của các bài toán đếm khác nhau: số $k$-tuples các số nguyên không âm có tổng là $n$ bằng số $(n + 1)$-tuples các số nguyên không âm có tổng là $k - 1$, theo sau là sự hoán đổi vai trò của các thanh \& ngôi sao trong sơ đồ biểu diễn cấu hình.
+    
+    To see the expression $\binom{n + k - 1}{k - 1}$ directly, observe that any arrangement of stars \& bars consists of a total of $n + k - 1$ symbols, $n$ of which are stars \& $k - 1$ of which are bars. Thus, we may lay out $n + k - 1$ slots \& choose $k - 1$ of these to contain bars (or, equivalently, choose $n$ of the slots to contain stars).
+    
+    -- Để hiểu trực tiếp biểu thức $\binom{n + k - 1}{k - 1}$, hãy quan sát rằng bất kỳ sự sắp xếp nào của các ngôi sao \& thanh đều bao gồm tổng cộng $n + k - 1$ ký hiệu, trong đó $n$ là các ngôi sao \& $k - 1$ là các thanh. Do đó, chúng ta có thể bố trí $n + k - 1$ khe \& chọn $k - 1$ trong số này để chứa các thanh (hoặc tương đương, chọn $n$ khe để chứa các ngôi sao).
+\end{proof}
+
+\begin{example}
+    If $n = 10,k = 4$, the number of solutions to $x_1 + x_2 + x_3 + x_4 = 10$ with $x_i\in\mathbb{N}$, $\forall i\in[4]$ is $\multiset{n + 1}{k - 1} = \multiset{k}{n} = \binom{n + k - 1}{k - 1} = \binom{10 + 4 - 1}{4 - 1} = \binom{13}{3} = 286$, where the \href{https://en.wikipedia.org/wiki/Multiset#Counting_multisets}{multiset coefficient} $\multiset{k}{n}$ is the number of multisets of size $n$, with elements taken from a set of size $k$.
+    
+    -- Nếu $n = 10,k = 4$, số nghiệm của $x_1 + x_2 + x_3 + x_4 = 10$ với $x_i\in\mathbb{N}$, $\forall i\in[4]$ là $\multiset{n + 1}{k - 1} = \multiset{k}{n} = \binom{n + k - 1}{k - 1} = \binom{10 + 4 - 1}{4 - 1} = \binom{13}{3} = 286$, trong đó hệ số đa tập $\multiset{k}{n}$ là số đa tập có kích thước $n$, với các phần tử được lấy từ một tập có kích thước $k$.
+\end{example}
+
+\paragraph*{Relation between Thms. \ref{thm: star bar positive} \& \ref{thm: star bar nonnegative}.} Thm. \ref{thm: star bar positive} can be restated in terms of Thm. \ref{thm: star bar nonnegative}, because the requirement that each variable by positive can be imposed by shifting each variable by $-1$, \& then requiring only that each variable be nonnegative, i.e.,
+\begin{equation*}
+    \left\{\begin{split}
+        \sum_{i=1}^n x_i &= k,\\
+        x_i&\in\mathbb{N},\ \forall i\in[n]
+    \end{split}\right.\Leftrightarrow\left\{\begin{split}
+        \sum_{i=1}^n y_i &= \sum_{i=1}^n (x_i + 1) = n + \sum_{i=1}^n x_i = n + k,\\
+        y_i &= x_i + 1\in\mathbb{N}^\star,\ \forall i\in[n],
+    \end{split}\right.
+\end{equation*}
+or
+\begin{equation*}
+    \left\{\begin{split}
+        \sum_{i=1}^n x_i &= k,\\
+        x_i&\in\mathbb{N}^\star,\ \forall i\in[n]
+    \end{split}\right.\Leftrightarrow\left\{\begin{split}
+        \sum_{i=1}^n y_i &= \sum_{i=1}^n (x_i - 1) = \sum_{i=1}^n x_i - n = k - n,\\
+        y_i &= x_i - 1\in\mathbb{N}^\star,\ \forall i\in[n].
+    \end{split}\right.
+\end{equation*}
 
 \begin{baitoan}[Euler candy problem -- Bài toán chia kẹo Euler]
 	Cho $m,n\in\mathbb{N}^\star$. Xét phương trình nghiệm nguyên
 	\begin{equation}
 		\label{Euler candy}
-		\sum_{i=1}^n x_i = m.
+		\sum_{i=1}^n x_i = x_1 + x_2 + \cdots + x_n = m.
 	\end{equation}
 	(a) Đếm số nghiệm nguyên dương của phương trình \eqref{Euler candy}. (b) Đếm số nghiệm nguyên không âm của phương trình \eqref{Euler candy}. (c) Đếm số nghiệm nguyên của phương trình
 	\begin{equation*}
@@ -590,8 +681,95 @@ int main() {
 \end{baitoan}
 
 \begin{proof}
-	(a) $C_{m-1}^{n-1}$. (b) $C_{p + n - 1}^{m + n - 1}$. (d) $C_{m + n - 1 - \sum_{i=1}^n m_i}$.
+	(a) $C_{m-1}^{n-1}$. (b) $C_{p + n - 1}^{m + n - 1}$. (d) $C_{m + n - 1 - \sum_{i=1}^n m_i}***$.
 \end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Relation to generating functions -- Quan hệ với các hàm sinh}
+The enumerations of Thms. \ref{thm: star bar positive} \& \ref{thm: star bar nonnegative} can also be found using \href{https://en.wikipedia.org/wiki/Generating_function}{generating functions} involving simple rational expressions. The 2 cases are very similar; we will look at the case when $x_i\ge0$, i.e., Thm. \ref{thm: star bar nonnegative} 1st. There is only 1 configuration for a single bin \& any given number of objects (because the objects are not distinguished). This is represented by the generating function
+\begin{equation*}
+    1 + 1x + 1x^2 + 1x^3 + \cdots = 1 + x + x^2 + x^3 + \cdots = \sum_{i=0}^\infty x^i = \frac{1}{1 - x}.
+\end{equation*}
+The series is a geometric series, \& the last equality holds analytically for $|x| < 1$, but is better understood in this context as a manipulation of \href{https://en.wikipedia.org/wiki/Formal_power_series}{formal power series}. The exponent of $x$ indicates how many objects are placed in the bin.
+
+-- Các phép liệt kê của Thms. \ref{thm: star bar positive} \& \ref{thm: star bar nonnegative} cũng có thể được tìm thấy bằng cách sử dụng các hàm tạo liên quan đến các biểu thức phân thức đơn giản. 2 trường hợp rất giống nhau; chúng ta sẽ xem xét trường hợp khi $x_i\ge0$, tức là Thm. \ref{thm: star bar nonnegative} 1. Chỉ có 1 cấu hình cho một bin duy nhất \& bất kỳ số lượng đối tượng nào được cho (vì các đối tượng không được phân biệt). Điều này được biểu diễn bằng hàm tạo
+\begin{equation*}
+    1 + 1x + 1x^2 + 1x^3 + \cdots = 1 + x + x^2 + x^3 + \cdots = \sum_{i=0}^\infty x^i = \frac{1}{1 - x}.
+\end{equation*}
+Chuỗi là một chuỗi hình học, \& đẳng thức cuối cùng giữ nguyên về mặt giải tích đối với $|x| < 1$, nhưng được hiểu rõ hơn trong bối cảnh này là thao tác của chuỗi lũy thừa chính thức. Số mũ của $x$ cho biết có bao nhiêu đối tượng được đặt trong thùng.
+
+Each additional bin is represented by another factor of $\frac{1}{1 - x}$; the generating function for $k$ bins is
+\begin{equation*}
+    \prod_{i=1}^k \frac{1}{1 - x} = \frac{1}{(1 - x)^k},
+\end{equation*}
+where the multiplication is the \href{https://en.wikipedia.org/wiki/Cauchy_product}{Cauchy product} of formal power series.
+
+-- Mỗi thùng bổ sung được biểu diễn bằng một hệ số khác của $\frac{1}{1 - x}$; hàm tạo cho $k$ thùng là
+\begin{equation*}
+    \prod_{i=1}^k \frac{1}{1 - x} = \frac{1}{(1 - x)^k},
+\end{equation*}
+trong đó phép nhân là tích Cauchy của chuỗi lũy thừa chính thức.
+
+To find the number of configurations with $n$ objects, we want the coefficient of $x^n$ (denoted by prefixing the expression for the generating function with $[x^n]$), i.e.,
+\begin{equation*}
+    [x^n]\frac{1}{(1 - x)^k} = [x^n](1 - x)^{-k}.
+\end{equation*}
+This coefficient can be found using binomial series \& agrees with the result of Thm. \ref{thm: star bar nonnegative}, namely $\binom{n + k - 1}{k - 1}$.
+
+-- Để tìm số cấu hình có $n$ đối tượng, chúng ta muốn hệ số của $x^n$ (được biểu thị bằng cách thêm tiền tố $[x^n]$ vào biểu thức cho hàm tạo), tức là,
+\begin{equation*}
+    [x^n]\frac{1}{(1 - x)^k} = [x^n](1 - x)^{-k}.
+\end{equation*}
+Hệ số này có thể được tìm thấy bằng cách sử dụng chuỗi nhị thức \& phù hợp với kết quả của Thm. \ref{thm: star bar nonnegative}, cụ thể là $\binom{n + k - 1}{k - 1}$.
+
+This Cauchy product expression is justified via stars \& bars: the coefficient of $x^n$ in the expansion of the product
+\begin{equation*}
+    \prod_{i=1}^k\sum_{j=0}^\infty x^j = \prod_{i=1}^k (1 + x + x^2 + \cdots) = (1 + x + x^2 + \cdots)(1 + x + x^2 + \cdots)\cdots(1 + x + x^2 + \cdots)
+\end{equation*}
+($k$ factors) is the number of ways of obtaining the $n$th power of $x$ by multiplying 1 power of $x$ from each of the $k$ factors. So the stars represent $x$s \& a bar separates the $x$s coming from 1 factor from those coming from the next factor.
+
+-- Biểu thức tích Cauchy này được chứng minh bằng các ngôi sao \& thanh: hệ số của $x^n$ trong khai triển của tích
+\begin{equation*}
+    \prod_{i=1}^k\sum_{j=0}^\infty x^j = \prod_{i=1}^k (1 + x + x^2 + \cdots) = (1 + x + x^2 + \cdots)(1 + x + x^2 + \cdots)\cdots(1 + x + x^2 + \cdots)
+\end{equation*}
+($k$ thừa số) là số cách để có được lũy thừa $n$ của $x$ bằng cách nhân lũy thừa 1 của $x$ từ mỗi thừa số trong $k$. Vì vậy, các ngôi sao biểu diễn $x$s \& một thanh ngăn cách các $x$s xuất phát từ 1 thừa số với các $x$s xuất phát từ thừa số tiếp theo.
+
+For the case when $x_i > 0$, i.e., Thm. \ref{thm: star bar positive}, no configuration has an empty bin, \& so the generating for a single bin is
+\begin{equation*}
+    \sum_{i=1}^\infty x^i = x + x^2 + x^3 + \cdots = \frac{x}{1 - x}.
+\end{equation*}
+The Cauchy product is therefore $\dfrac{x^k}{(1 - x)^k}$, \& the coefficient of $x^n$ is found using binomial series to be $\binom{n - 1}{k - 1}$.
+
+-- Đối với trường hợp khi $x_i > 0$, tức là Thm. \ref{thm: star bar positive}, không có cấu hình nào có bin rỗng, \& do đó phép tạo cho một bin đơn là
+\begin{equation*}
+    \sum_{i=1}^\infty x^i = x + x^2 + x^3 + \cdots = \frac{x}{1 - x}.
+\end{equation*}
+Do đó, tích Cauchy là $\dfrac{x^k}{(1 - x)^k}$, \& hệ số của $x^n$ được tìm thấy khi sử dụng chuỗi nhị thức là $\binom{n - 1}{k - 1}$.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Recurrence \& dynamic programming point of views of stars \& bars -- Quan điểm truy hồi \& quy hoạch động của bài toán sao \& thanh}
+Gọi $a(n,k)$ là số nghiệm nguyên dương của phương trình $\sum_{i=1}^n x_i = k$. Vì $x_i\ge1$, $\forall i\in[n]$, nên $k = \sum_{i=1}^n x_i\ge n$, suy ra $a(n,k) = 0$ nếu $k < n$. Có $x_n = k - \sum_{i=1}^{n - 1} x_i\le k - \sum_{i=1}^{n - 1} 1 = k - (n - 1) = k - n + 1$, nên $x_n\in[k - n + 1]$, với mỗi giá trị của $x_n\in[k - n + 1]$, ta có phương trình $\sum_{i=1}^{n - 1} x_i = k - x_n$, suy ra công thức truy hồi:
+\begin{equation*}
+    a(n,k) = \left\{\begin{split}
+        &0&&\mbox{if } k < n,\\
+        &1&&\mbox{if } k = n,\\
+        &\sum_{i=1}^{k - n + 1} a(n - 1,k - i)&&\mbox{if } k > n.
+    \end{split}\right.
+\end{equation*}
+Tương tự, gọi $b(n,k)$ là số nghiệm nguyên không âm của phương trình $\sum_{i=1}^n x_i = k$. Vì $x_i\ge0$, $\forall i\in[n]$, nên $k = \sum_{i=1}^n x_i\ge0$, suy ra $a(n,k) = 0$ nếu $k < 0$. Có $x_n = k - \sum_{i=1}^{n - 1} x_i\le k - \sum_{i=1}^{n - 1} 0 = k$, nên $x_n\in[k]$, với mỗi giá trị của $x_n\in[k]$, ta có phương trình $\sum_{i=1}^{n - 1} x_i = k - x_n$, suy ra công thức truy hồi:
+\begin{equation*}
+    b(n,k) = \left\{\begin{split}
+        &0&&\mbox{if } k < 0,\\
+        &1&&\mbox{if } k = 0,\\
+        &\sum_{i=0}^k b(n - 1,k - i)&&\mbox{if } k > 0.
+    \end{split}\right.
+\end{equation*}
+
+\begin{baitoan}
+    Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để tính $a(n,k),b(n,k)$ bằng: (a) đệ quy (top-down). (b) quy hoạch động (bottom-up).
+\end{baitoan}
 
 %------------------------------------------------------------------------------%
 
@@ -1989,7 +2167,12 @@ Pascal's rule can be generalized to \href{https://en.wikipedia.org/wiki/Multinom
 
 %------------------------------------------------------------------------------%
 
-\section{Multinomial distribution -- Phân Phối Multinomial}
+\section{Multinomial Distribution -- Phân Phối Multinomial}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item 
+\end{enumerate}
+
 
 %------------------------------------------------------------------------------%
 

@@ -2189,10 +2189,93 @@ Difference equations are used in a variety of contexts, e.g. in \href{https://en
 \textbf{\textsf{Resource -- Tài nguyên.}}
 \begin{enumerate}
 	\item \href{https://en.wikipedia.org/wiki/Dynamic_programming}{Wikipedia{\tt/}dynamic programming}.
-	\item \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}. {\sc Trần Đan Thư, Nguyễn Thanh Phương, Đinh Bá Tiến, Trần Minh Triết, Đặng Bình Phương}. {\it Kỹ Thuật Lập Trình}. Chap. 9: Kỹ Thuật Quy Hoạch Động.
+    
 	\item \cite{Bertsekas2005,Bertsekas2017}. {\sc Dimitri P. Bertsekas}. {\it Dynamic Programming \& Optimal Control. Vol. I}. 3e. 4e (can't download yet).
+    
 	\item \cite{Bertsekas2007,Bertsekas2012} {\sc Dimitri P. Bertsekas}. {\it Dynamic Programming \& Optimal Control. Vol. II}. 3e. 4e (can't download yet).
+    
+    \item \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}. {\sc Trần Đan Thư, Nguyễn Thanh Phương, Đinh Bá Tiến, Trần Minh Triết, Đặng Bình Phương}. {\it Kỹ Thuật Lập Trình}. Chap. 9: Kỹ Thuật Quy Hoạch Động.
+    
+    \item \cite{Wu_Wang2016}. {\sc Yonghui Wu, Jiande Wang}. {\it Data Structure Practice for Collegiate Programming Contests \& Education}. Chap. 3: Simple Recursion -- Đệ Quy Đơn Giản.
+    
+    \item \cite{Wu_Wang2018}. {\sc Yonghui Wu, Jiande Wang}. {\it Algorithm Design Practice for Collegiate Programming Contests \& Education}. Chap. 9: Practice for Dynamic Programming -- Thực Hành Quy Hoạch Động.
 \end{enumerate}
+Dynamic programming (DP) is used to solve optimization problems. DP breaks an optimization problem into a sequence of related subproblems, solves these subproblems just once, stores solutions to subproblems, \& constructs an optimal solution to the problem, based on solutions to subproblems. The method for storing solutions to subproblems is called {\it memorization}. When the same subproblem occurs, its solution can be used directly.
+
+-- Lập trình động (DP) được sử dụng để giải quyết các bài toán tối ưu hóa. DP chia 1 bài toán tối ưu hóa thành 1 chuỗi các bài toán con có liên quan, giải các bài toán con này chỉ 1 lần, lưu trữ các giải pháp cho các bài toán con, \& xây dựng 1 giải pháp tối ưu cho bài toán, dựa trên các giải pháp cho các bài toán con. Phương pháp lưu trữ các giải pháp cho các bài toán con được gọi là ghi nhớ. Khi cùng 1 bài toán con xảy ra, giải pháp của nó có thể được sử dụng trực tiếp.
+
+There are 2 characteristics for a problem solved by DP:
+\begin{enumerate}
+    \item Optimization: An optimal solution to a problem consists of optimal solutions to subproblems.
+    \item No aftereffect: A solution to a subproblem is only related to solutions to its direct predecessors.
+\end{enumerate}
+-- Có 2 đặc điểm cho 1 bài toán được giải quyết bằng DP:
+\begin{enumerate}
+    \item Tối ưu hóa: Một giải pháp tối ưu cho 1 bài toán bao gồm các giải pháp tối ưu cho các bài toán con.
+    \item Không có hậu quả: Một giải pháp cho 1 bài toán con chỉ liên quan đến các giải pháp cho các bài toán tiền nhiệm trực tiếp của nó.
+\end{enumerate}
+Dynamic Programming experiments are organized as follows:
+\begin{itemize}
+    \item Linear Dynamic Programming,
+    \item Tree-Like Dynamic Programming,
+    \item Dynamic Programming with State Compression.
+\end{itemize}
+-- Các thí nghiệm DP được tổ chức như sau:
+\begin{itemize}
+    \item Quy hoạch động tuyến tính,
+    \item Quy hoạch động dạng cây,
+    \item Quy hoạch động với nén trạng thái.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\section{Linear Dynamic Programming -- Quy Hoạch Động Tuyến Tính}
+Basic concepts for DP \& the method for linear DP are as follows.
+\begin{enumerate}
+    \item {\it Stage $k$ \& state $s_k$}: The solution to a problem is divided into $k$ orderly \& related stages. In a stage there are several states. State $s_k$ is a state in stage $k$.
+    
+    -- {\it Giai đoạn $k$ \& trạng thái $s_k$}: Giải pháp cho 1 vấn đề được chia thành $k$ giai đoạn có thứ tự \& liên quan. Trong 1 giai đoạn có 1 số trạng thái. Trạng thái $s_k$ là trạng thái trong giai đoạn $k$.
+    \item {\it Decision $u_k$ \& available decision set $D_k(s_k)$}: The choice from a state in stage $k - 1$ (the current stage) to a state in stage $k$ (the next stage) is called {\it decision} $u_k$. Normally, a state can be reachable through more than 1 decision from the last stage, \& such decisions constitute an available decision set $D_k(s_k)$. A decision sequence from the initial state to the goal state is called a {\it strategy}.
+    
+    -- {\it Quyết định $u_k$ \& tập quyết định khả dụng $D_k(s_k)$}: Lựa chọn từ trạng thái ở giai đoạn $k - 1$ (giai đoạn hiện tại) đến trạng thái ở giai đoạn $k$ (giai đoạn tiếp theo) được gọi là {\it quyết định} $u_k$. Thông thường, 1 trạng thái có thể đạt được thông qua nhiều hơn 1 quyết định từ giai đoạn cuối cùng, \& các quyết định như vậy tạo thành 1 tập quyết định khả dụng $D_k(s_k)$. Trình tự quyết định từ trạng thái ban đầu đến trạng thái mục tiêu được gọi là {\it chiến lược}.
+    \item {\it Successor Function \& Optimization.} A successor function is used to describe the transition from stage $k - 1$ to stage $k$. The DP method is used to solve some optimization problems. Successor functions are used to find a solution with the optimal (minimum or maximum) value to a problem. A successor function can be formally defined as follows:
+    \begin{equation*}
+        f_k(s_k) = {\rm opt}_{u_k\in D_k(s_k)} g(f_{k-1}(T_k(s_k,u_k)),u_k),
+    \end{equation*}
+    where $T_k(s_k,u_k)$ is a state $s_{k-1}$ in stage $k - 1$ which relates to state $s_k$ through decision $u_k$, \& $f_{k-1}(T_k(s_k,u_k))$ is an optimal solution, $g(x,u_k)$ is a function for value $x$ \& decision $u_k$, i.e., $g(f_{k-1}(T_k(s_k,u_k)))$ is a function from state $s_{k-1}$ to state $s_k$ through decision $u_k$; $opt$ means optimization; \& $f_1(s_1)$ is an initial value. Because $u_k$ is 1 decision in a decision set $D_k(s_k)$, all decisions are enumerated to get the optimal solution to $s_k$. From the initial state, successor functions are used to get the optimal solution $f_n$ (goal state) to the problem finally.
+    
+    -- {\it Hàm kế thừa \& Tối ưu hóa.} Hàm kế thừa được sử dụng để mô tả quá trình chuyển đổi từ giai đoạn $k - 1$ sang giai đoạn $k$. Phương pháp DP được sử dụng để giải 1 số bài toán tối ưu hóa. Hàm kế thừa được sử dụng để tìm giải pháp có giá trị tối ưu (tối thiểu hoặc tối đa) cho 1 bài toán. Một hàm kế thừa có thể được định nghĩa chính thức như sau:
+    \begin{equation*}
+        f_k(s_k) = {\rm opt}_{u_k\in D_k(s_k)} g(f_{k-1}(T_k(s_k,u_k)),u_k),
+    \end{equation*}
+    trong đó $T_k(s_k,u_k)$ là trạng thái $s_{k-1}$ ở giai đoạn $k - 1$ liên quan đến trạng thái $s_k$ thông qua quyết định $u_k$, \& $f_{k-1}(T_k(s_k,u_k))$ là 1 giải pháp tối ưu, $g(x,u_k)$ là 1 hàm cho giá trị $x$ \& quyết định $u_k$, tức là, $g(f_{k-1}(T_k(s_k,u_k)))$ là 1 hàm từ trạng thái $s_{k-1}$ đến trạng thái $s_k$ thông qua quyết định $u_k$; $opt$ có nghĩa là tối ưu hóa; \& $f_1(s_1)$ là giá trị ban đầu. Vì $u_k$ là 1 quyết định trong tập quyết định $D_k(s_k)$, tất cả các quyết định đều được liệt kê để có được giải pháp tối ưu cho $s_k$. Từ trạng thái ban đầu, các hàm kế thừa được sử dụng để có được giải pháp tối ưu $f_n$ (trạng thái mục tiêu) cho bài toán cuối cùng.
+\end{enumerate}
+If the stages are in linear order, linear DP is used to solve the problem.
+
+-- Nếu các giai đoạn theo thứ tự tuyến tính, DP tuyến tính được sử dụng để giải quyết vấn đề.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+for (every state i is processed in linear order) {
+    for (every state j in state i is enumerated (j\in S_i)) {
+        for (every state k in stage i - 1 which is related to state j is enumerated (k\in S_{i-1})) {
+            calculate f_i(j) = opt_{u_k\in D_k(k)} g(f_{i-1}(k), u_k);
+        }
+    }
+}
+\end{Verbatim}
+
+\begin{problem}[Brackets sequence, \cite{Wu_Wang2018}, p. 261]
+    Define a regular brackets sequence in the following way:
+    \begin{enumerate}
+        \item An empty sequence is a regular sequence.
+        \item If $S$ is a regular sequence, then $(S)$ \& $[S]$ are both regular sequences.
+        \item If $A,B$ are regular sequences, then $AB$ is a regular sequence.
+    \end{enumerate}
+    E.g., all of the following sequences of characters are regular brackets sequences: {\tt(), [], (()), ([]), ()[], ()[()]}
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
+\section{Problem: Dynamic Programming -- Bài Tập: Quy Hoạch Động}
 
 \begin{baitoan}[\cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, p. 441]
 	(a) Tìm $(x,y)\in\mathbb{R}^2$ thỏa $x^2 + y^2\le1$ để $x + y$ đạt {\rm GTNN, GTLN}. (b) Tìm $(x,y)\in\mathbb{R}^2$ thỏa $x^2 + y^2\le r^2$ để $x + y$ đạt {\rm GTNN, GTLN} với $r\in(0,\infty)$. (c) Phát biểu ý nghĩa hình học của bài toán.
@@ -3001,7 +3084,7 @@ int main() {
 	There are $n\in\mathbb{N}^\star$ you can attend. For each project, you know its starting \& ending days \& the amount of money you would get as reward. You can only attend 1 project during a day. What is the maximum amount of money you can earn?
 	\item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the number of projects. After this, there are $n$ lines. Each such line has 3 integers $a_i,b_i,p_i\in\mathbb{N}^\star$: the starting day, the ending day, \& the reward.
 	\item {\sf Output.} Print 1 integer: the maximum amount of money you can earn.
-	\item {\sf Constraints.} $n\in[2\cdot10^5],a_i,b_i,p_i[10^9]$, $a_i\le b_i$, $\forall i\in[n]$.
+	\item {\sf Constraints.} $n\in[2\cdot10^5],a_i,b_i,p_i\in[10^9]$, $a_i\le b_i$, $\forall i\in[n]$.
 	\item {\sf Sample.}
 	\begin{table}[H]
 		\centering
@@ -3110,6 +3193,10 @@ int main() {
         \end{tabular}
     \end{table}
 \end{baitoan}
+
+
+
+
 
 %------------------------------------------------------------------------------%
 
@@ -8394,6 +8481,75 @@ The sliding window technique is 1 of common techniques in digital image processi
 %------------------------------------------------------------------------------%
 
 \section{Knapsack problem -- Bài toán xếp balô}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/Knapsack_problem}{Wikipedia{\tt/}knapsack problem}.
+    
+    \item \href{https://en.wikipedia.org/wiki/List_of_knapsack_problems}{Wikipedia{\tt/}list of knapsack problem}.
+\end{enumerate}
+The {\it knapsack problem} is the following problem in combinatorial optimization:
+
+\begin{problem}
+    Given a set of items, each with a weight \& a value, determine which items to include in the collection so that the total weight is less than or equal to a given limit \& the total value is as large as possible.
+    
+    -- Cho 1 tập hợp các mục, mỗi mục có 1 trọng số \& 1 giá trị, hãy xác định những mục nào sẽ đưa vào bộ sưu tập sao cho tổng trọng số nhỏ hơn hoặc bằng 1 giới hạn nhất định \& tổng giá trị lớn nhất có thể.
+\end{problem}
+It derives its name from the problem faced by someone who is constrained by a fixed-size knapsack \& must fill it with the most valuable items. The problem often arises in \href{https://en.wikipedia.org/wiki/Resource_allocation}{resource allocation} where the decision-makers have to choose from a set of non-divisible projects or tasks under a fixed budget or time constraint, resp.
+
+-- Nó có tên bắt nguồn từ vấn đề mà một người phải đối mặt khi bị hạn chế bởi một chiếc ba lô có kích thước cố định \& phải lấp đầy nó bằng những vật phẩm có giá trị nhất. Vấn đề thường phát sinh trong việc phân bổ nguồn lực, khi những người ra quyết định phải lựa chọn từ một tập hợp các dự án hoặc nhiệm vụ không thể chia nhỏ theo một ngân sách cố định hoặc hạn chế thời gian, tương ứng.
+
+The knapsack problem has been studied for more than a century, with early works dating as far back as 1897.
+
+-- Bài toán ba lô đã được nghiên cứu trong hơn một thế kỷ, với những tác phẩm đầu tiên có niên đại từ năm 1897.
+
+The \href{https://en.wikipedia.org/wiki/Subset_sum_problem}{subset sum problem} is a special case of the decision \& 0-1 problems where each kind of item, the weight equals the value $w_i = v_i$. In the field of cryptography, the term {\it knapsack problem} is often used to refer specifically to the subset sum problem. The subset sum problem is 1 of \href{https://en.wikipedia.org/wiki/Karp%27s_21_NP-complete_problems}{Karp's 21 NP-complete problems}.
+
+-- Bài toán tổng tập con là một trường hợp đặc biệt của bài toán quyết định \& 0-1 trong đó mỗi loại mục, trọng số bằng giá trị $w_i = v_i$. Trong lĩnh vực mật mã, thuật ngữ {\it knapsack problem} thường được sử dụng để chỉ cụ thể bài toán tổng tập con. Bài toán tổng tập con là 1 trong 21 bài toán NP-complete của Karp.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Applications of knapsack problem -- Ứng dụng của bài toán xếp balô}
+Knapsack problems appear in real-world decision-making processes in a wide variety of fields, e.g. finding the least wasteful way to cut raw materials, selection of investments \& portfolios, selection of assets for \href{https://en.wikipedia.org/wiki/Securitization}{asset-backed securitization}, \& generating keys for the \href{https://en.wikipedia.org/wiki/Merkle%E2%80%93Hellman_knapsack_cryptosystem}{Merkle--Hellman} \& other \href{https://en.wikipedia.org/wiki/Knapsack_cryptosystems}{knapsack cryptosystems}.
+
+-- Các vấn đề về ba lô xuất hiện trong các quá trình ra quyết định thực tế ở nhiều lĩnh vực khác nhau, ví dụ như tìm cách ít lãng phí nhất để cắt giảm nguyên liệu thô, lựa chọn khoản đầu tư \& danh mục đầu tư, lựa chọn tài sản để chứng khoán hóa bằng tài sản, \& tạo khóa cho Merkle--Hellman \& các hệ thống mật mã ba lô khác.
+
+1 early application of knapsack algorithms was in the construction \& scoring of tests in which the test-takers have a choice as to which questions they answer. For small examples, it is a fairly simple process to provide the test-takers with such a choice. E.g., if an exam contains 12 questions each worth 10 points, the test-taker need only answer 10 questions to achieve a maximum possible score of 100 points. However, on tests with a heterogeneous distribution of point values, it is more difficult to provide choices. {\sf Feuerman \& Weiss} proposed a system in which students are given a heterogeneous test with a total of 125 possible points. The students are asked to answer all of the questions to the best of their abilities. Of the possible subsets of problems whose total point values add up to 100, a knapsack algorithm would determine which subset gives each student the highest possible score.
+
+-- 1 ứng dụng ban đầu của thuật toán ba lô là trong việc xây dựng \& chấm điểm các bài kiểm tra trong đó người làm bài kiểm tra có thể lựa chọn câu hỏi mà họ trả lời. Đối với các ví dụ nhỏ, đây là một quá trình khá đơn giản để cung cấp cho người làm bài kiểm tra sự lựa chọn như vậy. Ví dụ, nếu một bài kiểm tra có 12 câu hỏi, mỗi câu có giá trị 10 điểm, người làm bài kiểm tra chỉ cần trả lời 10 câu hỏi để đạt được số điểm tối đa có thể là 100 điểm. Tuy nhiên, đối với các bài kiểm tra có sự phân bố điểm không đồng nhất, việc cung cấp các lựa chọn sẽ khó khăn hơn. {\sf Feuerman \& Weiss} đã đề xuất một hệ thống trong đó học sinh được đưa ra một bài kiểm tra không đồng nhất với tổng số 125 điểm có thể. Học sinh được yêu cầu trả lời tất cả các câu hỏi theo khả năng tốt nhất của mình. Trong số các tập hợp con có thể có của các bài toán có tổng giá trị điểm bằng 100, thuật toán ba lô sẽ xác định tập hợp con nào mang lại cho mỗi học sinh điểm cao nhất có thể.
+
+A 1999 study of the Stony Brook University Algorithm Repository showed that, out of 75 algorithmic problems related to the field of combinatorial algorithms \& algorithm engineering, the knapsack problem was the 19th most popular \& the 3rd most needed after \href{https://en.wikipedia.org/wiki/Suffix_tree}{suffix trees} \& the \href{https://en.wikipedia.org/wiki/Bin_packing_problem}{bin packing problem}.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Definition of knapsack problem -- Định nghĩa bài toán xếp balô}
+The most common problem being solved is the 0-1 knapsack problem, which restricts the number $x_i$ of copies of each kind of item to 0 or 1. Given a set of $n$ items numbered from 1 up to $n$, each with a weight $w_i$ \& a value $v_i$, along with a maximum weight capacity $W$,
+\begin{equation*}
+    \mbox{maximize }\sum_{i=1}^n v_ix_i\mbox{ subject to }\sum_{i=1}^n w_ix_i\le W,\ x_i\in\{0,1\},\,\forall i\in[n].
+\end{equation*}
+Here $x_i$ represents the number of instances of item $i$ to include in the knapsack. Informally, the problem is to maximize the sum of the values of the items in the knapsack so that the sum of the weights is $\le$ the knapsack's capacity.
+
+-- Bài toán phổ biến nhất đang được giải quyết là bài toán ba lô 0-1, bài toán này hạn chế số lượng $x_i$ bản sao của mỗi loại vật phẩm là 0 hoặc 1. Cho một tập hợp $n$ vật phẩm được đánh số từ 1 đến $n$, mỗi vật phẩm có trọng lượng $w_i$ \& giá trị $v_i$, cùng với sức chứa trọng lượng tối đa $W$,
+\begin{equation*}
+    \mbox{maximize }\sum_{i=1}^n v_ix_i\mbox{ theo }\sum_{i=1}^n w_ix_i\le W,\ x_i\in\{0,1\},\,\forall i\in[n].
+\end{equation*}
+Tại đây $x_i$ biểu thị số lượng các trường hợp của vật phẩm $i$ cần đưa vào ba lô. Nói một cách không chính thức, bài toán là phải tối đa hóa tổng giá trị của các vật phẩm trong ba lô sao cho tổng trọng lượng bằng $\le$ sức chứa của ba lô.
+
+The {\it bounded knapsack problem} (BKP) removes the restriction that there is only 1 of each item, but restricts the number $x_i$ of copies of each kind of item to a maximum nonnegative integer value $c$:
+\begin{equation*}
+    \mbox{maximize }\sum_{i=1}^n v_ix_i\mbox{ theo }\sum_{i=1}^n w_ix_i\le W,\ x_i\in\overline{0,c},\,\forall i\in[n].
+\end{equation*}
+-- Bài toán ba lô bị giới hạn (BKP) loại bỏ hạn chế là chỉ có 1 cho mỗi mục, nhưng hạn chế số lượng $x_i$ bản sao của mỗi loại mục thành giá trị số nguyên không âm tối đa $c$:
+\begin{equation*}
+    \mbox{maximize }\sum_{i=1}^n v_ix_i\mbox{ theo }\sum_{i=1}^n w_ix_i\le W,\ x_i\in\overline{0,c},\,\forall i\in[n].
+\end{equation*}
+The {\it unbounded knapsack problem} (UKP) places no upper bound on the number of copies of each kind of item \& can be formulated as above except that the only restriction on $x_i$ is that it is a nonnegative integer.
+\begin{equation*}
+    \mbox{maximize }\sum_{i=1}^n v_ix_i\mbox{ theo }\sum_{i=1}^n w_ix_i\le W,\ x_i\in\mathbb{N},\,\forall i\in[n].
+\end{equation*}
+-- Bài toán ba lô không giới hạn (UKP) không đặt giới hạn trên cho số lượng bản sao của mỗi loại vật phẩm \& có thể được xây dựng như trên ngoại trừ hạn chế duy nhất đối với $x_i$ là nó là một số nguyên không âm.
+\begin{equation*}
+    \mbox{maximize }\sum_{i=1}^n v_ix_i\mbox{ theo }\sum_{i=1}^n w_ix_i\le W,\ x_i\in\mathbb{N},\,\forall i\in[n].
+\end{equation*}
 
 \begin{baitoan}[\cite{Thanh_computational_complexity_theory}, p. 25, xếp balô, MAX-KNAPSACK]
     Cho 1 lô hàng hóa gồm các gói hàng, mỗi gói đều có khối lượng cùng với giá trị cụ thể, \& cho 1 chiếc balô. Chọn từ lô này vài gói hàng nào đó \& xếp đầy vào balô, nhưng không được quá, sao cho thu được 1 {\rm GTLN} có thể.
@@ -8410,6 +8566,10 @@ The sliding window technique is 1 of common techniques in digital image processi
         \max_{I\subset[n]}\sum_{i\in I} \nu_i\mbox{ subject to }\sum_{i\in I} s_i\le S.
     \end{equation*}
 \end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Computational complexity of knapsack problem -- Độ phức tạp tính toán của bài toán xếp balô}
 
 %------------------------------------------------------------------------------%
 

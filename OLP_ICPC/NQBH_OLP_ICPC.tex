@@ -324,11 +324,182 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
     \end{table}
 \end{problem}
 
+\begin{proof}[Solution]
+    Mấu chốt ở đây là phải sử dụng kiểu dữ liệu {\tt long long} thay vì {\tt int} (sẽ bị overflow), see, e.g., \cite{Laaksonen2020,Laaksonen2024}.
+    C++:
+    \begin{enumerate}
+        \item VNTA's C++: weird algorithm:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    long long n;
+    cin >> n;
+    while (n != 1) {
+        cout << n << ' ';
+        if (n % 2 == 0) n /= 2;
+        else n = n * 3 + 1;
+    }
+    cout << 1;
+}
+        \end{Verbatim}
+        \item NHH's C++: weird algorithm:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    long long n; cin >> n;
+    vector<long long> res;
+    
+    cout << n << " ";
+    while (n != 1) {
+        if (n % 2 == 0) {
+            n /= 2;
+            res.push_back(n);
+        } else {
+            n = n * 3 + 1;
+            res.push_back(n);
+        }
+    }
+    
+    for (int i = 0; i < res.size(); ++i) cout << res[i] << " ";
+    return 0;
+}
+        \end{Verbatim}
+        \item DXH's C++: weird algorithm:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+void printCollatz(long long n) {
+    cout << n;
+    while (n != 1) {
+        if (n % 2 == 0) // chan thi chia cho 2
+        n = n / 2;
+        else
+        n = 3 * n + 1;  // le thi * 3 + 1
+        cout << " " << n;
+    }
+    cout << "\n";
+}
+
+int main() {
+    long long n; // n -> so nguyen duong
+    cin >> n;
+    printCollatz(n);
+}
+        \end{Verbatim}
+        \item DPAK's C++: weird algorithm:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+signed main() {
+    long long n; cin >> n;
+    cout << n << " ";
+    for (; n != 1 ; (n % 2 == 0 ? n /= 2 : (n *= 3, n++)), cout << n << " " );
+    return 0;
+}
+        \end{Verbatim}
+        \item DNDK's C++: weird algorithm:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#define ll long long
+using namespace std;
+
+int main() {
+    ll n;
+    cin >> n;
+    while (n != 1) {
+        cout << n << " ";
+        if (n % 2 == 0) n = n / 2;
+        else n = n * 3 + 1;
+    }
+    cout << n << '\n';
+    return 0;
+}
+        \end{Verbatim}
+        \item NLDK's C++: weird algorithm:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+#pragma GCC optimize ("O3")
+#pragma GCC optimize ("unroll-loops")
+#define Sanic_speed ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL);
+#define Ret return 0;
+#define ret return;
+#define all(x) x.begin(), x.end()
+#define el "\n";
+#define elif else if
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define pops pop_back
+#define cYES cout << "YES" << "\n";
+#define cNO cout << "NO" << "\n";
+#define cYes cout << "Yes" << "\n";
+#define cNo cout << "No" << "\n";
+#define cel cout << "\n";
+#define frs(i, a, b) for(int i = a; i < b; ++i)
+#define fre(i, a, b) for(int i = a; i <= b; ++i)
+#define wh(t) while (t--)
+#define SORAI int main()
+using namespace std;
+typedef unsigned long long ull;
+
+void solve() {
+    ll n; cin >> n;
+    cout << n << " ";
+    while (n != 1) {
+        if (n & 1) {
+            n = 3 * n + 1;
+        } else {
+            n /= 2;
+        }
+        cout << n << " ";
+    }
+}
+
+SORAI {
+    Sanic_speed
+    int t = 1;// cin >> t;
+    wh(t) {solve();}
+}
+        \end{Verbatim}
+        \item TQS's C++: weird algorithm:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    long long n;
+    cin >> n;
+    cout << n;
+    while (n != 1) {
+        if (n % 2 == 0) {
+            n = n / 2;
+            cout << " " << n;
+        }
+        else {
+            n = n * 3 + 1;
+            cout << " " << n;
+        }
+    }
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
 \begin{problem}[\href{https://cses.fi/problemset/task/1083}{CSES Problem Set{\tt/}missing number}]
     You are given all numbers in $[n]$ except one. Find the missing number.
     \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$. The 2nd line contains $n  - 1$ numbers. Each number is distinct \& between $1$ \& $n$ (inclusive) .
     \item {\sf Output.} Print the missing number.
-    \item {\sf Constraints.} $n\overline{2,2\cdot10^5}$.
+    \item {\sf Constraints.} $n\in\overline{2,2\cdot10^5}$.
     \item {\sf Sample.}
     \begin{table}[H]
         \centering
@@ -342,6 +513,13 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
         \end{tabular}
     \end{table}
 \end{problem}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item 
+    \end{enumerate}
+\end{proof}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1069}{CSES Problem Set{\tt/}repetitions}]
     You are given a DNA sequence: a string consisting of characters {\tt A, C, G, T}. Find the longest repetition in the sequence. This is a maximum-length substring containing only 1 type of character.
@@ -438,7 +616,47 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
     \end{table}
 \end{problem}
 
-\begin{problem}[\href{https://cses.fi/problemset/task/1072}{CSES Problem Set{\tt/}two knights}]
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item NHH's C++: number spiral:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+#define ll long long
+
+int main() {
+    int t; cin >> t;
+    while (t--) {
+        ll y, x;
+        cin >> y >> x;
+        
+        ll k = max(x, y);
+        ll base = (k - 1) * (k - 1);
+        ll ans;
+        
+        if (k % 2 == 0) {
+            if (x == k)
+            ans = base + y;
+            else
+            ans = base + k + (k - x);
+        } else {
+            if (y == k)
+            ans = base + x;
+            else
+            ans = base + k + (k - y);
+        }
+        
+        cout << ans << "\n";
+    }
+    return 0;
+}
+        \end{Verbatim}
+    \end{enumerate}
+    
+\end{proof}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1072}{CSES Problem Set{\tt/}2 knights}]
     Count for $k\in[n]$ the number of ways $2$ knights can be placed on a $k\times k$ chessboard so that they do not attack each other.
     \item {\sf Input.} The only input line contains an integer $n\in\mathbb{N}^\star$.
     \item {\sf Output.} Print $n$ integers: the results.
@@ -463,6 +681,62 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
     \end{table}
 \end{problem}
 
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item NHH's C++: 2 knights:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <algorithm>
+#include <string>
+#define ll long long
+using namespace std;
+
+int main() {
+    ll n; cin >> n;
+    for (int i = 1; i <= n; ++i) {
+        ll s = i * i; // number of squares in i x i chessboard
+        // Cách chọn 2 vị trí bất kỳ cho 2 quân Mã - Tổ hợp
+        ll total = (s * (s - 1)) / (ll) 2; // phải ép kiểu vì mặc định là (int) 2, không ll (2)
+        // Cách chọn 2 vị trí 2 quân Mã có thể tấn công nhau
+        ll attack = (ll) 4 * (i - 1) * (i - 2); // = number of 2x3 or 3x2 rectangles in ixi chessboard
+        // Cách chọn 2 vị trí không để 2 quân Mã tấn công nhau
+        ll res = total - attack;
+        cout << res << "\n";
+    }
+    
+    return 0;
+}
+        \end{Verbatim}
+        \item PPP's C++: 2 knights:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <cmath>
+using namespace std;
+using ul = unsigned long;
+
+ul n; // Số ô bàn cờ
+
+ul find_ways(ul k) {
+    // Số cách tối đa đặt 2 quân mã lên bàn cờ
+    ul knights_placements = (pow(k, 2) * (pow(k, 2) - 1)) / 2;
+    
+    // Trường hợp 2 quân mã tấn công nhau trên bàn cờ
+    ul knights_attacks = 4 * (k - 1) * (k - 2);
+    
+    return knights_placements - knights_attacks; // Trả về số cách xếp 2 quân mã cuối cùng
+}
+
+int main() {
+    cin >> n;
+    for (ul i = 1; i <= n; ++i)
+    cout << find_ways(i) << " ";
+    return 0;
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
 \begin{problem}[\href{https://cses.fi/problemset/task/1092}{CSES Problem Set{\tt/}two sets}]
     Divide the numbers $[n]$ into 2 sets of equal sum.
     \item {\sf Input.} The only input line contains an integer $n\in\mathbb{N}^\star$.
@@ -481,7 +755,8 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
             & 3 \\
             & 3 5 6\\
             \hline
-            6 & NO
+            6 & NO\\
+            \hline
         \end{tabular}
     \end{table}
 \end{problem}
@@ -506,9 +781,31 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
 
 \begin{proof}[Solution]
     The number of bit strings of length $n\in\mathbb{N}^\star$ is $2^n$.
+    
+    \noindent C++:
+    \begin{enumerate}
+        \item NHH's C++: bit strings:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+#define ll long long
+const ll MOD = 1e9 + 7; // tránh tràn số nguyên lớn
+
+int main() {
+    ll n; cin >> n;
+    ll res = 1;
+    
+    // Với mỗi vị trí có 2 cách chọn các bit (0 hoặc 1)
+    for (ll i = 0; i < n; ++i)
+    res = (res * 2) % MOD;
+    cout << res << "\n";
+    return 0;
+}
+        \end{Verbatim}
+    \end{enumerate}
 \end{proof}
 
-\begin{problem}[\href{https://cses.fi/problemset/task/1618}{CSES Problem Set{\tt/}trailing zeros}]
+\begin{problem}[\href{https://cses.fi/problemset/task/1618}{CSES Problem Set{\tt/}trailing zeros}]    
     Calculate the number of trailing zeros in the factorial $n!$, e.g., $20! = 2432902008176640000$ \& it has $4$ trailing zeros.
     \item {\sf Input.} The only input line has an integer $n\in\mathbb{N}^\star$.
     \item {\sf Output.} Print the number of trailing zeros is $n!$.
@@ -525,6 +822,34 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
         \end{tabular}
     \end{table}
 \end{problem}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item NHH's C++: trailing 0s:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <string>
+#define ll long long
+using namespace std;
+
+int main() {
+    ll n; cin >> n;
+    ll count = 0;
+    ll n5 = 5;
+    ll res = n / n5;
+    
+    while (res != 0) {
+        count += res;
+        n5 = n5 * 5;
+        res = n / n5;
+    }
+    cout << count << " ";
+    return 0;
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
 
 \begin{problem}[CSES Problem Set{\tt/}coin piles]
     You have $2$ coin piles containing $a,b\in\mathbb{N}$ coins. On each move, you can either remove $1$ coin from the left pile \& $2$ coins from the right pile, or $2$ coins from the left pile \& $1$ coin from the right pile. Efficiently find out if you can empty both the piles.
@@ -546,6 +871,35 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
         \end{tabular}
     \end{table}
 \end{problem}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item NHH's C++: coin pile:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#define ll long long
+using namespace std;
+
+
+int main() {
+    ll t, a, b, sum = 0;
+    cin >> t;
+    
+    while (t--) {
+        cin >> a >> b;
+        sum = a + b;
+        if (sum % 3 == 0 && max(a, b) <= 2 * min(a, b)) cout << "YES" << '\n';
+        else cout << "NO" << '\n';
+    }
+    return 0;
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
 
 \begin{problem}[\ref{https://cses.fi/problemset/task/1755}{CSES Problem Set{\tt/}palindrome reorder}]
     Given a string, recorder its letters in such a way that it becomes a palindrome (i.e., it reads the same forwards \& backwards).
@@ -586,6 +940,36 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
     \end{table}
 \end{problem}
 
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item PGL's C++: gray code:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int main() {
+    int n; cin >> n;
+    vector<string> gray;
+    gray.push_back("0");
+    gray.push_back("1");
+    for (int i = 2; i <= n; ++i) {
+        vector<string> res;
+        for (auto s : gray) res.push_back("0" + s);
+        vector<string> rev;
+        rev = gray;
+        reverse(rev.begin(), rev.end());
+        for (auto s : rev) res.push_back("1" + s);
+        gray = res;
+    }
+    for (auto it : gray) cout << it << endl;
+    return 0;
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
 \begin{problem}[\href{https://cses.fi/problemset/task/2165}{CSES Problem Set{\tt/}tower of Hanoi}]
     The Tower of Hanoi game consists of $3$ stacks (left, middle, \& right) \& $n\in\mathbb{N}^\star$ round disks of different sizes. Initially, the left stack has all the disks, in increasing order of size from top to bottom. The goal is to move all the disks to the right stack using the middle stack. On each move you can move the uppermost disk from a stack to another stack. In addition, it is not allowed to place a larger disk on a smaller disk. Find a solution that minimizes the number of moves.
     \item {\sf Input.} The only input line has an integer $n\in\mathbb{N}^\star$: the number of of disks.
@@ -606,6 +990,98 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
         \end{tabular}
     \end{table}
 \end{problem}
+
+\begin{proof}[Solution]
+    For a given $n\in\mathbb{N}^\star$, the number of moves is $2^n - 1$.
+    
+    \noindent C++:
+    
+    \begin{enumerate}
+        \item NHH's C++: Hanoi tower:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+#include <cmath>
+#define ll long long
+using namespace std;
+
+void move (ll n, ll l, ll r, ll m) {
+    if (n == 1) {
+        cout << l << " " << r << '\n';
+        return;
+    }
+    
+    // move n-1 disks from left to middle, right as the 'middle man' (by recursion)
+    move(n - 1, l, m, r);
+    // move the nth disk (largest disk) from left to right
+    cout << l << " " << r << '\n';
+    // move n-1 disks from middle to right (by recursion)
+    move(n - 1, m, r, l);
+}
+
+int main() {
+    ll n; cin >> n;
+    cout << pow(2, n) - 1 << '\n'; // total moves
+    move(n, 1, 3, 2);
+    return 0;
+}
+        \end{Verbatim}
+        \item DPAK's C++: Hanoi tower:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<pair<int, int>> ans;
+void move(int numDisk, int start, int temp, int target) {
+    if (numDisk == 1) {
+        ans.push_back({start, target});
+        return;
+    }
+    move(numDisk - 1, start, target, temp);
+    move(1, start, temp, target);
+    move(numDisk - 1, temp, start, target);
+}
+
+int main() {
+    int n; cin >> n;
+    move(n, 1, 2, 3);
+    cout << ans.size() << '\n';
+    for (auto [s, t] : ans) {
+        cout << s << " " << t << '\n';
+    }
+}
+    \end{Verbatim}
+        \item DNDK's C++: Hanoi tower:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+void Hanoi(int x, int A, int B, int C) {
+    if (x == 1) {
+        cout << A << " " << C << "\n";
+        return;
+    }
+    Hanoi(x - 1, A, C, B);
+    cout << A << " " << C << "\n";
+    Hanoi(x - 1, B, A, C);
+}
+int main() {
+    int n;
+    cin >> n;
+    double x = pow(2, n) - 1;
+    cout << x << "\n";
+    Hanoi(n, 1, 2, 3);
+    return 0;
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/Tower_of_Hanoi}{Wikipedia{\tt/}tower of Hanoi}.
+\end{enumerate}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1622}{CSES Problem Set{\tt/}creating strings}]
     Given a string, generate all different strings that can be created using its characters.
@@ -665,6 +1141,58 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
     \item {\sf Explanation.} Group 1 has weights $2,3,4$ (total weight $9$), \& group 2 has weights $1,7$ (total weight $8$).
 \end{problem}
 
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item DPAK's C++: apple division
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+
+vector<ll> a;
+ll n;
+
+signed main() {
+    cin >> n;
+    a.resize(n);
+    for (ll i = 1; i <= n; ++i) cin >> a[i - 1];
+    ll mask = 1 << n;
+    vector<ll> groupA, groupB;
+    ll minWeight = INT_MAX;
+    ll gA = 0, gB = 0;
+    for (ll i = 0; i < mask; ++i) {
+        ll sumA = 0, sumB = 0;
+        for (ll j = 0; j < n; ++j) {
+            if (i & (1 << j)) sumA += a[j];
+            else sumB += a[j];
+        }
+        if (abs(sumA - sumB) < minWeight) {
+            groupA.clear(); groupB.clear();
+            for (ll j = 0; j < n; ++j)
+            if (i & (1 << j)) groupA.push_back(a[j]);
+            else groupB.push_back(a[j]);
+            minWeight = abs(sumA - sumB);
+            gA = sumA, gB = sumB;
+        }
+    }
+    ll ans = abs(gA - gB);
+    cout << ans << '\n';
+    /*
+    for (ll a : groupA) {
+        cout << a << " ";
+    }
+    cout << '\n';
+    for (ll b : groupB) {
+        cout << b << " ";
+    }
+    */
+}
+        \end{Verbatim}
+
+    \end{enumerate}
+\end{proof}
+
 \begin{problem}[\href{https://cses.fi/problemset/task/1624}{CSES Problem Set{\tt/}chessboard \& queens}]
     Place $8$ queens on a chessboard so that no $2$ queens are attacking each other. As an additional challenge, each square is either free or reserved, \& you can only place queens on the free squares. However, the reserved squares do not prevent queens from attacking each other. Count the number of possible ways are there to place the queens.
     \item {\sf Input.} The input line has $8$ lines, \& each of them has $8$ characters. Each square is either free {\tt.} or reversed {\tt*}.
@@ -718,6 +1246,137 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
     \end{table}
 \end{problem}
 
+\begin{proof}[Solution]
+    \noindent C++:
+    \begin{enumerate}
+        \item DAK's C++: Raab game I:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+/*
+(\_/)
+( * *)
+/ ?? <3
+*/
+void IOfile()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    freopen("b.inp", "r", stdin);
+    freopen("b.out", "w", stdout);
+}
+int n, a, b;
+int solve()
+{
+    cin >> n >> a >> b;
+    // n = 1
+    vector <int> ans1;
+    vector <int> ans2;
+    if (n == 1)
+    {
+        if (a + b == 0) {
+            cout << "YES" << '\n';
+            cout << 1 << '\n' << 1 << '\n';
+            return 0;
+        }
+        else {
+            cout << "NO" << '\n';
+            return 0;
+        }
+    }
+    // n = 2
+    if (n == 2)
+    {
+        if (a + b == 1 || a == 2 || b == 2) {
+            cout << "NO" << '\n';
+            return 0;
+        }
+        else {
+            cout << "YES" << '\n';
+            if (a == 0 && b == 0) {
+                cout << 1 << " " << 2 << '\n';
+                cout << 1 << " " << 2 << '\n';
+                return 0;
+            }
+            else {
+                cout << 2 << " " << 1 << '\n';
+                cout << 1 << " " << 2 << '\n';
+                return 0;
+            }
+        }
+        
+    }
+    
+    if (a + b > n) {
+        cout << "NO" << '\n';
+        return 0;
+    }
+    if (a == 0 && b == 0) {
+        cout << "YES" << '\n';
+        for (int i = 1; i <= n; i++) cout << i << " "; cout << '\n';
+        for (int i = 1; i <= n; i++) cout << i << " "; cout << '\n';
+        return 0;
+    }
+    if (a + b == n)
+    {
+        if (a == 0 || b == 0) {
+            cout << "NO" << '\n';
+            return 0;
+        }
+        else {
+            cout << "YES" << '\n';
+            {
+                
+                for (int i = 1; i <= n; i++) {
+                    int a2 = i + a;
+                    if (a2 > n) a2 -= n;
+                    ans1.push_back(i);
+                    ans2.push_back(a2);
+                }
+                for (int x : ans1) cout << x << " ";
+                cout << '\n';
+                for (int x : ans2) cout << x << " ";
+                cout << '\n';
+            }
+            return 0;
+        }
+    }
+    if (a == 0 || b == 0) {
+        cout << "NO" << '\n';
+        return 0;
+    }
+    cout << "YES" << '\n';
+    int s = a + b;
+    for (int i = 1; i <= s; i++) {
+        int a2 = i + a;
+        if (a2 > s) a2 -= s;
+        ans1.push_back(i);
+        ans2.push_back(a2);
+    }
+    for (int i = s + 1; i <= n; i++)
+    {
+        ans1.push_back(i);
+        ans2.push_back(i);
+    }
+    for (int x : ans1) cout << x << " ";
+    cout << '\n';
+    for (int x : ans2) cout << x << " ";
+    cout << '\n';
+    return 0;
+}
+int main()
+{
+    // IOfile();
+    int T;
+    cin >> T;
+    while (T--)
+    solve();
+    return 0;
+}
+\end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
 \begin{problem}[\href{https://cses.fi/problemset/task/3419}{CSES Problem Set{\tt/}mex grid construction}]
     Construct an $n\times n$ grid where each square has the smallest nonnegative integer that does not appear to the left on the same row or above on the same column.
     \item {\sf Input.} The only input line has an integer $n\in\mathbb{N}^\star$.
@@ -740,6 +1399,41 @@ Kỹ thuật {\it sliding window} cũng là 1 trường hợp riêng của ý t�
         \end{tabular}
     \end{table}
 \end{problem}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item DPAK's C++: mex grid construction:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+signed main() {
+    int n; cin >> n;
+    vector<vector<int>> a(n + 1, vector<int>(n + 1, -1));
+    
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            int num = 0;
+            set<int> ms;
+            for (int r = 1; r <= n; ++r)
+            if (a[r][j] != -1) ms.insert(a[r][j]);
+            for (int c = 1; c <= n; ++c)
+            if (a[i][c] != -1) ms.insert(a[i][c]);
+            
+            for (auto it : ms)
+            if (it == num) ++num;
+            a[i][j] = num;
+        }
+    }
+    
+    for (int i = 1; i <= n; ++i)
+    for (int j = 1; j <= n; ++j) cout << a[i][j] << " ";
+    cout << '\n';
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/3217}{CSES Problem Set{\tt/}knight moves grid}]
     There is a knight on a $n\times n$ chessboard. For each square, print the minimum number of moves the knight needs to do to reach the top-left corner.
@@ -7273,7 +7967,7 @@ The sliding window technique is 1 of common techniques in digital image processi
 \chapter{Bitwise Operations -- Các Phép Toán Bitwise}
 \minitoc
 
-\begin{problem}[\href{https://cses.fi/problemset/task/1146}{CSES Problem Set{\tt/}couting bits}]
+\begin{problem}[\href{https://cses.fi/problemset/task/1146}{CSES Problem Set{\tt/}counting bits}]
     Count the number of $1$ bits in the binary representations of integers between $1$ \& $n\in\mathbb{N}^\star$.
     \item {\sf Input.} The  only input line has an integer $n\in\mathbb{N}^\star$.
     \item {\sf Output.} Print the number of one bits in the binary representations of integers between $1$ \& $n$.
@@ -7283,7 +7977,7 @@ The sliding window technique is 1 of common techniques in digital image processi
         \centering
         \begin{tabular}{|l|l|}
             \hline
-            \verb|couting_bit.inp| & \verb|couting_bit.out| \\
+            \verb|counting_bit.inp| & \verb|counting_bit.out| \\
             \hline
             7 & 12 \\
             \hline
@@ -7291,6 +7985,57 @@ The sliding window technique is 1 of common techniques in digital image processi
     \end{table}
     \item {\sf Explanation.} The binary representations of $1,2,\ldots,7$ are $1,10,11,100,101,110,111$, so there are a total of $12$ $1$ bits.
 \end{problem}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item VNTA's C++: count bits
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+long long solve(long long n) {
+    long long res = 0;
+    for (int i = 0; i <= 50; i++) {
+        long long s = 1LL << (i + 1); //2^(i+1)
+        long long fs = (n + 1) / s;
+        long long r = (n + 1) % s;
+        res += fs * (s / 2);
+        res += max(0LL, r - (s / 2));
+    }
+    return res;
+}
+
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    long long n;
+    cin >> n;
+    cout << solve(n);
+}
+        \end{Verbatim}
+        \item DAK's C++: count bits
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+using ll = long long;
+
+int main() {
+    ll n;
+    cin >> n;
+    
+    ll sum = 0;
+    for (int j = 60; j >= 0; --j) {
+        ll bit = 1ll << j; // 2^j
+        sum += n / (bit * 2) * bit;
+        sum += max(0ll, n % (bit * 2) - (bit - 1));
+    }
+    cout << sum << '\n';
+}
+    \end{Verbatim}
+    \end{enumerate}
+\end{proof}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1655}{CSES Problem Set{\tt/}maximum xor subarray}]
     Given an array of $n\in\mathbb{N}^\star$ integers, find the maximum xor sum of a subarray.
@@ -7311,6 +8056,44 @@ The sliding window technique is 1 of common techniques in digital image processi
     \end{table}
 \end{problem}
 
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item DXH's C++: maximum xor subarray (pass 9{\tt/}14 CSES test cases):
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+// Sử dụng O(n^2) để tìm max XOR
+int main() {
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    
+    // Nhập mảng đầu vào
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    
+    // Tạo mảng prefix XOR: prefix[i] = a[0] ^ a[1] ^ ... ^ a[i-1]
+    vector<int> prefix(n + 1, 0);
+    for (int i = 0; i < n; ++i)
+    prefix[i + 1] = prefix[i] ^ a[i];
+    
+    // Duyệt tất cả các subarray: [i, j)
+    int maxXOR = 0;
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j <= n; ++j) {
+            int subXOR = prefix[j] ^ prefix[i];
+            maxXOR = max(maxXOR, subXOR);
+        }
+    }
+    
+    cout << maxXOR << '\n';
+    return 0;
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
 \begin{problem}[\href{https://cses.fi/problemset/task/3191}{CSES Problem Set{\tt/}maximum xor subset}]
     Given an array of $n\in\mathbb{N}^\star$ integers, find the maximum xor sum of a subset.
     \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the size of the array. The next line has $n$ integers $x_1,x_2,\ldots,x_n$: the contents of the array.
@@ -7321,7 +8104,7 @@ The sliding window technique is 1 of common techniques in digital image processi
         \centering
         \begin{tabular}{|l|l|}
             \hline
-            \verb|.inp| & \verb|.out| \\
+            \verb|maximum_xor_subset.inp| & \verb|maximum_xor_subset.out| \\
             \hline
             4 & 13 \\
             1 6 12 6 & \\

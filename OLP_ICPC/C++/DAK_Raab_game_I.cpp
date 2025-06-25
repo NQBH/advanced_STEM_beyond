@@ -16,7 +16,7 @@ int n, a, b;
 int solve()
 {
     cin >> n >> a >> b;
-    //n=1
+    // n = 1
     vector <int> ans1;
     vector <int> ans2;
     if (n == 1)
@@ -31,7 +31,7 @@ int solve()
             return 0;
         }
     }
-    //n=2
+    // n = 2
     if (n == 2)
     {
         if (a + b == 1 || a == 2 || b == 2) {
@@ -113,7 +113,7 @@ int solve()
 }
 int main()
 {
-    //IOfile();
+    // IOfile();
     int T;
     cin >> T;
     while (T--)

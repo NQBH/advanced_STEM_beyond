@@ -7,7 +7,7 @@ int main() {
     vector<string> gray;
     gray.push_back("0");
     gray.push_back("1");
-    for (int i = 2; i <= n; i++) {
+    for (int i = 2; i <= n; ++i) {
         vector<string> res;
         for (auto s : gray) res.push_back("0" + s);
         vector<string> rev;

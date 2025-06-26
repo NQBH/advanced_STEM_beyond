@@ -44,15 +44,15 @@ int main() {
 	cout << "\n=== Ket qua ===\n";
 
 	unsigned long long fn = factorial(n);
-	if (fn != 0) cout << "Pn = " << fn << endl;
+	if (fn != 0) cout << "Pn = " << fn << '\n';
 
 	unsigned long long Ank = permutation(n, k);
-	if (Ank != 0) cout << "A^k_n = " << Ank << endl;
+	if (Ank != 0) cout << "A^k_n = " << Ank << '\n';
 
 	unsigned long long Cnk = combination(n, k);
-	if (Cnk != 0) cout << "C^k_n = " << Cnk << endl;
+	if (Cnk != 0) cout << "C^k_n = " << Cnk << '\n';
 
 	unsigned long long Catn = catalan(n);
-	if (Catn != 0) cout << "Catalan(n) = " << Catn << endl;
+	if (Catn != 0) cout << "Catalan(n) = " << Catn << '\n';
 	return 0;
 }

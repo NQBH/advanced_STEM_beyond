@@ -1,10 +1,10 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 
 unsigned long long Pn(int n) {
     if (n == 0) return 1;
     unsigned long long res = 1;
-    for (int i = 2; i <= n; i++)res *= i;
+    for (int i = 2; i <= n; ++i) res *= i;
     return res;
 }
 
@@ -15,10 +15,9 @@ unsigned long long nCk(int n, int k) {
 
 void pascalTriangle(int n) {
     cout << "1st " << n + 1 << " lines of the Pascal triangle: \n";
-    for (int i = 0; i <= n; i++) {
-        for (int j = 0; j <= i; j++) {
+    for (int i = 0; i <= n; ++i) {
+        for (int j = 0; j <= i; ++j)
             cout << nCk(i, j) << " ";
-        }
         cout << '\n';
     }
     cout << "\n========================================\n";
@@ -30,7 +29,7 @@ void generatePartitions(int n, int m, int idx, vector<int>& cur, vector<vector<i
         res.push_back(cur);
         return;
     }
-    for (int i = 0; i <= n; i++) {
+    for (int i = 0; i <= n; ++i) {
         cur[idx] = i;
         generatePartitions(n - i, m, idx + 1, cur, res);
     }
@@ -46,7 +45,7 @@ double multinomialExpansion(int n, const vector<double>& a) {
     for (const auto& k : partitions) {
         unsigned long long coeff = Pn(n);
         double term = 1;
-        for (int i = 0; i < m; i++) {
+        for (int i = 0; i < m; ++i) {
             coeff /= Pn(k[i]);
             term *= pow(a[i], k[i]);
         }
@@ -64,8 +63,8 @@ int main() {
     pascalTriangle(n);
 
     vector<double>a(m);
-    for (int i = 0; i < m; i++) cin >> a[i];
+    for (int i = 0; i < m; ++i) cin >> a[i];
     double result = multinomialExpansion(n, a);
-    if (m > 2) cout << "(a1 +... + a" << m << ")^" << n << " = " << result << "\n";
+    if (m > 2) cout << "(a1 + ... + a" << m << ")^" << n << " = " << result << "\n";
     else cout <<  "(a1 + a2)^" << n << " = " << result << "\n";
 }

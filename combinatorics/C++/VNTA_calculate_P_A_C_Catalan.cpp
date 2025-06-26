@@ -1,10 +1,10 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 
 // n_max = 20
 long long Pn(int n) {
     long long res = 1;
-    for (int i = 2; i <= n; i++) res *= i;
+    for (int i = 2; i <= n; ++i) res *= i;
     return res;
 }
 
@@ -31,5 +31,5 @@ int main() {
     cin.tie(0); cout.tie(0);
     int n, k;
     cin >> n >> k;
-    cout << Pn(n) << endl << nAk(n, k) << endl << nCk(n, k) << endl << catalan_n(n);
+    cout << Pn(n) << '\n' << nAk(n, k) << '\n' << nCk(n, k) << '\n' << catalan_n(n);
 }

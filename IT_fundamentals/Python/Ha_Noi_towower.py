@@ -35,3 +35,29 @@ def hanoi(n, start, end, temp):
 n = int(input("Nhập số lượng đĩa: "))
 print("Các bước chuyển:")
 hanoi(n, '1', '2', '3')
+
+#bai19
+thap_ha_noi = []
+
+def giai_thap_ha_noi(n, cot_goc, cot_dich, cot_trung_gian):
+    if n == 1:
+        thap_ha_noi.append((1, cot_goc, cot_dich))
+    else:
+        giai_thap_ha_noi(n - 1, cot_goc, cot_trung_gian, cot_dich)
+        thap_ha_noi.append((n, cot_goc, cot_dich))
+        giai_thap_ha_noi(n - 1, cot_trung_gian, cot_dich, cot_goc)
+
+def in_thap_ha_noi(n):
+    print(f"\nBài toán: Di chuyển {n} đĩa từ cọc A sang cọc C theo đúng quy tắc.")
+    print("Yêu cầu: Chỉ được di chuyển 1 đĩa mỗi lần và không đặt đĩa lớn lên đĩa nhỏ.\n")
+    print("Các bước thực hiện:")
+
+    giai_thap_ha_noi(n, "A", "C", "B")
+
+    for i, (so_dia, cot_moc, cot_dich) in enumerate(thap_ha_noi, start=1):
+        print(f"Bước {i}: Di chuyển đĩa {so_dia} từ cọc {cot_moc} sang cọc {cot_dich}.")
+
+    print(f"\nCó tất cả {len(thap_ha_noi)} bước để hoàn thành việc di chuyển {n} đĩa.")
+
+n = int(input("Nhập số lượng đĩa: "))
+in_thap_ha_noi(n)

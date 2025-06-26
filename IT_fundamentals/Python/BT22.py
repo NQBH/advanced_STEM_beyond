@@ -97,3 +97,90 @@ s = S_h(n, x)
 e_x = math.exp(x)
 print("S(h) =", s)
 print("e^x - S(n) =", e_x - s)
+
+22 
+a)
+def tong_a(n):
+    if n == 1:
+        return 1 / 2
+    return 1 / (2 * n) + tong_a(n - 1)
+
+n = int(input("Nhập n: "))
+print(f"S = {tong_a(n)}")
+b)
+def tong_b(n):
+    if n == 1:
+        return 1
+    return n**n + tong_b(n - 1)
+
+n = int(input("Nhập n: "))
+print(f"S = {tong_b(n)}")
+c)
+import math
+
+def tong_c(k):
+    if k == 1:
+        return math.sqrt(3)
+    return math.sqrt(3 * k + tong_c(k - 1))
+
+n = int(input("Nhập n: "))
+print(f"S = {tong_c(n)}")
+D)
+def tong_d(n):
+    if n == 2:
+        return 2 ** (1/2)
+    return n ** (1/n) + tong_d(n - 1)
+
+n = int(input("Nhập n: "))
+print(f"S = {tong_d(n)}")
+e)
+def tong_e(k):
+    if k == 1:
+        return 1
+    return (k - 1 + tong_e(k - 1)) ** (1 / k)
+
+n = int(input("Nhập n: "))
+print(f"S = {(n + tong_e(n)) ** (1 / (n + 1))}")
+f)
+import math
+
+def tong_f(k):
+    if k == 1:
+        return math.sqrt(1)
+    return math.sqrt(k + tong_f(k - 1))
+
+n = int(input("Nhập n: "))
+print(f"S = {tong_f(n)}")
+g)
+import math
+
+def giaithua(n):
+    if n == 0 or n == 1:
+        return 1
+    return n * giaithua(n - 1)
+
+def tong_g(k):
+    if k == 1:
+        return math.sqrt(giaithua(1))
+    return (giaithua(k - 1) + tong_g(k - 1)) ** (1 / k)
+
+n = int(input("Nhập n: "))
+print(f"S = {(giaithua(n) + tong_g(n)) ** (1 / (n + 1))}")
+H)
+import math
+
+def giaithua(n):
+    if n == 0 or n == 1:
+        return 1
+    return n * giaithua(n - 1)
+
+def tong_h(n, x):
+    if n == 1:
+        return x
+    return (x ** n) / giaithua(n) + tong_h(n - 1, x)
+
+x = float(input("Nhập x: "))
+n = int(input("Nhập n: "))
+s = tong_h(n, x)
+print(f"S(n) = {s}")
+print(f"e^x - S(n) = {math.exp(x) - s}")

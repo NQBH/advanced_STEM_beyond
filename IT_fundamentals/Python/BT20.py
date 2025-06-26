@@ -33,3 +33,19 @@ def a(n):
 
 n = int(input("Nhập n: "))
 print(f"a[{n}] =", a(n))
+
+def a(n):
+    if n == 0:
+        return 1
+    total = 0
+    for i in range(n):
+        total += (n - i) ** 2 * a(i)
+    return total
+try:
+    n = int(input("Nhập n (n ∈ ℕ): "))
+    if n < 0:
+        print("Lỗi: n phải là số tự nhiên (n >= 0).")
+    else:
+        print(f"a[{n}] = {a(n)}")
+except ValueError:
+    print("Lỗi: Nhập một số nguyên hợp lệ.")

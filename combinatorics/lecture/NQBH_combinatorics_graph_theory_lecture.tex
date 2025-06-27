@@ -2842,7 +2842,7 @@ Recall that $p(n) = \sum_{i=1}^n p_i(n)$ is the total number of partitions of $n
     
     -- (a) Khi nào $p(n)$ là số chẵn \& khi nào $p(n)$ là số lẻ? Đưa ra 1 điều kiện khá đơn giản trên $n$ để xác định tính chẵn lẻ của $p(n)$. (b) Có phải
     \begin{equation*}
-        \lim_{x\to\infty} \frac{|\{n;1\le n\le x,\ p(n)\divby2\}|}{x} = \frac{1}{2} không?
+        \lim_{x\to\infty} \frac{|\{n;1\le n\le x,\ p(n)\divby2\}|}{x} = \frac{1}{2}?
     \end{equation*}
     (c) Khi nào $p(n)$ là số nguyên tố? Có phải nó là số nguyên tố vô hạn không?    
 \end{problem}
@@ -2870,13 +2870,29 @@ Berkovich \& Uncu (2019) prove the cases when $s = 1,s = 2$, but pose the more g
 
 %------------------------------------------------------------------------------%
 
-\section{Basic Generating functions -- Các Hàm Sinh Cơ Bản}
+\section{Basic Generating Functions -- Các Hàm Sinh Cơ Bản}
 \textbf{\textbf{Resources -- Tài nguyên.}}
 \begin{enumerate}
 	\item \href{https://en.wikipedia.org/wiki/Generating_function}{Wikipedia{\tt/}generating function}.
+    
 	\item MathScope. {\it Chuyên đề Tổ Hợp}.
+    \begin{itemize}
+        \item {\sc Hoàng Minh Quân}. {\it Phương Pháp Hàm Sinh}.
+        \item {\sc Lê Hữu Phước, Trần Nguyễn Quốc Cường}. {\it Phương Pháp Hàm Sinh}.
+    \end{itemize}
+    
+    \item \cite{Shahriari2022}. {\sc Shahriar Shahriari}. {\it An Invitation To Combinatorics}. Chap. 9: Generating Functions.
+    
 	\item \cite{Vinh_Lu_Olympic_Toan_to_hop}. {\sc Lê Anh Vinh, Lê Phúc Lữ, Nguyễn Huy Tùng, Trần Đăng Phúc, Vũ Văn Luân, Phạm Văn Thắng, Lê Quang Quân, Nguyễn Văn Thế, Nguyễn Tuấn Hải Đăng, Hà Hữu Cao Trình, Phạm Việt Hùng}. {\it Định Hướng Bồi Dưỡng Học Sinh Năng Khiếu Toán. Tập 4: Tổ Hợp}. Chap. 13: Hàm sinh \& ứng dụng.
 \end{enumerate}
+In this chapter, we turn to the powerful technique of generating functions for solving combinatorial problems. In combinatorics, we are often investigating a sequence of numbers $\{h_n\}_{n\in\mathbb{N}} = h_0,h_1,\ldots,h_n,\ldots$ We may be looking for a formula for $h_n$, \& sometimes we may have a recurrence relation or other partial information about $h_n$. To the untrained eye, it may seem unlikely that by considering the power series $\sum_{n=0}^\infty h_ix^i = h_0 + h_1x + \cdots + h_nx^n + \cdots$ -- i.e., constructed using every number in that sequence -- we can glean any new information about our sequence of numbers. After all, if we already know what $h_n$ is, then what use is this power series, \& if we don't know what $h_n$ is, then how are we going to deal with the more complicated power series?
+
+-- Trong chương này, chúng ta sẽ chuyển sang kỹ thuật mạnh mẽ là tạo ra các hàm để giải các bài toán tổ hợp. Trong tổ hợp, chúng ta thường nghiên cứu 1 dãy số $\{h_n\}_{n\in\mathbb{N}} = h_0,h_1,\ldots,h_n,\ldots$ Chúng ta có thể đang tìm kiếm 1 công thức cho $h_n$, \& đôi khi chúng ta có thể có 1 mối quan hệ đệ quy hoặc thông tin 1 phần khác về $h_n$. Đối với người chưa qua đào tạo, có vẻ không chắc rằng khi xem xét chuỗi lũy thừa $\sum_{n=0}^\infty h_ix^i = h_0 + h_1x + \cdots + h_nx^n + \cdots$ -- tức là được xây dựng bằng cách sử dụng mọi số trong dãy đó -- chúng ta có thể thu thập bất kỳ thông tin mới nào về dãy số của mình. Rốt cuộc, nếu chúng ta đã biết $h_n$ là gì, thì chuỗi lũy thừa này có tác dụng gì, \& nếu chúng ta không biết $h_n$ là gì, thì chúng ta sẽ xử lý chuỗi lũy thừa phức tạp hơn như thế nào?
+
+The basic idea is that we can use power series to encode a sequence of integers. Manipulating the underlying function may then provide an avenue for extracting additional information about the sequence.
+
+-- Ý tưởng cơ bản là chúng ta có thể sử dụng chuỗi lũy thừa để mã hóa 1 chuỗi số nguyên. Việc thao tác hàm cơ bản sau đó có thể cung cấp 1 con đường để trích xuất thông tin bổ sung về chuỗi.
+
 In mathematics, a {\it generating function} is a representation of an \href{https://en.wikipedia.org/wiki/Infinite_sequence}{infinite sequence} of numbers as the \href{https://en.wikipedia.org/wiki/Coefficient}{coefficients} of the \href{https://en.wikipedia.org/wiki/Formal_power_series}{formal power series}. Generating functions are often expressed in \href{https://en.wikipedia.org/wiki/Closed-form_expression}{closed form} (rather than as a series), by some expression involving operations on the formal series.
 
 -- Trong toán học, hàm sinh là biểu diễn của 1 chuỗi số vô hạn dưới dạng hệ số của 1 chuỗi lũy thừa chính thức. Các hàm sinh thường được biểu diễn ở dạng đóng (thay vì dạng chuỗi), bằng 1 số biểu thức liên quan đến các phép toán trên chuỗi chính thức.
@@ -2889,7 +2905,14 @@ Generating functions are sometimes called {\it generating series}, in that a ser
 
 -- Các hàm sinh đôi khi được gọi là {\it tạo chuỗi}, theo đó 1 chuỗi các số hạng có thể được coi là {\it tạo chuỗi} của chuỗi các hệ số số hạng của nó.
 
-\noindent{\bf History of generating function.} Generating functions were 1st introduced by \href{https://en.wikipedia.org/wiki/Abraham_de_Moivre}{\sc Abraham de Moivre} in 1730, in order to solve the general linear recurrence problem.
+\begin{problem}[\cite{Shahriari2022}, p. 292]
+    You want to arrange $17$ books on the shelf of a bookstore. The shelf is dedicated to the $3$ Toni Morrison novels published between 1977 \& 1987: Song of Solomon, Tar baby, \& Beloved. You have many copies of each, but on the shelf you want an even number of Song of Solomon, at least $3$ copies of Tar Baby, \& at most $4$ copies of Beloved. How many different arrangements are possible? (Copies of the same book do not have to be next to each other.)
+    
+    -- Bạn muốn sắp xếp $17$ cuốn sách trên kệ của 1 hiệu sách. Kệ sách dành riêng cho $3$ tiểu thuyết Toni Morrison được xuất bản từ năm 1977 \& 1987: Song of Solomon, Tar baby, \& Beloved. Bạn có nhiều bản sao của mỗi cuốn, nhưng trên kệ bạn muốn có 1 số chẵn Song of Solomon, ít nhất $3$ bản sao Tar Baby, \& nhiều nhất $4$ bản sao Beloved. Có bao nhiêu cách sắp xếp khác nhau có thể thực hiện? (Các bản sao của cùng 1 cuốn sách không nhất thiết phải nằm cạnh nhau.)
+\end{problem}
+
+
+\paragraph*{History of generating function.} Generating functions were 1st introduced by \href{https://en.wikipedia.org/wiki/Abraham_de_Moivre}{\sc Abraham de Moivre} in 1730, in order to solve the general linear recurrence problem.
 \begin{quotation}
 	``The name ``generating function'' is due to {\sc Laplace}. Yet, without giving it a name, {\sc Euler} used the device of generating functions long before {\sc Laplace} [$\ldots$]. He applied this mathematical tool to several problems in Combinatory Analysis \& the Theory of Numbers.'' -- \href{https://en.wikipedia.org/wiki/George_P%C3%B3lya}{\sc George P\'olya}, {\it Mathematics \& Plausible Reasoning} (1954)
 	
@@ -2897,7 +2920,7 @@ Generating functions are sometimes called {\it generating series}, in that a ser
 	
 	``A generating function is a clothesline on which we hang up a sequence of numbers for display.'' -- \href{https://en.wikipedia.org/wiki/Herbert_Wilf}{\sc Herbert Wilf}, \href{http://www.math.upenn.edu/~wilf/DownldGF.html}{Generatingfunctionology} (1994)
 \end{quotation}
-{\bf Convergence.} Unlike an ordinary series, the {\it formal} \href{https://en.wikipedia.org/wiki/Power_series}{power series} is not required to \href{https://en.wikipedia.org/wiki/Convergent_series}{converge}: in fact, the generating function is not actually regarded as a function, \& the ``variable'' remains an \href{https://en.wikipedia.org/wiki/Indeterminate_(variable)}{indeterminate}. One can generalize to formal power series in $> 1$ indeterminate, to encode information about infinite multi-dimensional arrays of numbers. Thus generating functions are not functions in the formal sense of a mapping from a \href{https://en.wikipedia.org/wiki/Domain_of_a_function}{domain} to a \href{https://en.wikipedia.org/wiki/Codomain}{codomain}.
+\paragraph*{Convergence.} Unlike an ordinary series, the {\it formal} \href{https://en.wikipedia.org/wiki/Power_series}{power series} is not required to \href{https://en.wikipedia.org/wiki/Convergent_series}{converge}: in fact, the generating function is not actually regarded as a function, \& the ``variable'' remains an \href{https://en.wikipedia.org/wiki/Indeterminate_(variable)}{indeterminate}. One can generalize to formal power series in $> 1$ indeterminate, to encode information about infinite multi-dimensional arrays of numbers. Thus generating functions are not functions in the formal sense of a mapping from a \href{https://en.wikipedia.org/wiki/Domain_of_a_function}{domain} to a \href{https://en.wikipedia.org/wiki/Codomain}{codomain}.
 
 -- Không giống như 1 chuỗi thông thường, chuỗi lũy thừa chính thức không bắt buộc phải hội tụ: trên thực tế, hàm sinh không thực sự được coi là 1 hàm, \& ``biến'' vẫn là 1 hàm bất định. Người ta có thể khái quát hóa thành chuỗi lũy thừa chính thức trong nhiều hơn 1 hàm bất định, để mã hóa thông tin về các mảng số đa chiều vô hạn. Do đó, các hàm sinh không phải là các hàm theo nghĩa chính thức của phép ánh xạ từ 1 miền tới 1 miền đồng dạng.
 
@@ -2905,11 +2928,11 @@ These expressions in terms of the indeterminate $x$ may involve arithmetic opera
 
 -- Những biểu thức này theo $x$ bất định có thể bao gồm các phép toán số học, phép tính vi phân đối với $x$ \& phép hợp với (tức là phép thế vào) các hàm sinh khác; vì các phép toán này cũng được định nghĩa cho các hàm, nên kết quả trông giống như 1 hàm của $x$. Thật vậy, biểu thức dạng đóng thường có thể được diễn giải như 1 hàm có thể được đánh giá tại các giá trị cụ thể (đủ nhỏ) của $x$, \& có chuỗi chính thức là phép khai triển chuỗi của nó; điều này giải thích cho tên gọi ``hàm sinh''. Tuy nhiên, không nhất thiết phải có cách diễn giải như vậy, vì chuỗi chính thức không bắt buộc phải đưa ra 1 chuỗi hội tụ khi 1 giá trị số khác không được thay thế cho $x$.
 
-\noindent{\bf Limitations of generating function.} Not all expressions that are meaningful as functions of $x$ are meaningful as expressions designating formal series, e.g., negative \& fractional powers of $x$ are examples of functions that do not have a corresponding formal power series.
+\paragraph{Limitations of generating function.} Not all expressions that are meaningful as functions of $x$ are meaningful as expressions designating formal series, e.g., negative \& fractional powers of $x$ are examples of functions that do not have a corresponding formal power series.
 
 -- {\it Hạn chế của hàm sinh.} Không phải tất cả các biểu thức có ý nghĩa như hàm của $x$ đều có ý nghĩa như các biểu thức chỉ định chuỗi chính thức, ví dụ, lũy thừa phân số \& âm của $x$ là ví dụ về các hàm không có chuỗi lũy thừa chính thức tương ứng.
 
-\noindent{\bf Idea of generating functions.} If we want to find a formula for some function $f(n)$ with $n\in\mathbb{N}$, then we can form the generating function of $f(n)$:
+\paragraph*{Idea of generating functions.} If we want to find a formula for some function $f(n)$ with $n\in\mathbb{N}$, then we can form the generating function of $f(n)$:
 \begin{equation}
 	\label{generating function}
 	\tag{genf}
@@ -2928,6 +2951,14 @@ Here we are concerned with formal power series, \& questions of convergence do n
 \subsection{Ordinary generating function (OGF) -- Hàm sinh thường}
 When the term {\it generating function} is used without quantification, it is usually taken to mean an ordinary generating function.
 
+-- Khi thuật ngữ {\it hàm sinh} được sử dụng mà không định lượng, nó thường được hiểu là 1 hàm sinh thường.
+
+\begin{problem}[\cite{Shahriari2022}, Warm-Up 9.1, p. 292]
+   Consider the function $f(x) = \frac{1}{1 + x^2}$ \& the polynomial $g(x) = a_0 + a_1x + a_2x^2 + a_3x^3$. Determine values for $a_0,a_1,a_2,a_3$ s.t. $f(0) = g(0),f'(0) = g'(0),f''(0) = g''(0),f'''(0) = g'''(0)$. Do you remember a name associated with such a polynomial $g(x)$?
+   
+   -- Xét hàm $f(x) = \frac{1}{1 + x^2}$ \& đa thức $g(x) = a_0 + a_1x + a_2x^2 + a_3x^3$. Xác định giá trị cho $a_0,a_1,a_2,a_3$ s.t. $f(0) = g(0),f'(0) = g'(0),f''(0) = g''(0),f'''(0) = g'''(0)$. Bạn có nhớ tên nào liên quan đến đa thức $g(x)$ như vậy không?
+\end{problem}
+
 \begin{definition}[Ordinary generating function (OGF)]
 	The {\rm ordinary generating function} of a sequence $\{a_n\}_{n=0}^\infty\subset\mathbb{C}$ of complex numbers is defined by
 	\begin{equation*}
@@ -2935,6 +2966,68 @@ When the term {\it generating function} is used without quantification, it is us
 	\end{equation*}
 	If $a_n$ is the \href{https://en.wikipedia.org/wiki/Probability_mass_function}{probability mass function} of a \href{https://en.wikipedia.org/wiki/Discrete_random_variable}{discrete random variable}, then its ordinary generating function is called a \href{https://en.wikipedia.org/wiki/Probability-generating_function}{probability-generating function}.
 \end{definition}
+
+\begin{definition}[Ordinary generating functions{\tt/}ordinary power series, \cite{Shahriari2022}, Def. 9.2, p. 293]
+    Let $\{h_n\}_{n=0}^\infty = h_0,h_1,\ldots,h_n,\ldots$ be an infinite sequence of numbers. The {\rm(ordinary) generating function} (or {\rm ordinary power series}) of this sequence is $g(x) = \sum_{i=0}^\infty h_ix^i = h_0 + h_1x + h_2x^2 + \cdots + h_nx^n + \cdots$ \& we write $g\xleftrightarrow{\rm ops}\{h_n\}_{n=0}^\infty$. (``ops'' stands for ordinary power series). Given a finite sequence $a_0,\ldots,a_k$ of numbers, we think of it as an infinite sequence by appending an infinite string of $0$'s to the end of it. The generating function of this finite sequence will then be a polynomial $f(x) = \sum_{i=0}^k a_ix^i = a_0 + a_1x + \cdots + a_kx^k$, \& we write $f\xleftrightarrow{\rm ops}\{a_n\}_{n=0}^\infty$.
+\end{definition}
+
+\begin{dinhnghia}[Hàm sinh thường]
+    Cho $\{h_n\}_{n=0}^\infty = h_0,h_1,\ldots,h_n,\ldots$ là 1 dãy số vô hạn. {\rm(ordinary) generate function} (hay {\rm regular power series}) của dãy số này là $g(x) = \sum_{i=0}^\infty h_ix^i = h_0 + h_1x + h_2x^2 + \cdots + h_nx^n + \cdots$ \& ta viết $g\xleftrightarrow{\rm ops}\{h_n\}_{n=0}^\infty$. (``ops'' là viết tắt của regular power series). Cho 1 dãy số hữu hạn $a_0,\ldots,a_k$, ta coi nó như 1 dãy vô hạn bằng cách thêm 1 chuỗi vô hạn các số $0$ vào cuối dãy. Hàm sinh của dãy hữu hạn này khi đó sẽ là 1 đa thức $f(x) = \sum_{i=0}^k a_ix^i = a_0 + a_1x + \cdots + a_kx^k$, \& chúng ta viết $f\xleftrightarrow{\rm ops}\{a_n\}_{n=0}^\infty$.
+\end{dinhnghia}
+
+\begin{remark}[\cite{Shahriari2022}, Rmk. 9.3, p. 293]
+    Recall from calculus that a {\rm power series} is an infinite series of the form $\sum_{i=0}^\infty a_ix^i$ where $a_i\in\mathbb{R}$, $\forall i\in\mathbb{N}$.
+    
+    -- Nhớ lại từ phép tính rằng {\rm chuỗi lũy thừa} là chuỗi vô hạn có dạng $\sum_{i=0}^\infty a_ix^i$ trong đó $a_i\in\mathbb{R}$, $\forall i\in\mathbb{N}$.
+    
+    In combinatorics we consider $\sum_{i=0}^\infty a_ix^i$ mostly as a {\rm formal} power series. I.e., most often \& especially at the more elementary level, we do not think of the power series as a function \& we do not plug in values for $x$. Rather we manipulate the series formally \& are mostly interested in what happens to the coefficients. As such, at the elementary level, we are interested in algebraic properties of power series more than analytic properties of such series. If we were to plug in values for $x$, \& sometimes we may do that, we should note that -- depending on the power series -- 1 of 3 things could happen: the series could converge only for $x = 0$; it could converge for all values of $x$ (this could happen, e.g., in the case of polynomials where only a finite number of the coefficients are nonzero; or it could converge for all $x$ with $|x| < R$, where $R\in(0,\infty)$ called the {\rm radius of convergence} (in this last case, the series may or may not converge for $x = \pm R$).
+    
+    -- Trong tổ hợp, chúng ta coi $\sum_{i=0}^\infty a_ix^i$ chủ yếu là 1 chuỗi lũy thừa {\rm chính thức}. Tức là, thường xuyên nhất \& đặc biệt là ở cấp độ sơ cấp hơn, chúng ta không nghĩ về chuỗi lũy thừa như 1 hàm \& chúng ta không thay các giá trị cho $x$. Thay vào đó, chúng ta thao tác chuỗi 1 cách chính thức \& chủ yếu quan tâm đến những gì xảy ra với các hệ số. Do đó, ở cấp độ sơ cấp, chúng ta quan tâm đến các tính chất đại số của chuỗi lũy thừa hơn là các tính chất giải tích của chuỗi đó. Nếu chúng ta thay các giá trị cho $x$, \& đôi khi chúng ta có thể làm như vậy, chúng ta nên lưu ý rằng -- tùy thuộc vào chuỗi lũy thừa -- 1 trong 3 điều có thể xảy ra: chuỗi chỉ có thể hội tụ khi $x = 0$; nó có thể hội tụ với mọi giá trị của $x$ (điều này có thể xảy ra, ví dụ, trong trường hợp đa thức mà chỉ có 1 số hữu hạn các hệ số khác không; hoặc nó có thể hội tụ với mọi $x$ với $|x| < R$, trong đó $R\in(0,\infty)$ được gọi là {\rm bán kính hội tụ} (trong trường hợp cuối cùng này, chuỗi có thể hoặc không thể hội tụ với $x = \pm R$).
+\end{remark}
+Some power series have a closed form. I.e., the Taylor series (at $x = 0$) of a known function generates the same power series. If $f$ is a real-valued function that is defined \& is infinitely differentiable at \& around $x = 0$ (more precisely, $f:A\to\mathbb{R}$ is infinitely differentiable, where $A$ is an open set containing 0), then its Taylor series at $x = 0$ is the power series
+\begin{equation}
+    \label{Taylor series x = 0}
+    \sum_{i=0}^\infty \frac{f^{(i)}(0)}{i!}x^i = f(0) + f'(0)x + \frac{f''(0)}{2!}x^2 + \cdots + \frac{f^{(i)}(0)}{i!}x^i + \cdots
+\end{equation}
+If we plug in $r\in\mathbb{R}$ for $x$ in \eqref{Taylor series x = 0}, the resulting series may or may not converge. Even if the series converges, what it converges to may not be equal to $f(r)$. On the other hand, if the function $f$ is equal (in an open interval that includes $0$) as a function to some power series, then that power series must be the Taylor series given in \eqref{Taylor series x = 0}. These are issues that are addressed in detail in courses in Mathematical Analysis. But, for us, the power series of \eqref{Taylor series x = 0} is the power series for $f(x)$ regardless of convergence issues. The function $f(x)$ carries -- in a compact form -- all the coefficients of the power series of \eqref{Taylor series x = 0}, \& that is all we want. If you want the coefficient of $x^i$, you just find $\dfrac{f^{(i)}(0)}{i!}$, \& you can do this even if the Taylor series converges just for $x = 0$ (which it always does). With considerable abuse of notation, we will sometimes write $f(x) = f(0) + f'(0)x + \cdots + \dfrac{f^{(i)}(0)}{i!}x^i + \cdots$, without specifying the radius of convergence. The advantage is that we can find the Taylor series (at $x = 0$) of other functions by manipulating this ``equation''. You can multiply both sides by a power of $x$, take derivatives \& antiderivatives, \& even replace $x$ by a power of $x$. This formal manipulation of Taylor series allows us to efficiently store many infinite sequences of numbers using a function. Instead of writing that $f(x)$ is equal to $f(0) + f'(0)x + \cdots + \dfrac{f^{(i)}(0)}{i!}x^i + \cdots$ -- which, if we are thinking of these as functions, could be incorrect -- the more precise notation would be $f(x)\xleftrightarrow{\rm ops}\left\{\dfrac{f^{(n)}(0)}{n!}\right\}_{n=0}^\infty$.
+
+-- 1 số chuỗi lũy thừa có dạng đóng. Ví dụ, chuỗi Taylor (tại $x = 0$) của 1 hàm đã biết tạo ra cùng 1 chuỗi lũy thừa. Nếu $f$ là 1 hàm giá trị thực được định nghĩa \& có khả vi vô hạn tại \& quanh $x = 0$ (chính xác hơn, $f:A\to\mathbb{R}$ có khả vi vô hạn, trong đó $A$ là 1 tập mở chứa 0), thì chuỗi Taylor của nó tại $x = 0$ là chuỗi lũy thừa
+\begin{equation*}
+    \sum_{i=0}^\infty \frac{f^{(i)}(0)}{i!}x^i = f(0) + f'(0)x + \frac{f''(0)}{2!}x^2 + \cdots + \frac{f^{(i)}(0)}{i!}x^i + \cdots
+\end{equation*}
+Nếu chúng ta thay $r\in\mathbb{R}$ cho $x$ trong \eqref{Taylor series x = 0}, chuỗi kết quả có thể hoặc không thể hội tụ. Ngay cả khi chuỗi hội tụ, thì giá trị mà nó hội tụ đến có thể không bằng $f(r)$. Mặt khác, nếu hàm $f$ bằng (trong 1 khoảng mở bao gồm $0$) dưới dạng hàm với 1 số chuỗi lũy thừa, thì chuỗi lũy thừa đó phải là chuỗi Taylor được đưa ra trong \eqref{Taylor series x = 0}. Đây là những vấn đề được giải quyết chi tiết trong các khóa học về Giải tích Toán học. Nhưng đối với chúng ta, chuỗi lũy thừa của \eqref{Taylor series x = 0} là chuỗi lũy thừa của $f(x)$ bất kể các vấn đề hội tụ. Hàm $f(x)$ mang -- ở dạng thu gọn -- tất cả các hệ số của chuỗi lũy thừa của \eqref{Taylor series x = 0}, \& đó là tất cả những gì chúng ta muốn. Nếu bạn muốn hệ số của $x^i$, bạn chỉ cần tìm $\dfrac{f^{(i)}(0)}{i!}$, \& bạn có thể làm điều này ngay cả khi chuỗi Taylor hội tụ chỉ với $x = 0$ (điều này luôn xảy ra). Với việc lạm dụng ký hiệu đáng kể, đôi khi chúng ta sẽ viết $f(x) = f(0) + f'(0)x + \cdots + \dfrac{f^{(i)}(0)}{i!}x^i + \cdots$, mà không chỉ định bán kính hội tụ. Ưu điểm là chúng ta có thể tìm chuỗi Taylor (tại $x = 0$) của các hàm khác bằng cách thao tác ``phương trình'' này. Bạn có thể nhân cả hai vế với lũy thừa của $x$, lấy đạo hàm \& nguyên hàm, \& thậm chí thay $x$ bằng lũy thừa của $x$. Thao tác chính thức này của chuỗi Taylor cho phép chúng ta lưu trữ hiệu quả nhiều chuỗi số vô hạn bằng cách sử dụng 1 hàm. Thay vì viết $f(x)$ bằng $f(0) + f'(0)x + \cdots + \dfrac{f^{(i)}(0)}{i!}x^i + \cdots$ -- điều này có thể không chính xác nếu chúng ta coi đây là các hàm -- ký hiệu chính xác hơn sẽ là $f(x)\xleftrightarrow{\rm ops}\left\{\dfrac{f^{(n)}(0)}{n!}\right\}_{n=0}^\infty$.
+
+\begin{example}[A few important power seies from calculus, \cite{Shahriari2022}, Example 9.4, p. 294]
+    The equal sign here does not mean that the function \& the power series are the same function. It only signifies that this power series is the Taylor series at $x = 0$ for this function.
+    
+    -- Dấu bằng ở đây không có nghĩa là hàm \& chuỗi lũy thừa là cùng 1 hàm. Nó chỉ biểu thị rằng chuỗi lũy thừa này là chuỗi Taylor tại $x = 0$ cho hàm này.
+    \begin{align*}
+        \frac{1}{1 - x} &= \sum_{i=0}^\infty x^i = 1 + x + x^2 + x^3 + \cdots,\\
+        e^x &= \sum_{i=0}^\infty \frac{1}{i!}x^i = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots,\\
+        \ln(1 + x) &= \sum_{i=0}^\infty \frac{(-1)^{i+1}x^i}{i} = x - \frac{x^2}{2} + \frac{x^3}{3} - \cdots.
+    \end{align*}
+\end{example}
+In analysis, we often start with a function, ask for its power series, \& investigate the convergence properties of the series. In combinatorics, we often start with a sequence of numbers, create the generating function for the sequence, \& ask for a closed form.
+
+-- Trong phân tích, chúng ta thường bắt đầu với 1 hàm, yêu cầu chuỗi lũy thừa của nó, \& nghiên cứu các tính chất hội tụ của chuỗi. Trong tổ hợp, chúng ta thường bắt đầu với 1 chuỗi số, tạo hàm sinh cho chuỗi, \& yêu cầu dạng đóng.
+
+\begin{example}[\cite{Shahriari2022}, Example 9.5, p. 294]
+    The ordinary generating function for the sequence $\{1\}_{n=0}^\infty = 1,1,1,\ldots$ is $1 + x + x^2 + \cdots$ \& has the closed form $\dfrac{1}{1 - x}$. Hence, we can write $\dfrac{1}{1 - x}\xleftrightarrow{\rm ops}\{1\}_{n=0}^\infty$. As functions, $\dfrac{1}{1 - x} = \sum_{n=0}^\infty x^n$ only for $|x| < 1$ (i.e., the radius of convergence of the series $\sum_{n=0}^\infty x^n$ is $R = 1$).
+    
+    -- Hàm sinh thông thường cho dãy $\{1\}_{n=0}^\infty = 1,1,1,\ldots$ là $1 + x + x^2 + \cdots$ \& có dạng đóng $\dfrac{1}{1 - x}$. Do đó, ta có thể viết $\dfrac{1}{1 - x}\xleftrightarrow{\rm ops}\{1\}_{n=0}^\infty$. Là các hàm, $\dfrac{1}{1 - x} = \sum_{n=0}^\infty x^n$ chỉ với $|x| < 1$ (i.e., bán kính hội tụ của chuỗi $\sum_{n=0}^\infty x^n$ là $R = 1$).
+\end{example}
+
+\begin{example}[\cite{Shahriari2022}, Example 9.6, pp. 294--295]
+    The ordinary generating function for the sequence $\underbrace{1,1,\ldots,1}_k,0,0,\ldots$ is $s(x) = \sum_{n=0}^{k-1} x^n = 1 + x + x^2 + \cdots + x^{k - 1}$. This is a partial sum of a geometric series, \& its closed form is found by noticing that $s(x) - xs(x) = 1 - x^k$, \& hence, for $x\ne1$, $s(x) = \dfrac{1 - x^k}{1 - x}$. Hence, we can write $\dfrac{1 - x^k}{1 - x}\xleftrightarrow{\rm ops}\{1\}_{n=0}^{k-1}$.
+    
+    -- Hàm sinh thông thường cho dãy số $\underbrace{1,1,\ldots,1}_k,0,0,\ldots$ là $s(x) = \sum_{n=0}^{k-1} x^n = 1 + x + x^2 + \cdots + x^{k - 1}$. Đây là tổng 1 phần của cấp số nhân, \& dạng đóng của nó được tìm thấy bằng cách lưu ý rằng $s(x) - xs(x) = 1 - x^k$, \& do đó, đối với $x\ne1$, $s(x) = \dfrac{1 - x^k}{1 - x}$. Do đó, chúng ta có thể viết $\dfrac{1 - x^k}{1 - x}\xleftrightarrow{\rm ops}\{1\}_{n=0}^{k-1}$.
+\end{example}
+
+\begin{example}[\cite{Shahriari2022}, Example 9.7, p. 295]
+    The ordinary generating function for the sequence $\dfrac{1}{0!},\dfrac{1}{1!},\dfrac{1}{2!},\dfrac{1}{3!},\ldots$ is $1 + x + \dfrac{x^2}{2!} + \dfrac{x^3}{3!} + \cdots$ \& has the closed form $e^x$. So, we write $e^x\xleftrightarrow{\rm ops}\left\{\dfrac{1}{n!}\right\}_{n=0}^\infty$.
+    
+    -- Hàm sinh thông thường cho dãy số $\dfrac{1}{0!},\dfrac{1}{1!},\dfrac{1}{2!},\dfrac{1}{3!},\ldots$ là $1 + x + \dfrac{x^2}{2!} + \dfrac{x^3}{3!} + \cdots$ \& có dạng đóng $e^x$. Vì vậy, chúng ta viết $e^x\xleftrightarrow{\rm ops}\left\{\dfrac{1}{n!}\right\}_{n=0}^\infty$.
+\end{example}
 
 \begin{baitoan}[Probability-generating function]
 	Make clear the concept of probability-generating function -- Làm rõ khái niệm hàm sinh xác suất.

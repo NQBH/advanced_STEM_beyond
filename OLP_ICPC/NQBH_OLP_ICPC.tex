@@ -963,7 +963,7 @@ int main() {
         for (auto s : rev) res.push_back("1" + s);
         gray = res;
     }
-    for (auto it : gray) cout << it << endl;
+    for (auto it : gray) cout << it << '\n';
     return 0;
 }
         \end{Verbatim}
@@ -2398,7 +2398,7 @@ int main() {
                 ++count;
             }
         }
-        cout << count << endl; // output result
+        cout << count << '\n'; // output result
         cin >> a[0]; // input 1st element of next test case
     }
     return 0;
@@ -3974,11 +3974,11 @@ void Countroom(vector<vector<char>> &a, int n, int m) {
         for (int j = 0; j < m; j++) {
             if (a[i][j] == '.') {
                 dfs(a, i, j, n, m);
-                count++;
+                ++count;
             }
         }
     }
-    cout << count << endl;
+    cout << count << '\n';
 }
 
 int main() {
@@ -4038,7 +4038,7 @@ int main() {
 	\end{table}
 \end{problem}
 
-\begin{problem}[{https://cses.fi/problemset/task/1667}{CSES Problem Set{\tt/}message route}]
+\begin{problem}[\href{https://cses.fi/problemset/task/1667}{CSES Problem Set{\tt/}message route}]
 	Syrjälä's network has $n$ computers \& $m$ connections. Task: find out if Uolevi can send a message to Maija, \& if it is possible, what is the minimum number of computers on such a route.
 	\item {\sf Input.} The 1st input line has 2 integers $n,m$: the number of computers \& connections. The computers are numbered $1,2,\ldots,n$. Uolevi's computer is $1$ \& Maija's computer is $n$. Then, there are $m$ lines describing the connections. Each line has 2 integers $a,b$: there is a connection between those computers. Every connection is between 2 different computers, \& there is at most 1 connection between any 2 computers.
 	\item {\sf Output.} If it is possible to send a message, 1st print $k$: the minimum number of computers on a valid route. After this, print an example of such a route. You can print any valid solution. If there are no routes, print {\tt IMPOSSIBLE}.
@@ -4833,7 +4833,7 @@ int main() {
     \begin{enumerate}
         \item DXH's C++: IMO2007 P3:
         \begin{Verbatim}[numbers=left,xleftmargin=5mm]
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 #define ll long long
 using namespace std;
 
@@ -4928,12 +4928,12 @@ void chiaphong(sodoketnoisv &sinhvien) {
     cout << "Room A: ";
     for (int id : roomA)
     cout << id << " ";
-    cout << endl;
+    cout << '\n';
     
     cout << "Room B: ";
     for (int id : roomB)
     cout << id << " ";
-    cout << endl;
+    cout << '\n';
 }
 
 int main() {
@@ -5265,7 +5265,7 @@ int main() {
         \end{Verbatim}
         \item NLDK's C++: Josephus Queries:
         \begin{Verbatim}[numbers=left,xleftmargin=5mm]
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 #pragma GCC optimize ("O3")
 #pragma GCC optimize ("unroll-loops")
 #define Sanic_speed ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL);
@@ -9154,6 +9154,309 @@ int main() {
 \minitoc
 
 %------------------------------------------------------------------------------%
+
+\begin{problem}[\href{https://cses.fi/problemset/task/3413}{CSES Problem Set{\tt/}filled subgrid count I}]
+    You are given a grid of letters. Calculate, for each letter, the number of square subgrids whose each letter is the same.
+    \item {\sf Input.} The 1st input line has $2$ integers $n,k\in\mathbb{N}^\star$: the size of the grid \& the number of letters. The letters are the 1st $k$ uppercase letters. After this, there are $n$ lines that describe the grid. Each line has $n$ letters.
+    \item {\sf Output.} Print $k$ integer: for each letter, the number of subgrids.
+    \item {\sf Constraints.} $n\in[3000],k\in[26]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|filled_subgrid_count_I.inp| & \verb|filled_subgrid_count_I.out| \\
+            \hline
+            5 3 & 21 \\
+            ABBBC & 10 \\
+            BBBBC & 3 \\
+            BCAAA & \\
+            AAAAA & \\
+            AAAAA & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item VNTA's C++: filled subgrid count I
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n, k;
+    cin >> n >> k;
+    vector<string> g(n);
+    for (int i = 0; i < n; ++i) cin >> g[i];
+    vector<long long> res(k, 0);
+    vector<vector<int>> dp(n, vector<int>(n, 0));
+    for (char c = 'A'; c < 'A' + k; ++c) {
+        for (int i = 0; i < n; ++i)
+        fill(dp[i].begin(), dp[i].end(), 0);
+        long long d = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (g[i][j] == c) {
+                    if (i == 0 || j == 0) dp[i][j] = 1;
+                    else dp[i][j] = min({dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]}) + 1;
+                    d += dp[i][j];
+                }
+            }
+        }
+        res[c - 'A'] = d;
+    }
+    for (int i = 0; i < k; ++i) cout << res[i] << "\n";
+    return 0;
+}
+        \end{Verbatim}
+        \item DPAK's C++: filled subgrid count I
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    ll n, k; cin >> n >> k;
+    vector<vector<char>> a(n + 1, vector<char>(n + 1));
+    for (ll i = 1; i <= n; ++i) {
+        for (ll j = 1; j <= n; ++j) cin >> a[i][j];
+    }
+    vector<ll> ans(k, 0);
+    vector<vector<ll>> dp(n + 1, vector<ll>(n + 1, 0));
+    
+    for (ll c = 0; c < k; ++c) {
+        char CHAR = c + 'A';
+        dp.resize(n + 1, vector<ll>(n + 1, 0)); // reset value
+        for (ll i = 1; i <= n; ++i)
+        for (ll j = 1; j <= n; ++j)
+        ans[c] += dp[i][j] = (a[i][j] == CHAR ? min({dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]}) + 1 : 0);
+    }
+    
+    for (ll c = 0; c < k; ++c) cout << ans[c] << '\n';
+}
+        \end{Verbatim}
+        \item NLDK's C++: filled subgrid count I
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+#pragma GCC optimize ("O3")
+#pragma GCC optimize ("unroll-loops")
+#define Sanic_speed ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL);
+#define Ret return 0;
+#define ret return;
+#define all(x) x.begin(), x.end()
+#define el "\n";
+#define elif else if
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define pops pop_back
+#define cYES cout << "YES" << "\n";
+#define cNO cout << "NO" << "\n";
+#define cYes cout << "Yes" << "\n";
+#define cNo cout << "No" << "\n";
+#define cel cout << "\n";
+#define frs(i, a, b) for(int i = a; i < b; ++i)
+#define fre(i, a, b) for(int i = a; i <= b; ++i)
+#define wh(t) while (t--)
+#define SORAI int main()
+using namespace std;
+typedef unsigned long long ull;
+
+void solve() {
+    int n, k;
+    cin >> n >> k;
+    string s[n];
+    vector<vector<int>> dp(n, vector<int> (n, 0));
+    vector<ll> a(k, 0);
+    frs(i, 0, n) cin >> s[i];
+    frs(i, 0, k) {
+        char c = i + 'A';
+        dp = vector<vector<int>>(n, vector<int>(n, 0));
+        frs(j, 0, n) {if (s[0][j] == c) dp[0][j] = 1;  a[i] += dp[0][j];}
+        frs(j, 1, n) {
+            if (s[j][0] == c) {dp[j][0] = 1; a[i] += dp[j][0];}
+            frs(m, 1, n) {
+                if (s[j][m] == c) {
+                    dp[j][m] = 1 + min({dp[j - 1][m], dp[j][m - 1], dp[j - 1][m - 1]});
+                    a[i] += dp[j][m];
+                } 
+            }
+        }
+    }
+    // answer
+    frs(i, 0, k) cout << a[i] << el
+}
+
+SORAI {
+    Sanic_speed
+    int t = 1; //cin >> t;
+    wh(t) {solve();}
+}
+        \end{Verbatim}
+        \item PPP's C++: filled subgrid count I
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+using ll = long long;
+
+int main() {
+    ll n, k; cin >> n >> k;
+    
+    vector<string> luoi(n); // vector lưu trữ lưới 
+    for (ll i = 0; i < n; ++i) cin >> luoi[i];
+    
+    // Đếm số hình vuông cho từng chữ cái A-Z
+    vector<ll> result(26, 0);
+    
+    // Kích thước lớn nhất của hình vuông kết thúc ở (i, j)
+    vector<vector<ll>> dp(n, vector<ll>(n, 1));
+    
+    // Tính số lượng hình vuông con có các ô giống nhau
+    for (ll i = 0; i < n; ++i) {  // Duyệt từng hàng của lưới grid
+        for (ll j = 0; j < n; ++j) {  // Duyệt từng cột trong hàng i.
+            if (i > 0 && j > 0 &&
+            luoi[i][j] == luoi[i - 1][j] &&     // Chỉ xét những ô không nằm ở biên
+            luoi[i][j] == luoi[i][j - 1] &&     // Lý do: Vì các ô ở hàng đầu và cột đầu không có đủ 3 ô bên trái, 
+            luoi[i][j] == luoi[i - 1][j - 1])   // trên và chéo trái trên để so sánh.
+            dp[i][j] = min(dp[i - 1][j], min(dp[i][j - 1], dp[i - 1][j - 1])) + 1;
+            // Với mỗi ô (i,j), ta cộng dp[i][j] vào tổng số hình vuông của chữ cái đó.
+            result[luoi[i][j] - 'A'] += dp[i][j];
+        }
+    }
+    
+    for (int i = 0; i < k; ++i) cout << result[i] << '\n';
+    return 0;
+}
+        \end{Verbatim}
+        \item NHT's C++: filled subgrid count I
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+
+const int N = 3005;
+string grid[N];
+int dp[N][N];
+ll result[30];
+int n, m;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    
+    cin >> n >> m;
+    for (int i = 0; i < n; ++i)
+    cin >> grid[i];
+    for (int i = 1; i <= n; ++i) {
+        vector<pair<int, int>> monotone;
+        ll rects = 0;
+        for (int j = 1; j <= n; ++j) {
+            dp[i][j] = 1;
+            if (i > 1 and grid[i - 1][j - 1] == grid[i - 2][j - 1])
+            dp[i][j] += dp[i - 1][j];
+            
+            if (j > 1 and grid[i - 1][j - 1] != grid[i - 1][j - 2]) {
+                monotone.clear();
+                rects = 0;
+            }
+            int cnt = 1;
+            while (monotone.size() and monotone.back().first >= dp[i][j]) {
+                cnt += monotone.back().second;
+                rects -= 1LL * monotone.back().first * monotone.back().second;
+                monotone.pop_back();
+            }
+            monotone.push_back({dp[i][j], cnt});
+            rects += 1LL * dp[i][j] * cnt;
+            result[grid[i - 1][j - 1] - 'A'] += rects;
+        }
+    }
+    for (int i = 0; i < m; ++i)
+    cout << result[i] << '\n';
+    
+    return 0;
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/3414}{CSES Problem Set{\tt/}filled subgrid count II}]
+    You are given a grid of letters. Calculate, for each letter, the number of rectangular subgrids whose each letter is the same.
+    \item {\sf Input.} The 1st input line has $2$ integers $n,k\in\mathbb{N}^\star$: the size of the grid \& the number of letters. The letters are the 1st $k$ uppercase letters. After this, there are $n$ lines that describe the grid. Each line has $n$ letters.
+    \item {\sf Output.} Print $k$ integer: for each letter, the number of subgrids.
+    \item {\sf Constraints.} $n\in[3000],k\in[26]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|filled_subgrid_count_II.inp| & \verb|filled_subgrid_count_II.out| \\
+            \hline
+            5 3 & 64 \\
+            ABBBC & 24 \\
+            BBBBC & 4 \\
+            BCAAA & \\
+            AAAAA & \\
+            AAAAA & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/3415}{CSES Problem Set{\tt/}all letter subgrid count I}]
+    You are given a grid of letters. Calculate the number of square subgrids that contain all the letters.
+    \item {\sf Input.} The 1st input line has $2$ integers $n,m\in\mathbb{N}^\star$: the size of the grid \& the number of letters. The letters are the 1st $k$ uppercase letters. After this, there are $n$ lines that describe the grid. Each line has $n$ letters.
+    \item {\sf Output.} Print the number of subgrids.
+    \item {\sf Constraints.} $n\in[3000],k\in[26]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|all_letter_subgrid_count_I.inp| & \verb|all_letter_subgrid_count_I.out| \\
+            \hline
+            5 3 & 15 \\
+            ABBBC & \\
+            BBBBC & \\
+            BCAAA & \\
+            AAAAA & \\
+            AAAAA & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/3415}{CSES Problem Set{\tt/}all letter subgrid count II}]
+    You are given a grid of letters. Calculate the number of rectangular subgrids that contain all the letters.
+    \item {\sf Input.} The 1st input line has $2$ integers $n,m\in\mathbb{N}^\star$: the size of the grid \& the number of letters. The letters are the 1st $k$ uppercase letters. After this, there are $n$ lines that describe the grid. Each line has $n$ letters.
+    \item {\sf Output.} Print the number of subgrids.
+    \item {\sf Constraints.} $n\in[500],k\in[26]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|all_letter_subgrid_count_II.inp| & \verb|all_letter_subgrid_count_II.out| \\
+            \hline
+            5 3 & 70 \\
+            ABBBC & \\
+            BBBBC & \\
+            BCAAA & \\
+            AAAAA & \\
+            AAAAA & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
 
 \begin{problem}[IMO2008P5]
     Let $n,k\in\mathbb{N}^\star$, $k\ge n$, $k - n\divby2$. Let $2n$ lamps labeled $1,2,\ldots,2n$ be given, each of which can be either on or off. Initially all the lamps are off. We consider sequences of {\rm steps}: at each step $1$ of the lamps is switched (from on to off or from off to on). Let $N$ be the number of such sequences consisting of $k$ steps \& resulting in the state where lamps $1$ through $n$ are all on, \& laps $n + 1$ through $2n$ are all off. Let $M$ be the number of such sequences consisting of $k$ steps, resulting in the state where lamps $1$ through $n$ are all on, \& lamps $n + 1$ through $2n$ are all off, but where none of the lamps $n + 1$ through $2n$ is ever switched on. Determine the ratio $\frac{M}{N}$.

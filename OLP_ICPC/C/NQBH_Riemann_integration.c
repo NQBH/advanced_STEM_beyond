@@ -2,17 +2,17 @@
 #include <stdio.h>
 
 // function taking a function pointer as an argument
-double compute_sum(double (*funcp)(double), double lo, double hi) {
+double compute_sum(double (*funcp)(double), double a, double b) {
     double sum = 0.0;
     
     // add values returned by the pointed-to function '*funcp'
     for (int i = 0; i <= 100; ++i) {
         // use the function pointer 'funcp' to invokve the function
-        double x = i / 100.0 * (hi - lo) + lo;
+        double x = i / 100.0 * (b - a) + a;
         double y = funcp(x);
         sum += y;
     }
-    return sum / 101.0 * (hi - lo);
+    return sum / 101.0 * (b - a);
 }
 
 double square(double x) {

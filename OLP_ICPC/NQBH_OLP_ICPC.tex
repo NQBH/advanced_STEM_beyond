@@ -244,13 +244,402 @@ Some critical-thinking questions:
 
 %------------------------------------------------------------------------------%
 
+\section{Basic Recursion Programming -- Lập Trình Đệ Quy Cơ Bản}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/Recursion_(computer_science)}{Wikipedia{\tt/}recursion (computer science)}.
+    
+    \item {\sc Nguyễn Quản Bá Hồng}. {\it Lecture Note: Information Technology Fundamentals -- Bài Giảng: Nền Tảng Công Nghệ Thông Tin}. Sect. Recursion -- Đệ Quy.
+    
+    PDF: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/IT_fundamentals/lecture/NQBH_IT_fundamentals_lecture.pdf}.
+    
+    \TeX: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/IT_fundamentals/lecture/NQBH_IT_fundamentals_lecture.tex}.
+    
+    \item \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}. {\sc Trần Đan Thư, Nguyễn Thanh Phương, Đinh Bá Tiến, Trần Minh Triết, Đặng Bình Phương}. {\it Kỹ Thuật Lập Trình}. Chap. 10: Lập Trình Đệ Quy.
+\end{enumerate}
+
+\begin{quotation}
+    ``Kỹ thuật lập trình đệ quy ({\it recursion}) có ý nghĩa rất lớn trong khoa học máy tính. Có rất nhiều thuật toán đòi hỏi cài đặt rất phức tạp \& cầu kỳ nếu không dùng kỹ thuật đệ quy. Đối với 1 số thuật toán do bản chất tự nhiên của chúng đã mang tính đệ quy, việc cài đặt đệ quy là gọn \& đẹp nhất. Khuyết điểm lớn nhất của kỹ thuật đệ quy là lời giải đệ quy cho 1 số bài toán có thể bị chạy rất chậm do sự bùng nổ tổ hợp khi kích thước bài toán gia tăng.'' -- \cite[Chap. 10: Lập Trình Đệ Quy, p. 397]{Thu_Phuong_Tien_Triet_Phuong_KTLT}
+\end{quotation}
+
+\begin{dinhnghia}[Khái niệm định nghĩa được đệ quy, \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, p. 397]
+    Trong Toán học \& Khoa học Máy tính, 1 khái niệm $A$ được {\rm định nghĩa đệ quy} nếu khi định nghĩa $A$ ta có thể sử dụng ngay chính khái niệm $A$.
+    
+    Trong lập trình, 1 chương trình con (hàm, thủ tục) được gọi là có tính đệ quy nếu trong thân của chương trình con đó có lệnh gọi lại chính nó 1 cách tường minh (explicit, trực tiếp) hay tiềm ẩn (implicit, gián tiếp) 
+\end{dinhnghia}
+1 chương trình con đệ quy căn bản gồm 2 phần:
+\begin{enumerate}
+    \item {\it Phần cơ sở} (base cases): Chứa các tác động của hàm hoặc thủ tục với 1 số giá trị cụ thể ban đầu của tham số.
+    \item {\it Phần đệ quy} (recurrence part): Định nghĩa tác động cần được thực hiện cho giá trị hiện thời của các tham số bằng các tác động đã được định nghĩa trước đây với kích thước tham số nhỏ hơn.
+\end{enumerate}
+
+\begin{vidu}
+    Định nghĩa số tự nhiên: (i) $0$ là 1 số tự nhiên. (ii) $n$ là 1 số tự nhiên nếu $n - 1$ là 1 số tự nhiên. Hay viết theo ký hiệu toán học: (i) $0\in\mathbb{N}$. (ii) $n - 1\in\mathbb{N}\Rightarrow n\in\mathbb{N}$.
+\end{vidu}
+C
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <stdio.h>
+
+int is_natural(int n) {
+    if (n == 0) return 1;
+    else return is_natural(n - 1);
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    printf("%d is_natural: %d", n, is_natural(n));
+    return 0;
+}
+\end{Verbatim}
+C++:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+
+bool is_natural(int n) {
+    if (n == 0) return true;
+    else return is_natural(n - 1);
+}
+
+int main() {
+    int n;
+    cin >> n;
+    cout << n << " is a natural number: " << is_natural(n) << '\n';
+}
+\end{Verbatim}
+Python:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+def is_natural(n):
+    if n == 0: return 1
+    else: return is_natural(n - 1)
+
+n = int(input())
+print(is_natural(n))
+\end{Verbatim}
+
+\begin{baitoan}[Factorial -- Giai thừa]
+    Viết chương trình {\sf C{\tt/}C++, Python} tính $n!$ bằng đệ quy.
+\end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\section{Problem: Recursion Programming -- Bài Tập: Lập Trình Đệ Quy}
+
+%------------------------------------------------------------------------------%
+
 \chapter{Dynamic Programming Techniques -- Kỹ Thuật Quy Hoạch Động}
 \minitoc
 
 %------------------------------------------------------------------------------%
 
-\chapter{Functional Pointers \& Variable Sourcecodes -- Con Trỏ Hàm \& Mã Nguồn Tùy Biến}
+\chapter{Function Pointers \& Variable Sourcecodes -- Con Trỏ Hàm \& Mã Nguồn Tùy Biến}
 \minitoc
+
+%------------------------------------------------------------------------------%
+
+\section{Function Pointers -- Con Trỏ Hàm}
+
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/Function_pointer}{Wikipedia{\tt/}function pointer}.
+    
+    \item \href{https://www.geeksforgeeks.org/c/function-pointer-in-c/}{Geeks4Geeks{\tt/}function pointer in C}.
+    
+    \item \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}. {\sc Trần Đan Thư, Nguyễn Thanh Phương, Đinh Bá Tiến, Trần Minh Triết, Đặng Bình Phương}. {\it Kỹ Thuật Lập Trình}. Chap. 10: Con Trỏ Hàm \& Mã Nguồn Tùy Biến.
+\end{enumerate}
+A {\it function pointer}, also called a {\it subroutine pointer} or {\it procedure pointer}, is a \href{https://en.wikipedia.org/wiki/Pointer_(computer_programming)}{pointer} reference executable code, rather than data. \href{https://en.wikipedia.org/wiki/Dereference_operator}{Dereferencing} the function pointer yields the referenced \href{https://en.wikipedia.org/wiki/Subroutine}{function}, which can be invoked \& passed arguments just as in a normal function call. Such an invocation is also known as an ``indirect'' call, because the function is being invoked {\it indirectly} through a variable instead of {\it directly} through a fixed identifier or address.
+
+-- {\it Con trỏ hàm}, còn được gọi là {\it con trỏ chương trình con} hoặc {\it con trỏ thủ tục}, là một tham chiếu con trỏ mã thực thi, chứ không phải dữ liệu. Hủy tham chiếu con trỏ hàm tạo ra hàm được tham chiếu, có thể được gọi \& truyền tham số giống như trong lệnh gọi hàm thông thường. Lệnh gọi như vậy cũng được gọi là lệnh gọi ``gián tiếp'', vì hàm được gọi {\it gián tiếp} thông qua một biến thay vì {\it trực tiếp} thông qua một định danh hoặc địa chỉ cố định.
+
+Function pointers allow different code to be executed at runtime. They can also be passed to a function to enable \href{https://en.wikipedia.org/wiki/Callback_(computer_programming)}{callbacks}.
+
+-- Con trỏ hàm cho phép thực thi mã khác nhau khi chạy. Chúng cũng có thể được truyền vào hàm để kích hoạt lệnh gọi lại.
+
+Function pointers are supported by \href{https://en.wikipedia.org/wiki/Third-generation_programming_language}{3rd-generation programming languages} (e.g. PL{\tt/}I, COBOL, Fortran, dBASE dBL, \& C) \& OOP languages (e.g. C++, C\#, \& D).
+
+-- Con trỏ hàm được hỗ trợ bởi các ngôn ngữ lập trình thế hệ thứ 3 (e.g., PL{\tt/}I, COBOL, Fortran, dBASE dBL, \& C) \& ngôn ngữ OOP (ví dụ: C++, C\#, \& D).
+
+%------------------------------------------------------------------------------%
+
+\subsection{Simple function pointers -- Các con trỏ hàm đơn giản}
+The simplest implementation of a function (or subroutine) pointer is as a variable containing the address of the function within executable memory. Older 3rd-generation languages e.g. PL{\tt/}I \& COBOL, as well as more modern languages e.g. Pascal \& C generally implement function pointers in this manner.
+
+-- Việc triển khai đơn giản nhất của con trỏ hàm (hoặc chương trình con) là một biến chứa địa chỉ của hàm trong bộ nhớ thực thi. Các ngôn ngữ thế hệ thứ 3 cũ hơn như PL{\tt/}I \& COBOL, cũng như các ngôn ngữ hiện đại hơn như Pascal \& C thường triển khai con trỏ hàm theo cách này.
+
+The following C program illustrate the use of 2 function pointers:
+\begin{itemize}
+    \item {\tt func1} takes 1 double-precision ({\tt double}) parameter \& returns another {\tt double}, \& is assigned to a function which converts centimeters to inches.
+    \item {\tt func2} takes a pointer to a constant character array as well as an integer \& returns a pointer to a character, \& is assigned to a \href{https://en.wikipedia.org/wiki/C_string_handling}{C string handling} function which returns a pointer to the 1st occurrence of a given character in a character array.
+\end{itemize}
+-- Chương trình C sau minh họa cách sử dụng 2 con trỏ hàm:
+\begin{itemize}
+    \item {\tt func1} lấy 1 tham số độ chính xác kép ({\tt double}) \& trả về một {\tt double} khác, \& được gán cho một hàm chuyển đổi centimet sang inch.
+    \item {\tt func2} lấy một con trỏ đến một mảng ký tự hằng số cũng như một số nguyên \& trả về một con trỏ đến một ký tự, \& được gán cho một hàm xử lý chuỗi C trả về một con trỏ đến lần xuất hiện đầu tiên của một ký tự đã cho trong một mảng ký tự.
+\end{itemize}
+
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <stdio.h>  /* for printf */
+#include <string.h> /* for strchr */
+
+double cm_to_inches(double cm) {
+    return cm / 2.54;
+}
+
+// "strchr" is part of the C string handling (i.e., no need for declaration)
+
+int main(void) {
+    double (*func1)(double) = cm_to_inches;
+    char * (*func2)(const char *, int) = strchr;
+    printf("%f %s", func1(15.0), func2("Wikipedia", 'p')); // prints "5.905512 pedia"
+    return 0;
+}
+\end{Verbatim}
+The next program uses a function pointer to invoke 1 of 2 functions {\tt sin} or {\tt cos} indirectly from another function (\verb|compute_sum|, computing an approximation of the function's \href{https://en.wikipedia.org/wiki/Riemann_integration}{Riemann integration}). The program operates by having function {\tt main} call function \verb|compute_sum| twice, passing it a pointer to the library function {\tt sin} the 1st time, \& a pointer to function {\tt cos} the 2nd time. Function \verb|compute_sum| in turn invokes 1 of the 2 functions indirectly by dereferencing its function pointer argument {\tt funcp} multiple times, adding together the values that the invoked function returns \& returning the resulting sum. The 2 sums are written to the standard output by {\tt main}.
+
+-- Chương trình tiếp theo sử dụng một con trỏ hàm để gọi 1 trong 2 hàm {\tt sin} hoặc {\tt cos} gián tiếp từ một hàm khác (\verb|compute_sum|, tính toán xấp xỉ tích phân Riemann của hàm). Chương trình hoạt động bằng cách để hàm {\tt main} gọi hàm \verb|compute_sum| hai lần, truyền cho nó một con trỏ tới hàm thư viện {\tt sin} lần đầu tiên, \& một con trỏ tới hàm {\tt cos} lần thứ 2. Đến lượt mình, hàm \verb|compute_sum| gọi 1 trong 2 hàm gián tiếp bằng cách hủy tham chiếu đối số con trỏ hàm {\tt funcp} của nó nhiều lần, cộng các giá trị mà hàm được gọi trả về \& trả về tổng kết quả. 2 tổng được ghi vào đầu ra chuẩn bởi {\tt main}.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <math.h>
+#include <stdio.h>
+
+// function taking a function pointer as an argument
+double compute_sum(double (*funcp)(double), double a, double b) {
+    double sum = 0.0;
+    
+    // add values returned by the pointed-to function '*funcp'
+    for (int i = 0; i <= 100; ++i) {
+        // use the function pointer 'funcp' to invokve the function
+        double x = i / 100.0 * (b - a) + a;
+        double y = funcp(x);
+        sum += y;
+    }
+    return sum / 101.0 * (b - a);
+}
+
+double square(double x) {
+    return x * x;
+}
+
+int main(void) {
+    double sum;
+    
+    // use standard library function sin() as the pointed-to function
+    sum = compute_sum(sin, 0.0, 1.0);
+    printf("sum(sin): %g\n", sum);
+    
+    // use standard library function cos() as the pointed-to function
+    sum = compute_sum(cos, 0.0, 1.0);
+    printf("sum(cos): %g\n", sum);
+    
+    // use user-defined function square() as the pointed-to function
+    sum = compute_sum(square, 0.0, 1.0);
+    printf("sum(square): %g\n", sum);
+    return 0;
+}
+\end{Verbatim}
+
+\begin{baitoan}[\cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, pp. 477--479]
+    Viết hàm tìm trong mảng 1 chiều gồm các số thực: (a) Số lớn nhất. (b) Số nhỏ nhất. (c) Số có trị tuyệt đối nhỏ nhất. (d) Số có trị số phần lẻ $\{x\} = x - \lfloor x\rfloor\in[0,1)$ lớn nhất.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    C:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <math.h>
+#include <stdio.h>
+
+int max_real(float a[], int n) {
+    // precondition: n >= 1
+    int id_max = 0;
+    for (int i = 1; i < n; ++i)
+    if (a[i] > a[id_max]) id_max = i;
+    return id_max;
+}
+
+int min_real(float a[], int n) {
+    // precondition: n >= 1
+    int id_min = 0;
+    for (int i = 1; i < n; ++i)
+    if (a[i] < a[id_min]) id_min = i;
+    return id_min;
+}
+
+int best_real(float a[], int n, int (*better)(float, float)) {
+    int id_best = 0;
+    for (int i = 1; i < n; ++i)
+    if (better(a[i], a[id_best])) id_best = i;
+    return id_best;
+}
+
+int abs_less(float x, float y) {
+    return fabs(x) < fabs(y);
+}
+
+int frac_greater(float x, float y) {
+    x = (float)fabs(x);
+    x -= (int)x;
+    y = (float)fabs(y);
+    y -= (int)y;
+    return x > y;
+}
+
+int main() {
+    float a[] = {-3.4F, 6.7F, -5.92F, 0.229F, -9.08F};
+    int n = sizeof(a) / sizeof(a[0]);
+    int j = best_real(a, n, abs_less);
+    printf("Element minimum abs = %f\n", a[j]);
+    j = best_real(a, n, frac_greater);
+    printf("Element maximum fraction = %f\n", a[j]);
+    return 0;
+}
+    \end{Verbatim}
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Functors{\tt/}Function object -- Đối tượng hàm}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/Function_object}{Wikipedia{\tt/}function object}.
+\end{enumerate}
+{\it Functors}, or {\it function objects}, are similar to function pointers, \& can be used in similar ways. A functor is an object of a class type that implements the function-call operator, allowing the object to be used within expressions using the same syntax as a function call. Functors are more powerful than simple function pointers, being able to contain their own data values, \& allowing the programmer to emulate closures. They are also used as callback functions if it is necessary to use a member function as a callback function.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Method pointers -- Các con trỏ phương pháp}
+C++ includes support for object-oriented programming, so classes can have \href{https://en.wikipedia.org/wiki/Method_(computer_programming)}{methods} (usually referred to as member functions). Non-static member functions (instance methods) have an implicit parameter (the \href{https://en.wikipedia.org/wiki/This_(computer_programming)}{\tt this} pointer) which is the pointer to the object it is operating on, so the type of the object must be included as part of the type of the function pointer. The method is then used on an object of that class by using 1 of the ``pointer-to-member'' operators: {\tt.*} or {\tt->*} (for an object or a pointer to object, resp.).
+
+-- C++ bao gồm hỗ trợ cho lập trình hướng đối tượng, do đó các lớp có thể có các phương thức (thường được gọi là hàm thành viên). Các hàm thành viên không tĩnh (phương thức thể hiện) có một tham số ngầm định (con trỏ {\tt this}) là con trỏ đến đối tượng mà nó đang vận hành, do đó kiểu của đối tượng phải được bao gồm như một phần của kiểu của con trỏ hàm. Sau đó, phương thức được sử dụng trên một đối tượng của lớp đó bằng cách sử dụng 1 trong các toán tử ``con trỏ đến thành viên'': {\tt.*} hoặc {\tt->*} (đối với một đối tượng hoặc một con trỏ đến đối tượng, tương ứng).
+
+Although function pointers in C \& C++ can be implemented as simple addresses, so that typically {\tt sizeof(Fx)==sizeof(void *)}, member points in C++ are sometimes implemented as ``\href{https://en.wikipedia.org/wiki/Fat_pointer}{fat pointers}'', typically 2 or 3 times the size of a simple function pointer, in order to deal with \href{https://en.wikipedia.org/wiki/Virtual_methods}{virtual methods} \& \href{https://en.wikipedia.org/wiki/Virtual_inheritance}{virtual inheritance}.
+
+-- Mặc dù các con trỏ hàm trong C \& C++ có thể được triển khai như các địa chỉ đơn giản, do đó thông thường {\tt sizeof(Fx)==sizeof(void *)}, các điểm thành viên trong C++ đôi khi được triển khai như ``con trỏ béo'', thường có kích thước gấp 2 hoặc 3 lần kích thước của một con trỏ hàm đơn giản, để xử lý các phương thức ảo \& kế thừa ảo.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Pointers in C++ -- Con trỏ trong C++}
+In C++, in addition to the method used in C, it is also possible to use the C++ standard library class template {\tt std::function}, of which the instances are function objects:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <functional>
+using namespace std;
+
+static double derivative(const function<double(double)> &f, double x0, double eps) {
+    double eps2 = eps / 2;
+    double a = x0 - eps2;
+    double b = x0 + eps2;
+    return (f(b) - f(a)) / eps;
+}
+
+static double f(double x) {
+    return x * x;
+}
+
+int main() {
+    double x = 1;
+    cout << "d/dx(x ^ 2) [@ x = " << x << "] = " << derivative(f, x, 1e-5) << '\n';
+    return 0;
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Pointers to member functions in C++ -- Con trỏ tới các hàm thành viên trong C++}
+This is how C++ uses function pointers when dealing with member functions of classes or structs. These are invoked using an object pointer or a {\tt this} call. They are type safe in that you can only call members of that class (or derivatives) using a point of that type. This example also demonstrates the use of a typedef for the pointer to member function added for simplicity. Function pointers to static member functions are done in the traditional `C' style because there is no object pointer for this call required.
+
+-- Đây là cách C++ sử dụng con trỏ hàm khi xử lý các hàm thành viên của lớp hoặc cấu trúc. Chúng được gọi bằng con trỏ đối tượng hoặc lệnh gọi {\tt this}. Chúng an toàn về kiểu vì bạn chỉ có thể gọi các thành viên của lớp đó (hoặc các dẫn xuất) bằng cách sử dụng một điểm có kiểu đó. Ví dụ này cũng chứng minh việc sử dụng typedef cho con trỏ tới hàm thành viên được thêm vào để đơn giản hóa. Con trỏ hàm tới các hàm thành viên tĩnh được thực hiện theo kiểu `C' truyền thống vì không cần con trỏ đối tượng cho lệnh gọi này.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Alternate C \& C++ syntax -- Cú pháp thay thế C \& C++}
+The C \& C++ syntax given above is the canonical one used in all the textbooks -- but it's difficult to read \& explain. even the above {\tt typedef} examples use {\tt this} syntax. However, every C \& C++ compiler supports a more clear \& concise mechanism to declare function pointers: use {\tt typedef}, but {\it don't} store the pointer as part of the definition. Note that the only way this kind of {\tt typedef} can actually be used is with a pointer -- but that highlights the pointer-ness of it.
+
+-- Cú pháp C \& C++ nêu trên là cú pháp chuẩn được sử dụng trong tất cả các sách giáo khoa -- nhưng rất khó để đọc \& giải thích. ngay cả các ví dụ {\tt typedef} ở trên cũng sử dụng cú pháp {\tt this}. Tuy nhiên, mọi trình biên dịch C \& C++ đều hỗ trợ một cơ chế \& rõ ràng hơn để khai báo các con trỏ hàm: sử dụng {\tt typedef}, nhưng {\it không} lưu trữ con trỏ như một phần của định nghĩa. Lưu ý rằng cách duy nhất để sử dụng loại {\tt typedef} này thực sự là với một con trỏ -- nhưng điều đó làm nổi bật tính chất con trỏ của nó.
+
+C \& C++:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// This declares 'F', a function that accepts a 'char' & returns an 'int'. Definition is elsewhere.
+int F(char c);
+
+// This defines 'Fn', a type of function that accepts a 'char' & returns an 'int'.
+typedef int Fn(char c);
+
+// This defines 'fn', a variable of type pointer-to-'Fn', & assigns the address of 'F' to it.
+Fn *fn = &F; // Note '&' not required - but it highlights what is being done.
+
+// This calls 'F' using 'fn', assigning the result to the variable 'a'
+int a = fn('A');
+
+// This defines 'Call', a function that accepts a pointer-to-'Fn', calls it, & returns the result
+int Call(Fn *fn, char c) {
+    return fn(c);
+} // call(fn, c)
+
+// This calls function 'Call', passing in 'F' & assigning the result to 'call'
+int call = Call(&F, 'A'); // again, '&' is not required
+
+// LEGACY: Note that to maintain existing code bases, the above definition style can still be used first;
+// then the original type can be defined in terms of it using the new style.
+
+// This defines 'PFn', a type of pointer-to-type-Fn.
+typedef Fn *PFn;
+
+// 'PFn' can be used wherever 'Fn *' can
+PFn pfn = F;
+int CallP(PFn fn, char c);
+\end{Verbatim}
+C++: These examples use the above definitions. In particular, note that the above definition for {\tt Fn} can be used in pointer-to-member-function definitions:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// This defines 'C', a class with similar static & member functions, & then creates an instance called 'c'
+class C {
+    public:
+    static int Static(char c);
+    int Member(char c);
+} c; // C
+
+// This defines 'p', a pointer to 'C' & assigns the address of 'c' to it
+C *p = &c;
+
+// This assigns a pointer-to-'Static' to 'fn'.
+// Since there is no 'this', 'Fn' is the correct type; and 'fn' can be used as above.
+fn = &C::Static;
+
+// This defines 'm', a pointer-to-member-of-'C' with type 'Fn',
+// and assigns the address of 'C::Member' to it.
+// You can read it right-to-left like all pointers:
+// "'m' is a pointer to member of class 'C' of type 'Fn'"
+Fn C::*m = &C::Member;
+
+// This uses 'm' to call 'Member' in 'c', assigning the result to 'cA'
+int cA = (c.*m)('A');
+
+// This uses 'm' to call 'Member' in 'p', assigning the result to 'pA'
+int pA = (p->*m)('A');
+
+// This defines 'Ref', a function that accepts a reference-to-'C',
+// a pointer-to-member-of-'C' of type 'Fn', and a 'char',
+// calls the function and returns the result
+int Ref(C &r, Fn C::*m, char c) {
+    return (r.*m)(c);
+} // Ref(r, m, c)
+
+// This defines 'Ptr', a function that accepts a pointer-to-'C',
+// a pointer-to-member-of-'C' of type 'Fn', and a 'char',
+// calls the function and returns the result
+int Ptr(C *p, Fn C::*m, char c) {
+    return (p->*m)(c);
+} // Ptr(p, m, c)
+
+// LEGACY: Note that to maintain existing code bases, the above definition style can still be used first;
+// then the original type can be defined in terms of it using the new style.
+
+// This defines 'FnC', a type of pointer-to-member-of-class-'C' of type 'Fn'
+typedef Fn C::*FnC;
+
+// 'FnC' can be used wherever 'Fn C::*' can
+FnC fnC = &C::Member;
+int RefP(C &p, FnC m, char c);
+\end{Verbatim}
 
 %------------------------------------------------------------------------------%
 

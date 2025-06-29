@@ -1,9 +1,8 @@
 #include <bits/stdc++.h>
-#define io ios_base::sync_with_stdio(0); cin.tie(0)
 using namespace std;
 
 bool findPair(const vector<long long>& S, long long a, long long b, char setName) {
-    for (long long i = 0; i < S.size(); ++i) {
+    for (long long i = 0; i < S.size(); ++i)
         for (long long j = i + 1; j < S.size(); ++j) {
             long long d = abs(S[i] - S[j]);
             if (d == a || d == b) {
@@ -11,16 +10,14 @@ bool findPair(const vector<long long>& S, long long a, long long b, char setName
                 return true;
             }
         }
-    }
     return false;
 }
 
 int main() {
-    io;
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
     long long a, b;
-    do {
-        cin >> a >> b;
-    } while ((a + b) % 2 == 0);
+    do cin >> a >> b; while ((a + b) % 2 == 0);
 
     // tạo dãy để chứng minh phản chứng
     vector<long long> A, B;

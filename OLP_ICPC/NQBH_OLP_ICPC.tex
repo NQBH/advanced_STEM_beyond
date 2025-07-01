@@ -785,7 +785,7 @@ This lets us solve for all states more efficiently. Say we compute ${\rm opt}(i,
 
 To minimize the runtime, we apply the idea behind divide \& conquer. 1st, compute ${\rm opt}\left(i,\lfloor\frac{n}{2}\rfloor\right)$, then, compute ${\rm opt}\left(i,\lfloor\frac{n}{4}\rfloor\right)$, knowing that it is $\le\left(i,\lfloor\rfloor\frac{n}{2}\rfloor\right)$ \& ${\rm opt}\left(i,\lfloor\frac{3n}{4}\rfloor\right)$ knowing that it is $\ge{\rm opt}\left(i,\lfloor\frac{n}{2}\rfloor\right)$. By recursively keeping track of the lower \& upper bound on ${\rm opt}$, we reach a $O(mn\log n)$ runtime. Each possible value of ${\rm opt}(i,j)$ only appears in $\log n$ different nodes.
 
--- Để giảm thiểu thời gian chạy, chúng ta áp dụng ý tưởng đằng sau phương pháp chia để trị. Đầu tiên, tính ${\rm opt}\left(i,\lfloor\frac{n}{2}\rfloor\right)$, sau đó, tính ${\rm opt}\left(i,\lfloor\frac{n}{4}\rfloor\right)$, biết rằng đó là $\le\left(i,\lfloor\rfloor\frac{n}{2}\rfloor\right)$ \& ${\rm opt}\left(i,\lfloor\frac{3n}{4}\rfloor\right)$ biết rằng đó là $\ge{\rm opt}\left(i,\lfloor\frac{n}{2}\rfloor\right)$. Bằng cách theo dõi đệ quy giới hạn dưới \& trên của ${\rm opt}$, chúng ta đạt được thời gian chạy $O(mn\log n)$. Mỗi giá trị có thể của ${\rm opt}(i,j)$ chỉ xuất hiện ở $\log n$ nút khác nhau.
+-- Để giảm thiểu thời gian chạy, chúng ta áp dụng ý tưởng đằng sau phương pháp chia để trị. Đầu tiên, tính ${\rm opt}\left(i,\lfloor\frac{n}{2}\rfloor\right)$, sau đó, tính ${\rm opt}\left(i,\lfloor\frac{n}{4}\rfloor\right)$, biết rằng đó là $\le\left(i,\lfloor\frac{n}{2}\rfloor\right)$ \& ${\rm opt}\left(i,\lfloor\frac{3n}{4}\rfloor\right)$ biết rằng đó là $\ge{\rm opt}\left(i,\lfloor\frac{n}{2}\rfloor\right)$. Bằng cách theo dõi đệ quy giới hạn dưới \& trên của ${\rm opt}$, chúng ta đạt được thời gian chạy $O(mn\log n)$. Mỗi giá trị có thể của ${\rm opt}(i,j)$ chỉ xuất hiện ở $\log n$ nút khác nhau.
 
 It doesn't matter how ``balanced'' ${\rm opt}(i,j)$ is. Across a fixed level, each value of $k$ is used at most twice, \& there are at most $\log n$ levels.
 
@@ -8348,6 +8348,192 @@ int main() {
 \begin{baitoan}
     Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để minh hoạ IMO2011P1.
 \end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\section{$p$-adic valuation -- Đánh giá $p$-adic}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/P-adic_valuation}{Wikipedia{\tt/}$p$-adic valuation}.
+\end{enumerate}
+In number theory, the {\it$p$-adic valuation} or {\it$p$-adic order} of an integer $n$ is the exponent of the highest power of the prime number $p$ that divides $n$, denoted by $\nu_p(n)$. Equivalently, $\nu_p(n)$ is the exponent to which $p$ appears in the prime factorization of $n$.
+
+-- Trong lý thuyết số, {\it$p$-adic evaluation} hoặc {\it$p$-adic order} của một số nguyên $n$ là số mũ của lũy thừa cao nhất của số nguyên tố $p$ chia hết cho $n$, được ký hiệu là $\nu_p(n)$. Tương đương, $\nu_p(n)$ là số mũ mà $p$ xuất hiện trong phép phân tích thừa số nguyên tố của $n$.
+\begin{equation*}
+    n\divby p^{\nu_p(n)},\ n\not{\divby p^{\nu_p(n) + 1}},\ \forall n\in\mathbb{N}^\star,\ \forall p\mbox{ is prime}.
+\end{equation*}
+
+\begin{definition}[$p$-adic valuatiion]
+    Let $p$ be a prime number. The {\rm$p$-adic valuation} of $n\in\mathbb{Z}$ is defined by
+    \begin{equation*}
+        \nu_p(n) = \left\{\begin{split}
+            &\max\{k\in\mathbb{N};p^k|n\}&&\mbox{if } n\ne0,\\
+            &\infty&&\mbox{if } n = 0.
+        \end{split}\right.
+    \end{equation*}
+    In particular, $\nu_p$ is a function $\nu_p:\mathbb{Z}\to\mathbb{N}\cup\{\infty\}$. The $p$-adic valuation can be extended to the rational numbers as the function $\nu_p:\mathbb{Q}\to\mathbb{Z}\cup\{\infty\}$ defined by $\nu_p\left(\frac{r}{s}\right) = \nu_p(r) - \nu_p(s)$.
+\end{definition}
+
+\begin{example}
+    (a) $|-12| = 12 = 2^2\cdot3^1\cdot5^0\Rightarrow\nu_2(-12) = \nu_2(12) = 2,\nu_3(-12) = \nu_3(12) = 1,\nu_p(-12) = \nu_p(12) = 0$, $\forall$ prime $p\ge5$. (b) $\frac{9}{8} = 2^{-3}\cdot3^2\Rightarrow\nu_2\left(\pm\frac{9}{8}\right) = -3,\nu_3\left(\pm\frac{9}{8}\right) = 2$.
+\end{example}
+The notation $p^k||n$ is sometimes used to mean $k = \nu_p(n)$. One has
+\begin{equation*}
+    n\divby p^{\nu_p(n)}\Rightarrow n\ge p^{\nu_p(n)}\Rightarrow\nu_p(n)\le\log_pn,\ \forall n\in\mathbb{N}^\star.
+\end{equation*}
+
+\begin{lemma}[Some properties of $p$-adic valuation]
+    (i) $\nu_p(rs) = \nu_p(r) + \nu_p(s)$. (ii) $\nu_p(r + s) = \min\{\nu_p(r),\nu_p(s)\}$.
+    \item(iii) {\rm(Legendre's formula)} $\nu_p(n!) = \sum_{i=1}^\infty \left\lfloor\dfrac{n}{p^i}\right\rfloor = \sum_{i=1}^{\lfloor\log_pn\rfloor} \left\lfloor\dfrac{n}{p^i}\right\rfloor$, $\forall n\in\mathbb{N}$.
+    \item(iv)
+    \begin{equation*}
+        \nu_p(n) = \nu_p(n!) - \nu_p((n - 1)!) = \sum_{i=1}^\infty \left(\left\lfloor\frac{n}{p^i}\right\rfloor - \left\lfloor\frac{n - 1}{p^i}\right\rfloor\right) = \sum_{i=1}^{\lfloor\log_pn\rfloor} \left(\left\lfloor\frac{n}{p^i}\right\rfloor - \left\lfloor\frac{n - 1}{p^i}\right\rfloor\right),\ \forall n\in\mathbb{N}.
+    \end{equation*}
+    This formula can be extended to negative integer values
+    \begin{equation*}
+        \nu_p(n) = \sum_{i=1}^{\lfloor\log_p|n|\rfloor} \left(\left\lfloor\frac{|n|}{p^i}\right\rfloor - \left\lfloor\frac{|n| - 1}{p^i}\right\rfloor\right),\ \forall n\in\mathbb{Z}.
+    \end{equation*}
+\end{lemma}
+
+%------------------------------------------------------------------------------%
+
+\subsection{$p$-adic absolute value}
+
+\begin{definition}
+    The {\rm$p$-adic absolute value} (or {\rm$p$-adic norm}, though not a form in the sense of analysis) on $\mathbb{Q}$ is the function $|\cdot|_p:\mathbb{Q}\to[0,\infty)$ defined by $|r|_p = p^{-\nu_p(r)}$.
+\end{definition}
+
+\begin{example}
+    (a) $|0|_p = p^{-\infty} = 0$, $\forall p$ prime. (b) $|-12|_2 = 2^{-2} = \frac{1}{4}$. (c) $\left|\frac{9}{8}\right|_2 = 2^{-(-3)} = 8$.
+\end{example}
+
+\begin{lemma}[Some properties of $p$-adic absolute value]
+    The $p$-adic absolute value satisfies the following properties:
+    \item(i) Nonnegativity: $|r|_p\ge0$.
+    \item(ii) $|r|_p = 0\Leftrightarrow r = 0$.
+    \item(iii) $|rs|_p = |r|_p|s|_p$.
+    \item(iv) Non-Archimedean: $|r + s|_p\le\max\{|r|_p,|s|_p\}$.
+\end{lemma}
+***
+
+%------------------------------------------------------------------------------%
+
+\subsection{Finding power of factorial divisor -- Tìm lũy thừa của ước số giai thừa}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://cp-algorithms.com/algebra/factorial-divisors.html}{Algorithms for Competitive Programming{\tt/}finding power of factorial divisor}.
+\end{enumerate}
+
+\begin{problem}
+    Given 2 numbers $n,k\in\mathbb{N}^\star$. Find the largest power $x$ of $k$ s.t. $n!\divby k^x$.
+    
+    -- Cho 2 số $n,k\in\mathbb{N}^\star$. Tìm lũy thừa $x$ lớn nhất của $k$ s.t. $n!\divby k^x$.
+\end{problem}
+
+\begin{proof}[Solution]
+    If $k = 1$, $x = \infty$. If $k\ne1$, we consider 2 cases:
+    \begin{enumerate}
+        \item {\bf Case $k = p$ is a prime.} The explicit expression for factorial $n! = \prod_{i=1}^n i = 1\cdot2\cdot3\cdots(n - 1)n$. Every $p$th element of the product is divisible by $p$, i.e., adds 1 to the answer; the number of such elements is $\left\lfloor\dfrac{n}{p}\right\rfloor$, consisting $p,2p,3p,\ldots,\left\lfloor\dfrac{n}{p}\right\rfloor p$. Every $p^2$-th element is divisible by $p^2$, i.e., adds 1 to the answer (the 1st power of $p$ has already been counted in the previous paragraph); the number of such elements is $\left\lfloor\dfrac{n}{p^2}\right\rfloor$, consisting $p^2,2p^2,3p^2,\ldots,\left\lfloor\dfrac{n}{p^2}\right\rfloor p^2$. \& so on, for every $i$ each $p^i$th element adds another 1 to the answer, \& there are $\left\lfloor\dfrac{n}{p^i}\right\rfloor$ such elements. The final answer is given by the Legendre's formula:
+        \begin{equation*}
+            \sum_{i=1}^\infty \left\lfloor\dfrac{n}{p^i}\right\rfloor = \sum_{i=1}^{\log_pn} \left\lfloor\dfrac{n}{p^i}\right\rfloor = \left\lfloor\dfrac{n}{p}\right\rfloor + \left\lfloor\dfrac{n}{p^2}\right\rfloor + \cdots + \left\lfloor\dfrac{n}{p^i}\right\rfloor + \cdots.
+        \end{equation*}
+        The sum is of course finite, since only approximately the 1st $\log_pn$ elements are nonzero. Thus, the runtime of this algorithm is $O(\log_pn)$.
+        
+        -- {\bf Trường hợp $k = p$ là số nguyên tố.} Biểu thức rõ ràng cho giai thừa $n! = \prod_{i=1}^n i = 1\cdot2\cdot3\cdots(n - 1)n$. Mỗi phần tử thứ $p$ của tích chia hết cho $p$, tức là thêm 1 vào đáp án; số các phần tử như vậy là $\left\lfloor\dfrac{n}{p}\right\rfloor$, bao gồm $p,2p,3p,\ldots,\left\lfloor\dfrac{n}{p}\right\rfloor p$. Mỗi phần tử thứ $p^2$ chia hết cho $p^2$, tức là thêm 1 vào đáp án (lũy thừa thứ 1 của $p$ đã được đếm trong đoạn trước); số các phần tử như vậy là $\left\lfloor\dfrac{n}{p^2}\right\rfloor$, bao gồm $p^2,2p^2,3p^2,\ldots,\left\lfloor\dfrac{n}{p^2}\right\rfloor p^2$. \& cứ thế, với mỗi $i$ mỗi phần tử thứ $p^i$ thêm một số 1 vào đáp số, \& có $\left\lfloor\dfrac{n}{p^i}\right\rfloor$ các phần tử như vậy. Câu trả lời cuối cùng được đưa ra bởi công thức Legendre:
+        \begin{equation*}
+            \sum_{i=1}^\infty \left\lfloor\dfrac{n}{p^i}\right\rfloor = \sum_{i=1}^{\lfloor\log_pn\rfloor} \left\lfloor\dfrac{n}{p^i}\right\rfloor = \left\lfloor\dfrac{n}{p}\right\rfloor + \left\lfloor\dfrac{n}{p^2}\right\rfloor + \cdots + \left\lfloor\dfrac{n}{p^i}\right\rfloor + \cdots.
+        \end{equation*}
+        Tổng tất nhiên là hữu hạn, vì chỉ xấp xỉ phần tử $\log_pn$ đầu tiên khác không. Do đó, thời gian chạy của thuật toán này là $O(\log_pn)$.
+        
+        {\sf Implementation.}
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+int factorial_pow(int n, int p) {
+    int res = 0;
+    while (n) {
+        n /= p;
+        res += n;
+    }
+    return res;
+}
+        \end{Verbatim}
+        \item {\bf Case $k$ is composite.} The same idea can't be applied directly. Instead we can factor $k = \prod_{i=1}^m p_i^{k_i} = p_1^{k_1}p_2^{k_2}\cdots p_m^{k_m}$ where $\{p_i\}_{i=1}^m$ are primes. For each $p_i$, we find the number of times it is present in $n!$ using the algorithm described above, called $a_i$. The answer for composite $k$ will be $\min_{i\in[m]} \dfrac{a_i}{k_i}$ (why?).
+        
+        -- {\bf Trường hợp $k$ là hợp số.} Không thể áp dụng trực tiếp ý tưởng tương tự. Thay vào đó, chúng ta có thể phân tích $k = \prod_{i=1}^m p_i^{k_i} = p_1^{k_1}p_2^{k_2}\cdots p_m^{k_m}$ trong đó $\{p_i\}_{i=1}^m$ là các số nguyên tố. Đối với mỗi $p_i$, chúng ta tìm số lần nó xuất hiện trong $n!$ bằng thuật toán được mô tả ở trên, được gọi là $a_i$. Câu trả lời cho hợp số $k$ sẽ là $\min_{i\in[m]} \dfrac{a_i}{k_i}$ (tại sao?).
+    \end{enumerate}
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Legendre's formula -- Công thức Legendre}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/Legendre%27s_formula}{Wikipedia{\tt/}Legendre's formula}.
+\end{enumerate}
+In mathematics, {\it Legendre's formula} gives an expression for the exponent of the largest power of a prime $p$ that divides the factorial $n!$. It is named after \href{https://en.wikipedia.org/wiki/Adrien-Marie_Legendre}{\sc Adrien-Marie Legendre}. It is also sometimes known as {\it de Polignac's formula}, named after \href{https://en.wikipedia.org/wiki/Alphonse_de_Polignac}{\sc Alphonse de Polignac}.
+
+-- Trong toán học, {\it Công thức Legendre} đưa ra biểu thức cho số mũ của lũy thừa lớn nhất của số nguyên tố $p$ chia hết cho giai thừa $n!$. Công thức này được đặt tên theo {\sc Adrien-Marie Legendre}. Đôi khi công thức này còn được gọi là {\it công thức de Polignac}, được đặt theo tên của {\sc Alphonse de Polignac}.
+
+\begin{theorem}[Legendre's formula]
+    For any prime number $p$ \& any $n\in\mathbb{N}^\star$, let $\nu_p(n)$ be the exponent of the largest power of $p$ that divides $n$ (i.e., the $p$-adic valuation of $n$). Then
+    \begin{equation*}
+        \nu_p(n!) = \sum_{i=1}^\infty \left\lfloor\dfrac{n}{p^i}\right\rfloor = \sum_{i=1}^{\lfloor\log_pn\rfloor} \left\lfloor\dfrac{n}{p^i}\right\rfloor.
+    \end{equation*}
+\end{theorem}
+While the 1st sum of the RHS is an infinite sum, for any particular values of $n,p$ it has only finitely many nonzero terms: for every $i$ large enough that $p^i > n\Leftrightarrow i > \log_pn$, one has $\left\lfloor\dfrac{n}{p^i}\right\rfloor = 0$, which reduces the infinite sum to the finite sum $\sum_{i=1}^{\lfloor\log_pn\rfloor} \left\lfloor\dfrac{n}{p^i}\right\rfloor$.
+
+-- Trong khi tổng đầu tiên của Vế phải là tổng vô hạn, đối với bất kỳ giá trị cụ thể nào của $n,p$ nó chỉ có hữu hạn số hạng khác không: đối với mọi $i$ đủ lớn để $p^i > n\Leftrightarrow i > \log_pn$, ta có $\left\lfloor\dfrac{n}{p^i}\right\rfloor = 0$, điều này làm giảm tổng vô hạn thành tổng hữu hạn $\sum_{i=1}^{\lfloor\log_pn\rfloor} \left\lfloor\dfrac{n}{p^i}\right\rfloor$.
+
+\begin{proof}[Proof]
+    Since $n!$ is the product of the integers $1$ through $n$, we obtain at least 1 factor of $p$ in $n!$ for each multiple of $p\in[n]$, of which there are $\left\lfloor\dfrac{n}{p}\right\rfloor$. Each multiple of $p^2$ contributes an additional factor of $p$, each multiple of $p^3$ contributes yet another factor of $p$, etc. Adding up the number of these factors gives the infinite sum for $\nu_p(n!)$.
+    
+    -- Vì $n!$ là tích của các số nguyên $1$ đến $n$, chúng ta thu được ít nhất 1 ước số của $p$ trong $n!$ cho mỗi bội số của $p\in[n]$, trong đó có $\left\lfloor\dfrac{n}{p}\right\rfloor$. Mỗi bội số của $p^2$ đóng góp thêm một ước số của $p$, mỗi bội số của $p^3$ đóng góp thêm một ước số nữa của $p$, v.v. Cộng số lượng các ước số này lại sẽ cho tổng vô hạn của $\nu_p(n!)$.
+\end{proof}
+
+\begin{example}
+    For $n = 6$, $6! = 720 = 2^4\cdot3^2\cdot5$. The exponents $\nu_2(6!) = 4,\nu_3(6!) = 2,\nu_5(6!) = 1$ can be computed by Legendre's formula as follows:
+    \begin{align*}
+        \nu_2(6!) &= \sum_{i=1}^\infty \left\lfloor\dfrac{6}{2^i}\right\rfloor = \left\lfloor\dfrac{6}{2}\right\rfloor + \left\lfloor\dfrac{6}{2^2}\right\rfloor = 3 + 1 = 4,\\
+        \nu_3(6!) &= \sum_{i=1}^\infty \left\lfloor\dfrac{6}{3^i}\right\rfloor = \left\lfloor\dfrac{6}{3}\right\rfloor = 2,\\
+        \nu_5(6!) &= \sum_{i=1}^\infty \left\lfloor\dfrac{6}{5^i}\right\rfloor = \left\lfloor\dfrac{6}{5}\right\rfloor = 1,\\
+        \nu_p(6!) &= \sum_{i=1}^\infty \left\lfloor\dfrac{6}{p^i}\right\rfloor = 0,\ \forall p\ge7,\ p\mbox{ is prime}.
+    \end{align*}
+\end{example}
+
+\paragraph*{Alternate form of Legendre's formula -- Dạng thay thế của công thức Legendre.} One may also reformulate Legendre's formula in terms of the base-$p$ expansion of $n$.
+
+-- Người ta cũng có thể xây dựng lại công thức của Legendre theo dạng khai triển cơ số $p$ của $n$.
+
+\begin{theorem}
+    Let $s_p(n)$ denote the sum of the digits in the base-$p$ expansion of $n$, then
+    \begin{equation*}
+        \nu_p(n!) = \frac{n - s_p(n)}{p - 1}.
+    \end{equation*}
+\end{theorem}
+
+\begin{proof}[Proof]
+    Write $n = \sum_{i=0}^l n_ip^i = n_lp^l + \cdots + n_1p + n_0$ in base $p$. Then $\left\lfloor\dfrac{n}{p^i}\right\rfloor = \sum_{j=i}^l n_jp^{j - i} = n_lp^{l - i} + \cdots + n_{i+1}p + n_i$, \& therefore
+    \begin{align*}
+        \nu_p(n!) &= \sum_{i=1}^l \left\lfloor\frac{n}{p^i}\right\rfloor = \sum_{i=1}^l\sum_{j=i}^l n_jp^{j - i} n_jp^{j - i} = \sum_{j=1}^l\sum_{i=1}^i n_jp^{j - i} = \sum_{j=1}^l n_j\cdot\frac{p^j - 1}{p - 1} = \sum_{j=0}^l n_j\cdot\frac{p^j - 1}{p - 1}\\
+        &= \frac{1}{p - 1}\sum_{j=0}^l (n_jp^j - n_j) = \frac{1}{p - 1}(n - s_p(n)).
+    \end{align*}
+\end{proof}
+
+\begin{example}
+    (a) In binary, $n = 6_{10} = 110_2$, $s_2(6) = 1 + 1 + 0 = 2$ \& so $\nu_2(6!) = \dfrac{6 - 2}{2 - 1} = 4$. (b) In ternary, $6_{10} = 20_3$, $s_3(6) = 2 + 0 = 2$ \& so $\nu_3(6!) = \dfrac{6 - 2}{3 - 1} = 2$.
+\end{example}
+
+\paragraph*{Applications of Legendre's formula -- Các ứng dụng của công thức Legendre.} Legendre's formula can be used to prove \href{https://en.wikipedia.org/wiki/Kummer%27s_theorem}{Kummer's theorem}. As 1 special case, it can be used to prove that if $n\in\mathbb{N}^\star$ then $\binom{2n}{n}\divby4\Leftrightarrow n$ is not a power of 2.
+
+-- Công thức Legendre có thể được sử dụng để chứng minh định lý Kummer. Là 1 trường hợp đặc biệt, nó có thể được sử dụng để chứng minh rằng nếu $n\in\mathbb{N}^\star$ thì $\binom{2n}{n}\divby4\Leftrightarrow n$ không phải là lũy thừa của 2.
+
+It follows from Legendre's formula that the \href{https://en.wikipedia.org/wiki/P-adic_exponential_function}{$p$-adic exponential function} has radius of convergence $p^{-\frac{1}{p - 1}}$.
+
+-- Từ công thức Legendre suy ra rằng hàm mũ $p$-adic có bán kính hội tụ $p^{-\frac{1}{p - 1}}$.
+
+%------------------------------------------------------------------------------%
+
+
+
 
 %------------------------------------------------------------------------------%
 

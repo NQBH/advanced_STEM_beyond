@@ -866,7 +866,87 @@ We can show that it is true when the cost function $C$ satisfies the following c
     \item $C(b,c)\le C(a,d)$
     \item $C(a,c) + C(b,d)\le C(a,d) + C(b,c)$ (the quadrangle inequality [QI]).
 \end{enumerate}
-***
+
+%------------------------------------------------------------------------------%
+
+\subsection{Algorithm of Knuth's optimization -- Thuật toán của tối ưu của Knuth}
+We process the dp states in such a way that we calculate ${\rm dp}(i,j - 1),{\rm dp}(i + 1,j)$ before ${\rm dp}(i,j)$, \& in doing so we also calculate ${\rm opt}(i,j - 1),{\rm opt}(i + 1,j)$. Then for calculating ${\rm opt}(i,j)$, instead of testing values of $k$ from $i$ to $j - 1$, we only need to test from ${\rm opt}(i,j - 1)$ to ${\rm opt}(i + 1,j)$. To process $(i,j)$ pairs in this order it is sufficient to use nested for loops in which $i$ goes from the maximum value to the minimum one \& $j$ goes from $i + 1$ to the maximum value.
+
+-- Chúng ta xử lý các trạng thái dp theo cách mà chúng ta tính toán ${\rm dp}(i,j - 1),{\rm dp}(i + 1,j)$ trước ${\rm dp}(i,j)$, \& khi làm như vậy, chúng ta cũng tính toán ${\rm opt}(i,j - 1),{\rm opt}(i + 1,j)$. Sau đó, để tính toán ${\rm opt}(i,j)$, thay vì kiểm tra các giá trị của $k$ từ $i$ đến $j - 1$, chúng ta chỉ cần kiểm tra từ ${\rm opt}(i,j - 1)$ đến ${\rm opt}(i + 1,j)$. Để xử lý các cặp $(i,j)$ theo thứ tự này, chỉ cần sử dụng các vòng lặp lồng nhau trong đó $i$ đi từ giá trị lớn nhất đến giá trị nhỏ nhất \& $j$ đi từ $i + 1$ đến giá trị lớn nhất.
+
+\paragraph*{Generic implementation.} Though implementation varies, here's a fairly generic example. The structure of the code is almost identical to that of Range DP.
+
+-- Mặc dù cách triển khai khác nhau, đây là một ví dụ khá chung chung. Cấu trúc của mã gần giống với cấu trúc của Range DP.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+int solve() {
+    int n;
+    ... // read n & input
+    int dp[N][N], opt[N][N];
+    
+    auto C = [&](int i, int j) {
+        ... // implement cost function C
+    };
+    
+    for (int i = 0; i < N; ++i) {
+        opt[i][j] = i;
+        ... // initialize dp[i][j] according to the problem
+    }
+    
+    for (int i = N - 2; i >= 0; --i) {
+        for (int j = i + 1; j < N; ++j) {
+            int mn = INT_MAX;
+            int cost = C(i, j);
+            for (int k = opt[i][j - 1]; k <= min(j - 1, opt[i + 1][j]); ++k) {
+                if (mn >= dp[i][k] + dp[k + 1][j] + cost) {
+                    opt[i][j] = k;
+                    mn = dp[i][k] + dp[k + 1][j] + cost;
+                }
+            }
+            dp[i][j] = mn;
+        }
+    }
+    return dp[0][N - 1];
+}
+\end{Verbatim}
+
+\paragraph*{Complexity.} A complexity of the algorithm can be estimated as the following sum:
+\begin{equation*}
+    \sum_{i=1}^N\sum_{j=i+1}^N {\rm opt}(i + 1,j) - {\rm opt}(i,j - 1) = \sum_{i=1}^N\sum_{j=i}^{N-1} {\rm opt}(i + 1,j + 1) - {\rm opt}(i,j).
+\end{equation*}
+Most of the terms in this expression cancel each other out, except for positive terms with $j = N - 1$ \& negative terms with $i = 1$. Thus, Thus, the whole sum can be estimated as
+\begin{equation*}
+    \sum_{i=1}^N {\rm opt}(i,N) - {\rm opt}(1,i) = O(n^2),
+\end{equation*}
+rather than $O(n^3)$ as it would be if we were using a regular range DP.
+
+-- Độ phức tạp của thuật toán có thể được ước tính như tổng sau:
+\begin{equation*}
+    \sum_{i=1}^N\sum_{j=i+1}^N {\rm opt}(i + 1,j) - {\rm opt}(i,j - 1) = \sum_{i=1}^N\sum_{j=i}^{N-1} {\rm opt}(i + 1,j + 1) - {\rm opt}(i,j).
+\end{equation*}
+Hầu hết các số hạng trong biểu thức này triệt tiêu lẫn nhau, ngoại trừ các số hạng dương với $j = N - 1$ \& các số hạng âm với $i = 1$. Do đó, tổng thể có thể được ước tính là
+\begin{equation*}
+    \sum_{i=1}^N {\rm opt}(i,N) - {\rm opt}(1,i) = O(n^2),
+\end{equation*}
+thay vì $O(n^3)$ như khi chúng ta sử dụng phạm vi DP thông thường.
+
+\paragraph*{On practice.} The most common application of Knuth's optimization is the Range DP, with the given transition. The only difficulty is in proving that the cost function satisfies the given conditions. The simplest case is when the cost function $C(i,j)$ is simply the sum of the elements of the subarray $S[i,i + 1,\ldots,j]$ for some array (depending on the question). However, they can be more complicated at times.
+
+-- Ứng dụng phổ biến nhất của tối ưu hóa Knuth là Range DP, với phép chuyển đổi đã cho. Khó khăn duy nhất là chứng minh rằng hàm chi phí thỏa mãn các điều kiện đã cho. Trường hợp đơn giản nhất là khi hàm chi phí $C(i,j)$ chỉ đơn giản là tổng các phần tử của mảng con $S[i,i + 1,\ldots,j]$ đối với một số mảng (tùy thuộc vào câu hỏi). Tuy nhiên, đôi khi chúng có thể phức tạp hơn.
+
+More than the conditions on the dp transition \& the cost function, the key to this optimization is the inequality on the optimum splitting point. In some problems, e.g. the optimal binary search tree problem (which is, incidentally, the original problem for which this optimization was developed), the transitions \& cost function will be less obvious, however, one can still prove that ${\rm opt}(i,j - 1)\le{\rm opt}(i,j)\le{\rm opt}(i + 1,j)$, \& thus, use this optimization.
+
+-- Hơn cả các điều kiện trên chuyển đổi dp \& hàm chi phí, chìa khóa cho quá trình tối ưu hóa này là bất đẳng thức trên điểm chia tách tối ưu. Trong một số bài toán, ví dụ như bài toán cây tìm kiếm nhị phân tối ưu (tình cờ là bài toán ban đầu mà quá trình tối ưu hóa này được phát triển), hàm chi phí chuyển đổi \& sẽ ít rõ ràng hơn, tuy nhiên, người ta vẫn có thể chứng minh rằng ${\rm opt}(i,j - 1)\le{\rm opt}(i,j)\le{\rm opt}(i + 1,j)$, \& do đó, hãy sử dụng quá trình tối ưu hóa này.
+
+\begin{proof}[Proof of correctness]
+    To prove the correctness of this algorithm in terms of $C(i,j)$ conditions, it suffices to prove that ${\rm opt}(i,j - 1)\le{\rm opt}(i,j)\le{\rm opt}(i + 1,j)$ assuming the given conditions are satisfied.
+    
+    -- Để chứng minh tính đúng đắn của thuật toán này theo các điều kiện $C(i,j)$, chỉ cần chứng minh rằng ${\rm opt}(i,j - 1)\le{\rm opt}(i,j)\le{\rm opt}(i + 1,j)$ giả sử các điều kiện đã cho được thỏa mãn.
+    
+    \begin{lemma}
+        ${\rm dp}(i,j)$ also satisfies the quadrangle inequality, given the conditions of the problem are satisfied.
+    \end{lemma}
+    ***
+\end{proof}
 
 %------------------------------------------------------------------------------%
 

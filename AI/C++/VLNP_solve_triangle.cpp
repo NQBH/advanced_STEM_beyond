@@ -10,8 +10,6 @@ struct Node {
 
 };
 
-const double PI = 3.14159265358979323846;
-
 bool isValidTriangle(double a, double b, double c) {
     return (a + b > c) && (a + c > b) && (b + c > a) && (a > 0) && (b > 0) && (c > 0);
 }
@@ -65,9 +63,9 @@ double R(double a, double b, double c, double S) {
     return (a * b * c) / (4 * S);
 }
 
-double r(double S, double p) {
-    if (p == 0) return 0;
-    return S / (p / 2);
+double r(double S, double P) {
+    if (P == 0) return 0;
+    return S / (P / 2);
 }
 
 double ra(double a, double S , double p) {
@@ -99,11 +97,11 @@ double gocC(double a, double b, double c) {
     return acos((a * a + b * b - c * c) / (2 * a * b));
 }
 double radtodeg(double rad) {
-    return rad * 180 / PI;
+    return rad * 180 / M_PI;
 }
 int main() {
     Node a, b, c;
-    ifstream inputFile("triagle.txt");
+    ifstream inputFile("triangle.txt");
     // cout<<"nhap 3 canh tam giac: ";
     // cin>>a.val>>b.val>>c.val;
     if (!inputFile.is_open()) {
@@ -135,7 +133,6 @@ int main() {
     double r_a = ra(a.val, dientich, chuvi);
     double r_b = rb(b.val, dientich, chuvi);
     double r_c = rc(c.val, dientich, chuvi);
-
 
     double angleA_rad = gocA(a.val, b.val, c.val);
     double angleB_rad = gocB(a.val, b.val, c.val);

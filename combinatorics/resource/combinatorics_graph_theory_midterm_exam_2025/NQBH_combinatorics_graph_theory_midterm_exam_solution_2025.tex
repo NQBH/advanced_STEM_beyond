@@ -1,0 +1,151 @@
+\documentclass{article}
+\usepackage[backend=biber,natbib=true,style=alphabetic,maxbibnames=50]{biblatex}
+\addbibresource{/home/nqbh/reference/bib.bib}
+\usepackage[utf8]{vietnam}
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
+\usepackage{amsmath,amssymb,amsthm,enumitem,float,graphicx,mathtools,tikz}
+\usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
+\allowdisplaybreaks
+\newtheorem{assumption}{Assumption}
+\newtheorem{baitoan}{Bài}
+\newtheorem{cauhoi}{Câu hỏi}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{corollary}{Corollary}
+\newtheorem{dangtoan}{Dạng toán}
+\newtheorem{definition}{Definition}
+\newtheorem{dinhly}{Định lý}
+\newtheorem{dinhnghia}{Định nghĩa}
+\newtheorem{example}{Example}
+\newtheorem{ghichu}{Ghi chú}
+\newtheorem{hequa}{Hệ quả}
+\newtheorem{hypothesis}{Hypothesis}
+\newtheorem{lemma}{Lemma}
+\newtheorem{luuy}{Lưu ý}
+\newtheorem{nhanxet}{Nhận xét}
+\newtheorem{notation}{Notation}
+\newtheorem{note}{Note}
+\newtheorem{principle}{Principle}
+\newtheorem{problem}{Problem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{question}{Question}
+\newtheorem{remark}{Remark}
+\newtheorem{theorem}{Theorem}
+\newtheorem{vidu}{Ví dụ}
+\usepackage[margin=1cm]{geometry}
+\def\labelitemii{$\circ$}
+\DeclareRobustCommand{\divby}{%
+    \mathrel{\vbox{\baselineskip.65ex\lineskiplimit0pt\hbox{.}\hbox{.}\hbox{.}}}%
+}
+\setlist[itemize]{leftmargin=*}
+\setlist[enumerate]{leftmargin=*}
+\newcommand{\genstirlingI}[3]{%
+    \genfrac{[}{]}{0pt}{#1}{#2}{#3}%
+}
+\newcommand{\genstirlingII}[3]{%
+    \genfrac{\{}{\}}{0pt}{#1}{#2}{#3}%
+}
+\newcommand{\stirlingI}[2]{\genstirlingI{}{#1}{#2}}
+\newcommand{\dstirlingI}[2]{\genstirlingI{0}{#1}{#2}}
+\newcommand{\tstirlingI}[2]{\genstirlingI{1}{#1}{#2}}
+\newcommand{\stirlingII}[2]{\genstirlingII{}{#1}{#2}}
+\newcommand{\dstirlingII}[2]{\genstirlingII{0}{#1}{#2}}
+\newcommand{\tstirlingII}[2]{\genstirlingII{1}{#1}{#2}}
+\def\multiset#1#2{\ensuremath{\left(\kern-.3em\left(\genfrac{}{}{0pt}{}{#1}{#2}\right)\kern-.3em\right)}}
+
+\title{Lời Giải Đề Thi Giữa Kỳ Tổ Hợp {\it\&} Lý Thuyết Đồ Thị Hè 2025\\Midterm Exam Solution: Combinatorics {\it\&} Graph Theory Summer 2025}
+\author{Giảng viên ra đề: Nguyễn Quản Bá Hồng}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{center}\large
+    \textbf{\textsf{Yêu cầu Bắt Buộc}}
+\end{center}
+
+\begin{enumerate}
+    \item Được phép sử dụng tài liệu giấy (sách, báo, tập{\tt/}nháp viết tay, khăn giấy, giấy súc, etc.) không giới hạn.
+    \item Cấm sử dụng thiết bị điện tử (trừ máy tính bỏ túi không có tích hợp AIs), AI tools (Gemini, ChatGPT, Grok, etc.). Nếu phát hiện 0 điểm ngay lần đầu tiên \& thu bài -- không có bất cứ cảnh cáo nào.
+    \item Nếu làm không được, viết định nghĩa sẽ được +0.25 điểm. Trong mỗi bài, nếu không làm được ý trước thì vẫn có thể sử dụng kết quả các ý trước để làm ý sau của bài toán.
+    \item Thời gian thi: 2.5 hours. Có thể nộp bài sớm nếu tự sinh viên muốn hoặc bị giảng viên bắt. Nộp bài sớm vẫn phải ngồi lại phòng thi, không được về sớm, để chiêm nghiệm về thái độ học tập, làm việc của bản thân \& đặc biệt về cuộc đời.
+    \item Nếu phát hiện đề sai rồi sửa lại được đề \& làm đúng thì sẽ được cộng thêm nhiều điểm.
+    \item Đề thi tổng cộng $\Sigma = 25$ điểm. Điểm dư {\tt grade -= 10} sẽ được cộng vào các cột khác, đặc biệt là đồ án cuối kỳ tương đối nặng, của các môn học mà giảng viên dạy.
+\end{enumerate}
+
+\begin{center}\large
+    \textbf{\textsf{Đề Thi Chính Thức}}
+\end{center}
+
+\begin{baitoan}[Mở rộng đề thi THPTQG Toán 2025]
+    {\rm($\Sigma = 1$ điểm)} Có $m\in\mathbb{N}^\star$ ngăn trong 1 giá để sách được đánh số thứ tự $1,2,\ldots,m$ \& $n\in\mathbb{N}^\star$ quyển sách khác nhau. Xếp $n$ quyển sách này vào $m$ ngăn đó, các quyển sách được xếp thẳng đứng thành 1 hàng ngang với gáy sách quay ra ngoài ở mỗi ngăn. Khi đã xếp xong $n$ quyển sách, 2 cách xếp được gọi là {\rm giống nhau} nếu chúng thỏa mãn đồng thời 2 điều kiện sau: (i) Với từng ngăn, số lượng quyển sách ở ngăn đó là như nhau trong cả 2 cách xếp. (ii) Với từng ngăn, thứ tự từ trái sang phải của các quyển sách được xếp là như nhau trong cả 2 cách xếp. Đếm số cách xếp đôi một khác nhau nếu: (a) {\rm(0.5 điểm)} Mỗi ngăn có ít nhất 1 quyển sách. (b) {\rm(0.5 điểm)} Mỗi ngăn có thể không có quyển nào.
+\end{baitoan}
+
+\begin{baitoan}[Vandermonde's identity -- Đẳng thức Vandermonde]
+    {\rm($\Sigma = 2$ điểm)} (a) {\rm(1 điểm)} Chứng minh đẳng thức Vandermonde
+    \begin{equation*}
+        \sum_{i=0}^r \binom{m}{i}\binom{n}{r - i} = \binom{m + n}{i},\ \forall m,n,r\in\mathbb{N}.
+    \end{equation*}
+    bằng 2 cách: (i) {\rm(0.5 điểm)} Phương pháp tổ hợp. (ii) {\rm(0.5 điểm)} Phương pháp đại số thông qua việc tính hệ số của $x^r$ trong khai triển của $(1 + x)^m(1 + x)^n$. (b) {\rm(1 điểm)} Chứng minh đẳng thức Vandermonde tổng quát:
+    \begin{equation*}
+        \binom{\sum_{i=1}^p n_i}{m} = \sum_{\sum_{i=1}^p k_i = m} \prod_{i=1}^p \binom{n_i}{k_i},\mbox{ i.e., }\binom{n_1 + \cdots + n_p}{m} = \sum_{k_1 + \cdots + k_p = m} \binom{n_1}{k_1}\binom{n_2}{k_2}\cdots\binom{n_p}{k_p}.
+    \end{equation*}
+    bằng 2 cách: (i) {\rm(0.5 điểm)} Phương pháp tổ hợp. (ii) {\rm(0.5 điểm)} Phương pháp đại số.
+\end{baitoan}
+
+\begin{baitoan}[Hockey-stick identity]
+    {\rm(2 điểm)} Chứng minh đẳng thức Hockey-stick:
+    \begin{equation*}
+        \sum_{i=r}^n \binom{i}{r} = \sum_{j=0}^{n - r} \binom{j + r}{r} = \sum_{j=0}^{n - r} \binom{j + r}{j} = \binom{n + 1}{n - r},\ \forall n,r\in\mathbb{N},\ n\ge r,
+    \end{equation*}
+    bằng $4$ cách: (a) {\rm(0.5 điểm)} Quy nạp. (b) {\rm(0.5 điểm)} Biến đổi đại số. (c) {\rm(0.5 điểm)} Phương pháp tổ hợp. (d) {\rm(0.5 điểm)} Sử dụng hàm sinh bằng cách tính hệ số của $x^r$ trong biểu thức $\sum_{i=r}^n (x + 1)^i = (x + 1)^r + (x + 1)^{r + 1} + \cdots + (x + 1)^n$.
+\end{baitoan}
+
+\begin{baitoan}[Pascal's rule \& generalized Pascal's rule]
+    {\rm(2.5 điểm)} Chứng minh: (a) Công thức Pascal $\binom{n - 1}{k} + \binom{n - 1}{k - 1} = \binom{n}{k}$ bằng 2 cách: (i) {\rm(0.5 điểm)} Biến đổi đại số. (ii) {\rm(0.5 điểm)} Phương pháp tổ hợp. (b) {\rm(0.5 điểm)} Tìm công thức cho hệ số của $\prod_{i=1}^m x_i^{k_i} = x_1^{k_1}x_2^{k_2}\cdots x_m^{k_m}$ trong khai triển của $\left(\sum_{i=1}^m x_i\right)^n = (x_1 + x_2 + \cdots + x_m)^n$. (c) {\rm(1 điểm)} Đặt hệ số ở câu (b) là $c(m,n,k_1,k_2,\ldots,k_m)$, viết lại đẳng thức ở câu (a) với $m = 2$ theo ký hiệu này. Chứng minh quy tắc Pascal tổng quát:
+    \begin{align*}
+        &c(m,n - 1,k_1 - 1,k_2,k_3,\ldots,k_m) + c(m,n - 1,k_1,k_2 - 1,k_3,\ldots,k_m) + \cdots + c(m,n - 1,k_1,k_2,k_3,\ldots,k_m - 1)\\
+        &= c(m,n,k_1,k_2,\ldots,k_m),\ \forall m\in\mathbb{N},\,m\ge2,\ k_i\in\mathbb{N}^\star,\ \forall i\in[m],\ \sum_{i=1}^m k_i = n.
+    \end{align*}
+\end{baitoan}
+
+\begin{baitoan}[Euler candy problem -- Bài  toán chia kẹo Euler]
+    {\rm($\Sigma = 3$ điểm)} (a) {\rm(0.5 điểm)} Phát biểu 2 phiên bản của bài toán chia kẹo Euler (stars \& bars). (b) {\rm(1.5 điểm)} Đếm số nghiệm nguyên của phương trình $\sum_{i=1}^m x_i = n$ với điều kiện: (i) {\rm(0.25 điểm)} $x_i\ge0$, $\forall i\in[m]$. (ii) {\rm(0.25 điểm)} $x_i\ge1$, $\forall i\in[m]$. (iii) {\rm(0.5 điểm)} $x_i\divby2$, $\forall i\in[m]$. (iv) {\rm(0.5 điểm)} $x_i\not{\divby2}$, $\forall i\in[m]$. (c) {\rm(1 điểm)} Gọi $a(m,n),b(m,n),c(m,n),d(m,n)$ là số nghiệm nguyên tương ứng ở 4 ý trước, thiết lập các công thức truy hồi cho chúng.
+\end{baitoan}
+
+\begin{baitoan}[Count number of monic monomials -- Đếm số đơn thức hệ số 1]
+    {\rm($\Sigma = 2$ điểm)} 1 đơn thức hệ số $1$ (monic) của $n\in\mathbb{N}^\star$ biến $x_1,x_2,\ldots,x_n$ là 1 biểu thức toán học có dạng $\prod_{i=1}^n x_i^{a_i} = x_1^{a_1}x_2^{a_2}\cdots x_n^{a_n}$ với $a_i\in\mathbb{N}$, $\forall i\in[n]$, \& {\rm bậc} $d = \sum_{i=1}^n a_i = a_1 + a_2 + \cdots + a_n$. Đếm: (a) {\rm(0.5 điểm)} Số đơn thức hệ số 1 bậc $d$ của $n$ biến $x_1,x_2,\ldots,x_n$. (b) {\rm(0.5 điểm)} Số đơn thức hệ số 1 bậc $\le d$ của $n$ biến $x_1,x_2,\ldots,x_n$. (c) {\rm(1 điểm)} Gọi $a(n,d),b(n,d)$ là số đơn thức thỏa mãn ở 2 câu trước, thiết lập các công thức truy hồi cho chúng.
+\end{baitoan}
+
+%\begin{baitoan}[Newton binomial theorem \& multinomial theorem]
+%    {\rm(1.5 điểm)} (a) {\rm(0.5 điểm)} Phát biểu định lý nhị thức Newton \& multinomial theorem. (b) {\rm(1 điểm)} Chứng minh định lý nhị thức Newton \& multinomial theorem bằng 2 phương pháp: (i) {\rm(0.5 điểm)} Đếm tổ hợp. (ii) {\rm(0.5 điểm)} Quy nạp.
+%\end{baitoan}
+
+\begin{baitoan}[Mở rộng \cite{Shahriari2022}, P1.3.4, p. 22]
+    {\rm($\Sigma = 7$ điểm)} Cho $n\in\mathbb{N}^\star$. Xét 1 dải bìa cứng $1\times n$. Chúng ta có 1 số lượng lớn $m$ loại mảnh có kích thước $\{1\times i\}_{i=2}^{m+1} = 1\times2,1\times3,\ldots,1\times(m + 1)$. Cho $f(n)$ là số cách ta có thể lát cho dải bìa cứng bằng các mảnh của mình. (a) {\rm(0.5 điểm)} Tính $f(1),f(2),f(3),\ldots,f(10)$. (b) {\rm(0.5 điểm)} Chứng minh công thức truy hồi cho $f(n)$: $f(n) = \sum_{i=2}^{m + 1} f(n - i)$, $\forall n\in\mathbb{N}^\star$. (c) {\rm(1 điểm)} Làm lại 2 ý trước nếu $m$ loại mảnh đổi thành $1\times1,1\times2,\ldots,1\times m$ cho $g(n)$ là số cách lát thỏa mãn. (d) {\rm(5 điểm)} Gọi $f(m,n),g(m,n)$ lần lượt là số cách ta có thể lát cho dải bìa cứng $m\times n$ bằng $m$ loại mảnh có kích thước $\{1\times i\}_{i=2}^{m+1},\{1\times i\}_{i=1}^m$. (i) {\rm(0.5 điểm)} Tính $f(2,2),f(3,2),f(4,2),f(5,2)$. (ii) {\rm(1 điểm)} Thiết lập công thức truy hồi cho $f(n,2) = f(2,n),g(n,2) = g(2,n)$. (iii) {\rm(3.5 điểm)} Thiết lập công thức truy hồi cho $f(m,n),g(m,n)$.
+\end{baitoan}
+
+\begin{baitoan}[Stirling numbers -- Số Stirling]
+    {\rm($\Sigma = 1$ điểm)} (a) {\rm(0.5 điểm, \cite[P6.1.13]{Shahriari2022})} Tìm \& chứng minh công thức dạng
+    \begin{equation*}
+        \stirlingI{n}{n - 2} = \binom{n}{*} + *\binom{n}{*},\ \forall n\in\mathbb{N},\,n\ge2.
+    \end{equation*}
+    (b) {\rm(0.5 điểm, \cite[P6.2.7]{Shahriari2022})} Tìm \& chứng minh công thức dạng
+    \begin{equation*}
+        \stirlingII{n}{n - 2} = \binom{n}{*} + *\binom{n}{*},\ \forall n\in\mathbb{N},\,n\ge2.
+    \end{equation*}  
+\end{baitoan}
+
+\begin{baitoan}[Euler's theorem{\tt/}handshaking lemma \& Havel--Hakimi algorithm]
+    {\rm($\Sigma = 1.5$ điểm)} (a) {\rm(0.5 điểm)} Phát biểu định lý Euler \& định lý về thuật toán Havel--Hakimi. 2 định lý này áp dụng cho các loại đồ thị nào? (b) {\rm(0.5 điểm) \cite[P10.1.13, p. 368]{Shahriari2022}} Chứng minh 1 dãy $d_1,d_2,\ldots,d_n$ là 1 graphic sequence khi \& chỉ khi dãy $n - d_n - 1,\ldots,n - d_2 - 1,n - d_1 - 1$ là graphic; áp dụng kiểm tra $9,9,9,9,9,9,9,9,8,8,8$ có phải là graphic squence không. (c) {\rm(0.5 điểm)} Sử dụng thuật toán Havel--Hakimi để tra các dãy $9,9,9,9,9,9,9,9,8,8,8$ có phải là graphic sequence hay không.
+\end{baitoan}
+
+\begin{baitoan}[Vài đồ thị đơn đặc biệt \cite{Valiente2021}]
+    {\rm($\Sigma = 3$ điểm)} (a) {\rm(0.5 điểm)} Chứng minh số cạnh tối đa của 1 đồ thị đơn có $n\in\mathbb{N}^\star$ đỉnh bằng $\frac{1}{2}n(n - 1)$. Khi đẳng thức xảy ra, đồ thị đơn hữu hạn đó được gọi là đồ thị gì? Viết định nghĩa, vẽ, tìm số cạnh \& dãy bậc của đồ thị đó. (b) {\rm(0.5 điểm)} Viết định nghĩa, vẽ, tìm số cạnh \& dãy bậc của đồ thị đường đi -- path graph $P_n$. (c) Viết định nghĩa, vẽ, tìm số cạnh \& dãy bậc của đồ thị chu trình -- cycle graph $C_n$. (d) Viết định nghĩa, vẽ, tìm số cạnh \& dãy bậc của đồ thị bánh xe -- wheel graph $W_{n+1}$. (e) {\rm(0.5 điểm)} Viết định nghĩa, vẽ, tìm số cạnh \& dãy bậc khả dĩ của đồ thị chính quy -- regular graph. (f) {\rm(0.5 điểm)} Tìm số cạnh \& dãy bậc của đồ thị 2 phía đầy đủ -- complete bipartite graph $K_{m,n}$.
+\end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\printbibliography[heading=bibintoc]
+    
+\end{document}

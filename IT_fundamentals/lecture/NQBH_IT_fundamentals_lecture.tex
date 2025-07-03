@@ -5,7 +5,7 @@
 \usepackage{tocloft}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 \usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
-\usepackage{amsmath,amssymb,amsthm,enumitem,float,graphicx,mathtools,tikz}
+\usepackage{amsmath,amssymb,amsthm,enumitem,fancyvrb,float,graphicx,mathtools,tikz}
 \usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
 \allowdisplaybreaks
 \newtheorem{assumption}{Assumption}
@@ -383,6 +383,172 @@ Python code:
 \begin{baitoan}[\cite{Que_BT_Python}, 10., p. 91]
     Không được dùng {\tt list, tuple, string}, chỉ dùng biến đơn, viết Python sử dụng đệ quy để đảo ngược 1 số, e.g., $123\mapsto321$.
 \end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\section{Visualization with {\tt matplotlib}}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://matplotlib.org/stable/users/explain/quick_start.html#quick-start}{matplotlib{\tt/}quick start guide}.
+\end{enumerate}
+Import thư viện {\tt matplotlib}:
+\begin{verbatim}
+import matplotlib.pyplot as plt
+import numpy as np
+\end{verbatim}
+{\tt matplotlib} graphs your data on {\tt Figure}s (e.g., windows, Jupyter widgets, etc.), each of which can contain 1 or more {\tt Axes}, an area where points can be specified in terms of $x$-$y$ coordinates (or $\theta$-$r$ in a polar plot, $x$-$y$-$z$ in a 3D plot, etc.). The simplest way of creating a Figure with an Axes is using {\tt pyplot.subplots}. We can then sue {\tt Axes.plot} to draw some data on the Axes, \& {\tt show} to display the figure:
+
+-- {\tt matplotlib} biểu đồ hóa dữ liệu của bạn trên {\tt Figure} (ví dụ: cửa sổ, tiện ích Jupyter, v.v.), mỗi cửa sổ có thể chứa 1 hoặc nhiều {\tt Axes}, một khu vực nơi các điểm có thể được chỉ định theo tọa độ $x$-$y$ (hoặc $\theta$-$r$ trong biểu đồ cực, $x$-$y$-$z$ trong biểu đồ 3D, v.v.). Cách đơn giản nhất để tạo Figure với Axes là sử dụng {\tt pyplot.subplots}. Sau đó, chúng ta có thể sử dụng {\tt Axes.plot} để vẽ một số dữ liệu trên Axes, \& {\tt show} để hiển thị hình:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+fig, ax = plt.subplots()             # Create a figure containing a single Axes.
+ax.plot([1, 2, 3, 4], [1, 4, 2, 3])  # Plot some data on the Axes.
+plt.show()                           # Show the figure.
+\end{Verbatim}
+Depending on the environment you are working in, {\tt plt.show()} can be left out, which is e.g. the case with Jupyter notebooks, which automatically show all figures created in a code cell.
+
+-- Tùy thuộc vào môi trường bạn đang làm việc, {\tt plt.show()} có thể bị bỏ qua, ví dụ như trường hợp của sổ ghi chép Jupyter, tự động hiển thị tất cả các hình được tạo trong ô mã.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Parts of a figure -- Các phần của 1 hình}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=4cm]{matplotlib_component}
+    \caption{Compenents of a {\tt matplotlib} figure.}
+\end{figure}
+
+\begin{enumerate}
+    \item {\tt Figure}: The whole figure. The Figure keeps track of all the child {\tt Axes}, a group of `special' Artists (titles, figure legends, colorbars, etc.), \& even nested subfigures.
+    
+    -- Toàn bộ hình. Hình theo dõi tất cả các {\tt Axes} con, một nhóm Nghệ sĩ `đặc biệt' (tiêu đề, chú thích hình, thanh màu, v.v.), \& thậm chí cả các hình phụ lồng nhau.
+    
+    Typically, create a new Figure through 1 of the following functions:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+fig = plt.figure()             # an empty figure with no Axes
+fig, ax = plt.subplots()       # a figure with a single Axes
+fig, axs = plt.subplots(2, 2)  # a figure with a 2x2 grid of Axes
+# a figure with one Axes on the left, and two on the right:
+fig, axs = plt.subplot_mosaic([['left', 'right_top'],
+['left', 'right_bottom']])   
+    \end{Verbatim}
+    \verb|subplots(), subplot_mosaic| are convenience functions that additionally create Axes objects inside the Figure, but you can also manually add Axes later on.
+    
+    -- \verb|subplots(), subplot_mosaic| là các hàm tiện ích có chức năng tạo thêm các đối tượng Axes bên trong Hình, nhưng bạn cũng có thể thêm Axes theo cách thủ công sau đó.
+    \item {\sf Axes}: An Axes is an Artist attached to a Figure that contains a region for plotting data, \& usually includes 2 (or 3 in the case of 3D) {\tt Axis} objects (be aware of the difference between {\tt Axes, Axis}) that provide ticks \& tick labels to provide scales for the data in the Axes. Each {\tt Axes} also has a title (set via \verb|set_title()|), an $x$-label (set via \verb|set_xlabel()|), \& a $y$-label (set via \verb|set_ylabel()|).
+    
+    -- Axes là 1 Artist gắn liền với một Figure chứa một vùng để vẽ dữ liệu, \& thường bao gồm 2 (hoặc 3 trong trường hợp 3D) {\tt Axis} đối tượng (lưu ý sự khác biệt giữa {\tt Axes, Axis}) cung cấp các dấu \& nhãn dấu để cung cấp thang đo cho dữ liệu trong Axes. Mỗi {\tt Axes} cũng có một tiêu đề (được thiết lập thông qua \verb|set_title()|), một nhãn $x$ (được thiết lập thông qua \verb|set_xlabel()|), \& một nhãn $y$ (được thiết lập thông qua \verb|set_ylabel()|).
+    
+    The {\tt Axes} methods are the primary interface or configuring most parts of your plot (adding data, controlling axis scales \& limits, adding labels, etc.).
+    
+    -- Các phương thức {\tt Axes} là giao diện chính hoặc cấu hình hầu hết các phần của biểu đồ (thêm dữ liệu, kiểm soát tỷ lệ trục \& giới hạn, thêm nhãn, v.v.).
+    \item {\tt Axis}: These objects set the scale \& limits \& generate ticks (the marks on the Axis) \& ticklabels (strings labeling the ticks). The location of the ticks is determined by a {\tt Locator} object \& the ticklabel strings are formatted by a {\tt Formatter}. The combination of the correct {\tt Locator} \& {\tt Formatter} gives very fine control over the tick locations \& labels.
+    
+    -- Các đối tượng này thiết lập tỷ lệ \& giới hạn \& tạo ra các vạch chia (các vạch trên Trục) \& nhãn chia (các chuỗi nhãn chia). Vị trí của các vạch chia được xác định bởi một đối tượng {\tt Locator} \& các chuỗi nhãn chia được định dạng bởi một {\tt Formatter}. Sự kết hợp của {\tt Locator} \& {\tt Formatter} chính xác mang lại khả năng kiểm soát rất tốt đối với các vị trí của vạch chia \& nhãn.
+    \item {\tt Artist}: Basically, everything visible on the Figure is an Artist (even {\tt Figure, Axes}, \& {\tt Axis} objects). This includes {\tt Text} objects, {\tt Line2D} objects, {\tt collections} objects, {\tt Patch} objects, etc. When the Figure is rendered, all of the {\tt Artists} are drawn to the {\tt canvas}. Most Artists are tied to an Axes; such an Artist cannot be shared by multiple Axes, or moved from 1 to another.
+    
+    -- Về cơ bản, mọi thứ hiển thị trên Figure đều là một Artist (kể cả các đối tượng {\tt Figure, Axes}, \& {\tt Axis}). Điều này bao gồm các đối tượng {\tt Text}, {\tt Line2D}, {\tt collections}, {\tt Patch}, v.v. Khi Figure được hiển thị, tất cả {\tt Artists} đều được vẽ vào {\tt canvas}. Hầu hết các Artists đều được gắn với một Axes; một Artist như vậy không thể được chia sẻ bởi nhiều Axes hoặc di chuyển từ 1 đến 1 Axes khác.
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Types of inputs to plotting functions -- Các loại đầu vào để vẽ hàm}
+Plotting functions except {\tt numpy.array} or \verb|numpy.ma.masked_array| as input, or objects that can be passed to {\tt numpy.asarray}. Classes that are similar to arrays (`array-like') e.g. {\tt pandas} data objects \& {\tt numpy.matrix} may not work as intended. Common convention is to convert these to {\tt numpy.array} objects prior to plotting, e.g., to convert a {\tt numpy.matrix}:
+
+-- Các hàm vẽ đồ thị ngoại trừ {\tt numpy.array} hoặc \verb|numpy.ma.masked_array| làm đầu vào hoặc các đối tượng có thể được truyền vào {\tt numpy.asarray}. Các lớp tương tự như mảng (`giống mảng') ví dụ: {\tt pandas} đối tượng dữ liệu \& {\tt numpy.matrix} có thể không hoạt động như mong đợi. Quy ước chung là chuyển đổi các đối tượng này thành {\tt numpy.array} trước khi vẽ đồ thị, ví dụ: chuyển đổi {\tt numpy.matrix}:
+\begin{verbatim}
+b = np.matrix([[1, 2], [3, 4]])
+b_asarray = np.asarray(b)
+\end{verbatim}
+Most methods will also parse a string-indexable object like a {\it dict}, a structure numpy array, or a {\tt pandas.DataFrame}. {\tt matplotlib} allows you to provide the {\tt data} keyword argument \& generate plots passing the strings corresponding to the $x,y$ variables.
+
+-- Hầu hết các phương pháp cũng sẽ phân tích cú pháp một đối tượng có thể lập chỉ mục theo chuỗi như {\it dict}, một mảng cấu trúc numpy hoặc {\tt pandas.DataFrame}. {\tt matplotlib} cho phép bạn cung cấp đối số từ khóa {\tt data} \& tạo biểu đồ truyền các chuỗi tương ứng với các biến $x,y$.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+np.random.seed(19680801)  # seed the random number generator.
+data = {'a': np.arange(50),
+    'c': np.random.randint(0, 50, 50),
+    'd': np.random.randn(50)}
+data['b'] = data['a'] + 10 * np.random.randn(50)
+data['d'] = np.abs(data['d']) * 100
+
+fig, ax = plt.subplots(figsize=(5, 2.7), layout='constrained')
+ax.scatter('a', 'b', c='c', s='d', data=data)
+ax.set_xlabel('entry a')
+ax.set_ylabel('entry b')
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Coding styles -- Các phong cách lập trình}
+
+
+\subsubsection{Explicit \& implicit interfaces -- Giao diện rõ ràng \& ngầm định}
+There are essentially 2 ways to use {\tt matplotlib}:
+\begin{enumerate}
+    \item Explicitly create Figures \& Axes, \& call methods on them (the ``object-oriented (OO) style'').
+    \item Rely on {\tt pyplot} to implicitly create \& manage the Figures \& Axes, \& use {\tt pyplot} functions for plotting.
+\end{enumerate}
+See \href{https://matplotlib.org/stable/users/explain/figure/api_interfaces.html#api-interfaces}{Matplotlib Application Interfaces (APIs)} for an explanation of the tradeoffs between the implicit \& explicit interfaces. So one can use the OO-style:
+
+-- Về cơ bản có 2 cách để sử dụng {\tt matplotlib}:
+\begin{enumerate}
+    \item Tạo Figures \& Axes một cách rõ ràng, \& gọi các phương thức trên chúng (``phong cách hướng đối tượng (OO)'').
+    \item Dựa vào {\tt pyplot} để tạo \& quản lý Figures \& Axes một cách ngầm định, \& sử dụng các hàm {\tt pyplot} để vẽ đồ thị.
+\end{enumerate}
+Xem \href{https://matplotlib.org/stable/users/explain/figure/api_interfaces.html#api-interfaces}{Giao diện ứng dụng Matplotlib (API)} để biết giải thích về sự đánh đổi giữa giao diện ngầm định \& rõ ràng. Vì vậy, người ta có thể sử dụng phong cách OO:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+x = np.linspace(0, 2, 100)  # Sample data.
+
+# Note that even in the OO-style, we use `.pyplot.figure` to create the Figure.
+fig, ax = plt.subplots(figsize=(5, 2.7), layout='constrained')
+ax.plot(x, x, label='linear')  # Plot some data on the Axes.
+ax.plot(x, x**2, label='quadratic')  # Plot more data on the Axes...
+ax.plot(x, x**3, label='cubic')  # ... and some more.
+ax.set_xlabel('x label')  # Add an x-label to the Axes.
+ax.set_ylabel('y label')  # Add a y-label to the Axes.
+ax.set_title("Simple Plot")  # Add a title to the Axes.
+ax.legend()  # Add a legend.
+\end{Verbatim}
+or the pyplot-style:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+x = np.linspace(0, 2, 100)  # Sample data.
+
+plt.figure(figsize=(5, 2.7), layout='constrained')
+plt.plot(x, x, label='linear')  # Plot some data on the (implicit) Axes.
+plt.plot(x, x**2, label='quadratic')  # etc.
+plt.plot(x, x**3, label='cubic')
+plt.xlabel('x label')
+plt.ylabel('y label')
+plt.title("Simple Plot")
+plt.legend()
+\end{Verbatim}
+In addition, there is a 3rd approach, for the case when embedding {\tt matplotlib} in a GUI application, which completely drops {\tt pyplot}, even for figure creation, see \href{https://matplotlib.org/stable/gallery/user_interfaces/index.html#user-interfaces}{embedding matplotlib in graphical user interfaces}.
+
+-- Ngoài ra, còn có cách tiếp cận thứ 3, dành cho trường hợp nhúng {\tt matplotlib} vào ứng dụng GUI, cách này loại bỏ hoàn toàn {\tt pyplot}, ngay cả khi tạo hình, hãy xem nhúng matplotlib vào giao diện người dùng đồ họa.
+
+\begin{remark}
+    The approach using the {\tt pylab} interface, via {\tt from pylab import *} is strongly deprecated.
+\end{remark}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Making a helper functions -- Tạo các hàm giúp đỡ}
+If you need to make the same plots over \& over again with different data sets, or want to easily wrap {\tt matplotlib} methods, use the recommended signature function.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+def my_plotter(ax, data1, data2, param_dict):
+    """
+    A helper function to make a graph.
+    """
+    out = ax.plot(data1, data2, **param_dict)
+    return out
+\end{Verbatim}
+which you would then use twice to populate 2 subplots:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+data1, data2, data3, data4 = np.random.randn(4, 100)  # make 4 random data sets
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(5, 2.7))
+my_plotter(ax1, data1, data2, {'marker': 'x'})
+my_plotter(ax2, data3, data4, {'marker': 'o'})
+\end{Verbatim}
 
 %------------------------------------------------------------------------------%
 

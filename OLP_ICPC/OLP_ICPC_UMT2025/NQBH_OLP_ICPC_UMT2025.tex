@@ -1,0 +1,125 @@
+\documentclass{article}
+\usepackage[backend=biber,natbib=true,style=alphabetic,maxbibnames=50]{biblatex}
+\addbibresource{/home/nqbh/reference/bib.bib}
+\usepackage[utf8]{vietnam}
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
+\usepackage{amsmath,amssymb,amsthm,enumitem,fancyvrb,float,graphicx,mathtools,tikz}
+\usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
+\allowdisplaybreaks
+\newtheorem{assumption}{Assumption}
+\newtheorem{baitoan}{Bài toán}
+\newtheorem{cauhoi}{Câu hỏi}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{corollary}{Corollary}
+\newtheorem{dangtoan}{Dạng toán}
+\newtheorem{definition}{Definition}
+\newtheorem{dinhly}{Định lý}
+\newtheorem{dinhnghia}{Định nghĩa}
+\newtheorem{example}{Example}
+\newtheorem{ghichu}{Ghi chú}
+\newtheorem{hequa}{Hệ quả}
+\newtheorem{hypothesis}{Hypothesis}
+\newtheorem{lemma}{Lemma}
+\newtheorem{luuy}{Lưu ý}
+\newtheorem{nhanxet}{Nhận xét}
+\newtheorem{notation}{Notation}
+\newtheorem{note}{Note}
+\newtheorem{principle}{Principle}
+\newtheorem{problem}{Problem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{question}{Question}
+\newtheorem{remark}{Remark}
+\newtheorem{theorem}{Theorem}
+\newtheorem{vidu}{Ví dụ}
+\usepackage[left=1cm,right=1cm,top=5mm,bottom=5mm,footskip=4mm]{geometry}
+\def\labelitemii{$\circ$}
+\DeclareRobustCommand{\divby}{%
+    \mathrel{\vbox{\baselineskip.65ex\lineskiplimit0pt\hbox{.}\hbox{.}\hbox{.}}}%
+}
+\setlist[itemize]{leftmargin=*}
+\setlist[enumerate]{leftmargin=*}
+
+\title{Phân Tích Đề Thi Olympic Tin Học {\it\&} ICPC UMT 2025}
+\author{Nguyễn Quản Bá Hồng\footnote{A scientist- {\it\&} creative artist wannabe, a mathematics {\it\&} computer science lecturer of Department of Artificial Intelligence {\it\&} Data Science (AIDS), School of Technology (SOT), UMT Trường Đại học Quản lý {\it\&} Công nghệ TP.HCM, Hồ Chí Minh City, Việt Nam.\\E-mail: {\sf nguyenquanbahong@gmail.com} {\it\&} {\sf hong.nguyenquanba@umt.edu.vn}. Website: \url{https://nqbh.github.io/}. GitHub: \url{https://github.com/NQBH}.}}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+    This text is a part of the series {\it Some Topics in Advanced STEM \& Beyond}:
+    
+    {\sc url}: \url{https://nqbh.github.io/advanced_STEM/}.
+    
+    Latest version:
+    \begin{itemize}
+        \item {\it Phân Tích Đề Thi Olympic Tin Học \& ICPC UMT 2025}.
+        
+        PDF: {\sc url}: \url{.pdf}.
+        
+        \TeX: {\sc url}: \url{.tex}.
+        \item {\it }.
+        
+        PDF: {\sc url}: \url{.pdf}.
+        
+        \TeX: {\sc url}: \url{.tex}.
+    \end{itemize}
+\end{abstract}
+\tableofcontents
+
+%------------------------------------------------------------------------------%
+
+\section{Olympic Tin Học Sinh Viên UMT 2025}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item {\sc Lê Phúc Lữ}. {\it Đề Thi Chính Thức Olympic Tin Học Sinh Viên UMT 2025}.
+    
+    \item {\sc Phan Vĩnh Tiến, Đỗ Anh Kiệt, Đặng Phúc An Khang, Ngô Hoàng Tùng, Nguyễn Lê Đăng Khoa, Trần Quang Sơn}. {\it Lời Giải Tham Khảo Olympic Tin Học Sinh Viên \& ICPC UMT 2025}. Fanpage: \url{https://www.facebook.com/STAC.UMT}.
+\end{enumerate}
+
+\begin{baitoan}[Team ICPC cho mùa giải mới]
+    Cho $n\in\mathbb{N}^\star$ thành viên, mỗi người có điểm năng lực là số nguyên $a_i$, $\forall i\in[n]$. Đếm số cách chọn 1 đội gồm $3$ thành viên sao cho hiệu giữa điểm cao nhất \& thấp nhất trong đội không vượt quá $2$.
+    \item {\sf Input.} Dòng 1 chứa số nguyên dương $n\in\overline{3,10^5}$. Dòng 2 chứa $n$ số nguyên dương $a_i\in[10^9]$, $\forall i\in[n]$.
+    \item {\sf Output.} Tổng số cách chọn đội thỏa mãn yêu cầu đề bài.
+    \item {\sf Subtask.} 50\% số điểm tương ứng với $n\le10$. 50\% số điểm không có ràng buộc gì thêm.
+\end{baitoan}
+
+\begin{proof}[1st solution]
+    Sử dụng vét cạn, duyệt qua các cách chọn đội có thể có.
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n; cin >> n;
+    vector<int> a(n);
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    sort(a.begin(), a.end());
+    
+    int res = 0;
+    for (int i = 0; i < n - 2; ++i)
+        for (int j = i + 1; j < n - 1; ++j)
+            for (int k = j + 1; k < n; ++k)
+                if (a[k] - a[i] <= 2) ++res;
+    cout << res;
+}
+    \end{Verbatim}
+     {\it Phân tích độ phức tạp thuật toán}: Về độ phức tạp không gian, tốn $n + 5 = O(n)$ ô nhớ {\tt int} cho vector$\{a[i]\}_{i=0}^{n-1}$, \& 5 biến $n,i,j,k$, {\tt res}. Về độ phức tạp thời gian, tốn $n + 1$ để nhập $n$ \& vector $\{a[i]\}_{i=0}^{n-1}$, {\tt sort} tốn trung bình $O(n\log n)$ time.
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+ \section{ICPC UMT 2025}
+ 
+ 
+
+%------------------------------------------------------------------------------%
+
+\section{Miscellaneous}
+
+%------------------------------------------------------------------------------%
+
+\printbibliography[heading=bibintoc]
+    
+\end{document}

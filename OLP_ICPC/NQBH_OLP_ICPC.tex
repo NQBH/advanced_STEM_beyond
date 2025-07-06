@@ -237,6 +237,110 @@ Some critical-thinking questions:
 \chapter{Sort Algorithms \& Applications -- Thuật Toán Sắp Xếp \& Ứng Dụng}
 \minitoc
 
+
+\section{Basic Terminologies -- Thuật Ngữ Cơ Bản}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \cite{Knuth1998}. {\sc Donald Erwin Knuth}. {\it The Art of Computer Programming. Volume 3: Sorting \& Searching}. Chap. 5: Sorting.
+\end{enumerate}
+
+\begin{definition}[Records, file, key, \cite{Knuth1998}, p. 4]
+    We are given $n\in\mathbb{N}^\star$ items $\{r_i\}_{i=1}^n$ to be sorted; we shall call them {\rm records}, \& the entire collection of $n$ records will be called a {\rm file}. Each record $r_i$ has a {\rm key}, $k_i$, which governs sorting process, $\forall i\in[n]$. Additional data, besides the key, is usually also present; this extra ``satellite information'' has no effect no sorting except that it must be carried along as part of each record.
+\end{definition}
+
+\begin{dinhnghia}[Hồ sơ, tập tin, chìa khóa]
+    Chúng ta được cung cấp $n\in\mathbb{N}^\star$ mục $\{r_i\}_{i=1}^n$ để sắp xếp; chúng ta sẽ gọi chúng là {\rm records}, \& toàn bộ tập hợp $n$ bản ghi sẽ được gọi là {\rm file}. Mỗi bản ghi $r_i$ có một {\rm key}, $k_i$, điều khiển quá trình sắp xếp, $\forall i\in[n]$. Dữ liệu bổ sung, bên cạnh khóa, thường cũng có mặt; ``thông tin vệ tinh'' bổ sung này không có tác dụng gì đối với việc sắp xếp ngoại trừ việc nó phải được mang theo như một phần của mỗi bản ghi.
+\end{dinhnghia}
+
+\begin{definition}[Ordering relation, \cite{Knuth1998}, p. 4]
+    An {\rm ordering relation} ``$<$'' is specified on the keys so that the following conditions are satisfied for any key values $a,b,c$:
+    \item(i) {\rm Law of trichotomy:} Exactly 1 of the possibilities $a < b,a = b,b < a$ is true. 
+    \item(ii) {\rm Law of transitivity:} If $a < b$ \& $b < c$, then $a < c$.
+    
+    Properties (i) \& (ii) characterize the mathematical concept of {\rm linear ordering}, also called {\rm total ordering}.
+\end{definition}
+
+\begin{dinhnghia}[Quan hệ thứ tự]
+    Một {\rm quan hệ sắp xếp} ``$<$'' được chỉ định trên các khóa sao cho các điều kiện sau được thỏa mãn đối với bất kỳ giá trị khóa nào $a,b,c$:
+    \item(i) {\rm Luật tam phân:} Có đúng 1 trong các khả năng $a < b,a = b,b < a$ là đúng.
+    \item(ii) {\rm Luật bắc cầu:} Nếu $a < b$ \& $b < c$, thì $a < c$.
+    
+    Các thuộc tính (i) \& (ii) mô tả khái niệm toán học về {\rm sắp xếp tuyến tính}, còn được gọi là {\rm sắp xếp toàn phần}.
+\end{dinhnghia}
+Any relationship ``$<$'' satisfying these 2 properties can be sorted by most of common methods, although some sorting techniques are designed to work only with numerical or alphabetic keys that have the usual ordering.
+
+-- Bất kỳ mối quan hệ ``$<$'' nào thỏa mãn 2 tính chất này đều có thể được sắp xếp bằng hầu hết các phương pháp phổ biến, mặc dù một số kỹ thuật sắp xếp được thiết kế để chỉ hoạt động với các khóa số hoặc chữ cái có thứ tự thông thường.
+
+The goal of sorting is to determine a permutation $p(1)p(2)\ldots p(n)$ of the indices $[n]$ that will put the keys into nondecreasing order $k_{p(1)}\le k_{p(2)}\le\cdots k_{p(n)}$.
+
+\begin{definition}[Stable sorting]
+    The sorting is called {\rm stable} if we make the further requirement that records with equal keys should remain their original relative order. I.e., stable sorting has the additional property that
+    \begin{equation}
+        \label{stable sorting condition}
+        p(i) < p(j)\mbox{ whenever } k_{p(i)} = k_{p(j)}\land i < j.
+    \end{equation}
+\end{definition}
+
+\begin{dinhnghia}[Sắp xếp ổn định, \cite{Knuth1998}, p. 4]
+    Sắp xếp được gọi là {\rm ổn định} nếu chúng ta đưa ra yêu cầu tiếp theo là các bản ghi có khóa bằng nhau phải giữ nguyên thứ tự tương đối ban đầu của chúng. Tức là, sắp xếp ổn định có thêm thuộc tính là
+    \begin{equation}
+        \label{điều kiện sắp xếp ổn định}
+        p(i) < p(j)\mbox{ bất cứ khi nào } k_{p(i)} = k_{p(j)}\land i < j.
+    \end{equation}
+\end{dinhnghia}
+In some cases we will want the records to be physically rearranged in storage so that their keys are in order. But in other cases it will be sufficient merely to have an auxiliary table that specifies the permutation in some way, so that the records can be accessed in order of their keys.
+
+-- Trong một số trường hợp, chúng ta sẽ muốn các bản ghi được sắp xếp lại về mặt vật lý trong kho lưu trữ để các khóa của chúng được sắp xếp theo thứ tự. Nhưng trong những trường hợp khác, chỉ cần có một bảng phụ trợ chỉ định hoán vị theo một cách nào đó là đủ, để có thể truy cập các bản ghi theo thứ tự các khóa của chúng.
+
+A few of the sorting methods assume the existence of either or both of the values ``$\pm\infty$'', which are defined to be greater than or less than all keys, resp: $-\infty < k_i < \infty$, $\forall i\in[n]$. Such extreme values are occasionally used as artificial keys or as sentinel indicators. The case of equality is excluded in $-\infty < k_i < \infty$, $\forall i\in[n]$; if equality can occur, the algorithms can be modified so that they will still work, but usually at the expense of some elegance \& efficiency.
+
+-- 1 số phương pháp sắp xếp giả định sự tồn tại của một hoặc cả hai giá trị ``$\pm\infty$'', được định nghĩa là lớn hơn hoặc nhỏ hơn tất cả các khóa, tương ứng: $-\infty < k_i < \infty$, $\forall i\in[n]$. Các giá trị cực trị như vậy đôi khi được sử dụng làm khóa nhân tạo hoặc làm chỉ báo canh gác. Trường hợp bằng nhau bị loại trừ trong $-\infty < k_i < \infty$, $\forall i\in[n]$; nếu có thể xảy ra bằng nhau, các thuật toán có thể được sửa đổi để chúng vẫn hoạt động, nhưng thường phải trả giá bằng một số tính thanh lịch \& hiệu quả.
+
+Sorting can be classified generally into {\it internal sorting}, in which the records are kept entirely in the computer's high-speed random-access memory, \& {\it external sorting}, when more records are present than can be held comfortably in memory at once. Internal sorting allows more flexibility in the structuring \& accessing of the data, while external sorting shows us how to live with rather stringent accessing constraints.
+
+-- Sắp xếp có thể được phân loại chung thành {\it sắp xếp nội bộ}, trong đó các bản ghi được lưu giữ hoàn toàn trong bộ nhớ truy cập ngẫu nhiên tốc độ cao của máy tính, \& {\it sắp xếp bên ngoài}, khi có nhiều bản ghi hơn mức có thể lưu trữ thoải mái trong bộ nhớ cùng một lúc. Sắp xếp nội bộ cho phép linh hoạt hơn trong việc cấu trúc \& truy cập dữ liệu, trong khi sắp xếp bên ngoài cho chúng ta biết cách sống với các ràng buộc truy cập khá nghiêm ngặt.
+
+The time required to sort $n$ records, using a decent general-purpose sorting algorithm, is roughly proportional to $n\log n$; we make about $\log n$ ``passes'' over the data. This is the minimum possible time, if the records are in random order \& if sorting is done by pairwise comparisons of keys. Thus if we double the number of records, it will take a little more than twice as long to sort them, all other things being equal. (Actually, as $n$ approaches infinity, a better indication of the time needed to sort is $n(\log n)^2$, if the keys are distinct, since the size of the keys must grow at least as fast as $\log n$; but for practical purposes, $n$ never really approaches infinity.)
+
+-- Thời gian cần thiết để sắp xếp $n$ bản ghi, sử dụng một thuật toán sắp xếp mục đích chung tốt, gần như tỷ lệ thuận với $n\log n$; chúng ta thực hiện khoảng $\log n$ ``lượt'' trên dữ liệu. Đây là thời gian tối thiểu có thể, nếu các bản ghi được sắp xếp theo thứ tự ngẫu nhiên \& nếu việc sắp xếp được thực hiện bằng cách so sánh từng cặp khóa. Do đó, nếu chúng ta tăng gấp đôi số bản ghi, sẽ mất nhiều thời gian hơn gấp đôi một chút để sắp xếp chúng, nếu mọi thứ khác đều như nhau. (Trên thực tế, khi $n$ tiến tới vô cực, một chỉ báo tốt hơn về thời gian cần thiết để sắp xếp là $n(\log n)^2$, nếu các khóa là khác nhau, vì kích thước của các khóa phải tăng ít nhất là nhanh bằng $\log n$; nhưng vì mục đích thực tế, $n$ không bao giờ thực sự tiến tới vô cực.)
+
+On other hand, if the keys are known to be randomly distributed w.r.t. some continuous numerical distribution, we will see that sorting can be accomplished in $O(n)$ steps on the average.
+
+-- Mặt khác, nếu các khóa được biết là phân phối ngẫu nhiên theo một phân phối số liên tục nào đó, chúng ta sẽ thấy rằng việc sắp xếp có thể được thực hiện trung bình trong $O(n)$ bước.
+
+\begin{problem}[\cite{Knuth1998}, 1., p. 5, M20]
+    Prove, from the laws of trichotomy \& transitivity, that the permutation $p(1)p(2)\ldots p(n)$ is {\rm uniquely} determined when the sorting is assumed to be stable.
+    
+    -- Chứng minh, từ các định luật tam phân \& tính bắc cầu, rằng hoán vị $p(1)p(2)\ldots p(n)$ được {\rm xác định duy nhất} khi phép sắp xếp được cho là ổn định.
+\end{problem}
+
+\begin{problem}[\cite{Knuth1998}, 2., p. 5, 21]
+    
+\end{problem}
+
+\begin{problem}[\cite{Knuth1998}, 3., p. 5, M25]
+    Let $<$ be a relation on $k_1,\ldots,k_n$ that satisfies the law of trichotomy but not the transitive law. Prove that even without the transitive law it is possible to sort the records in a stable manner, meeting conditions $k_{p(1)}\le k_{p(2)}\le\cdots k_{p(n)}$ \& \eqref{stable sorting condition}; in fact, there are at least $3$ arrangements that satisfy the conditions.
+    
+    -- Cho $<$ là một quan hệ trên $k_1,\ldots,k_n$ thỏa mãn luật tam phân nhưng không thỏa mãn luật bắc cầu. Chứng minh rằng ngay cả khi không có luật bắc cầu, vẫn có thể sắp xếp các bản ghi theo cách ổn định, thỏa mãn các điều kiện $k_{p(1)}\le k_{p(2)}\le\cdots k_{p(n)}$ \& \eqref{điều kiện sắp xếp ổn định}; trên thực tế, có ít nhất $3$ cách sắp xếp thỏa mãn các điều kiện.
+\end{problem}
+
+\begin{problem}[\cite{Knuth1998}, 4., p. 5, 21]
+    
+\end{problem}
+
+\begin{problem}[\cite{Knuth1998}, ., p. 6, ]
+    
+\end{problem}
+
+\begin{baitoan}[Extended sorting problem -- Bài toán sắp xếp mở rộng]
+    Cho $n\in\mathbb{N}^\star$, 1 tập tin $f = \{r_i\}_{i=1}^n$, mỗi hồ sơ $r_i$ có 1 danh sách $n_i\in\mathbb{N}$ chìa khóa (keys or attributions) $\{k_{ij}\}_{j=1}^{n_i}$, $\forall i\in[n]$. (a) Tìm cách sắp xếp tập tin này theo 1 hàm so sánh hay hàm đánh giá tiêu chí $f(n_i,\{k_{ij}\}_{j=1}^{n_i}$ nào đó. (b) Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để cài đặt thuật giải.
+\end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\section{Combinatorial Properties of Permutations -- Tính Chất Tổ Hợp của Hoán Vị}
+
+
 %------------------------------------------------------------------------------%
 
 \chapter{Recursion Programming -- Lập Trình Đệ Quy}

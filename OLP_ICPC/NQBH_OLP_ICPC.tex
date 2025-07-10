@@ -202,6 +202,11 @@ Some critical-thinking questions:
 \part{Introduction to Programming -- Nhập Môn Lập Trình}
 \minitoc
 
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \cite{Thu_Phuong_Tien_Triet_NMLT}. {\sc Trần Đan Thư, Nguyễn Thanh Phương, Đinh Bá Tiến, Trần Minh Triết}. {\it Nhập Môn Lập Trình}.
+\end{enumerate}
+
 %------------------------------------------------------------------------------%
 
 \part{Programming Techniques -- Kỹ Thuật Lập Trình}
@@ -333,7 +338,7 @@ On other hand, if the keys are known to be randomly distributed w.r.t. some cont
 \end{problem}
 
 \begin{baitoan}[Extended sorting problem -- Bài toán sắp xếp mở rộng]
-    Cho $n\in\mathbb{N}^\star$, 1 tập tin $f = \{r_i\}_{i=1}^n$, mỗi hồ sơ $r_i$ có 1 danh sách $n_i\in\mathbb{N}$ chìa khóa (keys or attributions) $\{k_{ij}\}_{j=1}^{n_i}$, $\forall i\in[n]$. (a) Tìm cách sắp xếp tập tin này theo 1 hàm so sánh hay hàm đánh giá tiêu chí $f(n_i,\{k_{ij}\}_{j=1}^{n_i}$ nào đó. (b) Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để cài đặt thuật giải.
+    Cho $n\in\mathbb{N}^\star$, 1 tập tin $f = \{r_i\}_{i=1}^n$, mỗi hồ sơ $r_i$ có 1 danh sách $n_i\in\mathbb{N}$ chìa khóa (keys or attributions) $\{k_{ij}\}_{j=1}^{n_i}$, $\forall i\in[n]$. (a) Tìm cách sắp xếp tập tin này theo 1 hàm so sánh hay hàm đánh giá tiêu chí $f(n_i,\{k_{ij}\}_{j=1}^{n_i})$ nào đó. (b) Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để cài đặt thuật giải.
 \end{baitoan}
 
 %------------------------------------------------------------------------------%
@@ -1361,6 +1366,67 @@ typedef Fn C::*FnC;
 FnC fnC = &C::Member;
 int RefP(C &p, FnC m, char c);
 \end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\part{Data Structure {\it\&} Algorithm -- Cấu Trúc Dữ Liệu {\it\&} Giải Thuật}
+
+%------------------------------------------------------------------------------%
+
+\chapter{Basic Data Structures -- Cấu Trúc Dữ Liệu Cơ Bản}
+
+%------------------------------------------------------------------------------%
+
+\section{Minimum Stack{\tt/}Minimum Queue -- Ngăn Xếp Tối Thiểu{\tt/}Hàng Đợi Tối Thiểu}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://cp-algorithms.com/data_structures/stack_queue_modification.html}{Algorithms for Competitive Programming{\tt/}minimum stack{\tt/}minimum queue}.
+\end{enumerate}
+Consider 3 problems: 1st modify a stack in a way that allows us to find the smallest element of the stack in $O(1)$, then we will do the same thing with a queue, \& finally we will use these data structures to find the minimum in all subarrays of a fixed length in an array in $O(n)$.
+
+-- Xét 3 bài toán: Đầu tiên, sửa đổi một ngăn xếp theo cách cho phép chúng ta tìm phần tử nhỏ nhất của ngăn xếp trong $O(1)$, sau đó chúng ta sẽ làm điều tương tự với một hàng đợi, \& cuối cùng chúng ta sẽ sử dụng các cấu trúc dữ liệu này để tìm phần tử nhỏ nhất trong tất cả các mảng con có độ dài cố định trong một mảng trong $O(n)$.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Stack modification -- Sửa đổi ngăn xếp}
+We want to modify the stack data structure in such a way, that it is possible to find the smallest element in the stack in $O(1)$ time, while maintaining the same asymptotic behavior for adding \& removing elements from the stack. On a stack we only add \& remove elements on 1 end.
+
+-- Chúng ta muốn sửa đổi cấu trúc dữ liệu ngăn xếp sao cho có thể tìm thấy phần tử nhỏ nhất trong ngăn xếp trong thời gian $O(1)$, đồng thời vẫn duy trì hành vi tiệm cận tương tự khi thêm \& xóa phần tử khỏi ngăn xếp. Trên ngăn xếp, chúng ta chỉ thêm \& xóa phần tử ở đầu 1.
+
+To do this, we will not only store the elements in the stack, but we will store them in pairs: the element itself \& the minimum in the stack starting from this element \& below:
+\begin{verbatim}
+stack<pair<int, int>> st;s
+\end{verbatim}
+Finding the minimum in the whole stack consists only of looking at the value {\tt stack.top().second}. Adding or removing a new element to the stack can be done in constant time.
+
+-- Việc tìm giá trị nhỏ nhất trong toàn bộ ngăn xếp chỉ bao gồm việc xem xét giá trị {\tt stack.top().second}. Việc thêm hoặc xóa một phần tử mới vào ngăn xếp có thể được thực hiện theo thời gian không đổi.
+
+Implementation:
+\begin{itemize}
+    \item Add an element:
+    \begin{verbatim}Cập
+int new_min = st.empty() ? new_elem : min(new_elem, st.top().second);
+st.push({new_elem, new_min});
+    \end{verbatim}
+    \item Remove an element:
+    \begin{verbatim}
+int removed_element = st.top().first;
+st.pop();
+    \end{verbatim}
+    \item Find the minimum:
+    \begin{verbatim}
+int minimum = st.top().second;
+    \end{verbatim}
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Queue modification -- Sửa đổi hàng đợi}
+We want to achieve the same operations with a queue, i.e. we want to add elements at the end \& remove them from the front.
+
+%------------------------------------------------------------------------------%
+
+\part{Object-Oriented Programming -- Lập Trình Hướng Đối Tượng}
 
 %------------------------------------------------------------------------------%
 
@@ -3130,6 +3196,135 @@ signed main() {
         \end{tabular}
     \end{table}
 \end{problem}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item VNTA's C++: Josephus problem I:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+long long solve(long long n, long long k) {
+    if (n == 3 && k == 2) return 1;
+    if (n == 1) return 1;
+    if (k <= n / 2) return (2 * k);
+    long long new_n = n / 2;
+    long long new_k = k - (n + 1) / 2;
+    long long res = solve(new_n, new_k);
+    if (n % 2 == 0) return 2 * res - 1;
+    else return 2 * res + 1;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    int q;
+    cin >> q;
+    long long n, k;
+    while (q--) {
+        cin >> n >> k;
+        cout << solve(n, k) << "\n";
+    }
+}
+        \end{Verbatim}
+        \item NLDK's C++: Josephus problem I:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include<bits/stdc++.h>
+#pragma GCC optimize ("O3")
+#pragma GCC optimize ("unroll-loops")
+#define Sanic_speed ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL);
+#define Ret return 0;
+#define ret return;
+#define all(x) x.begin(), x.end()
+#define el "\n";
+#define elif else if
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define pops pop_back
+#define cYES cout << "YES" << "\n";
+#define cNO cout << "NO" << "\n";
+#define cYes cout << "Yes" << "\n";
+#define cNo cout << "No" << "\n";
+#define frs(i, a, b) for(int i = a; i < b; ++i)
+#define fre(i, a, b) for(int i = a; i <= b; ++i)
+#define wh(t) while (t--)
+#define SORAI int main()
+using namespace std;
+typedef unsigned long long ull;
+
+int Looping(int n, int k) {
+    if (n == 1) {return 1;}
+    if ((n + 1) / k >= 2) {
+        if (k * 2 > n) {return 2 * k % n;}
+        else {return 2 * k;}
+    }
+    int temp = Looping(n / 2, k - (n + 1) / 2);
+    if (n & 1) {return 2 * temp + 1;}
+    else {return 2 * temp - 1;}
+}
+
+void solve() {
+    int n, k;
+    cin >> n >> k;
+    cout << Looping(n, k) << el
+}
+/*
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+1 3 5 7 9 11 13 15 17 19
+1 5 9 13 17
+1 9 17
+9
+*/
+SORAI {
+    Sanic_speed
+    int t; cin >> t;
+    wh(t) {solve();}
+}
+        \end{Verbatim}
+        \item NHT's C++: Josephus problem I:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+
+ll fix(ll n, ll k) {
+    if (n == 1) return 1;
+    if (k <= ((n + 1) / 2)) {
+        if (2 * k > n) return (2 * k) % n;
+        else return 2 * k;
+    }
+    ll tmp = fix(n / 2, k - (n + 1) / 2);
+    if (n % 2 == 1) return 2 * tmp + 1;
+    else return 2 * tmp - 1;
+}
+
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    int q;
+    cin >> q;
+    while (q--) {
+        ll n, k;
+        cin >> n >> k;
+        cout << fix(n, k) << "\n";
+    }
+    return 0;
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+
+Mở rộng bài toán trên từ $2$ thành $k\in\mathbb{N}^\star$:
+
+\begin{baitoan}[Áp dụng danh sách liên kết vòng, \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}, p. 275]
+    1 đoàn thám hiểm gồm $n\in\mathbb{N}^\star$ thành viên cần phải vượt qua 1 khu rừng rậm. Chẳng may, khi đi đến giữa rừng thì họ bị bộ lạc ăn thịt người bắt giữ. Bộ lạc này quyết định mỗi ngày sẽ ăn thịt 1 người trong đoàn. Cách mà bộ lạc chọn người là họ sẽ sắp xếp $n$ người thành 1 vòng tròn. Họ sẽ bắt đầu đếm lần lượt từ người thứ nhất trở đi cho đến $k\in\mathbb{N}^\star$ người. Khi đó người thứ $k$ sẽ bị giết thịt. Ngày hôm sau, họ sẽ tiếp tục đếm lại từ người thứ $k + 1$ (người đứng ngay sau người $k$ hôm qua) \& đếm lần lượt cho đến $k$ \& chọn người mới này. Quá trình đếm được thực hiện trên vòng tròn (i.e., sau người cuối cùng sẽ là người đầu tiên) \& mỗi ngày họ bắt đi 1 người. Bộ lạc này cũng ra điều kiện là nếu ai may mắn là người cuối cùng còn sót lại trong $n$ người thì sẽ được tha. Viết chương trình để minh họa quá trình thực hiện bài toán với $n,k$ được nhập vào. Chương trình cần in ra lần lượt những người bị giết theo thứ tự \& cuối cùng là người may mắn sẽ thoát chết.
+\end{baitoan}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/2163}{CSES Problem Set{\tt/}Josephus problem II}]
     Consider a game where there are $n\in\mathbb{N}^\star$ children (numbered $1,2,\ldots,n$) in a circle. During the game, repeatedly $k\in\mathbb{N}^\star$ children are skipped \& $1$ child is removed from the circle. In which order will the children be removed?

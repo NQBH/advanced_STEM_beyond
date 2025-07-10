@@ -7,7 +7,7 @@ ll fix(ll n, ll k) {
     if (k <= ((n + 1) / 2)) {
         if (2 * k > n) return (2 * k) % n;
         else return 2 * k;
-    }        
+    }
     ll tmp = fix(n / 2, k - (n + 1) / 2);
     if (n % 2 == 1) return 2 * tmp + 1;
     else return 2 * tmp - 1;

@@ -6831,7 +6831,7 @@ void find_comps() {
 \subsection{Finding bridges in $O(|V| + |E|)$ -- Tìm cầu trong $O(|V| + |E|)$}
 We are given an undirected graph. A {\it bridge} is defined as an edge which, when removed, makes the graph disconnected (or more precisely, increases the number of components in the graph). The task is to find all bridges in the given graph. Informally, the problem is formulated as follows: given a map of cities connected with roads, find all ``important'' roads, i.e., roads which, when removed, cause disappearance of a path between some pair of cities.
 
--- Chúng ta được cho 1 đồ thị vô hướng. Một {\it bridge} được định nghĩa là 1 cạnh mà khi bị xóa đi, đồ thị sẽ mất kết nối (hay chính xác hơn là làm tăng số thành phần trong đồ thị). Nhiệm vụ là tìm tất cả các cây cầu trong đồ thị đã cho. Một cách không chính thức, bài toán được phát biểu như sau: cho 1 bản đồ các thành phố được kết nối bằng đường bộ, hãy tìm tất cả các con đường ``quan trọng'', tức là những con đường mà khi bị xóa đi, sẽ làm mất đi 1 lối đi giữa 1 cặp thành phố nào đó.
+-- Chúng ta được cho 1 đồ thị vô hướng. 1  {\it bridge} được định nghĩa là 1 cạnh mà khi bị xóa đi, đồ thị sẽ mất kết nối (hay chính xác hơn là làm tăng số thành phần trong đồ thị). Nhiệm vụ là tìm tất cả các cây cầu trong đồ thị đã cho. 1  cách không chính thức, bài toán được phát biểu như sau: cho 1 bản đồ các thành phố được kết nối bằng đường bộ, hãy tìm tất cả các con đường ``quan trọng'', tức là những con đường mà khi bị xóa đi, sẽ làm mất đi 1 lối đi giữa 1 cặp thành phố nào đó.
 
 The algorithm described here is based on depth 1st search \& has $O(|V| + |E|)$ complexity, where $|V|$ is the number of vertices \& $|E|$ is the number of edges in the graph. Note that there is also the article \href{https://cp-algorithms.com/graph/bridge-searching-online.html}{Finding Bridges Online} -- unlike the offline algorithm described here, the online algorithm is able to maintain the list of all bridges in a changing graph (assuming that the only type of change is addition of new edges).
 
@@ -7143,7 +7143,7 @@ void Dijkstra(int s, vector<int>& d, vector<int>& p) {
 \end{Verbatim}
 We don't need the array $u[]$ from the normal Dijkstra's algorithm implementation any more. We will use the {\tt set} to store that information, \& also find the vertex with the shortest distance with it. It kinda acts like a queue. The main loops executes until there are no more vertices in the set{\tt/}queue. A vertex with the smallest distance gets extracted, \& for each successful relaxation we 1st remove the old pair, \& then after the relaxation add the new pair into the queue.
 
--- Chúng ta không cần mảng $u[]$ từ triển khai thuật toán Dijkstra thông thường nữa. Chúng ta sẽ sử dụng {\tt set} để lưu trữ thông tin đó, \& cũng tìm đỉnh có khoảng cách ngắn nhất đến nó. Nó hoạt động giống như 1 hàng đợi. Các vòng lặp chính sẽ thực thi cho đến khi không còn đỉnh nào trong hàng đợi set{\tt/}. Một đỉnh có khoảng cách nhỏ nhất sẽ được trích xuất, \& với mỗi lần giãn thành công, trước tiên chúng ta xóa cặp cũ, \& sau khi giãn, thêm cặp mới vào hàng đợi.
+-- Chúng ta không cần mảng $u[]$ từ triển khai thuật toán Dijkstra thông thường nữa. Chúng ta sẽ sử dụng {\tt set} để lưu trữ thông tin đó, \& cũng tìm đỉnh có khoảng cách ngắn nhất đến nó. Nó hoạt động giống như 1 hàng đợi. Các vòng lặp chính sẽ thực thi cho đến khi không còn đỉnh nào trong hàng đợi set{\tt/}. 1  đỉnh có khoảng cách nhỏ nhất sẽ được trích xuất, \& với mỗi lần giãn thành công, trước tiên chúng ta xóa cặp cũ, \& sau khi giãn, thêm cặp mới vào hàng đợi.
 
 \paragraph*{priroty\_queue.} The main difference to the implementation with {\tt set} is that in many languages, including C++, we cannot remove elements from the \verb|priority_queue| (although heaps can support that operation in theory). Therefore we have to use a workaround: We simply don't delete the old pair from the queue. As a result a vertex can appear multiple times with different distance in the queue at the same time. Among these pairs we are only interested in the pairs where the 1st element is equal to the corresponding value in $d[]$, all the other pairs are old. Therefore we need to make a small modification: at the beginning of each iteration, after extracting the next pair, we check if it is an important pair or if it is already an old \& handled pair. This check is important, otherwise the complexity can increase up to $O(mn)$.
 
@@ -7980,20 +7980,212 @@ int main() {
 	\item {\sf Constraints.} $1\le n,m\le1000$.
 	\item {\sf Sample.} Input:
 	\begin{verbatim}
-		5 8
-		########
-		#.A#...#
-		#.##.#B#
-		#......#
-		########
+5 8
+########
+#.A#...#
+#.##.#B#
+#......#
+########
 	\end{verbatim}
 	Output:
 	\begin{verbatim}
-		YES
-		9
-		LDDRRRRRU
+YES
+9
+LDDRRRRRU
 	\end{verbatim}
 \end{problem}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item VNTA's C++: labyrinth:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int n, m, si, sj, ei, ej;
+char a[1001][1001];
+bool visited[1001][1001];
+int dx[4] = { -1, 0, 0, 1}; // x: row
+int dy[4] = {0, -1, 1, 0}; // y: column
+char dir[4] = {'U', 'L', 'R', 'D'};
+int d[1001][1001]; // d[i][j]: # steps from starting node to (i,j)
+pair<int, int> parent[1001][1001];
+
+void inp()  {
+    cin >> n >> m;
+    for (int i = 1; i <= n; ++i)
+    for (int j = 1; j <= m; ++j) {
+        cin >> a[i][j];
+        if (a[i][j] == 'A') {
+            si = i;
+            sj = j;
+        }
+        else if (a[i][j] == 'B') {
+            ei = i;
+            ej = j;
+        }
+    }
+    memset(visited, false, sizeof(visited));
+    memset(d, 0, sizeof(d));
+}
+
+// find the shortest path from 'A' to 'B'
+void bfs(int i, int j) {
+    queue<pair<int, int>> q;
+    q.push({i, j});
+    visited[i][j] = true;
+    d[i][j] = 0;
+    while (!q.empty()) {
+        auto [x, y] = q.front();
+        q.pop();
+        for (int k = 0; k < 4; ++k) {
+            int ni = x + dx[k];
+            int nj = y + dy[k];
+            if (ni >= 1 && ni <= n && nj >= 1 && nj <= m && a[ni][nj] != '#' && !visited[ni][nj]) {
+                parent[ni][nj] = {x, y};
+                d[ni][nj] = d[x][y] + 1;
+                q.push({ni, nj});
+                visited[ni][nj] = true;
+                if (a[ni][nj] == 'B') return;
+            }
+        }
+    }
+}
+
+void trace_shortest_path() {
+    if (!d[ei][ej]) cout << "NO";
+    else {
+        cout << "YES\n" << d[ei][ej] << '\n';
+        string path = "";
+        int x = ei, y = ej;
+        while (make_pair(x, y) != make_pair(si, sj)) {
+            auto [px, py] = parent[x][y];
+            for (int k = 0; k < 4; ++k) {
+                if (px + dx[k] == x && py + dy[k] == y) {
+                    path += dir[k];
+                    break;
+                }
+            }
+            x = px;
+            y = py;
+        }
+        reverse(path.begin(), path.end());
+        cout << path;
+    }
+}
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    inp();
+    bfs(si, sj);
+    trace_shortest_path();
+}
+        \end{Verbatim}        
+        \item NLDK's C++: labyrinth:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+#pragma GCC optimize ("O3")
+#pragma GCC optimize ("unroll-loops")
+#define Sanic_speed ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL);
+#define Ret return 0;
+#define ret return;
+#define all(x) x.begin(), x.end()
+#define el "\n";
+#define elif else if
+#define ll long long
+#define fi first
+#define se second
+#define pb push_back
+#define pf push_front
+#define popb pop_back
+#define mp make_pair
+#define popf pop_front
+#define cYES cout << "YES" << "\n";
+#define cNO cout << "NO" << "\n";
+#define cYes cout << "Yes" << "\n";
+#define cNo cout << "No" << "\n";
+#define cel cout << "\n";
+#define frs(i, a, b) for(int i = a; i < b; ++i)
+#define fre(i, a, b) for(int i = a; i <= b; ++i)
+#define wh(t) while (t--)
+#define SORAI int main()
+using namespace std;
+typedef unsigned long long ull;
+
+int dx[4] = { -1, 0, 0, 1};
+int dy[4] = {0, -1, 1, 0};
+char movement[4] = {'U', 'L', 'R', 'D'};
+vector<vector<char>> path(1009, vector<char> (1009, '.'));
+
+void solve() {
+    int n, m, xA, yA, ans = 0;
+    cin >> n >> m;
+    string c[n];
+    bool Anotfound = 1;
+    frs(i, 0, n) {
+        cin >> c[i];
+        if (Anotfound) {
+            frs(j, 0, m) {
+                if (c[i][j] == 'A') {
+                    xA = i; yA = j;
+                    path[i][j] = 'A';
+                    Anotfound = 0;
+                    break;
+                }
+            }
+        }
+    }
+    queue<pair<int, int>> q;
+    q.push(mp(xA, yA));
+    c[xA][yA] = '#';
+    while (!q.empty()) {
+        int x = q.front().fi;
+        int y = q.front().se;
+        q.pop();
+        frs(i, 0, 4) {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+            if (nx >= 0 && nx < n && ny >= 0 && ny < m) {
+                if (c[nx][ny] == '#') {continue;}
+                elif (c[nx][ny] == '.') {
+                    c[nx][ny] = '#';
+                    q.push(mp(nx, ny));
+                    path[nx][ny] = movement[i];
+                } else {
+                    cYES
+                    path[nx][ny] = movement[i];
+                    string p;
+                    while (path[nx][ny] != 'A') {
+                        p += path[nx][ny];
+                        ++ans;
+                        if (path[nx][ny] == 'U') {++nx;}
+                        elif (path[nx][ny] == 'L') {++ny;}
+                        elif (path[nx][ny] == 'R') {--ny;}
+                        else {--nx;}
+                    }
+                    reverse(all(p));
+                    cout << ans << el
+                    cout << p << el
+                    ret
+                }
+            }
+        }
+    }
+    cNO
+}
+
+SORAI {
+    Sanic_speed
+    int t = 1;// cin >> t;
+    wh(t) {solve();}
+}
+        \end{Verbatim}
+        
+        
+    \end{enumerate}
+\end{proof}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1666}{CSES Problem Set{\tt/}building roads}]
 	Byteland has $n$ cities, \& $m$ roads between them. Goal: construct new roads so that there is a route between any 2 cities. Task: find out the minimum number of roads required, \& also determine which roads should be built.
@@ -12153,10 +12345,153 @@ The sliding window technique is 1 of common techniques in digital image processi
 
 %------------------------------------------------------------------------------%
 
-%------------------------------------------------------------------------------%
-
 \chapter{Bitwise Operations -- Các Phép Toán Bitwise}
 \minitoc
+
+%------------------------------------------------------------------------------%
+
+\section{Basic Bitwise Operations -- Các Phép Toán Bitwise Cơ Bản}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://en.wikipedia.org/wiki/Bitwise_operation}{Wikipedia{\tt/}bitwise operation}.
+\end{enumerate}
+In computer programming, a {\it bitwise operation} operates on a \href{https://en.wikipedia.org/wiki/Bit_string}{bit string}, a \href{https://en.wikipedia.org/wiki/Bit_array}{bit array}, or a \href{https://en.wikipedia.org/wiki/Binary_numeral}{binary numeral} (considered as a bit string) at the level of its individual bits. It is a fast \& simple action, basic to the higher-level arithmetic operations \& directly supported by the \href{https://en.wikipedia.org/wiki/Central_processing_unit}{processor}. Most bitwise operations are presented as 2-operand instructions where the result replaces 1 of the input operands.
+
+-- Trong lập trình máy tính, một phép toán bitwise hoạt động trên một chuỗi bit, một mảng bit hoặc một số nhị phân (được coi là một chuỗi bit) ở cấp độ từng bit riêng lẻ. Đây là một thao tác nhanh \& đơn giản, cơ bản cho các phép toán số học cấp cao \& được bộ xử lý hỗ trợ trực tiếp. Hầu hết các phép toán bitwise được trình bày dưới dạng các lệnh 2 toán hạng, trong đó kết quả thay thế 1 trong các toán hạng đầu vào.
+
+On simple low-cost processors, typically, bitwise operations are substantially faster than division, several times faster than multiplication, \& sometimes significantly faster than addition. While modern processor usually perform addition \& multiplication just as fast as bitwise operations due to their longer \href{https://en.wikipedia.org/wiki/Instruction_pipeline}{instruction pipelines} \& other \href{https://en.wikipedia.org/wiki/Computer_architecture}{architectural} design choices, bitwise operations do commonly use less power because of the reduced use of resources.
+
+-- Trên các bộ xử lý đơn giản, giá thành thấp, các phép toán bitwise thường nhanh hơn đáng kể so với phép chia, nhanh hơn gấp nhiều lần so với phép nhân, \& đôi khi nhanh hơn đáng kể so với phép cộng. Mặc dù bộ xử lý hiện đại thường thực hiện phép cộng \& phép nhân nhanh như các phép toán bitwise do các đường ống lệnh dài hơn \& các lựa chọn thiết kế kiến trúc khác, các phép toán bitwise thường sử dụng ít năng lượng hơn do giảm thiểu việc sử dụng tài nguyên.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Bitwise operators -- Toán tử bitwise}
+In the following explanations, any indication of a bit's position is counted from the right (least significant) side, advancing left, e.g., the binary value $0001_2$ (decimal 1) has zeros at every position but the 1st (i.e., the rightmost) one.
+
+-- Trong các giải thích sau đây, bất kỳ dấu hiệu nào về vị trí của một bit đều được tính từ phía bên phải (ít quan trọng nhất), tiến về phía bên trái, ví dụ, giá trị nhị phân $0001_2$ (số thập phân 1) có số 0 ở mọi vị trí trừ vị trí thứ 1 (i.e., vị trí ngoài cùng bên phải).
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{NOT}
+The {\it bitwise NOT}, or {\it bitwise complement}, is a unary operation that performs logical negation on each bit, forming the ones' complement of the given binary value. Bits that are 0 become 1, \& those that are 1 become 0, e.g.,
+\begin{verbatim}
+NOT 0111 (decimal 7) = 1000 (decimal 8)
+NOT 10101011 (decimal 171) = 01010100 (decimal 84)
+\end{verbatim}
+The result is equal to the 2's complement of the value minus 1. If 2's complement arithmetic is used, then ${\tt NOT}\ x = -x - 1$.
+
+-- Phép toán {\it bitwise NOT}, hay {\it bitwise complement}, là một phép toán đơn vị thực hiện phép phủ định logic trên mỗi bit, tạo thành phần bù 1 của giá trị nhị phân đã cho. Các bit 0 trở thành 1, \& các bit 1 trở thành 0, ví dụ:
+\begin{verbatim}
+NOT 0111 (thập phân 7) = 1000 (thập phân 8)
+NOT 10101011 (thập phân 171) = 01010100 (thập phân 84)
+\end{verbatim}
+Kết quả bằng phần bù 2 của giá trị trừ 1. Nếu sử dụng phép tính số học phần bù 2, thì ${\tt NOT}\ x = -x - 1$.
+
+For unsigned integers, the bitwise complement of a number is the ``mirror reflection'' of the number across the half-way point of the unsigned integer's range. E.g., for 8-bit unsigned integers, ${\tt NOT}\ x = 255 - x$, which can be visualized on a graph as a downward line that effectively ``flips'' an increasing range from 0 to 255, to a decreasing range from 255 to 0. A simple but illustrative example use is to invert a \href{https://en.wikipedia.org/wiki/Grayscale_image}{grayscale image} where each pixel is stored as an unsigned integer.
+
+-- Đối với số nguyên không dấu, phần bù bit của một số là ``phản xạ gương'' của số đó qua điểm giữa của miền giá trị của số nguyên không dấu. E.g., đối với số nguyên không dấu 8 bit, ${\tt NOT}\ x = 255 - x$, có thể được biểu diễn trên đồ thị như một đường thẳng hướng xuống, ``lật'' một miền giá trị tăng dần từ 0 đến 255 thành một miền giá trị giảm dần từ 255 đến 0. 1  ví dụ đơn giản nhưng minh họa là đảo ngược một ảnh xám, trong đó mỗi điểm ảnh được lưu trữ dưới dạng một số nguyên không dấu.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{AND}
+A {\it bitwise AND} is a binary operation that takes 2 equal-length binary representations \& performs the logical AND operation on each pair of the corresponding bits. Thus, if both bits in the compared position are 1, the bit in the resulting binary representation is 1: $1\cdot1 = 1$, otherwise, the result is 0: $1\cdot0 = 0\cdot0 = 0$, e.g.
+\begin{verbatim}
+0101 AND 0011 (decimal 5 AND decimal 3) = 0001 (decimal 1)
+\end{verbatim}
+The operation may be used to determine whether a particular bit is {\it set} (1) or {\it cleared} (0). E.g., given a bit pattern 0011 (decimal 3), to determine whether the 2nd bit is set we use a bitwise AND with a bit pattern containing 1 only in the 2nd bit:
+
+
+%------------------------------------------------------------------------------%
+
+\section{Problem: Bitwise Operations -- Bài Tập: Các Phép Toán Bitwise}
+
+\begin{problem}[Number of set bits]
+    Count set bits, i.e., determine how many bits in a binary representation of a number $n\in\mathbb{N}$ are set to $1$.
+\end{problem}
+\href{https://www.geeksforgeeks.org/cpp/counting-set-bits-in-cpp/}{Geeks4Geeks{\tt/}counting set bits in C++}. In C++, we have several different methods to count the number of set bits in a number $n\in\mathbb{N}$.
+
+\begin{proof}[1st solution: use bitwise AND with shift operator]
+    We use the bitwise AND operator \& to check each bit of the number. We process all bits by repeatedly right-shifting the number once after checking whether each one is set.
+    
+    -- Sử dụng toán tử AND bitwise \& để kiểm tra từng bit của số. Chúng tôi xử lý tất cả các bit bằng cách dịch chuyển số sang phải nhiều lần sau khi kiểm tra xem từng bit đã được thiết lập hay chưa.
+    
+    C++ implementation:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// C++ Program to count number of set bits in a number using AND operation & left shifting
+#include <iostream>
+using namespace std;
+
+int count_set_bit(int n) { // time complexity: O(log2 n) & auxiliary space: O(1)
+    int count = 0;
+    // run still n > 0
+    while (n) {
+        count += n & 1; // check least significant bit
+        n >>= 1; // right shift number by 1
+    }
+    return count;
+}
+
+int main() {
+    int n;
+    cin >> n;
+    cout << count_set_bit(n) << '\n'; // count & print set bits in n
+}
+    \end{Verbatim}
+\end{proof}
+
+\begin{proof}[2nd proof: use Brian Kernighan's algorithm]
+    {\sc Brian Kernighan}'s algorithm is an efficient method for counting the number of set bits. It works by resetting the rightmost set bit in each iteration in till the number becomes equal to 0. So the number of times we iterate is the number of set bits in it. To reset the rightmost bit, we use the formula $n\&=(n - 1)$.
+    
+    -- Thuật toán của {\sc Brian Kernighan} là một phương pháp hiệu quả để đếm số bit set. Nó hoạt động bằng cách đặt lại bit set ngoài cùng bên phải trong mỗi lần lặp cho đến khi số bit bằng 0. Vì vậy, số lần lặp lại chính là số bit set trong đó. Để đặt lại bit ngoài cùng bên phải, chúng ta sử dụng công thức $n\&=(n - 1)$.
+    
+    C++:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+// count number of set bits in a number using AND operation & left shifting
+int count_set_bit_and(int n) { // time complexity: O(log2 n) & auxiliary space: O(1)
+    int count = 0;	
+    while (n) { // run still n > 0
+        count += n & 1; // check least significant bit
+        n >>= 1; // right shift number by 1
+    }
+    return count;
+}
+// count number of set bits in a number using Brian Kernighan's algorithm
+int count_set_bit_Brian_Kernighan_alg(int n) { // time complexity: O(log2 n) & auxiliary space: O(1)
+    int count = 0;
+    while (n) { // run till n becomes 0
+        n &= (n - 1); // turn off/reset the rightmost set bit
+        ++count;
+    }
+    return count;
+}
+// count number of set bits in a number using a lookup table
+unsigned char bit_set_table256[256];
+// function to initialize lookup table
+void initialize() {
+    bit_set_table256[0] = 0;
+    for (int i = 1; i < 256; ++i)
+    bit_set_table256[i] = (i & 1) + bit_set_table256[i / 2];
+}
+// time complexity: O(1), time for creating lookup table is not considered
+// auxiliary space: O(1), space for lookup table is not considered
+int count_set_bit_lookup_table(int n) {
+    return bit_set_table256[n & 0xFF] +  bit_set_table256[(n >> 8) & 0xFF] +
+           bit_set_table256[(n >> 16) & 0xFF] +  bit_set_table256[(n >> 24) & 0xFF];
+}
+
+int main() {
+    int n;
+    cin >> n;
+    // count & print set bits in n
+    cout << count_set_bit_and(n) << '\n';
+    cout << count_set_bit_Brian_Kernighan_alg(n) << '\n';
+    initialize();
+    cout << count_set_bit_lookup_table(n) << '\n';
+}
+    \end{Verbatim}
+\end{proof}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1146}{CSES Problem Set{\tt/}counting bits}]
     Count the number of $1$ bits in the binary representations of integers between $1$ \& $n\in\mathbb{N}^\star$.
@@ -12178,8 +12513,93 @@ The sliding window technique is 1 of common techniques in digital image processi
 \end{problem}
 
 \begin{proof}[Solution]
+    
+    \begin{lemma}
+        If $n = 2^b - 1 = 11\ldots1_2$ ($b$ numbers $1$) for some $b\in\mathbb{N}^\star$, then the total number of set bits is $b2^{b - 1}$.
+    \end{lemma}
+    
+    \begin{proof}[1st proof]
+        \href{https://www.geeksforgeeks.org/competitive-programming/cses-solutions-counting-bits/}{Geeks4Geeks{\tt/}CSES solutions{\tt/}counting bits}. For all the numbers 0 to $2^b - 1$, if you complement \& flip the list you end up with the same list (half the bits are on, half off). If the number does not have all set bits, then some position $m$ is the position of leftmost set bit. The number of set bits in that position is $n - (1\ll m) + 1$. The remaining set bits are in 2 parts:
+        \begin{itemize}
+            \item The bits in the $(m - 1)$ positions down to the point where the leftmost bit becomes 0, \&
+            \item The $2^{m - 1}$ numbers below that point, which is the closed form $(m - 1)2^{m - 2}$.
+        \end{itemize}
+        -- Đối với tất cả các số từ 0 đến $2^b - 1$, nếu bạn bổ sung \& lật ngược danh sách, bạn sẽ có cùng một danh sách (một nửa số bit được bật, một nửa bị tắt). Nếu số không có tất cả các bit thiết lập, thì vị trí $m$ là vị trí của bit thiết lập ngoài cùng bên trái. Số bit thiết lập ở vị trí đó là $n - (1\verb|<<|m) + 1$. Các bit thiết lập còn lại được chia thành 2 phần:
+        \begin{itemize}
+            \item Các bit ở vị trí $(m - 1)$ xuống đến điểm mà bit ngoài cùng bên trái trở thành 0, \&
+            \item Các số $2^{m - 1}$ bên dưới điểm đó, là dạng đóng $(m - 1)2^{m - 2}$.
+        \end{itemize}
+        Done.
+    \end{proof}
+    
+    \begin{proof}[2nd proof]
+        Gọi $f_1(n)$ là số bit 1 từ 1 đến số $11\ldots1_2 = 2^n - 1$ ($n$ số 1), dễ dàng tính được $f_1(0) = 0,f_1(1) = 1$ \& thiết lập được công thức truy hồi $f_1(n + 1) = 2f_1(n) + 2^n$ để có thể chứng minh bằng quy nạp công thức $f_1(n) = n2^{n - 1}$, $\forall n\in\mathbb{N}$, thật vậy, bước chuyển quy nạp: $f_1(n + 1) = 2f_1(n) + 2^{n - 1} = 2n2^{n - 1} + 2^n = n2^n + 2^n = (n + 1)2^n = (n + 1)2^{(n + 1) - 1}$.
+    \end{proof}
     C++:
     \begin{enumerate}
+        \item G4G's C++: count bits
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#define ll long long
+using namespace std;
+
+// return position of left most set bit. The rightmost position is considered as 0
+ll get_leftmost_bit(ll n) {
+    ll m = 0;
+    while (n > 1) {
+        n = n >> 1;
+        ++m;
+    }
+    return m;
+}
+// given the position of previous leftmost set bit in n (or an upper bound on leftmost position)
+// returns the new position of leftmost set bit in n
+ll get_next_leftmost_bit(ll n, ll m) {
+    ll temp = 1 << m;
+    while (n < temp) {
+        temp = temp >> 1;
+        --m;
+    }
+    return m;
+}
+// returns count of set bits present in all numbers from 1 to n
+ll count_set_bit(ll n) { // time complexity: O(log n), auxiliary space: O(1)
+    // base case: if n = 0, then set bit count = 0
+    if (n == 0) return 0;
+    // get the position of leftmost set bit in n. This will be used as an upper bound
+    // for next set bit function
+    ll m = get_leftmost_bit(n);
+    // get position of next leftmost set bit
+    m = get_next_leftmost_bit(n, m);
+    // if n is of the form 2^x - 1: done. Since positions are considered starting from 0, ++m
+    if (n == (1LL << (m + 1)) - 1) return (m + 1) * (1 << m);
+    // update n for next recursive call
+    n = n - (1LL << m);
+    return (n + 1) + count_set_bit(n) + m * (1LL << (m - 1));
+}
+
+int main() {
+    ll n;
+    cin >> n;
+    cout << count_set_bit(n);
+}        
+        \end{Verbatim}
+        
+        \begin{remark}[get-leftmost-bit function]
+            Hàm \verb|get_leftmost_bit| có nghĩa là nếu $n$ có dạng biểu diễn trong hệ nhị phân là $n = \overline{a_ma_{m-1}\ldots a_1a_0}|_2$ với $a_m = 1$, $a_i\in\{0,1\}$, $\forall i\in\overline{0,m - 1}$, thì \verb|get_leftmost_bit|$(n) = m$, còn nếu cho phép viết các bit $0$ ở đầu, i.e., bỏ ràng buộc $a_m = 1$ thì có thể định nghĩa hàm \verb|get_leftmost_bit| bởi:
+            \begin{equation*}
+                n = \overline{a_ma_{m-1}\ldots a_1a_0}|_2\Rightarrow\verb|get_leftmost_bit|(n) = \max\{i\in\overline{0,m};a_i = 1\}.
+            \end{equation*}
+        \end{remark}
+        
+        \begin{remark}[get-next-leftmost-bit function]
+            Hàm \verb|get_next_leftmost_bit| có nghĩa là nếu $n$ có dạng biểu diễn trong hệ nhị phân là $n = \overline{a_ma_{m-1}\ldots a_1a_0}|_2$ với $a_m = 1$, $a_i\in\{0,1\}$, $\forall i\in\overline{0,m - 1}$, thì \verb|get_leftmost_bit|$(n) = \max\{i\in\overline{0,m - 1};a_i = 1\}$, còn nếu cho phép viết các bit $0$ ở đầu, i.e., bỏ ràng buộc $a_m = 1$ thì có thể định nghĩa hàm \verb|get_next_leftmost_bit| bởi:
+            \begin{align*}
+                n = \overline{a_ma_{m-1}\ldots a_1a_0}|_2\Rightarrow{\tt get\_next\_leftmost\_bit}(n) &= \max\left\{\{i\in\overline{0,m};a_i = 1\}\backslash\{{\tt get\_leftmost\_bit}(n)\}\right\}\\
+                &= \max\left\{\{i\in\overline{0,m};a_i = 1\}\backslash\{\max\{i\in\overline{0,m};a_i = 1\}\}\right\},
+            \end{align*}
+            i.e., phần tử lớn thứ 2 của tập hợp $\{i\in\overline{0,m};a_i = 1\}$.
+        \end{remark}
         \item VNTA's C++: count bits
         \begin{Verbatim}[numbers=left,xleftmargin=5mm]
 #include <bits/stdc++.h>
@@ -12214,8 +12634,7 @@ using ll = long long;
 
 int main() {
     ll n;
-    cin >> n;
-    
+    cin >> n;    
     ll sum = 0;
     for (int j = 60; j >= 0; --j) {
         ll bit = 1ll << j; // 2^j
@@ -12224,7 +12643,57 @@ int main() {
     }
     cout << sum << '\n';
 }
-    \end{Verbatim}
+        \end{Verbatim}
+    \end{enumerate}
+    \item C\#:
+    \begin{enumerate}
+        \item G4G's C\#:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
++++
+        \end{Verbatim}
+        
+    \end{enumerate}
+    \item Python:
+    \begin{enumerate}
+        \item G4G's Python:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+# function to get position of leftmost set bit in n
+def get_leftmost_bit(n):
+    m = 0
+    # iterate until n becomes 1
+    while n > 1:
+        # right shift n by 1 bit
+        n >>= 1
+        # increment m to track position of leftmost set bit
+        m += 1
+    return m # return position of leftmost set bit
+# function to get position of next leftmost set bit in n
+def get_next_leftmost_bit(n, m):
+    temp = 1 << m # create a mask with only mth bit set
+    # iterate until n becomes >= the mask
+    while n < temp:
+        # right shift the mask by 1 bit
+        temp >>= 1
+        # decrement m to track position of next leftmost set bit
+        m -= 1
+    return m # return position of next leftmost set bit
+#function to count number of set bits in numbers from 1 to n
+def count_set_bit(n): # time complexity: O(log n) & auxiliary space: O(1)
+    if n == 0:
+        return 0 # base case: if n is 0, return 0
+    m = get_leftmost_bit(n) # get position of leftmost set bit in n
+    m = get_next_leftmost_bit(n, m) # get position of next leftmost set bit in n
+    # if n is of the form 2^x - 1, return count directly
+    if n == (1 << (m + 1)) - 1:
+        return (m + 1) * (1 << m)
+    # update n for next recursive call
+    n -= 1 << m
+    # return count recursively calculated based on updated n
+    return (n + 1) + count_set_bit(n) + m * (1 << (m - 1))
+if __name__ == "__main__":
+    n = int(input())
+    print(count_set_bit(n)) # print count of set bits in numbers from 1 to n
+        \end{Verbatim}
     \end{enumerate}
 \end{proof}
 

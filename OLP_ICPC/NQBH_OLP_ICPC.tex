@@ -5490,8 +5490,8 @@ If the stages are in linear order, linear DP is used to solve the problem.
 -- Nếu các giai đoạn theo thứ tự tuyến tính, DP tuyến tính được sử dụng để giải quyết vấn đề.
 \begin{Verbatim}[numbers=left,xleftmargin=5mm]
 for (every state i is processed in linear order) {
-    for (every state j in state i is enumerated (j\in S_i)) {
-        for (every state k in stage i - 1 which is related to state j is enumerated (k\in S_{i-1})) {
+    for (every state j in state i is enumerated (j in S_i)) {
+        for (every state k in stage i - 1 which is related to state j is enumerated (k in S_{i-1})) {
             calculate f_i(j) = opt_{u_k\in D_k(k)} g(f_{i-1}(k), u_k);
         }
     }
@@ -5505,7 +5505,245 @@ for (every state i is processed in linear order) {
         \item If $S$ is a regular sequence, then $(S)$ \& $[S]$ are both regular sequences.
         \item If $A,B$ are regular sequences, then $AB$ is a regular sequence.
     \end{enumerate}
-    E.g., all of the following sequences of characters are regular brackets sequences: {\tt(), [], (()), ([]), ()[], ()[()]}
+    E.g., all of the following sequences of characters are regular brackets sequences: {\tt(), [], (()), ([]), ()[], ()[()]} \& all of the following character sequences are not: {\tt(, [, ), )(, ([])], ([()])}. Some sequence of characters {\tt(, ), [, ]} is given. You are to find the shortest possible regular brackets sequence that contains the given character sequence as a subsequence. Here, a string $a_1a_2\ldots a_n$ is called a {\rm subsequence} of the string $b_1b_2\ldots b_m$ if there exist such indices $1\le i_1 < i_2 < \cdots < i_n\le m$, that $a_j = b_{i_j}$, $\forall j\in[n]$.
+    \item {\sf Input.} The input file contains at most $100$ brackets (characters {\tt(, ), [, ]}) that are situated on a single line without any other characters among them.
+    \item {\sf Output.} Write to the output file a single line that contains some regular brackets sequence that has the minimal possible length \& contains the given sequence as a subsequence.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|bracket_sequence.inp| & \verb|bracket_sequence.out| \\
+            \hline
+            ([()] & ()[()] \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \item {\sf Source.} ACM Northeastern Europe 2001. {\sf IDs for Online Judges.} POJ 1141, ZOJ 1463, Ural 1183, UVA 2451.
+\end{problem}
+
+\begin{proof}[Solution]
+    Suppose stage $r$ is the length of subsequence, $r\in[n]$, \& state $i$ is the pointer pointing to the front of the current subsequence, $0\le i\le n - r$. Based on $i$ \& $r$, the pointer $j$ pointing to the rear of the current subsequence can be calculated $j = i + r - 1$. Suppose $dp[i,j]$ is the minimal number of characters that must be inserted into $s_i\ldots s_j$. Obviously, if the length of subsequence is 1, $dp[i,i] = 1$, $0\le i < {\rm strlen}(s)$.
+    
+    -- Giả sử giai đoạn $r$ là độ dài của dãy con, $r\in[n]$, \& trạng thái $i$ là con trỏ trỏ đến đầu dãy con hiện tại, $0\le i\le n - r$. Dựa trên $i$ \& $r$, con trỏ $j$ trỏ đến cuối dãy con hiện tại có thể được tính $j = i + r - 1$. Giả sử $dp[i,j]$ là số ký tự tối thiểu phải được chèn vào $s_i\ldots s_j$. Rõ ràng, nếu độ dài của dãy con là 1, $dp[i,i] = 1$, $0\le i < {\rm strlen}(s)$.
+    
+    If \verb!((si=='[')&&(sj==']')||(si=='(')&&(sj==')'))!, then the minimal number of characters that must be inserted into $s_i\ldots s_j$ is the minimal number of characters that must be inserted into $s_{i+1}\ldots s_j$, i.e., $dp[i,j] = dp[i + 1,j - 1]$; otherwise $s_i\ldots s_j$ is divided into 2 parts, \& we need to determine the pointer $k$ ($i\le k < j$) so that $dp[i,j] = \min_{1\le k < j} dp[i,k] + dp[k + 1,j]$.
+    
+    -- Nếu \verb!((si=='[')&&(sj==']')||(si=='(')&&(sj==')'))!, thì số ký tự tối thiểu phải chèn vào $s_i\ldots s_j$ là số ký tự tối thiểu phải chèn vào $s_{i+1}\ldots s_j$, tức là $dp[i,j] = dp[i + 1,j - 1]$; nếu không thì $s_i\ldots s_j$ được chia thành 2 phần, \& chúng ta cần xác định con trỏ $k$ ($i\le k < j$) sao cho $dp[i,j] = \min_{1\le k < j} dp[i,k] + dp[k + 1,j]$.
+    
+    A memorized list {\tt path[][]} is used to store all solutions to subproblems:
+    \begin{equation*}
+        {\rm path}[i][j] = \left\{\begin{split}
+            &-1&&\mbox{if } s_is_j\in\{(),[]\},\\
+            &k&&\mbox{if } dp[i,j] = \min_{1\le k < j} dp[i,k] + dp[k + 1,j].
+        \end{split}\right.
+    \end{equation*}
+    After the memorized list {\tt path[][]} is calculated through dynamic programming, the regular bracket sequence that has the minimal possible length \& contains the given sequence as a subsequence can be obtained through recursion.
+    
+    -- 1 danh sách ghi nhớ {\tt path[][]} được sử dụng để lưu trữ tất cả các nghiệm của các bài toán con:
+    \begin{equation*}
+        {\rm path}[i][j] = \left\{\begin{split}
+            &-1&&\mbox{if } s_is_j\in\{(),[]\},\\
+            &k&&\mbox{if } dp[i,j] = \min_{1\le k < j} dp[i,k] + dp[k + 1,j].
+        \end{split}\right.
+    \end{equation*}
+    Sau khi danh sách ghi nhớ {\tt path[][]} được tính toán thông qua quy hoạch động, dãy ngoặc chính quy có độ dài nhỏ nhất có thể \& chứa dãy đã cho dưới dạng dãy con có thể thu được thông qua đệ quy.
+    
+    C++:
+    \begin{enumerate}
+        \item Regular bracket sequence: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C++/bracket_sequence.cpp}.
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <cstdio>
+#include <cstring>
+
+const int N = 100;
+char str[N]; // input string
+int dp[N][N], path[N][N];
+
+void oprint(int i, int j) { // output regular brackets sequence containing subsequence str[i, j]
+    if (i > j) return;
+    if (i == j) { // there is only 1 character for subsequence str[i, j]
+        if (str[i] == '[' || str[i] == ']') printf("[]");
+        else printf("()");
+    }
+    else if (path[i][j] == -1) { // str[i] & str[j] are matched brackets
+        printf("%c", str[i]);
+        oprint(i + 1, j - 1);
+        printf("%c", str[j]);
+    }
+    else {
+        oprint(i, path[i][j]);
+        oprint(path[i][j] + 1, j);
+    }
+}
+
+int main(void) {
+    while (fgets(str, sizeof(str), stdin)) {
+        int n = strlen(str);
+        if (n == 0) {
+            printf("\n");
+            continue;
+        }
+        memset(dp, 0, sizeof(dp));
+        for (int i = 0; i < n; ++i) dp[i][i] = 1;
+        for (int r = 1; r < n; ++r) { // stage: r is the length of subsequences
+            for (int i = 0; i < n - r; ++i) { // state: fronts of subsequences are enumerated
+                int j = i + r; // rears of subsequences
+                dp[i][j] = 0x7fffffff;
+                // str[i] & str[j] are matched
+                if ((str[i] == '(' && str[j] == ')') || (str[i] == '[' && str[j] == ']')) {
+                    dp[i][j] = dp[i + 1][j - 1];
+                    path[i][j] = -1;
+                }
+                for (int k = i; k < j; ++k) // k is enumerated
+                if (dp[i][j] > dp[i][k] + dp[k + 1][j]) {
+                    dp[i][j] = dp[i][k] + dp[k + 1][j];
+                    path[i][j] = k;
+                }
+            }
+        }
+        oprint(0, n - 2); // output the regular brackets sequence: original oprint(0, n - 1);
+        printf("\n");
+    }
+    return 0;
+}
+        \end{Verbatim}
+        \item NQBH's C++: (regular) bracket sequence:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <climits>
+#include <cstring>
+#include <vector>
+#define ll long long
+using namespace std;
+
+string s;
+const ll N = 1000;
+vector<vector<ll>> path(N, vector<ll>(N));
+
+bool check(char c, char v) {
+    return ((c == '(' && v == ')') || (c == '[' && v == ']'));
+}
+
+void display(ll i, ll j) {
+    if (i > j) return;
+    if (i == j) { // there is only 1 character for subsequence s[i, j]
+        if (s[i] == '[' || s[i] == ']') cout << "[]";
+        else cout << "()";
+    }
+    else if (path[i][j] == -1) { // s[i] & s[j] are matched brackets
+        cout << s[i];
+        display(i + 1, j - 1);
+        cout << s[j];
+    }
+    else {
+        display(i, path[i][j]);
+        display(path[i][j] + 1, j);
+    }
+}
+
+int main() {
+    while (cin >> s) {
+        ll n = s.size();
+        if (n == 0) {
+            printf("\n");
+            continue;
+        }
+        s = " " + s; // 0-based indexing --> 1-based indexing
+        vector<vector<ll>> dp(n + 1, vector<ll>(n + 1, INT_MAX));
+        for (ll i = 1; i <= n; ++i) dp[i][i] = 1;
+        for (ll r = 1; r <= n; ++r)
+        for (ll l = r - 1; l >= 1; --l)
+        if (check(s[l], s[r])) { // s[i] & s[j] are matched brackets
+            if (l == r - 1) dp[l][r] = 0;
+            else dp[l][r] = dp[l + 1][r - 1];
+            path[l][r] = -1;
+        }
+        else {
+            for (ll k = l; k < r; ++k)
+            if (dp[l][r] > dp[l][k] + dp[k + 1][r]) {
+                dp[l][r] = dp[l][k] + dp[k + 1][r];
+                path[l][r] = k;
+            }
+        }
+        cout << dp[1][n] << '\n';
+        display(1, n);
+        cout << '\n';
+    }
+}
+        \end{Verbatim}
+        \item DPAK's C++: (regular) bracket sequence: Just count the number of additional brackets, do not print out the satisfying result yet. \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C++/DPAK_bracket_sequence.cpp}.
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+
+bool check(char c, char v) {
+    return ((c == '(' && v == ')') || (c == '[' && v == ']'));
+}
+
+int main() {
+    string s; cin >> s;
+    ll n = s.size();
+    s = " " + s; // 0-based indexing --> 1-based indexing
+    vector<vector<ll>> dp(n + 1, vector<ll>(n + 1, INT_MAX));
+    for (ll i = 1; i <= n; ++i) dp[i][i] = 1;
+    for (ll r = 1; r <= n; ++r)
+    for (ll l = r - 1; l >= 1; --l)
+    if (check(s[l], s[r])) {
+        if (l == r - 1) dp[l][r] = 0;
+        else {
+            dp[l][r] = dp[l + 1][r - 1];
+            for (ll k = l; k < r; ++k) dp[l][r] = min(dp[l][r], dp[l][k] + dp[k + 1][r]);
+        }
+    }
+    else dp[l][r] = min(dp[l + 1][r] + 1, dp[l][r - 1] + 1);
+    cout << dp[1][n] << '\n';
+}
+        \end{Verbatim}
+        
+    \end{enumerate}
+\end{proof}
+There are 3 classical problems solved by dynamic programming method: subset sum, longest common subsequence (LCS), \& longest increasing subsequence (LIS).
+
+-- Có 3 bài toán cổ điển được giải bằng phương pháp quy hoạch động: tổng tập con, dãy con chung dài nhất (LCS), \& dãy con tăng dài nhất (LIS).
+
+%------------------------------------------------------------------------------%
+
+\subsection{Subset sum -- Tổng tập hợp con}
+Suppose $S = \{x_1,x_2,\ldots,x_n\} = \{x_i;i\in[n]\}\subset\mathbb{N}$ is a set of nonnegative integers, \& $c\in\mathbb{N}$. The Subset Sum problem is to determine whether there is a subset of the given set with the sum equal to given $c$.
+
+-- Giả sử $S = \{x_1,x_2,\ldots,x_n\} = \{x_i;i\in[n]\}\subset\mathbb{N}$ là một tập hợp các số nguyên không âm, \& $c\in\mathbb{N}$. Bài toán Tổng tập hợp con là xác định xem có tập hợp con nào của tập hợp đã cho có tổng bằng $c$ đã cho hay không.
+
+Coin counting is a classical problem for Subset Sum. Given a set of $n\in\mathbb{N}^\star$ nonnegative integers $\{a_i;i\in[n]\} = \{a_1,a_2,\ldots,a_n\}\subset\mathbb{N}$ \& a nonnegative integer $t\in\mathbb{N}$, coin counting is to determine how many solutions of the form ${\bf k}\coloneqq(k_1,\ldots,k_n)\in\mathbb{N}^n$ to the following equation
+\begin{equation*}
+    \sum_{i=1}^n k_ia_i = k_1a_1 + k_2a_2 + \cdots + k_na_n = t,\ k_i\in\mathbb{N},\ \forall i\in[n].
+\end{equation*}
+DP can be used to solve the problem. Suppose $c(i,j)$ is the number of solutions to the following equation
+\begin{equation*}
+    \sum_{m=1}^i k_ma_m = k_1a_1 + k_2a_2 + \cdots + k_ia_i = j,\ k_i\in\mathbb{N},\ \forall i\in[n],\ k_i > 0.
+\end{equation*}
+
+
+\begin{problem}[Dollars, \cite{Wu_Wang2018}, p. 264]
+    
+    
+    
+    \item {\sf Input.} The 1st input line has $2$ integers $n,m\in\mathbb{N}^\star$: the number of 
+    \item {\sf Output.} Print $1$ integer: the 
+    \item {\sf Constraints.} $n\in[2\cdot10^5],m\in[100],x_i\in\in[10^9]$, $\forall i\in[n]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|.inp| & \verb|.out| \\
+            \hline
+            & \\
+            & \\
+            \hline
+        \end{tabular}
+    \end{table}
 \end{problem}
 
 %------------------------------------------------------------------------------%
@@ -9516,9 +9754,9 @@ int main() {
 \end{proof}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1095}{CSES Problem Set{\tt/}exponentiation}]
-    Efficiently calculate values $a^b\mod10^9 + 7$. Assume $0^0 = 1$.
+    Efficiently calculate values $a^b\mbox{ mod } 10^9 + 7$. Assume $0^0 = 1$.
     \item {\sf Input.} The 1st input line contains an integer $n\in\mathbb{N}^\star$: the number of calculations. After this, there are $n$ lines, each containing $2$ integers $a,b\in\mathbb{N}^\star$.
-    \item {\sf Output.} Print each value $a^b\mod10^9 + 7$.
+    \item {\sf Output.} Print each value $a^b\mbox{ mod } 10^9 + 7$.
     \item {\sf Constraints.} $n\in[2\cdot10^5],a,b\in\overline{0,10^9}$.
     \item {\sf Sample.}
     \begin{table}[H]
@@ -9537,9 +9775,9 @@ int main() {
 \end{problem}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1712}{CSES Problem Set{\tt/}exponentiation II}]
-    Efficiently calculate values $a^{b^c}\mod10^9 + 7$. Assume $0^0 = 1$.
+    Efficiently calculate values $a^{b^c}\mbox{ mod } 10^9 + 7$. Assume $0^0 = 1$.
     \item {\sf Input.} The 1st input line contains an integer $n\in\mathbb{N}^\star$: the number of calculations. After this, there are $n$ lines, each containing $3$ integers $a,b,c\in\mathbb{N}^\star$.
-    \item {\sf Output.} Print each value $a^{b^c}\mod10^9 + 7$.
+    \item {\sf Output.} Print each value $a^{b^c}\mbox{ mod } 10^9 + 7$.
     \item {\sf Constraints.} $n\in[2\cdot10^5],a,b,c\in\overline{0,10^9}$.
     \item {\sf Sample.}
     \begin{table}[H]
@@ -9598,9 +9836,9 @@ int main() {
 \end{problem}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1082}{CSES Problem Set{\tt/}sum of divisors}]
-    Let $\sigma(n)$ denote the sum of divisors of an integer $n\in\mathbb{N}^\star$, e.g., $\sigma(12) = 1 + 2 + 3 + 4 + 6 + 12 = 28$. Calculate the sum $\sum_{i=1}^n \sigma(i)\mod10^9 + 7$.
+    Let $\sigma(n)$ denote the sum of divisors of an integer $n\in\mathbb{N}^\star$, e.g., $\sigma(12) = 1 + 2 + 3 + 4 + 6 + 12 = 28$. Calculate the sum $\sum_{i=1}^n \sigma(i)\mbox{ mod } 10^9 + 7$.
     \item {\sf Input.} The only input line has an integer $n\in\mathbb{N}^\star$.
-    \item {\sf Output.} Print $\sum_{i=1}^n \sigma(i)\mod10^9 + 7$.
+    \item {\sf Output.} Print $\sum_{i=1}^n \sigma(i)\mbox{ mod } 10^9 + 7$.
     \item {\sf Constraints.} $n\in[10^{12}]$.
     \item {\sf Sample.}
     \begin{table}[H]
@@ -9902,7 +10140,7 @@ int main() {
 \begin{problem}[CSES Problem Set{\tt/}Fibonacci numbers]
     The Fibonacci numbers can be defined as follows: $F_0 = F_1 = 1$, $F_n = F_{n - 1} + F_{n - 2}$. Calculate the value of $F_n$ for a given $n\in\mathbb{N}^\star$.
     \item {\sf Input.} The only input line has an integer $n\in\mathbb{N}^\star$.
-    \item {\sf Output.} Print the value of $F_n\mod10^9 + 7$.
+    \item {\sf Output.} Print the value of $F_n\mbox{ mod } 10^9 + 7$.
     \item {\sf Constraints.} $n\in\overline{0,10^{18}}$.
     \item {\sf Sample.}
     \begin{table}[H]
@@ -9920,7 +10158,7 @@ int main() {
 \begin{problem}[CSES Problem Set{\tt/}throwing dice]
     Calculate the number of ways to get a sum $n\in\mathbb{N}^\star$ by throwing dice. Each throw yields an integer $\in[6]$, e.g., if $n = 10$, some possible ways are $3 + 3 + 4,1 + 4 + 1 + 4,1 + 1 + 6 + 1 + 1$.
     \item {\sf Input.} The only input line has an integer $n\in\mathbb{N}^\star$.
-    \item {\sf Output.} Print the value of $F_n\mod10^9 + 7$.
+    \item {\sf Output.} Print the value of $F_n\mbox{ mod } 10^9 + 7$.
     \item {\sf Constraints.} $n\in[10^{18}]$.
     \item {\sf Sample.}
     \begin{table}[H]
@@ -9938,7 +10176,7 @@ int main() {
 \begin{problem}[\href{https://cses.fi/problemset/task/1723}{CSES Problem Set{\tt/}graph paths I}]
     Consider a directed graph that has $n\in\mathbb{N}^\star$ nodes \& $m\in\mathbb{N}^\star$ edges. Count the number of paths from node $1$ to node $n$ with exactly $k$ edges.
     \item {\sf Input.} The 1st input line has $3$ integers $n,m,k\in\mathbb{N}^\star$: the number of nodes \& edges, \& the length of the path. The nodes are numbered $1,2,\ldots,n$. Then, there are $m$ lines describing the edges. Each line contains $2$ integers $a,b\in\mathbb{N}^\star$: there is an edge from node $a$ to node $b$.
-    \item {\sf Output.} Print the value of $F_n\mod10^9 + 7$.
+    \item {\sf Output.} Print the value of $F_n\mbox{ mod } 10^9 + 7$.
     \item {\sf Constraints.} $n\in[100],m\in[n(n - 1)],k\in[10^9],1\le a\le b\le n$.
     \item {\sf Sample.}
     \begin{table}[H]
@@ -9984,10 +10222,10 @@ int main() {
     Given $n(m + 1)$ coefficients $a_{ij},b_i$ which form the following $n\in\mathbb{N}^\star$ linear equations:
     \begin{equation*}
         \left\{\begin{split}
-            a_{11}x_1 + a_{12}x_2 + \cdots + a_{1m}x_m &= b_1\mod10^9 + 7,\\
-            a_{21}x_1 + a_{22}x_2 + \cdots + a_{2m}x_m &= b_2\mod10^9 + 7,\\
+            a_{11}x_1 + a_{12}x_2 + \cdots + a_{1m}x_m &= b_1\mbox{ mod } 10^9 + 7,\\
+            a_{21}x_1 + a_{22}x_2 + \cdots + a_{2m}x_m &= b_2\mbox{ mod } 10^9 + 7,\\
             &\ldots\\
-            a_{n1}x_1 + a_{n2}x_2 + \cdots + a_{nm}x_m &= b_n\mod10^9 + 7.
+            a_{n1}x_1 + a_{n2}x_2 + \cdots + a_{nm}x_m &= b_n\mbox{ mod } 10^9 + 7.
         \end{split}\right.
     \end{equation*}
     Find any $m$ integers $x_1,x_2,\ldots,x_m$ that satisfy the given equations.
@@ -12396,10 +12634,175 @@ For unsigned integers, the bitwise complement of a number is the ``mirror reflec
 \subsubsection{AND}
 A {\it bitwise AND} is a binary operation that takes 2 equal-length binary representations \& performs the logical AND operation on each pair of the corresponding bits. Thus, if both bits in the compared position are 1, the bit in the resulting binary representation is 1: $1\cdot1 = 1$, otherwise, the result is 0: $1\cdot0 = 0\cdot0 = 0$, e.g.
 \begin{verbatim}
-0101 AND 0011 (decimal 5 AND decimal 3) = 0001 (decimal 1)
+0101 (decimal 5) AND 0011  (decimal 3) = 0001 (decimal 1)
+\end{verbatim}
+-- Phép toán {\it bitwise AND} là một phép toán nhị phân lấy 2 biểu diễn nhị phân có độ dài bằng nhau \& thực hiện phép toán logic AND trên mỗi cặp bit tương ứng. Do đó, nếu cả hai bit ở vị trí được so sánh đều là 1, thì bit trong biểu diễn nhị phân kết quả là 1: $1\cdot1 = 1$, nếu không, kết quả là 0: $1\cdot0 = 0\cdot0 = 0$, ví dụ:
+\begin{verbatim}
+0101 (decimal 5) AND 0011  (decimal 3) = 0001 (decimal 1)
 \end{verbatim}
 The operation may be used to determine whether a particular bit is {\it set} (1) or {\it cleared} (0). E.g., given a bit pattern 0011 (decimal 3), to determine whether the 2nd bit is set we use a bitwise AND with a bit pattern containing 1 only in the 2nd bit:
+\begin{verbatim}
+0011 (decimal 3) AND 0010 (decimal 2) = 0010 (decimal 2)
+\end{verbatim}
+Because the result 0010 is nonzero, we know the 2nd bit in the original pattern was set. This is often called {\it bit masking}. (By analogy, the use of \href{https://en.wikipedia.org/wiki/Masking_tape}{making tape} covers, or {\it masks}, portions that should not be altered or portions that are not of interest. In this case, the 0 values mask the bits that are not of interest.)
 
+-- Phép toán này có thể được sử dụng để xác định xem một bit cụ thể đã được {\it set} (1) hay {\it clear} (0). Ví dụ, với một mẫu bit 0011 (số thập phân 3), để xác định xem bit thứ 2 đã được set hay chưa, chúng ta sử dụng phép toán AND từng bit với mẫu bit chỉ chứa 1 trong bit thứ 2:
+\begin{verbatim}
+0011 (decimal 3) AND 0010 (decimal 2) = 0010 (decimal 2)
+\end{verbatim}
+Vì kết quả 0010 khác không, chúng ta biết bit thứ 2 trong mẫu ban đầu đã được set. Điều này thường được gọi là {\it che bit}. (Tương tự, việc sử dụng băng che, hay {\it mask}, để che các phần không nên thay đổi hoặc các phần không cần thiết. Trong trường hợp này, các giá trị 0 sẽ che các bit không cần thiết.)
+
+The bitwise AND may be used to clear selected bits (or \href{https://en.wikipedia.org/wiki/Flag_word}{flags}) of a \href{https://en.wikipedia.org/wiki/Processor_register}{register} in which each bit represents an individual \href{https://en.wikipedia.org/wiki/Boolean_data_type}{Boolean state}. This technique is an efficient way to store a number of Boolean values using as little memory as possible.
+
+-- Phép toán AND bitwise có thể được sử dụng để xóa các bit (hoặc cờ) đã chọn của một thanh ghi trong đó mỗi bit biểu diễn một trạng thái Boolean riêng lẻ. Kỹ thuật này là một cách hiệu quả để lưu trữ một số giá trị Boolean bằng cách sử dụng càng ít bộ nhớ càng tốt.
+
+E.g., 0110 (decimal 6) can be considered a set of 4 flags numbered from right to left, where the 1st \& 4th flags are clear (0), \& the 2nd \& 3rd flags are set (1). The 3rd flag may be cleared by using a bitwise AND with the pattern that has a zero only in the 3rd bit:
+\begin{verbatim}
+0110 (decimal 6) AND 1011 (decimal 11) = 0010 (decimal 2)
+\end{verbatim}
+Because of this property, it becomes easy to check the \href{https://en.wikipedia.org/wiki/Parity_(mathematics)}{parity} of a binary number by checking the value of the lowest valued bit.
+\begin{verbatim}
+0110 (decimal 6) AND 0001 (decimal 1) = 0000 (decimal 0)
+\end{verbatim}
+Because 6 AND 1 is 0, $6\divby2$ \& therefore even.
+
+-- E.g., 0110 (số thập phân 6) có thể được coi là một tập hợp 4 cờ được đánh số từ phải sang trái, trong đó cờ thứ nhất \& thứ 4 được xóa (0), \& cờ thứ 2 \& thứ 3 được đặt (1). Cờ thứ 3 có thể được xóa bằng cách sử dụng phép toán AND từng bit với mẫu chỉ có số 0 ở bit thứ 3:
+\begin{verbatim}
+0110 (số thập phân 6) VÀ 1011 (số thập phân 11) = 0010 (số thập phân 2)
+\end{verbatim}
+Nhờ tính chất này, việc kiểm tra tính chẵn lẻ của một số nhị phân trở nên dễ dàng bằng cách kiểm tra giá trị của bit có giá trị thấp nhất.
+\begin{verbatim}
+0110 (số thập phân 6) VÀ 0001 (số thập phân 1) = 0000 (số thập phân 0)
+\end{verbatim}
+Vì 6 AND 1 bằng 0, nên $6\divby2$ \& do đó là số chẵn.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{OR}
+A {\it bitwise OR} is a binary operation that takes 2 bit patterns of equal length \& performs the \href{https://en.wikipedia.org/wiki/Logical_disjunction}{logical inclusive OR} operation on each pair of corresponding bits. The result in each portion is 0 if both bits are 0, while otherwise the result is 1, e.g.:
+\begin{verbatim}
+0101 (decimal 5) OR 0011 (decimal 3) = 0111 (decimal 7)
+\end{verbatim}
+The bitwise OR may be used to set to 1 the selected bits of the register described above. E.g., the 4th bit of 0010 (decimal 2) may be est by performing a bitwise OR with the pattern with only the 4th bit set:
+\begin{verbatim}
+0010 (decimal 2) OR 1000 (decimal 8) = 1010 (decimal 10)
+\end{verbatim}
+-- Phép toán {\it bitwise OR} là một phép toán nhị phân lấy 2 chuỗi bit có độ dài bằng nhau \& thực hiện phép toán logic OR bao gồm trên mỗi cặp bit tương ứng. Kết quả trong mỗi phần là 0 nếu cả hai bit đều bằng 0, trong khi các trường hợp còn lại là 1, ví dụ:
+\begin{verbatim}
+0101 (thập phân 5) OR 0011 (thập phân 3) = 0111 (thập phân 7)
+\end{verbatim}
+Phép toán OR bitwise có thể được sử dụng để đặt các bit đã chọn của thanh ghi được mô tả ở trên thành 1. Ví dụ: bit thứ 4 của 0010 (thập phân 2) có thể được xác định bằng cách thực hiện phép toán OR bitwise với chuỗi chỉ có bit thứ 4 được đặt:
+\begin{verbatim}
+0010 (thập phân 2) OR 1000 (thập phân 8) = 1010 (thập phân 10)
+\end{verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{XOR}
+A {\it bitwise XOR} is a binary operation that takes 2 bit patterns of equal length \& performs the \href{https://en.wikipedia.org/wiki/Exclusive_disjunction}{logical exclusive OR} operation on each pair of corresponding bits. The result in each position is 1 if only 1 of the bits is 1, but will be 0 if both are 0 or both are 1. In this we perform the comparison of 2 bits, being 1 if the 2 bits are different, \& 0 if they are the same, e.g.:
+\begin{verbatim}
+0101 (decimal 5) XOR 0011 (decimal 3) = 0110 (decimal 6)
+\end{verbatim}
+-- {\it bitwise XOR} là một phép toán nhị phân lấy 2 mẫu bit có độ dài bằng nhau \& thực hiện phép toán logic OR loại trừ trên mỗi cặp bit tương ứng. Kết quả ở mỗi vị trí là 1 nếu chỉ có 1 bit là 1, nhưng sẽ là 0 nếu cả hai đều là 0 hoặc cả hai đều là 1. Trong phép toán này, chúng ta thực hiện so sánh 2 bit, bằng 1 nếu 2 bit khác nhau, bằng 0 nếu chúng giống nhau, e.g.:
+\begin{verbatim}
+0101 (thập phân 5) XOR 0011 (thập phân 3) = 0110 (thập phân 6)
+\end{verbatim}
+The bitwise XOR may be used to invert selected bits in a register (also called {\it toggle} or {\it flip}). Any bit may be toggled by XORing it with 1, e.g., given the bit pattern 0010 (decimal 2) the 2nd \& 4th bits may be toggled by a bitwise XOR with a bit pattern containing 1 in the 2nd \& 4th positions:
+\begin{verbatim}
+0010 (decimal 2) XOR 1010 (decimal 10) = 1000 (decimal 8)
+\end{verbatim}
+This technique may be used to manipulate bit patterns representing sets of Boolean states.
+
+-- Phép toán XOR bitwise có thể được sử dụng để đảo ngược các bit được chọn trong một thanh ghi (còn gọi là {\it toggle} hoặc {\it flip}). Bất kỳ bit nào cũng có thể được đảo ngược bằng cách XOR nó với 1, ví dụ, với mẫu bit 0010 (thập phân 2), bit thứ 2 \& thứ 4 có thể được đảo ngược bằng phép toán XOR bitwise với mẫu bit chứa 1 ở vị trí thứ 2 \& thứ 4:
+\begin{verbatim}
+0010 (thập phân 2) XOR 1010 (thập phân 10) = 1000 (thập phân 8)
+\end{verbatim}
+Kỹ thuật này có thể được sử dụng để thao tác các mẫu bit biểu diễn các tập hợp trạng thái Boolean.
+
+\href{https://en.wikipedia.org/wiki/Assembly_language}{Assembly language} programmers \& optimizing \href{https://en.wikipedia.org/wiki/Compiler}{compiler}s sometimes use XOR as a short-cut to setting the value of a register to 0. Performing XOR on a value against itself always yields 0, \& on many architectures this operation requires fewer clock cycles \& less memory than loading a zero value \& saving it to the register.
+
+-- Các lập trình viên ngôn ngữ hợp ngữ \& trình biên dịch tối ưu hóa đôi khi sử dụng XOR như một phím tắt để đặt giá trị của một thanh ghi thành 0. Thực hiện XOR trên một giá trị so với chính nó luôn trả về 0, \& trên nhiều kiến trúc, thao tác này cần ít chu kỳ xung nhịp \& ít bộ nhớ hơn so với việc tải một giá trị bằng không \& lưu nó vào thanh ghi.
+
+If the set of bit strings of fixed length $n$ (i.e., \href{https://en.wikipedia.org/wiki/Word_(computer_architecture)}{machine words}) is thought of as an $n$-dimensional vector space $\mathbb{F}_2^n$ over the field $\mathbb{F}_2$, then vector addition corresponds to the bitwise XOR.
+
+-- Nếu tập hợp các chuỗi bit có độ dài cố định $n$ (tức là các từ máy) được coi là không gian vectơ $n$ chiều $\mathbb{F}_2^n$ trên trường $\mathbb{F}_2$, thì phép cộng vectơ tương ứng với XOR từng bit.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Mathematical equivalents -- Tương đương toán học}
+Assuming $x\ge y$, for the nonnegative integers, the bitwise operations can be written as follows:
+\begin{align*}
+    {\tt NOT}\ x &= \sum_{n=0}^{\lfloor\log_2x\rfloor} 2^n\left[\left(\left\lfloor\frac{x}{2^n}\right\rfloor\mbox{ mod } 2 + 1\right)\mbox{ mod } 2\right] = \sum_{n=0}^{\lfloor\log_2x\rfloor} \left[2^{\lfloor\log_2x\rfloor + 1} - 1 - x\right],\\
+    x{\tt AND} y &= \sum_{n=0}^{\lfloor\log_2x\rfloor} 2^n\left(\left\lfloor\frac{x}{2^n}\right\rfloor\mbox{ mod } 2\right)\left(\left\lfloor\frac{y}{2^n}\right\rfloor\mbox{ mod } 2\right),\\
+    x{\tt OR} y &= \sum_{n=0}^{\lfloor\log_2x\rfloor} 2^n\left(\left(\left\lfloor\frac{x}{2^n}\right\rfloor\mbox{ mod } 2\right) + \left(\left\lfloor\frac{y}{2^n}\right\rfloor\mbox{ mod } 2\right) - \left(\left\lfloor\frac{x}{2^n}\right\rfloor\mbox{ mod } 2\right)\left(\left\lfloor\frac{y}{2^n}\right\rfloor\mbox{ mod } 2\right)\right),\\
+    x{\tt XOR} y &= \sum_{n=0}^{\lfloor\log_2x\rfloor} 2^n\left(\left[\left(\left\lfloor\frac{x}{2^n}\right\rfloor\mbox{ mod } 2\right) + \left(\left\lfloor\frac{y}{2^n}\right\rfloor\mbox{ mod } 2\right)\right]\mbox{ mod } 2\right) = \sum_{n=0}^{\lfloor\log_2x\rfloor} 2^n\left[\left(\left\lfloor\frac{x}{2^n}\right\rfloor + \left\lfloor\frac{y}{2^n}\right\rfloor\right)\mbox{ mod } 2\right].
+\end{align*}
+
+\paragraph*{Truth table for all binary logical operators -- Bảng chân lý cho tất cả các toán tử logic nhị phân.} There are 16 possible \href{https://en.wikipedia.org/wiki/Truth_function}{truth functions} of 2 \href{https://en.wikipedia.org/wiki/Binary_variable}{binary variables}, this defines a \href{https://en.wikipedia.org/wiki/Truth_table}{truth table}. See \href{https://en.wikipedia.org/wiki/Bitwise_operation}{Wikipedia{\tt/}bitwise operation} for the bitwise equivalent operations of 2 bits $P,Q$.
+
+-- Có 16 hàm chân lý khả dĩ của 2 biến nhị phân, điều này định nghĩa một bảng chân lý. Xem \href{https://en.wikipedia.org/wiki/Bitwise_operation}{Wikipedia{\tt/}phép toán bitwise} để biết các phép toán tương đương bitwise của 2 bit $P,Q$.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Bit shifts -- Dịch chuyển bit}
+The {\it bit shifts} are sometimes considered bitwise operations, because they treat a value as a series of bits rather than as a numerical quantity. In these operations, the digits are moved, or {\it shifted}, to the left or right. Registers in a computer processor have a fixed width, so some bits will be ``shifted out'' of the register at 1 end, while the same number of bits are ``shifted in'' from the other end; the differences between bit shift operators lie in how they determine the values of the shifted-in bits.
+
+-- Việc dịch chuyển bit đôi khi được coi là các phép toán bitwise, vì chúng coi một giá trị là một chuỗi bit chứ không phải là một số lượng. Trong các phép toán này, các chữ số được dịch chuyển, hay còn gọi là {\it shifting}, sang trái hoặc phải. Các thanh ghi trong bộ xử lý máy tính có chiều rộng cố định, vì vậy một số bit sẽ được ``dịch chuyển ra'' khỏi thanh ghi ở đầu này, trong khi cùng số bit đó được ``dịch chuyển vào'' từ đầu kia; sự khác biệt giữa các phép toán dịch chuyển bit nằm ở cách chúng xác định giá trị của các bit được dịch chuyển vào.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Bit addressing -- Địa chỉ bit}
+If the width of the register (frequently 32 or even 64) is larger than the number of bits (usually 8) of the smallest addressable unit, frequently called {\it byte}, the shift operations include an addressing scheme from the bytes to the bits. Thereby the orientations ``left'' \& ``right'' are taken from the standard writing of numbers in a \href{https://en.wikipedia.org/wiki/Place-value_notation}{place-value notation}, s.t. a left shift increases \& a right shift decreases the value of the number -- if the left digits are read 1st, this makes up a \href{https://en.wikipedia.org/wiki/Big-endian}{big-endian} orientation. Disregarding the boundary effects at both ends of the register, arithmetic \& logical shift operations behave the same, \& a shift by 8 bit positions transports the bit pattern by 1 byte position in the following way:
+\begin{itemize}
+    \item \href{https://en.wikipedia.org/wiki/Little-endian}{Little-endian} ordering: a left shift by 8 positions increases the byte address by 1, a right shift by 8 positions decreases the byte address by 1.
+    \item \href{https://en.wikipedia.org/wiki/Big-endian}{Big-endian} ordering: a left shift by 8 positions decreases the byte address by 1, a right shift by 8 positions increases the byte address by 1.
+\end{itemize}
+-- Nếu độ rộng của thanh ghi (thường là 32 hoặc thậm chí 64) lớn hơn số bit (thường là 8) của đơn vị địa chỉ nhỏ nhất, thường được gọi là {\it byte}, các phép dịch chuyển sẽ bao gồm một sơ đồ địa chỉ từ byte sang bit. Do đó, hướng ``trái'' \& ``phải'' được lấy từ cách viết số chuẩn trong ký hiệu giá trị vị trí, ví dụ: dịch chuyển trái làm tăng \& dịch chuyển phải làm giảm giá trị của số -- nếu các chữ số bên trái được đọc trước, điều này tạo thành hướng big-endian. Bỏ qua các hiệu ứng biên giới ở cả hai đầu của thanh ghi, các phép dịch chuyển số học \& logic đều hoạt động giống nhau, \& dịch chuyển 8 vị trí bit sẽ vận chuyển mẫu bit đi 1 vị trí byte theo cách sau:
+\begin{itemize}
+    \item Sắp xếp Little-endian: dịch chuyển sang trái 8 vị trí làm tăng địa chỉ byte lên 1, dịch chuyển sang phải 8 vị trí làm giảm địa chỉ byte đi 1.
+    \item Sắp xếp Big-endian: dịch chuyển sang trái 8 vị trí làm giảm địa chỉ byte đi 1, dịch chuyển sang phải 8 vị trí làm tăng địa chỉ byte đi 1.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Arithmetic shift -- Sự dịch chuyển số học}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{itemize}
+    \item \href{https://en.wikipedia.org/wiki/Arithmetic_shift}{Wikipedia{\tt/}arithmetic shift}.
+\end{itemize}
+In an {\it arithmetic shift} (sticky shift), the bits that are shifted out of either end are discarded. In a left arithmetic shift, zeros are shifted in on the right; in a right arithmetic shift, the \href{https://en.wikipedia.org/wiki/Sign_bit}{sign bit} (the MSB in 2's complement) is shifted in on the left, thus preserving the sign of the operand.
+
+-- Trong phép dịch chuyển số học (sticky shift), các bit bị dịch chuyển ra khỏi hai đầu sẽ bị loại bỏ. Trong phép dịch chuyển số học trái, các số 0 được dịch chuyển vào bên phải; trong phép dịch chuyển số học phải, bit dấu (MSB trong phần bù 2) được dịch chuyển vào bên trái, do đó giữ nguyên dấu của toán hạng.
+ 
+This example uses an 8-bit register, interpreted as 2's complement:
+\begin{verbatim}
+00010111 (decimal +23) LEFT-SHIFT = 00101110 (decimal +46)
+10010111 (decimal -105) RIGHT-SHIFT = 11001011 (decimal -53)
+\end{verbatim}
+In the 1st case, the leftmost digit was shifted past the end of the register, \& a new 0 was shifted into the rightmost position. In the 2nd case, the rightmost 1 was shifted out (perhaps into the \href{https://en.wikipedia.org/wiki/Carry_flag}{carry flag}), \& a new 1 was copied into the leftmost position, preserving the sign of the number. Multiple shifts are sometimes shortened to a single shift by some number of digits, e.g.:
+\begin{verbatim}
+00010111 (decimal +23) LEFT-SHIFT-BY-TWO =  01011100 (decimal +92)
+\end{verbatim}
+-- Ví dụ này sử dụng một thanh ghi 8 bit, được diễn giải theo dạng bù 2:
+\begin{verbatim}
+00010111 (thập phân +23) DỊCH TRÁI = 00101110 (thập phân +46)
+10010111 (thập phân -105) DỊCH PHẢI = 11001011 (thập phân -53)
+\end{verbatim}
+Trong trường hợp thứ nhất, chữ số tận cùng bên trái được dịch chuyển qua cuối thanh ghi, \& một số 0 mới được dịch chuyển sang vị trí tận cùng bên phải. Trong trường hợp thứ hai, số 1 tận cùng bên phải được dịch chuyển ra ngoài (có thể là vào cờ nhớ), \& một số 1 mới được sao chép vào vị trí tận cùng bên trái, giữ nguyên dấu của số. Đôi khi, nhiều lần dịch chuyển được rút gọn thành một lần dịch chuyển duy nhất bằng một số chữ số nhất định, ví dụ:
+\begin{verbatim}
+00010111 (thập phân +23) DỊCH TRÁI BẰNG HAI = 01011100 (thập phân +92)
+\end{verbatim}
+A left arithmetic shift by $n$ is equivalent to multiplying by $2^n$ (provided the value does not \href{https://en.wikipedia.org/wiki/Arithmetic_overflow}{overflow}), while a right arithmetic shift by $n$ of a 2's complement value is equivalent to taking the floor of division by $2^n$. If the binary number is treated as one's complement, then the same right-shift operation results in division by $2^n$ \& rounding toward 0.
+
+-- Dịch chuyển số học trái theo $n$ tương đương với phép nhân với $2^n$ (với điều kiện giá trị không tràn), trong khi dịch chuyển số học phải theo $n$ của phần bù 2 tương đương với việc lấy phần nguyên của phép chia cho $2^n$. Nếu số nhị phân được coi là phần bù 1, thì phép dịch chuyển phải tương tự sẽ cho kết quả là phép chia cho $2^n$ \& làm tròn về 0.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Logical shift -- Dịch chuyển logic}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Circular shift -- Dịch chuyển tròn}
 
 %------------------------------------------------------------------------------%
 
@@ -12408,7 +12811,16 @@ The operation may be used to determine whether a particular bit is {\it set} (1)
 \begin{problem}[Number of set bits]
     Count set bits, i.e., determine how many bits in a binary representation of a number $n\in\mathbb{N}$ are set to $1$.
 \end{problem}
-\href{https://www.geeksforgeeks.org/cpp/counting-set-bits-in-cpp/}{Geeks4Geeks{\tt/}counting set bits in C++}. In C++, we have several different methods to count the number of set bits in a number $n\in\mathbb{N}$.
+
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://www.geeksforgeeks.org/c/counting-set-bit-in-c/}{Geeks4Geeks{\tt/}counting set bit in C}.
+    
+    \item \href{https://www.geeksforgeeks.org/cpp/counting-set-bits-in-cpp/}{Geeks4Geeks{\tt/}counting set bits in C++}.
+\end{enumerate}
+C: 
+
+In C++, we have several different methods to count the number of set bits in a number $n\in\mathbb{N}$.
 
 \begin{proof}[1st solution: use bitwise AND with shift operator]
     We use the bitwise AND operator \& to check each bit of the number. We process all bits by repeatedly right-shifting the number once after checking whether each one is set.
@@ -14226,17 +14638,17 @@ Quite often you come across the problem of computing binomial coefficients modul
 
 -- Bạn thường gặp phải vấn đề tính hệ số nhị thức modulo 1 số $m$ nào đó.
 
-\paragraph*{Binomial coefficient for small $n$ -- Hệ số nhị thức cho $n$ nhỏ.} The previously discussed approach of Pascal's triangle can be used to calculate all values of $\binom{n}{k}\mod m$ for reasonably small $n$, since it requires time complexity $O(n^2)$. This approach can handle any modulo, since only addition operations are used.
+\paragraph*{Binomial coefficient for small $n$ -- Hệ số nhị thức cho $n$ nhỏ.} The previously discussed approach of Pascal's triangle can be used to calculate all values of $\binom{n}{k}\mbox{ mod }  m$ for reasonably small $n$, since it requires time complexity $O(n^2)$. This approach can handle any modulo, since only addition operations are used.
 
--- Phương pháp tiếp cận tam giác Pascal đã thảo luận trước đó có thể được sử dụng để tính toán tất cả các giá trị của $\binom{n}{k}\mod m$ cho $n$ khá nhỏ, vì nó đòi hỏi độ phức tạp thời gian $O(n^2)$. Phương pháp tiếp cận này có thể xử lý bất kỳ modulo nào, vì chỉ sử dụng các phép toán cộng.
+-- Phương pháp tiếp cận tam giác Pascal đã thảo luận trước đó có thể được sử dụng để tính toán tất cả các giá trị của $\binom{n}{k}\mbox{ mod }  m$ cho $n$ khá nhỏ, vì nó đòi hỏi độ phức tạp thời gian $O(n^2)$. Phương pháp tiếp cận này có thể xử lý bất kỳ modulo nào, vì chỉ sử dụng các phép toán cộng.
 
 \paragraph*{Binomial coefficient module large prime -- Hệ số nhị thức modulo nguyên tố lớn.} The formula for the binomial coefficients is $\binom{n}{k} = \dfrac{n!}{k!(n - k)!}$, so if we want to compute it module some prime $m > n$ we get
 \begin{equation*}
-    \binom{n}{k}\equiv n!(k!)^{-1}((n - k)!)^{-1}\mod m.
+    \binom{n}{k}\equiv n!(k!)^{-1}((n - k)!)^{-1}\mbox{ mod }  m.
 \end{equation*}
 -- Công thức cho hệ số nhị thức là $\binom{n}{k} = \dfrac{n!}{k!(n - k)!}$, vì vậy nếu chúng ta muốn tính toán nó theo môđun 1 số nguyên tố $m > n$, chúng ta sẽ có
 \begin{equation*}
-    \binom{n}{k}\equiv n!(k!)^{-1}((n - k)!)^{-1}\mod m.
+    \binom{n}{k}\equiv n!(k!)^{-1}((n - k)!)^{-1}\mbox{ mod }  m.
 \end{equation*}
 1st we precompute all factorials module $m$ up to MAXN! in $O({\rm MAXN})$ time.
 \begin{Verbatim}[numbers=left,xleftmargin=5mm]

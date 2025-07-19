@@ -4,6 +4,7 @@
 const int N = 100;
 char str[N]; // input string
 int dp[N][N], path[N][N];
+
 void oprint(int i, int j) { // output regular brackets sequence containing subsequence str[i, j]
 	if (i > j) return;
 	if (i == j) { // there is only 1 character for subsequence str[i, j]
@@ -22,15 +23,14 @@ void oprint(int i, int j) { // output regular brackets sequence containing subse
 }
 
 int main(void) {
-	while (fgets(str, N, stdin)) { // error: ‘gets’ was not declared in this scope; did you mean 'getw'?
+	while (fgets(str, sizeof(str), stdin)) { // error: 'gets' was not declared in this scope; did you mean 'getw'?
 		int n = strlen(str);
 		if (n == 0) {
 			printf("\n");
 			continue;
 		}
 		memset(dp, 0, sizeof(dp));
-		for (int i = 0; i < n; ++i)
-			dp[i][i] = 1;
+		for (int i = 0; i < n; ++i) dp[i][i] = 1;
 		for (int r = 1; r < n; ++r) { // stage: r is the length of subsequences
 			for (int i = 0; i < n - r; ++i) { // state: fronts of subsequences are enumerated
 				int j = i + r; // rears of subsequences
@@ -39,15 +39,14 @@ int main(void) {
 					dp[i][j] = dp[i + 1][j - 1];
 					path[i][j] = -1;
 				}
-				for (int k = i; k < j; ++k) { // k is enumerated
+				for (int k = i; k < j; ++k) // k is enumerated
 					if (dp[i][j] > dp[i][k] + dp[k + 1][j]) {
 						dp[i][j] = dp[i][k] + dp[k + 1][j];
 						path[i][j] = k;
 					}
-				}
 			}
 		}
-		oprint(0, n - 1); // output the regular brackets sequence
+		oprint(0, n - 2); // output the regular brackets sequence: original oprint(0, n - 1);
 		printf("\n");
 	}
 	return 0;

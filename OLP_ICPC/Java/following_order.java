@@ -40,7 +40,7 @@ public class Main {
 			for (int i = 0; i < v.length(); i += 4) // calculate every vertices' in-degrees
 				++pre[v.charAt(i + 2)];
 			dfs(1, "");
-			print("/n");
+			print("\n");
 		}
 	}
 }

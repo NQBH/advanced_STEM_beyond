@@ -8399,13 +8399,143 @@ The function $low$ is used to get cut vertices \& bridges of a connected graph \
 \end{equation*}
 where $s$ is a child of $u$, \& $(u,w)$ is a back edge.
 
+\begin{note}
+    Need to explain these concepts clearer.
+\end{note}
 -- Hàm $low$ được sử dụng để lấy các đỉnh cắt \& cầu của một đồ thị liên thông \& các thành phần song liên thông của đồ thị. Giả sử $pre[v]$ là số thứ tự của đỉnh $v$ trong phép duyệt DFS, tức là $pre[v]$ là thời điểm đỉnh $v$ được thăm. Hàm $low[u]$ là $pre[v]$ của đỉnh $v$, là đỉnh tổ tiên được thăm sớm nhất của $u$ \& các đỉnh con của $u$, tức là,
 \begin{equation*}
     low[u] = \min_{(u,s),(u,w)\in E} \{pre[u],low[s],pre[w]\},
 \end{equation*}
 với $s$ là con của $u$, \& $(u,w)$ là cạnh sau.
 
-p. 352+++
+A vertex itself is considered 1 of its ancestors. Therefore, $low[u] = pre[u]$ or $low[u] = pre[w]$ can hold. $low[u]$ is calculated as follows:
+\begin{equation*}
+    low[u] = \left\{\begin{split}
+        &pre[u]&&\mbox{if } u \mbox{ is visited for the 1st time in DFS},\\
+        &\min\{low[u],pre[w]\}&&\mbox{if }(u,w)\mbox{ is a back edge},\\
+        &\min\{low[u],low[s]\}&&\mbox{all edges related to } u\mbox{'s children are inspected}.
+    \end{split}\right.
+\end{equation*}
+In the algorithm, $low[u]$ is changed until the DFS subtree whose root is $u$ \& array $low$ \& array $pre$ for $u$ \& its descendants are produced.
+
+-- Bản thân một đỉnh được coi là 1 trong các đỉnh tổ tiên của nó. Do đó, $low[u] = pre[u]$ hoặc $low[u] = pre[w]$ có thể đúng. $low[u]$ được tính như sau:
+\begin{equation*}
+    low[u] = \left\{\begin{split}
+        &pre[u]&&\mbox{nếu } u \mbox{ được thăm lần đầu tiên trong DFS},\\
+        &\min\{low[u],pre[w]\}&&\mbox{nếu }(u,w)\mbox{ là cạnh sau},\\
+        &\min\{low[u],low[s]\}&&\mbox{tất cả các cạnh liên quan đến các đỉnh con của } u\mbox{đều được kiểm tra}.
+    \end{split}\right.
+\end{equation*}
+Trong thuật toán, $low[u]$ được thay đổi cho đến khi cây con DFS có gốc là $u$ \& mảng $low$ \& mảng $pre$ cho $u$ \& các con cháu của nó được tạo ra.
+
+In DFS, edges can be classified into 4 types:
+\begin{enumerate}
+    \item {\it Branch edge} $T$: Edge $(u,v)$ is a branch edge if it is the 1st time that $v$ is visited in DFS.
+    \item {\it Back edge} $B$: Edge $(u,v)$ is a back edge if $u$ is a descendant of $v$ \& $v$ has been visited, but all descendants of $v$ haven't been visited.
+    \item {\it Forward edge} $F$: Edge $(u,v)$ is a forward edge if $v$ is a descendant of $u$, all descendants of $v$ have been visited, \& $pre[u] < pre[v]$.
+    \item {\it Cross-edge} $C$: All other edges $(u,v)$. I.e., $u,v$ has no ancestor-descendant relationship in a DFS tree, or $u,v$ are in different DFS trees. All descendants of $v$ have been visited \& $pre[u] > pre[v]$.
+\end{enumerate}
+-- Trong DFS, các cạnh có thể được phân loại thành 4 loại:
+\begin{enumerate}
+    \item {\it Cạnh nhánh} $T$: Cạnh $(u,v)$ là cạnh nhánh nếu $v$ được thăm lần đầu tiên trong DFS.
+    \item {\it Cạnh sau} $B$: Cạnh $(u,v)$ là cạnh sau nếu $u$ là con của $v$ \& $v$ đã được thăm, nhưng tất cả các con của $v$ chưa được thăm.
+    \item {\it Cạnh tiến} $F$: Cạnh $(u,v)$ là cạnh tiến nếu $v$ là con của $u$, tất cả các con của $v$ đã được thăm, \& $pre[u] < pre[v]$.
+    \item {\it Cạnh chéo} $C$: Tất cả các cạnh khác $(u,v)$. Ví dụ, $u,v$ không có mối quan hệ tổ tiên-con cháu trong một cây DFS, hoặc $u,v$ nằm trong các cây DFS khác nhau. Tất cả con cháu của $v$ đã được thăm \& $pre[u] > pre[v]$.
+\end{enumerate}
+
+\begin{enumerate}
+    \item {\bf Function $low$ is used to get cut vertices in a connected graph.} We determine whether a vertex is cut vertex or not based on the 2 following properties:
+
+    {\bf Property 1.} If vertex $U$ isn't a root, $U$ is a cut vertex iff there exists a child $s$ of $U$, $low[s]\ge pre[U]$, i.e., there is no back edge from $s$ \& its descendants to $U$'s ancestors.
+
+    In an undirected graph, there are only branch edges \& back edges. We can calculate $low,pre$ through DFS, \& find whether property 1 holds or not. The process is as follows: If $(v,w)$ is a branch edge $T$ ({\tt pre[w] == -1}), \& if there is no back edge from $w$ or $w$'s descendants to $v$'s ancestors ($low[w]\ge pre[v]$), then vertex $v$ is a cut vertex, \& $low[v] = \min\{low[v],low[w]\}$.
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+If (v, w) is a back edge B (pre[w] != -1), then low[v] = min{low[v], pre[w]}.
+void find_cut_point(int v) { // DFS sarts from v to calculate a cut vertex in an undirected graph
+    int w;
+    low[v] = pre[v] = ++d; // initialization
+    for (w in seet of adjacent vertices for v) && (w != v) { // search edge (v, w) for vertex v
+        if (pre[w] == -1) { // if (v, w) is branch edge T, w is called recursively. If w & its descendants can't return to v's ancestors, v is a cut vertex, calculate low[v]
+            find_cut_point(w); // w's all children's related edges
+            if (low[w] >= pre[v]) // v is a cut vertex
+                low[v] = min{low[v], low[w]};
+        };
+        else low[v] = min{low[v], pre[w]}; // if (v, w) is a back edge, calculate low[v]
+    }
+}
+    \end{Verbatim}
+    {\bf Property 2.} If $U$ is selected as the root, then $U$ is a cut vertex iff it has more than 1 child.
+
+    In an undirected graph, there is no cross-edge $C$.
+
+    Based on the above 2 properties, the algorithm calculating cut vertices is as follows:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+for (i = 0; i < n; ++i) pre[i] = -1; // initialization
+low[s] = pre[s] = d = 0; // vertex s: start vertex
+p = 0; // number of children for vertex s
+for (each w in adj[s]) ++p;
+if (p > 1)
+    s is a cut vertex & exit; // Property 2
+    find_cut_point(s); // Property 1
+    \end{Verbatim}
+    \item {\bf Function $low$ is used to get the bridge in a connected graph.} In an undirected graph, edge $(u, v)$ is a bridge iff $(u,v)$ is not in any simple circuit.
+
+    The method determining whether an edge is a bridge is not is as follows. Edge $(u,v)$ is a branch edge discovered by DFS. If there is no back edge connecting $v$ \& its descendants to $u$'s ancestors, i.e., $low[v] > pre[u]$ or $low[v] == pre[v]$, then deleting $(u,v)$ leads to $u,v$ unconnected. Therefore, edge $(u,v)$ is a bridge.
+
+    In an undirected graph there are only branch edges \& back edges. DFS can be used to calculate $low,pre$ for vertices (initial values for $pre[]$ are $-1$) \& calculate bridges in the undirected graph. The method is as follows:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+If (v, w) is a branch edge (pre[w] == -1),
+& if there is no back edge from w or w's descendants to u's ancestors, ((low[w] == pre[w]) || (low[w] > pre[v])), then (v, w) is a bridge, & low[v] = min{low[v], low[w]}.
+If (v, w) is a back edge (pre[w] != -1), then low[v] = min{low[v], pre[w]}.
+void find_bridge(v); { // DFS to find bridges from vertex v
+    int w;
+    low[v] = pre[v] = ++d;
+    for (each w in set of adjacent vertices for v) && (w != v) { // Search edge (v, w)
+        if (pre[w] == -1) { // if (v, w) is a branch edge
+            find_bridge(w);
+            if ((low[w] == pre[w]) || (low[w] > pre[v]))
+                (v, w) is a branch edge;
+            low[v] = min{low[v], low[w]};
+        };
+        else low[v] = min{low[v], pre[w]}; // if (v, w) is a backk edge
+    }
+}
+    \end{Verbatim}
+    \item {\bf Function $low$ is used to get biconnected components.} A biconnected component is a connected component without a cut vertex. Biconnected components of a graph are partitions of edges of the graph, i.e., every edge must be in a block, \& 2 different blocks don't contain common edges. The key to finding a block in an undirected graph is to find a cut vertex. DFS is used to get $low,pre$ (initial values for $pre[]$ are $-1$) \& calculate blocks in the undirected graph. The process is as follows.
+
+    -- {\bf Hàm $low$ được sử dụng để lấy các thành phần song liên thông.} Thành phần song liên thông là thành phần liên thông không có đỉnh cắt. Các thành phần song liên thông của một đồ thị là các phân hoạch các cạnh của đồ thị, tức là mỗi cạnh phải nằm trong một khối, \& 2 khối khác nhau không chứa các cạnh chung. Chìa khóa để tìm một khối trong đồ thị vô hướng là tìm một đỉnh cắt. DFS được sử dụng để lấy $low,pre$ (giá trị ban đầu của $pre[]$ là $-1$) \& tính toán các khối trong đồ thị vô hướng. Quy trình như sau.
+
+    For vertex $v$, $u$ is the parent for $v$: if $u$ is the root, $(u,v)$ is the 1st edge for the block; else, suppose $f$ is $u$'s parent. If $u$ is deleted, $v,f$ aren't connected, \& then $\{f,u,v\}$ isn't biconnected, \& $(u,v)$ is the 1st edge for the new block; else, $(u,v)$ \& $(f,u)$ are in a same block. A stack is used to store vertices in the current block. Suppose $st$ is a stack, $sp$ is the pointer pointing to the top of the stack; $r$ is the number of blocks in the graph; $ans$ is used to store blocks, where all vertices for the $t$th block are stored in $ans[t][0]\ldots ans[t][k]$, \& $ans[t][k + 1] = -1$ (end mark for block $t$, $t\in[r]$);
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+void dfs(v) { // calculate block ans containing vertex v
+    st[sp++] = v;
+    pre[v] = low[v] = ++d; // v is pushed into the stack
+    for (each w in set of adjacent vertices for v) & (w != v) { // search adjacent edge (v, w) for v
+        if (pre[w] == -1) { // (v, w) is a branch edge T
+            dfs(w);
+            if (low[w] < low[v]) low[v] = low[w]; // all children's related edges for w have been checked, low[v] = min{low[w], low[v]}
+            if (low[w] >= pre[v]) { // w & its descendants can't return to an ancestor earlier than v
+                //then v is a cut vertex, the block is sent to ans[r]
+                k = 0;
+                st[sp] = -1;
+                ans[r][0] = v; // vertex v enters ans[r]
+                while (st[sp] != w) ans[r][++k] = st[--sp]; // vertices above w enter ans[r]
+                ans[r][++k] = -1; // end mark for ans[r]
+                if (k > 2) ++r; // if number of vertices in block > 2, accumulation
+            }
+        }
+        else if (pre[w] < low[w]) // (v, w) is back edge B, low[v] = min{pre[w], low[v]}
+        low[v] = pre[w];
+    }
+}
+    \end{Verbatim}
+\end{enumerate}
+
+\begin{baitoan}[Knights of the round table, \cite{Wu_Wang2016}, pp. 356--357]
+    Being a knight is a very attractive career: searching for the Holy Grail, saving damsels in distress, \& drinking with the other knights are fun things to do. Therefore, it is not very surprising that in recent years, the kingdom of King Arthur has experienced an unprecedented increase in the number of knights. There are so many knights now that it is very rare that every knight of the Round Table can come at the same time to Camelot \& sit around the Round Table; usually only a small group of knights is there, while the rest are busy doing heroic deeds around the country.
+
+
+\end{baitoan}
 
 %------------------------------------------------------------------------------%
 

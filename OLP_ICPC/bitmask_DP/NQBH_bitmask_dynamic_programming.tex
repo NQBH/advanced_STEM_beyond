@@ -400,6 +400,12 @@ Some useful operations:
 
     {\sf Abstract.} Speeding up naive recursive solutions with memoization.
 
+    \item \href{https://codeforces.com/blog/entry/70018}{CodeForces{\tt/}icecuber's blog{\tt/}CSES DP section editorial}.
+
+    \item \href{https://codeforces.com/blog/entry/111675}{CodeForces{\tt/}UnexpectedValue's blog{\tt/}CSES DP section editorial (part 2)}.
+
+    \item \href{https://cp-algorithms.com/dynamic_programming/intro-to-dp.html}{Algorithms for Competitive Programming{\tt/}introduction to dynamic programming}.
+
     \item \href{https://en.wikipedia.org/wiki/Dynamic_programming}{Wikipedia{\tt/}dynamic programming}.
 \end{enumerate}
 {\it Dynamic Programming} (DP) is an important algorithmic technique in Competitive Programming from the gold division to competitions like the International Olympiad of Informatics (abbr., IOI). By breaking down the full task into subproblem, DP avoids the redundant computations of brute force solutions. Although it is not too difficult to grasp the general ideas behind DP, the technique can be used in a diverse range of problems \& is a must-know idea for competitors in the USACO Gold division.
@@ -474,8 +480,8 @@ The problem asks us to compute the minimum total cost it takes for a frog to tra
     \end{enumerate}
     -- Có 2 phương pháp DP chính:
     \begin{enumerate}
-        \item {\it Push DP}, trong đó chúng ta cập nhật các trạng thái tương lai dựa trên trạng thái hiện tại;
-        \item {\it Pull DP}, trong đó chúng ta tính toán trạng thái hiện tại dựa trên các trạng thái trước đó.
+        \item {\it DP đẩy}, trong đó chúng ta cập nhật các trạng thái tương lai dựa trên trạng thái hiện tại;
+        \item {\it DP kéo}, trong đó chúng ta tính toán trạng thái hiện tại dựa trên các trạng thái trước đó.
     \end{enumerate}
     \item(a) {\bf Push DP.} There are only 2 options: jumping once, or jumping twice. Define ${\rm dp}[i]$ as the minimum cost to reach stone $i$. Then, our transitions are as follows:
     \begin{itemize}
@@ -488,7 +494,7 @@ The problem asks us to compute the minimum total cost it takes for a frog to tra
             {\rm dp}[i + 2] = \min\{{\rm dp}[i + 2],{\rm dp}[i] + |h_i - h_{i+2}|\}.
         \end{equation*}
     \end{itemize}
-    We can start with the base case that ${\rm dp}[0] = 0$, since the frog is already on that square, \& proceed to calculate ${\rm dp}[1],{\rm dp}[2],\ldots,{\rm dp}[n - 1]$.
+    We can start with the base case that ${\rm dp}[0] = 0$, since the frog is already on that square, \& then calculate ${\rm dp}[1],{\rm dp}[2],\ldots,{\rm dp}[n - 1]$.
 
     -- {\bf DP đẩy.} Chỉ có 2 lựa chọn: nhảy một lần hoặc nhảy hai lần. Xác định ${\rm dp}[i]$ là chi phí tối thiểu để đến được hòn đá $i$. Sau đó, các bước chuyển tiếp của chúng ta như sau:
     \begin{itemize}
@@ -578,9 +584,62 @@ int main() {
 \begin{enumerate}
     \item {\sc Michael Cao, Siyong Huang, Peng Bai}. \href{https://usaco.guide/gold/dp-bitmasks}{USACO Guide{\tt/}bitmask DP}.
 
-    \item \href{https://codedream.edu.vn/bitmask_1/}{CodeDream{\tt/}quy hoạch động xử lý bit (DP bitmask) phần 1}.
+    {\sf Abstract.} Bitmask dynamic programming (abbr., bitmask DP) attacks DP problems that require iterating over subsets.
+
+    \item {\sc Nguyễn Đức Kiên}. \href{https://wiki.vnoi.info/algo/dp/dp-bitmask}{VNOI Wiki{\tt/}quy hoạch động bitmask}.
+
+    \item {\sc Nguyễn Hải Nam}. \href{https://codedream.edu.vn/bitmask_1/}{CodeDream{\tt/}quy hoạch động xử lý bit (DP bitmask) phần 1}.
 \end{enumerate}
-Bitmask dynamic programming (abbr., bitmask DP) attacks DP problems that require iterating over subsets.
+Mọi số nguyên trong hệ thập phân đều có thể biểu diễn được dưới dạng nhị phân. Với các số nhị phân, có thêm các phép toán {\tt AND} (\verb|&| trong C++), {\tt OR} (\verb!|! trong C++), {\tt XOR} (\verb|^| trong C++), dịch trái (\verb|<<| trong C++), dịch phải (\verb|>>| trong C++), $\ldots$ Ngôn ngữ C++ hỗ trợ 1 số hàm liên quan đến dãy bit, e.g., \verb|__builtin_popcount()| (đếm số bit 1), \verb|__builtin_ctz()| (đếm số bit 0 ở tận cùng bên phải), $\ldots$ Sử dụng các phép toán này, ta có thể dễ dàng thực hiện 1 số thao tác:
+\begin{enumerate}
+    \item Xác định giá trị của bit thứ $i$: \verb|(mask >> i) & 1| tương đồng với việc kiểm tra 1 phần tử có nằm trong 1 tập hợp hay không, tương ứng với hàm đặc trưng
+    \begin{equation*}
+        1_A(x) = \chi_A(x) = \left\{\begin{split}
+            &1&&\mbox{if } x\in A,\\
+            &0&&\mbox{if } x\notin A.
+        \end{split}\right.
+    \end{equation*}
+    \item Lật ngược (flip) giá trị của bit thứ $i$: \verb|mask ^= (1 << i)|, tương đồng với việc thêm{\tt/}bớt 1 phần tử trong tập hợp.
+    \item Đếm số bit 1 trong 1 số được biểu diễn nhị phân, tương đồng với việc đếm số phần tử của tập hợp.
+\end{enumerate}
+{\sf Ý tưởng}: Dùng biểu diễn nhị phân đễ mã hóa{\tt/}biểu diễn các tập con $B$ của 1 tập hợp $A$. Ta có thể biểu diễn 1 tập con của 1 tập hợp bằng 1 xâu nhị phân, trong đó bit thứ $i$ bằng 0{\tt/}1 khi phần tử thứ $i$ không{\tt/}có trong tập con $B$. Xâu nhị phân này được gọi là {\it bitmask}.
+
+Định nghĩa Toán học của bitmask:
+
+\begin{dinhnghia}[Bitmask]
+    Cho $n\in\mathbb{N}^\star$, $A = \{a_0,a_1,\ldots,a_{n-1}\}$ là 1 tập hợp có $n$ phần tử, \& $B\subset A$. {\rm Bitmask} của $B$ là xâu nhị phân
+    \begin{equation*}
+        {\rm mask}(T)\coloneqq\overline{\chi_B(a_n)\ldots\chi_B(a_1)\chi_B(a_0)}|_2 = \sum_{i=0}^{n-1} \chi_B(a_i)2^i.
+    \end{equation*}
+\end{dinhnghia}
+Định nghĩa Tin học của bitmask:
+
+\begin{dinhnghia}[Bitmask]
+    Cho $n\in\mathbb{N}^\star$ \& 1 tập hợp $S = \{a_0,a_1,\ldots,a_{n-1}\}$. Xét 1 tập con $T = \{a_{i_1},a_{i_2},\ldots,a_{i_k}\}\subset S$ với $k = |T|$. Ta có thể biểu diễn $T$ bằng 1 xâu nhị phân độ dài $n$, với bit thứ $i$ (ở đây là bit có giá trị cao thứ $i$ hay bit thứ $i$ từ phải sang) bằng $1$ nếu $a_i\in T$:
+    \begin{equation}
+        \label{def: mask}
+        {\rm mask}(T)\coloneqq0\ldots010\ldots010\ldots010\ldots0|_2 = \sum_{j=1}^k a_{i_j}2^{i_j},
+    \end{equation}
+     với $k$ vị trí bằng $1$ là $i_1,i_2,\ldots,i_k$.
+\end{dinhnghia}
+Do ${\rm mask}(T)$ là 1 xâu nhị phân, ta có thể biểu diễn nó bằng 1 số thập phân như trong công thức \eqref{def: mask}.
+
+\begin{vidu}
+    (a) $12 = 1100_2$ biểu diễn tập con $T = \{a_2,a_3\}$ của $S = \{a_0,a_1,a_2,a_3\}$. (b) $17 = 010001_2$ biểu diễn tập con $T = \{a_0,a_4\}$ của $S = \{a_0,a_1,a_2,a_3,a_4,a_5\}$. (c) $0 = 000_2$ biểu diễn tập con $T = \emptyset$ của $S = \{a_0,a_1,a_2\}$.
+\end{vidu}
+
+\begin{lemma}[Duyệt bitmask]
+    Khi duyệt tất cả các số từ $0$ đến $2^{n-1}$, ta sẽ duyệt qua mọi xâu nhị phân độ dài $n$, \& cũng là duyệt qua tất cả các tập con của tập $S = \{a_0,a_1,\ldots,a_n\}$. Công việc duyệt này có độ phức tạp thời gian là $O(2^n)$.
+\end{lemma}
+
+\begin{proof}]
+    Có 1 song ánh (tương ứng 1-1) giữa các xâu nhị phân chiều dài $n$ với các tập con của 1 tập có $n$ phần tử cho trước.
+\end{proof}
+
+\begin{problem}[\href{https://codeforces.com/contest/550/problem/B}{CodeForces{\tt/}preparing Olympiad}]
+    You have $n\in\mathbb{N}^\star$ problems. You have estimated the difficulty of the $i$th one as $c_i\in\mathbb{N}^\star$. Now you want to prepare a problemset for a contest, using some of the problems you have made. A problemset for the contest must consist of at least 2 problems. You think that the total difficulty of the problems of the contest must be at least $l$ \& at most $r$. Also, you think that the difference between difficulties of the easiest \& the hardest of the chosen problems must be at least $x$. Find the number of ways to choose a problemset for the contest.
+    +++
+\end{problem}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1690}{CSES Problem Set{\tt/}Hamiltonian flights}]
     There are $n\in\mathbb{N}^\star$ cities \& $m\in\mathbb{N}^\star$ flight connections between them. You want to travel from Syrjälä to Lehmälä so that you visit each city exactly once. How many possible routes are there?
@@ -679,7 +738,7 @@ int main() {
 \end{definition}
 
 \begin{dinhnghia}[Tập con ngặt]
-    Cho $A$ là 1 tập hợp. Tập con $B$ được gọi là {\rm tập con thực sự} (cũng là {\rm tập con nghiêm ngặt}) của $A$ nếu và chỉ $B\subset A$ \& $B\ne A$, ký hiệu là $B\subsetneq A$ (hoặc $B\subsetneqq A$).
+    Cho $A$ là 1 tập hợp. Tập con $B$ được gọi là {\rm tập con thực sự} (cũng là {\rm tập con ngặt}) của $A$ nếu và chỉ $B\subset A$ \& $B\ne A$, ký hiệu là $B\subsetneq A$ (hoặc $B\subsetneqq A$).
 \end{dinhnghia}
 
 \begin{baitoan}

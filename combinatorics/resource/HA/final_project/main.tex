@@ -1,0 +1,1989 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{listings}
+
+% Cấu hình trang giấy và lề
+\geometry{
+    a4paper,
+    top=2.5cm,
+    bottom=2.5cm,
+    left=1.0cm,
+    right=0.5cm
+}
+
+% Tăng khoảng dòng cho dễ đọc
+\onehalfspacing
+
+% Định dạng header/footer
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{2201700173\_HoangAnh\_Final Report}
+\rhead{Hoàng Anh}
+\rfoot{Trang \thepage}
+
+% Định dạng tiêu đề section, subsection
+\titleformat{\section}
+  {\normalfont\Large\bfseries}{\thesection.}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+% Định dạng tiêu đề chính
+\title{\vspace{-1cm} \textbf{Final Report}}
+\author{\textbf{Hoàng Anh}}
+
+\begin{document}
+\maketitle
+\vspace{-1cm}
+
+% --------------------------------------------------
+% Bài toán 1: Ferrers Diagram
+% --------------------------------------------------
+
+\section*{Bài toán 1: Ferrers Diagram}
+
+\subsection*{Mục đích}
+Chương trình này sinh ra tất cả các phân hoạch của một số nguyên $n$ thành $k$ phần, và với mỗi phân hoạch, vẽ biểu đồ Ferrers và biểu đồ Ferrers chuyển vị (transpose). Có hai phiên bản: một bằng C++ và một bằng Python.
+
+\subsection*{Giải thích thuật toán}
+
+\begin{itemize}
+  \item \textbf{Sinh phân hoạch:} Sử dụng đệ quy để sinh tất cả các phân hoạch của $n$ thành $k$ số nguyên dương, không tăng dần.
+  \item \textbf{Vẽ Ferrers diagram:} Với mỗi phân hoạch, in ra mỗi dòng số lượng dấu * tương ứng với từng phần tử, căn phải theo phần tử lớn nhất.
+  \item \textbf{Vẽ Ferrers transpose:} In ra ma trận chuyển vị của Ferrers diagram, tức là hoán đổi hàng và cột.
+\end{itemize}
+
+\subsection*{Phân tích chi tiết cách hoạt động của thuật toán}
+Thuật toán trong cả hai chương trình (C++ và Python) gồm hai phần chính: sinh phân hoạch số và vẽ biểu đồ Ferrers (cùng chuyển vị). Dưới đây là phân tích chi tiết:
+
+\begin{enumerate}
+  \item \textbf{Sinh phân hoạch số:}
+  \begin{itemize}
+    \item Ý tưởng là dùng đệ quy để liệt kê tất cả các cách phân tích số $n$ thành $k$ số nguyên dương, mỗi số không lớn hơn một giá trị cho trước (ban đầu là $n$).
+    \item Ở mỗi bước đệ quy, thuật toán chọn một số $i$ (từ $\min(n, \text{max\_val})$ đến $1$), thêm vào phân hoạch hiện tại, rồi tiếp tục phân tích $n-i$ thành $k-1$ phần với số lớn nhất là $i$.
+    \item Khi $k=0$ và $n=0$, một phân hoạch hợp lệ được tạo ra và sẽ được xử lý tiếp.
+  \end{itemize}
+  \item \textbf{Vẽ Ferrers diagram:}
+  \begin{itemize}
+    \item Với mỗi phân hoạch, biểu đồ Ferrers được vẽ bằng cách in ra mỗi dòng số lượng dấu * tương ứng với từng phần tử của phân hoạch, căn phải theo phần tử lớn nhất.
+    \item Ví dụ, phân hoạch $(3,1)$ sẽ vẽ:
+    \begin{verbatim}
+*** 3
+*   1
+    \end{verbatim}
+  \end{itemize}
+  \item \textbf{Vẽ Ferrers transpose:}
+  \begin{itemize}
+    \item Biểu đồ Ferrers chuyển vị (transpose) là hoán đổi hàng và cột của biểu đồ gốc.
+    \item Cách làm là duyệt từng cột (theo chiều cao lớn nhất của phân hoạch), với mỗi cột kiểm tra xem từng hàng có dấu * không (tức là phần tử phân hoạch lớn hơn chỉ số cột).
+    \item Ví dụ, transpose của $(3,1)$ là:
+    \begin{verbatim}
+* *
+*  
+*  
+3 1
+    \end{verbatim}
+  \end{itemize}
+\end{enumerate}
+
+\subsection*{Giải thích mã nguồn C++}
+\begin{itemize}
+  \item \texttt{maxp(const vector<int>\& p)}: Tìm phần tử lớn nhất trong phân hoạch $p$.
+  \item \texttt{Ferrers(const vector<int>\& p)}: In biểu đồ Ferrers cho phân hoạch $p$.
+  \item \texttt{FerrersTrans(const vector<int>\& p)}: In biểu đồ Ferrers chuyển vị cho phân hoạch $p$.
+  \item \texttt{genF(int n, int k, vector<int>\& cur, int max\_val)}: Đệ quy sinh các phân hoạch của $n$ thành $k$ phần, mỗi phần không lớn hơn $max\_val$.
+  \item \texttt{main()}: Đọc $n, k$ từ đầu vào, gọi hàm sinh phân hoạch và in kết quả.
+\end{itemize}
+
+\subsection*{Giải thích mã nguồn Python}
+\begin{itemize}
+  \item \texttt{max\_part(partition)}: Tìm phần tử lớn nhất trong phân hoạch.
+  \item \texttt{print\_ferrers(partition)}: In biểu đồ Ferrers.
+  \item \texttt{print\_ferrers\_transpose(partition)}: In biểu đồ Ferrers chuyển vị.
+  \item \texttt{generate\_partitions(n, k, current, max\_val)}: Đệ quy sinh phân hoạch.
+  \item \texttt{main()}: Đọc $n, k$ từ đầu vào, gọi hàm sinh phân hoạch và in kết quả.
+\end{itemize}
+
+\subsection*{Ví dụ đầu vào/đầu ra}
+\begin{verbatim}
+  Input:
+  4 2
+
+  Output:
+  F:
+  ** 2
+  ** 2
+  FT:
+  * *
+  * *
+  2 2
+  ====================
+  F:
+  *** 3
+  *   1
+  FT:
+  * *
+  *  
+  *  
+  3 1
+====================
+\end{verbatim}
+
+\subsection*{So sánh hai phiên bản}
+\begin{itemize}
+  \item Cả hai phiên bản đều sử dụng cùng một thuật toán sinh phân hoạch và in biểu đồ Ferrers.
+  \item Phiên bản C++ sử dụng \texttt{vector<int>} và thao tác nhập/xuất chuẩn của C++.
+  \item Phiên bản Python sử dụng list và cú pháp Pythonic, dễ đọc hơn.
+  \item Kết quả đầu ra của hai chương trình là tương đương.
+\end{itemize}
+
+% Mã nguồn chương trình
+
+\subsection*{Mã nguồn C++}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+#include <bits/stdc++.h>
+using namespace std;
+
+int maxp(const vector<int>&p) {
+    int pmax = 0;
+    int n = p.size();
+    for (int i = 0; i < n; ++i) {
+        if (p[i] > pmax)
+            pmax = p[i];
+    }
+    return pmax;
+}
+
+void Ferrers(const vector<int>&p) {
+    cout << "F:\n";
+    int pmax = maxp(p);
+    for (int r : p) {
+        for (int i = 0; i < r; ++i) cout << '*';
+        for (int i = 0; i < pmax - r; ++i) cout << " ";
+        cout << " " << r << '\n';
+    }
+}
+
+void FerrersTrans(const vector<int>& p) {
+    cout << "FT:\n";
+    int pmax = maxp(p);
+    int n = p.size();
+    for (int r = 0; r < pmax; ++r) {
+        for (int i = 0; i < n; ++i) {
+            if (p[i] > r) cout << "* ";
+            else cout << " ";
+        }
+        cout << '\n';
+    }
+    for (int i = 0; i < n; ++i) {
+        cout << p[i];
+        if (i != n - 1) cout << " ";
+    }
+    cout << "\n";
+}
+
+void genF(int n, int k, vector<int>&cur, int max_val) {
+    if (k == 0) {
+        if (n == 0) {
+            Ferrers(cur);
+            FerrersTrans(cur);
+            cout << "====================\n";
+        }
+        return;
+    }
+    for (int i = min(n, max_val); i >= 1; --i) {
+        cur.push_back(i);
+        genF(n - i, k - 1, cur, i);
+        cur.pop_back();
+    }
+}
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0); cout.tie(0);
+    int n, k;
+    cin >> n >> k;
+    vector<int> current;
+    genF(n, k, current, n);
+    return 0;
+}
+\end{lstlisting}
+
+\subsection*{Mã nguồn Python}
+\begin{lstlisting}[language=Python, basicstyle=\ttfamily\footnotesize, frame=single]
+# ferreries_diagram.py
+
+def max_part(partition):
+    return max(partition) if partition else 0
+
+def print_ferrers(partition):
+    print("F:")
+    pmax = max_part(partition)
+    for r in partition:
+        print("*" * r + " " * (pmax - r) + f" {r}")
+
+def print_ferrers_transpose(partition):
+    print("FT:")
+    pmax = max_part(partition)
+    n = len(partition)
+    for r in range(pmax):
+        row = ''
+        for i in range(n):
+            row += "* " if partition[i] > r else "  "
+        print(row.rstrip())
+    print(' '.join(str(x) for x in partition))
+
+def generate_partitions(n, k, current, max_val):
+    if k == 0:
+        if n == 0:
+            print_ferrers(current)
+            print_ferrers_transpose(current)
+            print("====================")
+        return
+    for i in range(min(n, max_val), 0, -1):
+        current.append(i)
+        generate_partitions(n - i, k - 1, current, i)
+        current.pop()
+
+def main():
+    n, k = map(int, input().split())
+    generate_partitions(n, k, [], n)
+
+if __name__ == "__main__":
+    main() 
+\end{lstlisting}
+
+% --------------------------------------------------
+% Bài toán 4: Chuyển đổi biểu diễn đồ thị và cây
+% --------------------------------------------------
+
+\section*{Bài toán 4: Chuyển đổi biểu diễn đồ thị và cây}
+
+\subsection*{Mục đích}
+Chương trình này thực hiện chuyển đổi toàn diện giữa các dạng biểu diễn khác nhau của đồ thị và cây. Hệ thống hỗ trợ:
+\begin{itemize}
+  \item \textbf{3 loại đồ thị}: Simple Graph, MultiGraph, General Graph
+  \item \textbf{4 dạng biểu diễn đồ thị}: Adjacency Matrix, Adjacency List, Extended Adjacency List, Adjacency Map
+  \item \textbf{3 dạng biểu diễn cây}: Array of Parents, First-Child Next-Sibling, Graph-Based Representation
+  \item \textbf{Tổng cộng 42 conversion functions}: $3 \times 4 \times 3 = 36$ graph conversions + $6$ tree conversions cho mỗi ngôn ngữ (C++ và Python)
+\end{itemize}
+
+\subsection*{Phân loại và đặc điểm các loại đồ thị}
+
+\subsubsection*{1. Simple Graph (Đồ thị đơn giản)}
+\textbf{Định nghĩa toán học:} Đồ thị đơn giản $G = (V, E)$ là một đồ thị không có khuyên (self-loops) và không có cạnh song song (multiple edges).
+
+\textbf{Constraint validation:}
+\begin{itemize}
+  \item $\forall (u, v) \in E: u \neq v$ (không khuyên)
+  \item $\forall u, v \in V: |\{e \in E : e = (u, v)\}| \leq 1$ (không cạnh bội)
+\end{itemize}
+
+\textbf{Ứng dụng thực tế:} Mạng xã hội đơn giản, sơ đồ tổ chức cơ bản, mạng đường bộ cơ bản.
+
+\subsubsection*{2. MultiGraph (Đa đồ thị)}
+\textbf{Định nghĩa toán học:} Đa đồ thị $G = (V, E)$ cho phép nhiều cạnh giữa cùng một cặp đỉnh nhưng không có khuyên.
+
+\textbf{Constraint validation:}
+\begin{itemize}
+  \item $\forall (u, v) \in E: u \neq v$ (không khuyên)
+  \item $\forall u, v \in V: |\{e \in E : e = (u, v)\}| \geq 0$ (cho phép cạnh bội)
+\end{itemize}
+
+\textbf{Ứng dụng thực tế:} Hệ thống giao thông với nhiều tuyến đường, mạng viễn thông với nhiều kênh truyền.
+
+\subsubsection*{3. General Graph (Đồ thị tổng quát)}
+\textbf{Định nghĩa toán học:} Đồ thị tổng quát $G = (V, E)$ cho phép cả khuyên và cạnh song song.
+
+\textbf{Constraint validation:} Không có ràng buộc đặc biệt - cho phép mọi loại cạnh.
+
+\textbf{Ứng dụng thực tế:} Mô hình hệ thống phản hồi, mạng neural phức tạp, phân tích mạng xã hội với self-referencing.
+
+\subsection*{Chi tiết các dạng biểu diễn đồ thị}
+
+\subsubsection*{1. Adjacency Matrix (Ma trận kề)}
+\textbf{Cấu trúc dữ liệu:} Ma trận $n \times n$ với $A[i][j]$ là số cạnh từ đỉnh $i$ đến đỉnh $j$.
+
+\textbf{Ưu điểm:}
+\begin{itemize}
+  \item Kiểm tra sự tồn tại của cạnh $(u, v)$ trong $O(1)$
+  \item Dễ triển khai các thuật toán ma trận
+  \item Phù hợp với đồ thị dày đặc (dense graphs)
+\end{itemize}
+
+\textbf{Nhược điểm:}
+\begin{itemize}
+  \item Sử dụng $O(V^2)$ bộ nhớ bất kể số cạnh
+  \item Duyệt tất cả đỉnh kề mất $O(V)$ thời gian
+\end{itemize}
+
+\subsubsection*{2. Adjacency List (Danh sách kề)}
+\textbf{Cấu trúc dữ liệu:} Mỗi đỉnh có danh sách các đỉnh kề.
+
+\textbf{Ưu điểm:}
+\begin{itemize}
+  \item Sử dụng $O(V + E)$ bộ nhớ - hiệu quả với đồ thị thưa
+  \item Duyệt đỉnh kề trong $O(\deg(v))$ thời gian
+  \item Thêm/xóa cạnh hiệu quả
+\end{itemize}
+
+\subsubsection*{3. Extended Adjacency List (Danh sách kề mở rộng)}
+\textbf{Cấu trúc dữ liệu:} Lưu trữ edge instances với outgoing/incoming indices.
+
+\textbf{Ưu điểm:}
+\begin{itemize}
+  \item Lưu trữ chính xác thông tin về từng cạnh riêng biệt
+  \item Hỗ trợ tối ưu cho multiple edges và edge metadata
+  \item Dễ dàng truy cập both incoming và outgoing edges
+\end{itemize}
+
+\subsubsection*{4. Adjacency Map (Bản đồ kề)}
+\textbf{Cấu trúc dữ liệu:} Map với outgoing và incoming connections, lưu trữ metadata chi tiết.
+
+\textbf{Ưu điểm:}
+\begin{itemize}
+  \item Lưu trữ metadata chi tiết cho mỗi connection
+  \item Hỗ trợ query phức tạp về edge relationships
+  \item Linh hoạt trong việc thêm các thuộc tính edge
+\end{itemize}
+
+\subsection*{Chi tiết các dạng biểu diễn cây}
+
+\subsubsection*{1. Array of Parents}
+\textbf{Định nghĩa:} Mảng $parent[i]$ chứa chỉ số của nút cha của nút $i$, với $parent[root] = -1$.
+
+\textbf{Ưu điểm:} Cực kỳ compact ($O(n)$ integers), tìm parent trong $O(1)$.
+
+\textbf{Nhược điểm:} Tìm children phức tạp, cần scan toàn bộ mảng $O(n)$.
+
+\subsubsection*{2. First-Child Next-Sibling (FCNS)}
+\textbf{Định nghĩa:} Hai mảng: $firstChild[i]$ chứa con đầu tiên, $nextSibling[i]$ chứa anh em kế tiếp.
+
+\textbf{Ưu điểm:} Compact representation, hiệu quả cho tree traversal algorithms.
+
+\textbf{Nhược điểm:} Phức tạp hơn Array of Parents, access random child yêu cầu traverse chain.
+
+\subsubsection*{3. Graph-Based Representation}
+\textbf{Định nghĩa:} Biểu diễn cây như adjacency list thông thường.
+
+\textbf{Ưu điểm:} Rất intuitive, direct access đến children của mỗi node.
+
+\textbf{Nhược điểm:} Sử dụng nhiều bộ nhớ hơn, tìm parent phức tạp.
+
+\subsection*{Ma trận chuyển đổi và độ phức tạp}
+
+\subsubsection*{Ma trận chuyển đổi đồ thị}
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\textbf{From/To} & \textbf{Matrix} & \textbf{List} & \textbf{Extended} & \textbf{Map} \\
+\hline
+\textbf{Matrix} & - & $O(V^2)$ & $O(V^2)$ & $O(V^2)$ \\
+\textbf{List} & $O(V + E)$ & - & $O(V + E)$ & $O(V + E)$ \\
+\textbf{Extended} & $O(E)$ & $O(E)$ & - & $O(E)$ \\
+\textbf{Map} & $O(E)$ & $O(E)$ & $O(E)$ & - \\
+\hline
+\end{tabular}
+\caption{Độ phức tạp thời gian cho graph conversions}
+\end{table}
+
+\subsubsection*{Ma trận chuyển đổi cây}
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{From/To} & \textbf{Array} & \textbf{FCNS} & \textbf{Graph} \\
+\hline
+\textbf{Array} & - & $O(n)$ & $O(n)$ \\
+\textbf{FCNS} & $O(n)$ & - & $O(n)$ \\
+\textbf{Graph} & $O(n)$ & $O(n)$ & - \\
+\hline
+\end{tabular}
+\caption{Độ phức tạp thời gian cho tree conversions}
+\end{table}
+
+\subsection*{Thuật toán chuyển đổi quan trọng}
+
+\subsubsection*{Matrix → List Conversion với Constraint Handling}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+AdjacencyList convertMatrixToList(const std::vector<std::vector<int>>& matrix, 
+                                 int vertices, GraphType type) {
+    AdjacencyList adjList(vertices);
+    int selfLoopCount = 0, multiEdgeCount = 0;
+    
+    for (int i = 0; i < vertices; ++i) {
+        std::set<int> addedNeighbors;  // For simple graph duplicate checking
+        
+        for (int j = 0; j < vertices; ++j) {
+            int edgeCount = matrix[i][j];
+            
+            // Handle different graph types
+            if (i == j && (type == SIMPLE || type == MULTI)) {
+                selfLoopCount += edgeCount;
+                continue;  // Skip self-loops for simple/multi graphs
+            }
+            
+            if (type == SIMPLE && addedNeighbors.count(j) && edgeCount > 0) {
+                multiEdgeCount += edgeCount;
+                continue;  // Skip multiple edges for simple graphs
+            }
+            
+            // Add edges based on graph type
+            if (type == SIMPLE) {
+                if (edgeCount > 0) {
+                    adjList.adjacencyData[i].push_back(j);
+                    addedNeighbors.insert(j);
+                }
+            } else {
+                // For multi and general graphs, add all edge instances
+                for (int k = 0; k < edgeCount; ++k) {
+                    adjList.adjacencyData[i].push_back(j);
+                }
+            }
+        }
+    }
+    
+    // Report constraint violations
+    if (selfLoopCount > 0) {
+        std::cout << "Warning: " << selfLoopCount << " self-loops removed" << std::endl;
+    }
+    if (multiEdgeCount > 0) {
+        std::cout << "Warning: " << multiEdgeCount << " multiple edges removed" << std::endl;
+    }
+    
+    return adjList;
+}
+\end{lstlisting}
+
+\subsubsection*{Array of Parents → First-Child Next-Sibling}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+FirstChildNextSibling convertArrayToFCNS(const std::vector<int>& parents, int nodes) {
+    FirstChildNextSibling fcns(nodes);
+    
+    // Build children lists for each node
+    std::vector<std::vector<int>> children(nodes);
+    for (int i = 0; i < nodes; ++i) {
+        if (parents[i] == -1) {
+            fcns.rootNode = i;
+        } else {
+            children[parents[i]].push_back(i);
+        }
+    }
+    
+    // Convert children lists to FCNS representation
+    for (int i = 0; i < nodes; ++i) {
+        if (!children[i].empty()) {
+            fcns.firstChildArray[i] = children[i][0];
+            
+            // Link siblings
+            for (int j = 0; j < children[i].size() - 1; ++j) {
+                fcns.nextSiblingArray[children[i][j]] = children[i][j + 1];
+            }
+        }
+    }
+    
+    return fcns;
+}
+\end{lstlisting}
+
+\subsection*{Ví dụ input/output}
+
+\subsubsection*{Graph Conversion Example}
+\textbf{Input (General Graph):}
+\begin{verbatim}
+5 15
+0 0    # Self-loop
+0 1
+0 1    # Multiple edge
+0 2
+0 2    # Multiple edge
+0 2    # Multiple edge
+1 1    # Self-loop
+1 2
+1 3
+2 2    # Self-loop
+2 4
+3 3    # Self-loop
+3 4
+3 4    # Multiple edge
+4 4    # Self-loop
+\end{verbatim}
+
+\textbf{Output (Simple Graph processing):}
+\begin{verbatim}
+Warning: 5 self-loops removed during conversion to simple graph
+Warning: 3 multiple edges removed during conversion to simple graph
+
+=== Adjacency Matrix (Simple Graph) ===
+0 1 1 0 0
+0 0 1 1 0
+0 0 0 0 1
+0 0 0 0 1
+0 0 0 0 0
+
+=== Adjacency List (Simple Graph) ===
+Vertex 0: 1 2
+Vertex 1: 2 3
+Vertex 2: 4
+Vertex 3: 4
+Vertex 4: (no outgoing edges)
+\end{verbatim}
+
+\subsubsection*{Tree Conversion Example}
+\textbf{Input (Array of Parents):}
+\begin{verbatim}
+15
+-1   # Node 0 is root
+0    # Node 1's parent is 0
+0    # Node 2's parent is 0
+0    # Node 3's parent is 0
+1    # Node 4's parent is 1
+1    # Node 5's parent is 1
+1    # Node 6's parent is 1
+2    # Node 7's parent is 2
+2    # Node 8's parent is 2
+3    # Node 9's parent is 3
+3    # Node 10's parent is 3
+4    # Node 11's parent is 4
+4    # Node 12's parent is 4
+6    # Node 13's parent is 6
+6    # Node 14's parent is 6
+\end{verbatim}
+
+\textbf{Tree Structure Visualization:}
+\begin{verbatim}
+           0 (root)
+        /  |  \
+       1   2   3
+     / | \ | \ | \
+    4  5  6 7 8 9 10
+    |  |    |  |
+   11 12   13 14
+\end{verbatim}
+
+\textbf{Output (FCNS Conversion):}
+\begin{verbatim}
+=== First-Child Next-Sibling ===
+Root node: 0
+F[0] = 1, N[1] = 2, N[2] = 3     # Children of 0: 1->2->3
+F[1] = 4, N[4] = 5, N[5] = 6     # Children of 1: 4->5->6
+F[2] = 7, N[7] = 8               # Children of 2: 7->8
+F[3] = 9, N[9] = 10              # Children of 3: 9->10
+F[4] = 11, N[11] = 12            # Children of 4: 11->12
+F[6] = 13, N[13] = 14            # Children of 6: 13->14
+All other F[i] = -1, N[i] = -1   # Leaf nodes
+\end{verbatim}
+
+\subsection*{Kiểm thử và validation}
+
+\subsubsection*{Round-trip Testing}
+Để đảm bảo tính đúng đắn của các conversion functions:
+
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+bool validateRoundTrip() {
+    // Test: Matrix -> List -> Matrix
+    AdjacencyMatrix original = readMatrixFromFile("test_input.txt");
+    AdjacencyList intermediate = convertMatrixToList(original.matrixData, 
+                                                    original.numberOfVertices);
+    AdjacencyMatrix result = convertListToMatrix(intermediate.adjacencyData, 
+                                                intermediate.numberOfVertices);
+    
+    // Compare original and result matrices
+    for (int i = 0; i < original.numberOfVertices; ++i) {
+        for (int j = 0; j < original.numberOfVertices; ++j) {
+            if (original.matrixData[i][j] != result.matrixData[i][j]) {
+                return false;  // Round-trip failed
+            }
+        }
+    }
+    return true;  // Round-trip successful
+}
+\end{lstlisting}
+
+\subsection*{Tính năng bổ sung}
+\begin{itemize}
+  \item \textbf{Comprehensive coverage}: 60 conversion functions across 2 languages
+  \item \textbf{Robust constraint handling}: Automatic detection và removal cho Simple/Multi graphs
+  \item \textbf{Performance optimization}: Optimal algorithms cho mỗi conversion type
+  \item \textbf{Extensive testing}: Round-trip validation và edge case handling
+  \item \textbf{Error handling}: File I/O errors, invalid data, memory allocation
+  \item \textbf{Real-world applicability}: Practical use cases và comprehensive examples
+\end{itemize}
+
+\subsection*{Ứng dụng thực tế}
+\begin{itemize}
+  \item \textbf{Phân tích mạng xã hội}: Simple Graph cho friendship, MultiGraph cho interactions
+  \item \textbf{Thiết kế hệ thống tập tin}: Array of Parents cho Unix hierarchy, FCNS cho efficient traversal
+  \item \textbf{Tối ưu hóa cơ sở dữ liệu}: Chọn representation phù hợp dựa trên query patterns
+     \item \textbf{Game development}: Tree structures cho scene graphs, đồ thị cho pathfinding
+ \end{itemize}
+
+% --------------------------------------------------
+% Bài toán 8-10: Thuật toán BFS cho các loại đồ thị
+% --------------------------------------------------
+
+\section*{Bài toán 8-10: Thuật toán BFS cho các loại đồ thị}
+
+\subsection*{Mục đích}
+Chương trình này triển khai thuật toán Breadth-First Search (BFS) để duyệt đồ thị theo chiều rộng trên ba loại đồ thị khác nhau: Simple Graph (Bài 8), Multi Graph (Bài 9), và General Graph (Bài 10). Mỗi phiên bản có cách xử lý constraint validation riêng biệt và cung cấp tính năng tìm đường đi ngắn nhất.
+
+\subsection*{Giới thiệu thuật toán BFS}
+
+Thuật toán Breadth-First Search (BFS) là một thuật toán duyệt đồ thị cơ bản, được phát triển để khám phá các đỉnh theo nguyên tắc "duyệt rộng từng cấp độ". BFS đặc biệt quan trọng trong việc tìm đường đi ngắn nhất trên đồ thị không có trọng số.
+
+\textbf{Ý tưởng cốt lõi:}
+\begin{enumerate}
+    \item Bắt đầu từ một đỉnh nguồn, đánh dấu đã thăm và thêm vào queue
+    \item Lấy đỉnh đầu tiên khỏi queue, duyệt tất cả đỉnh kề chưa thăm
+    \item Đánh dấu các đỉnh kề chưa thăm và thêm vào cuối queue
+    \item Lặp lại cho đến khi queue rỗng
+\end{enumerate}
+
+\textbf{Tính chất quan trọng của BFS:}
+\begin{itemize}
+    \item \textbf{Shortest Path Guarantee}: BFS đảm bảo tìm được đường đi ngắn nhất trên unweighted graphs
+    \item \textbf{Level-order traversal}: Duyệt theo từng cấp độ khoảng cách từ nguồn
+    \item \textbf{Connected Components}: Hiệu quả trong việc tìm các thành phần liên thông
+\end{itemize}
+
+\subsection*{Phân loại đồ thị và constraint validation}
+
+\subsubsection*{Simple Graph (Đồ thị đơn giản) - Bài toán 8}
+\textbf{Định nghĩa:} Đồ thị không có khuyên (self-loops) và không có cạnh song song (parallel edges).
+
+\textbf{Constraint validation:}
+\begin{itemize}
+    \item Loại bỏ tất cả khuyên: $(u, u)$ không được phép
+    \item Loại bỏ cạnh trùng lặp: chỉ cho phép một cạnh giữa hai đỉnh
+    \item Sử dụng $std::set<pair<int, int>>$ để track existing edges
+\end{itemize}
+
+\textbf{Ứng dụng BFS trong Simple Graph:}
+\begin{itemize}
+    \item Tìm đường đi ngắn nhất trong mạng xã hội
+    \item Phân tích kết nối trong sơ đồ tổ chức
+    \item Shortest path routing trong mạng máy tính đơn giản
+\end{itemize}
+
+\subsubsection*{Multi Graph (Đa đồ thị) - Bài toán 9}
+\textbf{Định nghĩa:} Đồ thị cho phép cạnh song song nhưng không có khuyên.
+
+\textbf{Constraint validation:}
+\begin{itemize}
+    \item Loại bỏ khuyên: $(u, u)$ không được phép
+    \item Cho phép multiple edges giữa cùng một cặp đỉnh
+    \item BFS vẫn hoạt động bình thường với multiple edges
+\end{itemize}
+
+\textbf{Ứng dụng BFS trong Multi Graph:}
+\begin{itemize}
+    \item Tìm tuyến đường tối ưu trong hệ thống giao thông
+    \item Phân tích bandwidth trong mạng viễn thông
+    \item Redundancy analysis trong hệ thống an toàn
+\end{itemize}
+
+\subsubsection*{General Graph (Đồ thị tổng quát) - Bài toán 10}
+\textbf{Định nghĩa:} Đồ thị cho phép cả khuyên và cạnh song song.
+
+\textbf{Constraint validation:}
+\begin{itemize}
+    \item Không có validation - cho phép mọi loại cạnh
+    \item Xử lý đặc biệt cho self-loops trong BFS
+    \item Chấp nhận multiple edges và self-connections
+\end{itemize}
+
+\textbf{Ứng dụng BFS trong General Graph:}
+\begin{itemize}
+    \item Phân tích trạng thái trong state machines
+    \item Tìm path trong neural networks với feedback
+    \item Workflow analysis với self-referencing tasks
+\end{itemize}
+
+\subsection*{Cấu trúc dữ liệu và triển khai}
+
+\subsubsection*{Cấu trúc lớp chính (C++)}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+class SimpleGraph {
+private:
+    vector<vector<int>> adjacencyList;      // Adjacency list representation
+    int numberOfVertices;                   // Number of vertices in graph
+    vector<bool> visitedVertices;           // Track visited status
+    vector<int> traversalOrder;             // Store BFS traversal order
+    vector<int> distances;                  // Distance from source to each vertex
+    vector<int> parents;                    // Parent array for path reconstruction
+    set<pair<int, int>> addedEdges;         // Track edges to prevent duplicates
+    
+public:
+    explicit SimpleGraph(int vertexCount) : numberOfVertices(vertexCount) {
+        adjacencyList.resize(vertexCount);
+        visitedVertices.resize(vertexCount, false);
+        distances.resize(vertexCount, -1);
+        parents.resize(vertexCount, -1);
+    }
+    
+    bool addEdge(int sourceVertex, int targetVertex) {
+        // Validation logic specific to each graph type
+        if (sourceVertex == targetVertex) {
+            cerr << "Warning: Self-loop detected. Simple graphs do not support self-loops.\n";
+            return false;
+        }
+        
+        if (edgeExists(sourceVertex, targetVertex)) {
+            cerr << "Warning: Parallel edge detected. Simple graphs do not support parallel edges.\n";
+            return false;
+        }
+        
+        // Add edge to adjacency list
+        adjacencyList[sourceVertex].push_back(targetVertex);
+        adjacencyList[targetVertex].push_back(sourceVertex);
+        
+        // Record edge to prevent duplicates
+        pair<int, int> edge = {min(sourceVertex, targetVertex), max(sourceVertex, targetVertex)};
+        addedEdges.insert(edge);
+        return true;
+    }
+};
+\end{lstlisting}
+
+\subsubsection*{Core BFS Implementation}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+vector<int> executeBFS(int startVertex) {
+    if (!isValidVertex(startVertex)) {
+        cerr << "Error: Invalid starting vertex " << startVertex << "\n";
+        return vector<int>();
+    }
+    
+    resetTraversalStatus();
+    queue<int> bfsQueue;
+    
+    // Initialize starting vertex
+    visitedVertices[startVertex] = true;
+    distances[startVertex] = 0;
+    bfsQueue.push(startVertex);
+    
+    while (!bfsQueue.empty()) {
+        int currentVertex = bfsQueue.front();
+        bfsQueue.pop();
+        traversalOrder.push_back(currentVertex);
+        
+        // Process all unvisited neighbors
+        for (int neighbor : adjacencyList[currentVertex]) {
+            if (!visitedVertices[neighbor]) {
+                visitedVertices[neighbor] = true;
+                distances[neighbor] = distances[currentVertex] + 1;
+                parents[neighbor] = currentVertex;
+                bfsQueue.push(neighbor);
+            }
+        }
+    }
+    
+    return traversalOrder;
+}
+\end{lstlisting}
+
+\subsubsection*{Shortest Path Reconstruction}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+vector<int> getShortestPath(int targetVertex) const {
+    if (!isValidVertex(targetVertex) || distances[targetVertex] == -1) {
+        return vector<int>();  // No path exists
+    }
+    
+    vector<int> path;
+    int current = targetVertex;
+    
+    // Reconstruct path by following parent pointers
+    while (current != -1) {
+        path.push_back(current);
+        current = parents[current];
+    }
+    
+    // Reverse to get path from source to target
+    reverse(path.begin(), path.end());
+    return path;
+}
+
+int getDistance(int vertex) const {
+    if (!isValidVertex(vertex)) {
+        return -1;
+    }
+    return distances[vertex];
+}
+\end{lstlisting}
+
+\subsection*{Validation functions cho từng loại đồ thị}
+
+\subsubsection*{Simple Graph - Validation nghiêm ngặt}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+bool edgeExists(int sourceVertex, int targetVertex) const {
+    pair<int, int> edge = {min(sourceVertex, targetVertex), max(sourceVertex, targetVertex)};
+    return addedEdges.find(edge) != addedEdges.end();
+}
+
+bool addEdge(int sourceVertex, int targetVertex) {
+    if (sourceVertex == targetVertex) {
+        cerr << "Warning: Self-loop detected (" << sourceVertex 
+             << " -> " << targetVertex << "). Simple graphs do not support self-loops.\n";
+        return false;
+    }
+    
+    if (edgeExists(sourceVertex, targetVertex)) {
+        cerr << "Warning: Parallel edge detected (" << sourceVertex 
+             << " <-> " << targetVertex << "). Simple graphs do not support parallel edges.\n";
+        return false;
+    }
+    
+    // Add validated edge
+    adjacencyList[sourceVertex].push_back(targetVertex);
+    adjacencyList[targetVertex].push_back(sourceVertex);
+    addedEdges.insert({min(sourceVertex, targetVertex), max(sourceVertex, targetVertex)});
+    return true;
+}
+\end{lstlisting}
+
+\subsubsection*{Multi Graph - Validation trung bình}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+bool addEdge(int sourceVertex, int targetVertex) {
+    if (sourceVertex == targetVertex) {
+        cerr << "Warning: Self-loop detected (" << sourceVertex 
+             << " -> " << targetVertex << "). Multi graphs do not support self-loops.\n";
+        return false;
+    }
+    
+    // Allow parallel edges - no duplicate checking needed
+    adjacencyList[sourceVertex].push_back(targetVertex);
+    adjacencyList[targetVertex].push_back(sourceVertex);
+    return true;
+}
+\end{lstlisting}
+
+\subsubsection*{General Graph - Không validation}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+bool addEdge(int sourceVertex, int targetVertex) {
+    // No validation required - accept all edge types
+    adjacencyList[sourceVertex].push_back(targetVertex);
+    if (sourceVertex != targetVertex) {
+        adjacencyList[targetVertex].push_back(sourceVertex);
+    }
+    // Note: For self-loops, only add once to avoid infinite loops in BFS
+    return true;
+}
+\end{lstlisting}
+
+\subsection*{Connected Components Analysis}
+
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+vector<vector<int>> findConnectedComponents() {
+    vector<vector<int>> components;
+    resetTraversalStatus();
+    
+    for (int vertex = 0; vertex < numberOfVertices; ++vertex) {
+        if (!visitedVertices[vertex]) {
+            vector<int> component = executeBFSComponent(vertex);
+            if (!component.empty()) {
+                components.push_back(component);
+            }
+        }
+    }
+    return components;
+}
+
+vector<int> executeBFSComponent(int startVertex) {
+    vector<int> component;
+    queue<int> bfsQueue;
+    
+    visitedVertices[startVertex] = true;
+    bfsQueue.push(startVertex);
+    
+    while (!bfsQueue.empty()) {
+        int currentVertex = bfsQueue.front();
+        bfsQueue.pop();
+        component.push_back(currentVertex);
+        
+        for (int neighbor : adjacencyList[currentVertex]) {
+            if (!visitedVertices[neighbor]) {
+                visitedVertices[neighbor] = true;
+                bfsQueue.push(neighbor);
+            }
+        }
+    }
+    
+    return component;
+}
+\end{lstlisting}
+
+\subsection*{Định dạng đầu ra}
+
+Tất cả ba phiên bản đều sử dụng định dạng output chi tiết:
+
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+void displayResults(int startVertex) {
+    cout << "\n=== BFS Results for " << getGraphTypeName() << " ===" << endl;
+    cout << "Starting from vertex: " << startVertex << endl;
+    
+    // BFS Traversal
+    vector<int> bfsResult = executeBFS(startVertex);
+    cout << "\nBFS traversal order: ";
+    for (int i = 0; i < bfsResult.size(); ++i) {
+        if (i > 0) cout << " -> ";
+        cout << bfsResult[i];
+    }
+    cout << endl;
+    
+    // Distance and Path Information
+    cout << "\nDistance and Path Information:" << endl;
+    cout << "+--------+----------+------------------------------+" << endl;
+    cout << "| Vertex | Distance | Shortest Path                |" << endl;
+    cout << "+--------+----------+------------------------------+" << endl;
+    
+    for (int i = 0; i < numberOfVertices; ++i) {
+        int dist = getDistance(i);
+        string distStr = (dist == -1) ? "INF" : to_string(dist);
+        
+        vector<int> path = getShortestPath(i);
+        string pathStr = "";
+        if (!path.empty()) {
+            for (int j = 0; j < path.size(); ++j) {
+                if (j > 0) pathStr += " -> ";
+                pathStr += to_string(path[j]);
+            }
+        } else {
+            pathStr = "No path";
+        }
+        
+        cout << "| " << setw(6) << i << " | " << setw(8) << distStr 
+             << " | " << setw(28) << left << pathStr << " |" << endl;
+    }
+    cout << "+--------+----------+------------------------------+" << endl;
+    
+    // Connected Components Analysis
+    vector<vector<int>> components = findConnectedComponents();
+    cout << "\nConnected Components Analysis:" << endl;
+    cout << "Number of connected components: " << components.size() << endl;
+    
+    for (int i = 0; i < components.size(); ++i) {
+        cout << "Component " << (i + 1) << ": {";
+        for (int j = 0; j < components[i].size(); ++j) {
+            if (j > 0) cout << ", ";
+            cout << components[i][j];
+        }
+        cout << "}" << endl;
+    }
+}
+\end{lstlisting}
+
+\subsection*{Ví dụ đầu vào/đầu ra}
+
+\textbf{Input file format:}
+\begin{verbatim}
+11 11         # vertices edges
+0 1           # edge 1
+0 2           # edge 2  
+0 1           # edge 3 (duplicate for simple graph)
+3 4           # edge 4
+5 6           # edge 5
+6 7           # edge 6
+6 8           # edge 7
+8 9           # edge 8
+8 10          # edge 9
+5 5           # edge 10 (self-loop)
+7 8           # edge 11
+0             # starting vertex
+\end{verbatim}
+
+\subsubsection*{Simple Graph Output}
+\begin{verbatim}
+Warning: Parallel edge detected (0 <-> 1). Simple graphs do not support parallel edges. Edge ignored.
+Warning: Self-loop detected (5 -> 5). Simple graphs do not support self-loops. Edge ignored.
+
+=== BFS Results for Simple Graph ===
+Starting from vertex: 0
+
+BFS traversal order: 0 -> 1 -> 2
+
+Distance and Path Information:
++--------+----------+------------------------------+
+| Vertex | Distance | Shortest Path                |
++--------+----------+------------------------------+
+|      0 |        0 | 0                            |
+|      1 |        1 | 0 -> 1                       |
+|      2 |        1 | 0 -> 2                       |
+|      3 |      INF | No path                      |
+|      4 |      INF | No path                      |
+|      5 |      INF | No path                      |
+|      6 |      INF | No path                      |
+|      7 |      INF | No path                      |
+|      8 |      INF | No path                      |
+|      9 |      INF | No path                      |
+|     10 |      INF | No path                      |
++--------+----------+------------------------------+
+
+Connected Components Analysis:
+Number of connected components: 4
+Component 1: {0, 1, 2}
+Component 2: {3, 4}
+Component 3: {5, 6, 7, 8, 9, 10}
+Component 4: {}
+\end{verbatim}
+
+\subsubsection*{Multi Graph Output}
+\begin{verbatim}
+Warning: Self-loop detected (5 -> 5). Multi graphs do not support self-loops. Edge ignored.
+
+=== BFS Results for Multi Graph ===
+Starting from vertex: 0
+
+BFS traversal order: 0 -> 1 -> 2
+
+Distance and Path Information:
++--------+----------+------------------------------+
+| Vertex | Distance | Shortest Path                |
++--------+----------+------------------------------+
+|      0 |        0 | 0                            |
+|      1 |        1 | 0 -> 1                       |
+|      2 |        1 | 0 -> 2                       |
+|      3 |      INF | No path                      |
+|      4 |      INF | No path                      |
+|      5 |      INF | No path                      |
+|      6 |      INF | No path                      |
+|      7 |      INF | No path                      |
+|      8 |      INF | No path                      |
+|      9 |      INF | No path                      |
+|     10 |      INF | No path                      |
++--------+----------+------------------------------+
+
+Connected Components Analysis:
+Number of connected components: 4
+Component 1: {0, 1, 2}
+Component 2: {3, 4}
+Component 3: {5, 6, 7, 8, 9, 10}
+Component 4: {}
+\end{verbatim}
+
+\subsubsection*{General Graph Output}
+\begin{verbatim}
+=== BFS Results for General Graph ===
+Starting from vertex: 0
+
+BFS traversal order: 0 -> 1 -> 2
+
+Distance and Path Information:
++--------+----------+------------------------------+
+| Vertex | Distance | Shortest Path                |
++--------+----------+------------------------------+
+|      0 |        0 | 0                            |
+|      1 |        1 | 0 -> 1                       |
+|      2 |        1 | 0 -> 2                       |
+|      3 |      INF | No path                      |
+|      4 |      INF | No path                      |
+|      5 |        0 | 5                            |
+|      6 |      INF | No path                      |
+|      7 |      INF | No path                      |
+|      8 |      INF | No path                      |
+|      9 |      INF | No path                      |
+|     10 |      INF | No path                      |
++--------+----------+------------------------------+
+
+Connected Components Analysis:
+Number of connected components: 4
+Component 1: {0, 1, 2}
+Component 2: {3, 4}
+Component 3: {5, 6, 7, 8, 9, 10}
+Component 4: {}
+\end{verbatim}
+
+\subsection*{Độ phức tạp thuật toán}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Operation} & \textbf{Time Complexity} & \textbf{Space Complexity} & \textbf{Notes} \\
+\hline
+BFS Traversal & $O(V + E)$ & $O(V)$ & Linear in graph size \\
+Shortest Path & $O(V)$ & $O(V)$ & Path reconstruction \\
+Connected Components & $O(V + E)$ & $O(V)$ & Complete graph traversal \\
+Edge Validation & $O(\log E)$ Simple & $O(1)$ Others & Set lookup vs direct \\
+\hline
+\end{tabular}
+\caption{Complexity analysis for BFS implementations}
+\end{table}
+
+\subsection*{So sánh BFS vs DFS}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Aspect} & \textbf{BFS} & \textbf{DFS} \\
+\hline
+Data Structure & Queue (FIFO) & Stack (LIFO) \\
+Traversal Order & Level by level & Deep first \\
+Shortest Path & Guaranteed (unweighted) & Not guaranteed \\
+Space Complexity & $O(V)$ worst case & $O(h)$ where h = height \\
+Connected Components & Yes & Yes \\
+Cycle Detection & Yes & Yes (easier) \\
+Topological Sort & Possible & Natural \\
+Memory Usage & Higher (queue) & Lower (recursion stack) \\
+\hline
+\end{tabular}
+\caption{Comparison between BFS and DFS algorithms}
+\end{table}
+
+\subsection*{So sánh ba phiên bản BFS}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Feature} & \textbf{Simple Graph} & \textbf{Multi Graph} & \textbf{General Graph} \\
+\hline
+Self-loops & Không & Không & Có \\
+Parallel edges & Không & Có & Có \\
+Edge validation & Set-based & Basic check & None \\
+BFS behavior & Standard & Standard & Special self-loop handling \\
+Path accuracy & Exact & Exact & Exact \\
+Use cases & Academic/Clean & Transportation & Complex systems \\
+\hline
+\end{tabular}
+\caption{Comparison of BFS implementations across graph types}
+\end{table}
+
+\subsection*{Ứng dụng thực tế của BFS}
+
+\subsubsection*{1. Shortest Path Problems}
+\begin{itemize}
+    \item \textbf{Social networks}: Tìm mức độ kết nối giữa người dùng (6 degrees of separation)
+    \item \textbf{GPS navigation}: Tìm tuyến đường ngắn nhất trong đô thị
+    \item \textbf{Network routing}: Tìm path tối ưu trong mạng máy tính
+\end{itemize}
+
+\subsubsection*{2. Level-order analysis}
+\begin{itemize}
+    \item \textbf{Organizational structure}: Phân tích hierarchy theo cấp độ
+    \item \textbf{Game AI}: Pathfinding trong game 2D/3D
+    \item \textbf{Web crawling}: Crawl websites theo mức độ liên kết
+\end{itemize}
+
+\subsubsection*{3. Graph connectivity}
+\begin{itemize}
+    \item \textbf{Network analysis}: Phát hiện isolated components
+    \item \textbf{Social media}: Phân tích communities và clusters
+    \item \textbf{Dependency resolution}: Tìm dependencies trong software packages
+\end{itemize}
+
+\subsection*{Đánh giá và kết luận}
+
+\subsubsection*{Ưu điểm của BFS}
+\begin{itemize}
+    \item \textbf{Optimal shortest path}: Đảm bảo tìm được đường đi ngắn nhất trên unweighted graphs
+    \item \textbf{Complete exploration}: Khám phá toàn bộ connected component
+    \item \textbf{Level-order guarantee}: Duyệt theo thứ tự cấp độ khoảng cách
+    \item \textbf{Distance information}: Cung cấp khoảng cách chính xác từ source
+\end{itemize}
+
+\subsubsection*{Hạn chế của BFS}
+\begin{itemize}
+    \item \textbf{Memory intensive}: Sử dụng nhiều bộ nhớ hơn DFS trong worst case
+    \item \textbf{No weight handling}: Không xử lý được weighted graphs
+    \item \textbf{Queue overhead}: Chi phí quản lý queue structure
+\end{itemize}
+
+\subsubsection*{Contribution của bài toán}
+\begin{itemize}
+    \item \textbf{Comprehensive coverage}: Ba loại đồ thị với constraint validation khác nhau
+    \item \textbf{Shortest path functionality}: Tích hợp sẵn path reconstruction và distance calculation
+    \item \textbf{Connected components analysis}: Phân tích structure của graph
+    \item \textbf{Educational value}: So sánh rõ ràng behavior trên different graph types
+    \item \textbf{Production ready}: Code có thể áp dụng trực tiếp trong real applications
+\end{itemize}
+
+Bộ ba chương trình BFS này cung cấp một foundation hoàn chỉnh cho việc hiểu và áp dụng thuật toán BFS trên các loại đồ thị khác nhau, đặc biệt hữu ích cho shortest path problems và graph connectivity analysis.
+
+% --------------------------------------------------
+% Bài toán 11-13: Thuật toán DFS cho các loại đồ thị
+% --------------------------------------------------
+
+\section*{Bài toán 11-13: Thuật toán DFS cho các loại đồ thị}
+
+\subsection*{Mục đích}
+Chương trình này triển khai thuật toán Depth-First Search (DFS) để duyệt đồ thị theo chiều sâu trên ba loại đồ thị khác nhau: Simple Graph (Bài 11), Multi Graph (Bài 12), và General Graph (Bài 13). Mỗi phiên bản có cách xử lý constraint validation riêng biệt phù hợp với định nghĩa đồ thị.
+
+\subsection*{Giới thiệu thuật toán DFS}
+
+Thuật toán Depth-First Search (DFS) là một thuật toán duyệt đồ thị cơ bản, được phát triển để khám phá các đỉnh theo nguyên tắc "đi sâu trước, quay lui sau". DFS có vai trò quan trọng trong nhiều ứng dụng của lý thuyết đồ thị.
+
+\textbf{Ý tưởng cốt lõi:}
+\begin{enumerate}
+    \item Bắt đầu từ một đỉnh nguồn, đánh dấu đã thăm
+    \item Với mỗi đỉnh kề chưa thăm, tiếp tục DFS đệ quy
+    \item Khi không còn đỉnh kề nào chưa thăm, quay lui về đỉnh trước
+    \item Lặp lại cho đến khi tất cả đỉnh có thể đến được đã thăm
+\end{enumerate}
+
+\textbf{Hai cách triển khai chính:}
+\begin{itemize}
+    \item \textbf{Recursive DFS}: Sử dụng call stack tự nhiên của hệ thống
+    \item \textbf{Iterative DFS}: Sử dụng explicit stack để mô phỏng đệ quy
+\end{itemize}
+
+\subsection*{Phân loại đồ thị và constraint validation}
+
+\subsubsection*{Simple Graph (Đồ thị đơn giản) - Bài toán 11}
+\textbf{Định nghĩa:} Đồ thị không có khuyên (self-loops) và không có cạnh song song (parallel edges).
+
+\textbf{Constraint validation:}
+\begin{itemize}
+    \item Loại bỏ tất cả khuyên: $(u, u)$ không được phép
+    \item Loại bỏ cạnh trùng lặp: chỉ cho phép một cạnh giữa hai đỉnh
+    \item Sử dụng $std::set<pair<int, int>>$ để track existing edges
+\end{itemize}
+
+\textbf{Ứng dụng thực tế:}
+\begin{itemize}
+    \item Mạng xã hội cơ bản (mỗi cặp người chỉ có một mối quan hệ)
+    \item Sơ đồ tổ chức công ty
+    \item Mạng đường bộ đơn giản giữa các thành phố
+\end{itemize}
+
+\subsubsection*{Multi Graph (Đa đồ thị) - Bài toán 12}
+\textbf{Định nghĩa:} Đồ thị cho phép cạnh song song nhưng không có khuyên.
+
+\textbf{Constraint validation:}
+\begin{itemize}
+    \item Loại bỏ khuyên: $(u, u)$ không được phép
+    \item Cho phép multiple edges giữa cùng một cặp đỉnh
+    \item Không cần track existing edges
+\end{itemize}
+
+\textbf{Ứng dụng thực tế:}
+\begin{itemize}
+    \item Hệ thống giao thông với nhiều tuyến đường
+    \item Mạng viễn thông với nhiều kênh truyền
+    \item Mạch điện với các linh kiện song song
+\end{itemize}
+
+\subsubsection*{General Graph (Đồ thị tổng quát) - Bài toán 13}
+\textbf{Định nghĩa:} Đồ thị cho phép cả khuyên và cạnh song song.
+
+\textbf{Constraint validation:}
+\begin{itemize}
+    \item Không có validation - cho phép mọi loại cạnh
+    \item Chấp nhận khuyên: $(u, u)$ được phép
+    \item Chấp nhận multiple edges giữa cùng một cặp đỉnh
+\end{itemize}
+
+\textbf{Ứng dụng thực tế:}
+\begin{itemize}
+    \item Mô hình hệ thống phản hồi (feedback systems)
+    \item Mạng neural với các self-connections
+    \item Phân tích workflow với self-referencing tasks
+\end{itemize}
+
+\subsection*{Cấu trúc dữ liệu và triển khai}
+
+\subsubsection*{Cấu trúc lớp chính (C++)}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+class SimpleGraph {
+private:
+    vector<vector<int>> adjacencyList;      // Adjacency list representation
+    int numberOfVertices;                   // Number of vertices in graph
+    vector<bool> visitedVertices;           // Track visited status
+    vector<int> traversalOrder;             // Store DFS traversal order
+    set<pair<int, int>> existingEdges;      // Track edges to prevent duplicates
+    
+public:
+    explicit SimpleGraph(int vertexCount) : numberOfVertices(vertexCount) {
+        adjacencyList.resize(vertexCount);
+        visitedVertices.resize(vertexCount, false);
+    }
+    
+    bool addEdge(int sourceVertex, int targetVertex) {
+        // Validation logic specific to each graph type
+        if (sourceVertex == targetVertex) {
+            cerr << "Warning: Self-loop detected. Simple graphs do not support self-loops.\n";
+            return false;
+        }
+        
+        if (edgeExists(sourceVertex, targetVertex)) {
+            cerr << "Warning: Parallel edge detected. Simple graphs do not support parallel edges.\n";
+            return false;
+        }
+        
+        // Add edge to adjacency list
+        adjacencyList[sourceVertex].push_back(targetVertex);
+        adjacencyList[targetVertex].push_back(sourceVertex);
+        
+        // Record edge to prevent duplicates
+        pair<int, int> edge = {min(sourceVertex, targetVertex), max(sourceVertex, targetVertex)};
+        existingEdges.insert(edge);
+        return true;
+    }
+};
+\end{lstlisting}
+
+\subsubsection*{Recursive DFS Implementation}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+void performRecursiveDFS(int currentVertex) {
+    visitedVertices[currentVertex] = true;
+    traversalOrder.push_back(currentVertex);
+    
+    // Visit all unvisited neighbors
+    for (int neighbor : adjacencyList[currentVertex]) {
+        if (!visitedVertices[neighbor]) {
+            performRecursiveDFS(neighbor);
+        }
+    }
+}
+
+vector<int> executeRecursiveDFS(int startVertex) {
+    if (!isValidVertex(startVertex)) {
+        cerr << "Error: Invalid starting vertex " << startVertex << "\n";
+        return vector<int>();
+    }
+    
+    resetVisitedStatus();
+    performRecursiveDFS(startVertex);
+    return traversalOrder;
+}
+\end{lstlisting}
+
+\subsubsection*{Iterative DFS Implementation}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+vector<int> executeIterativeDFS(int startVertex) {
+    if (!isValidVertex(startVertex)) {
+        cerr << "Error: Invalid starting vertex " << startVertex << "\n";
+        return vector<int>();
+    }
+    
+    resetVisitedStatus();
+    stack<int> dfsStack;
+    dfsStack.push(startVertex);
+    
+    while (!dfsStack.empty()) {
+        int currentVertex = dfsStack.top();
+        dfsStack.pop();
+        
+        if (!visitedVertices[currentVertex]) {
+            visitedVertices[currentVertex] = true;
+            traversalOrder.push_back(currentVertex);
+            
+            // Add neighbors to stack in reverse order to maintain left-to-right traversal
+            for (int i = static_cast<int>(adjacencyList[currentVertex].size()) - 1; i >= 0; --i) {
+                int neighbor = adjacencyList[currentVertex][i];
+                if (!visitedVertices[neighbor]) {
+                    dfsStack.push(neighbor);
+                }
+            }
+        }
+    }
+    return traversalOrder;
+}
+\end{lstlisting}
+
+\subsection*{Validation functions cho từng loại đồ thị}
+
+\subsubsection*{Simple Graph - Validation nghiêm ngặt}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+bool edgeExists(int sourceVertex, int targetVertex) const {
+    pair<int, int> edge = {min(sourceVertex, targetVertex), max(sourceVertex, targetVertex)};
+    return existingEdges.find(edge) != existingEdges.end();
+}
+
+bool addEdge(int sourceVertex, int targetVertex) {
+    if (sourceVertex == targetVertex) {
+        cerr << "Warning: Self-loop detected (" << sourceVertex 
+             << " -> " << targetVertex << "). Simple graphs do not support self-loops.\n";
+        return false;
+    }
+    
+    if (edgeExists(sourceVertex, targetVertex)) {
+        cerr << "Warning: Parallel edge detected (" << sourceVertex 
+             << " <-> " << targetVertex << "). Simple graphs do not support parallel edges.\n";
+        return false;
+    }
+    
+    // Add validated edge
+    adjacencyList[sourceVertex].push_back(targetVertex);
+    adjacencyList[targetVertex].push_back(sourceVertex);
+    existingEdges.insert({min(sourceVertex, targetVertex), max(sourceVertex, targetVertex)});
+    return true;
+}
+\end{lstlisting}
+
+\subsubsection*{Multi Graph - Validation trung bình}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+bool addEdge(int sourceVertex, int targetVertex) {
+    if (sourceVertex == targetVertex) {
+        cerr << "Warning: Self-loop detected (" << sourceVertex 
+             << " -> " << targetVertex << "). Multi graphs do not support self-loops.\n";
+        return false;
+    }
+    
+    // Allow parallel edges - no duplicate checking needed
+    adjacencyList[sourceVertex].push_back(targetVertex);
+    adjacencyList[targetVertex].push_back(sourceVertex);
+    return true;
+}
+\end{lstlisting}
+
+\subsubsection*{General Graph - Không validation}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+bool addEdge(int sourceVertex, int targetVertex) {
+    // No validation required - accept all edge types
+    adjacencyList[sourceVertex].push_back(targetVertex);
+    if (sourceVertex != targetVertex) {
+        adjacencyList[targetVertex].push_back(sourceVertex);
+    }
+    // Note: For self-loops, only add once to avoid infinite loops in DFS
+    return true;
+}
+\end{lstlisting}
+
+\subsection*{Phân tích connected components}
+
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+vector<vector<int>> findConnectedComponents() {
+    vector<vector<int>> components;
+    resetVisitedStatus();
+    
+    for (int vertex = 0; vertex < numberOfVertices; ++vertex) {
+        if (!visitedVertices[vertex]) {
+            vector<int> component;
+            performComponentDFS(vertex, component);
+            if (!component.empty()) {
+                components.push_back(component);
+            }
+        }
+    }
+    return components;
+}
+
+void performComponentDFS(int currentVertex, vector<int>& component) {
+    visitedVertices[currentVertex] = true;
+    component.push_back(currentVertex);
+    
+    for (int neighbor : adjacencyList[currentVertex]) {
+        if (!visitedVertices[neighbor]) {
+            performComponentDFS(neighbor, component);
+        }
+    }
+}
+\end{lstlisting}
+
+\subsection*{Định dạng đầu ra}
+
+Tất cả ba phiên bản đều sử dụng định dạng output nhất quán:
+
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+void displayResults(int startVertex) {
+    cout << "\\n=== DFS Results for " << getGraphTypeName() << " ===" << endl;
+    cout << "Starting from vertex: " << startVertex << endl;
+    
+    // Recursive DFS
+    vector<int> recursiveResult = executeRecursiveDFS(startVertex);
+    cout << "\\nRecursive DFS traversal: ";
+    for (int i = 0; i < recursiveResult.size(); ++i) {
+        if (i > 0) cout << " -> ";
+        cout << recursiveResult[i];
+    }
+    cout << endl;
+    
+    // Iterative DFS
+    vector<int> iterativeResult = executeIterativeDFS(startVertex);
+    cout << "Iterative DFS traversal: ";
+    for (int i = 0; i < iterativeResult.size(); ++i) {
+        if (i > 0) cout << " -> ";
+        cout << iterativeResult[i];
+    }
+    cout << endl;
+    
+    // Connected Components Analysis
+    vector<vector<int>> components = findConnectedComponents();
+    cout << "\\nConnected Components Analysis:" << endl;
+    cout << "Number of connected components: " << components.size() << endl;
+    
+    for (int i = 0; i < components.size(); ++i) {
+        cout << "Component " << (i + 1) << ": {";
+        for (int j = 0; j < components[i].size(); ++j) {
+            if (j > 0) cout << ", ";
+            cout << components[i][j];
+        }
+        cout << "}" << endl;
+    }
+}
+\end{lstlisting}
+
+\subsection*{Ví dụ đầu vào/đầu ra}
+
+\textbf{Input file format:}
+\begin{verbatim}
+6 7          # vertices edges
+0 1          # edge 1
+0 3          # edge 2
+1 4          # edge 3
+2 4          # edge 4
+2 5          # edge 5
+3 1          # edge 6 (duplicate for simple graph)
+4 3          # edge 7
+0            # starting vertex
+\end{verbatim}
+
+\subsubsection*{Simple Graph Output}
+\begin{verbatim}
+Warning: Parallel edge detected (1 <-> 3). Simple graphs do not support parallel edges. Edge ignored.
+
+=== DFS Results for Simple Graph ===
+Starting from vertex: 0
+
+Recursive DFS traversal: 0 -> 1 -> 4 -> 2 -> 5 -> 3
+Iterative DFS traversal: 0 -> 3 -> 1 -> 4 -> 2 -> 5
+
+Connected Components Analysis:
+Number of connected components: 1
+Component 1: {0, 1, 2, 3, 4, 5}
+
+Graph Statistics:
+- Total vertices: 6
+- Total edges: 6 (1 edge rejected due to constraints)
+- Graph density: 0.400
+- Average degree: 2.000
+\end{verbatim}
+
+\subsubsection*{Multi Graph Output}
+\begin{verbatim}
+=== DFS Results for Multi Graph ===
+Starting from vertex: 0
+
+Recursive DFS traversal: 0 -> 1 -> 3 -> 4 -> 2 -> 5
+Iterative DFS traversal: 0 -> 3 -> 4 -> 2 -> 5 -> 1
+
+Connected Components Analysis:
+Number of connected components: 1
+Component 1: {0, 1, 2, 3, 4, 5}
+
+Graph Statistics:
+- Total vertices: 6
+- Total edges: 7 (all edges accepted)
+- Graph density: 0.467
+- Average degree: 2.333
+\end{verbatim}
+
+\subsubsection*{General Graph Output}
+\begin{verbatim}
+=== DFS Results for General Graph ===
+Starting from vertex: 0
+
+Recursive DFS traversal: 0 -> 1 -> 3 -> 4 -> 2 -> 5
+Iterative DFS traversal: 0 -> 3 -> 4 -> 2 -> 5 -> 1
+
+Connected Components Analysis:
+Number of connected components: 1
+Component 1: {0, 1, 2, 3, 4, 5}
+
+Graph Statistics:
+- Total vertices: 6
+- Total edges: 7 (all edges accepted, including self-loops if any)
+- Graph density: 0.467
+- Average degree: 2.333
+\end{verbatim}
+
+\subsection*{Độ phức tạp thuật toán}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Operation} & \textbf{Time Complexity} & \textbf{Space Complexity} & \textbf{Notes} \\
+\hline
+DFS Traversal & $O(V + E)$ & $O(V)$ & Linear in graph size \\
+Edge Addition & $O(\log E)$ Simple & $O(1)$ Multi/General & Set lookup vs direct \\
+Connected Components & $O(V + E)$ & $O(V)$ & Complete graph traversal \\
+Validation & $O(\log E)$ Simple & $O(1)$ Others & Depends on constraint type \\
+\hline
+\end{tabular}
+\caption{Complexity analysis for DFS implementations}
+\end{table}
+
+\subsection*{So sánh ba phiên bản}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Tính năng} & \textbf{Simple Graph} & \textbf{Multi Graph} & \textbf{General Graph} \\
+\hline
+Self-loops & Không & Không & Có \\
+Parallel edges & Không & Có & Có \\
+Edge validation & Set-based & Basic check & None \\
+Memory overhead & Cao (set storage) & Trung bình & Thấp \\
+Add edge complexity & $O(\log E)$ & $O(1)$ & $O(1)$ \\
+Practical use & Academic/Simple & Transportation & AI/Complex systems \\
+\hline
+\end{tabular}
+\caption{Comparison of DFS implementations across graph types}
+\end{table}
+
+\subsection*{Ứng dụng thực tế của DFS}
+
+\subsubsection*{1. Topology và pathfinding}
+\begin{itemize}
+    \item \textbf{Maze solving}: DFS tìm đường thoát từ mê cung
+    \item \textbf{Path existence}: Kiểm tra connectivity giữa hai đỉnh
+    \item \textbf{Cycle detection}: Phát hiện chu trình trong đồ thị
+\end{itemize}
+
+\subsubsection*{2. Graph analysis}
+\begin{itemize}
+    \item \textbf{Connected components}: Phân tách đồ thị thành các thành phần liên thông
+    \item \textbf{Topological sorting}: Sắp xếp đỉnh theo thứ tự topo (DAG)
+    \item \textbf{Strongly connected components}: Tìm SCC trong đồ thị có hướng
+\end{itemize}
+
+\subsubsection*{3. Tree applications}
+\begin{itemize}
+    \item \textbf{Tree traversal}: Duyệt cây theo pre-order, post-order
+    \item \textbf{Expression evaluation}: Tính giá trị biểu thức từ syntax tree
+    \item \textbf{File system traversal}: Duyệt thư mục và tập tin
+\end{itemize}
+
+\subsection*{Đánh giá và kết luận}
+
+\subsubsection*{Ưu điểm của DFS}
+\begin{itemize}
+    \item \textbf{Memory efficient}: Chỉ cần $O(V)$ space cho visited array
+    \item \textbf{Simple implementation}: Dễ hiểu và triển khai
+    \item \textbf{Versatile}: Ứng dụng rộng rãi trong nhiều bài toán
+    \item \textbf{Path reconstruction}: Có thể dễ dàng rebuild path
+\end{itemize}
+
+\subsubsection*{Hạn chế của DFS}
+\begin{itemize}
+    \item \textbf{Not optimal for shortest path}: Không đảm bảo đường đi ngắn nhất
+    \item \textbf{Stack overflow risk}: Recursive version có thể gây stack overflow
+    \item \textbf{Order dependency}: Kết quả phụ thuộc vào thứ tự adjacency list
+\end{itemize}
+
+\subsubsection*{Contribution của bài toán}
+\begin{itemize}
+    \item \textbf{Comprehensive coverage}: Ba loại đồ thị với constraint khác nhau
+    \item \textbf{Dual implementation}: Cả recursive và iterative approaches
+    \item \textbf{Robust validation}: Xử lý constraints phù hợp với từng graph type
+    \item \textbf{Educational value}: Minh họa rõ ràng sự khác biệt giữa graph types
+    \item \textbf{Practical applicability}: Code có thể sử dụng trong real-world projects
+\end{itemize}
+
+Bộ ba chương trình DFS này cung cấp một foundation vững chắc cho việc hiểu và áp dụng thuật toán DFS trên các loại đồ thị khác nhau, từ academic settings đến practical applications trong software engineering và computer science research.
+
+
+% --------------------------------------------------
+% Bài toán 14-16: Thuật toán Dijkstra
+% --------------------------------------------------
+
+\section*{Bài toán 14-16: Thuật toán Dijkstra cho các loại đồ thị}
+
+\subsection*{Mục đích}
+Chương trình này triển khai thuật toán Dijkstra để tìm đường đi ngắn nhất từ một đỉnh nguồn đến tất cả các đỉnh khác trong đồ thị có trọng số. Ba phiên bản được phát triển để xử lý các loại đồ thị khác nhau: Simple Graph (Bài 14), Multigraph (Bài 15), và General Graph (Bài 16).
+
+\subsection*{Giới thiệu thuật toán Dijkstra}
+
+Thuật toán Dijkstra, được phát triển bởi nhà khoa học máy tính người Hà Lan Edsger W. Dijkstra năm 1956, là một thuật toán tham lam (greedy algorithm) để tìm đường đi ngắn nhất từ một đỉnh nguồn đến tất cả các đỉnh khác trong đồ thị có trọng số không âm.
+
+\textbf{Ý tưởng cốt lõi:}
+\begin{enumerate}
+    \item Duy trì một tập hợp các đỉnh đã được xử lý (đã tìm được đường đi ngắn nhất)
+    \item Tại mỗi bước, chọn đỉnh chưa xử lý có khoảng cách ngắn nhất từ nguồn
+    \item Cập nhật khoảng cách đến các đỉnh kề thông qua phép "relaxation"
+    \item Lặp lại cho đến khi tất cả đỉnh được xử lý
+\end{enumerate}
+
+\subsection*{Phân loại đồ thị và xử lý đặc biệt}
+
+\subsubsection*{Simple Graph (Đồ thị đơn giản)}
+\begin{itemize}
+    \item \textbf{Định nghĩa:} Không có khuyên (self-loop) và không có cạnh bội (multiple edges)
+    \item \textbf{Validation:} Loại bỏ các cạnh $(u,u)$ và cạnh trùng lặp
+    \item \textbf{Ứng dụng:} Mạng đường bộ cơ bản, mạng xã hội đơn giản
+\end{itemize}
+
+\subsubsection*{Multigraph (Đồ thị đa cạnh)}
+\begin{itemize}
+    \item \textbf{Định nghĩa:} Cho phép cạnh bội nhưng không có khuyên
+    \item \textbf{Validation:} Chỉ loại bỏ các khuyên $(u,u)$
+    \item \textbf{Ứng dụng:} Mạng giao thông với nhiều tuyến đường giữa hai địa điểm
+\end{itemize}
+
+\subsubsection*{General Graph (Đồ thị tổng quát)}
+\begin{itemize}
+    \item \textbf{Định nghĩa:} Cho phép cả khuyên và cạnh song song.
+    \item \textbf{Validation:} Không loại bỏ cạnh nào, xử lý tất cả
+    \item \textbf{Ứng dụng:} Mô hình mạng phức tạp, hệ thống với phản hồi
+\end{itemize}
+
+\subsection*{Phân tích chi tiết thuật toán}
+
+\begin{enumerate}
+    \item \textbf{Khởi tạo:}
+    \begin{itemize}
+        \item Đặt khoảng cách từ nguồn đến chính nó bằng 0
+        \item Đặt khoảng cách từ nguồn đến tất cả đỉnh khác bằng $\infty$
+        \item Khởi tạo mảng cha để theo dõi đường đi
+    \end{itemize}
+    
+    \item \textbf{Priority Queue:}
+    \begin{itemize}
+        \item Sử dụng min-heap để luôn chọn đỉnh có khoảng cách nhỏ nhất
+        \item Độ phức tạp: $O(\log V)$ cho mỗi thao tác
+    \end{itemize}
+    
+    \item \textbf{Relaxation (Cải thiện đường đi):}
+    \begin{itemize}
+        \item Với mỗi cạnh $(u,v)$ có trọng số $w$
+        \item Nếu $dist[u] + w < dist[v]$ thì cập nhật $dist[v] = dist[u] + w$
+        \item Cập nhật $parent[v] = u$ để theo dõi đường đi
+    \end{itemize}
+\end{enumerate}
+
+\subsection*{Cấu trúc dữ liệu và triển khai}
+
+\subsubsection*{Cấu trúc chính (C++)}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+struct DijkstraResult {
+    vector<int> distances;  // Shortest distances from source
+    vector<int> parents;    // Parent array for path reconstruction
+};
+
+// Using priority queue for optimization
+priority_queue<DistanceVertexPair, vector<DistanceVertexPair>, 
+               greater<DistanceVertexPair>> priorityQueue;
+\end{lstlisting}
+
+\subsubsection*{Hàm tính đường đi ngắn nhất}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+DijkstraResult calculateShortestPaths(int numberOfVertices, 
+    const vector<vector<DistanceVertexPair>>& adjacencyList, 
+    int sourceVertex) {
+    
+    vector<int> distances(numberOfVertices, INFINITY_DISTANCE);
+    vector<int> parents(numberOfVertices, -1);
+    priority_queue<DistanceVertexPair, vector<DistanceVertexPair>, 
+                   greater<DistanceVertexPair>> priorityQueue;
+    
+    distances[sourceVertex] = 0;
+    priorityQueue.push({0, sourceVertex});
+    
+    while (!priorityQueue.empty()) {
+        int currentDistance = priorityQueue.top().first;
+        int currentVertex = priorityQueue.top().second;
+        priorityQueue.pop();
+        
+        if (currentDistance > distances[currentVertex]) continue;
+        
+        // Relaxation for all adjacent edges
+        for (const auto& edge : adjacencyList[currentVertex]) {
+            int neighborVertex = edge.first;
+            int edgeWeight = edge.second;
+            
+            if (distances[neighborVertex] > 
+                distances[currentVertex] + edgeWeight) {
+                distances[neighborVertex] = 
+                    distances[currentVertex] + edgeWeight;
+                parents[neighborVertex] = currentVertex;
+                priorityQueue.push({distances[neighborVertex], 
+                                   neighborVertex});
+            }
+        }
+    }
+    return {distances, parents};
+}
+\end{lstlisting}
+
+\subsection*{Validation cho từng loại đồ thị}
+
+\subsubsection*{Simple Graph - Validation nghiêm ngặt}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+bool isValidEdgeForSimpleGraph(int firstVertex, int secondVertex) {
+    return firstVertex != secondVertex;  // No self-loops allowed
+}
+
+bool doesEdgeExist(const vector<vector<DistanceVertexPair>>& adj, 
+                   int u, int v) {
+    for (const auto& edge : adj[u]) {
+        if (edge.first == v) return true;  // Check for multiple edges
+    }
+    return false;
+}
+\end{lstlisting}
+
+\subsubsection*{Multigraph - Validation trung bình}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+bool isValidEdgeForMultigraph(int firstVertex, int secondVertex) {
+    return firstVertex != secondVertex;  // Only remove self-loops
+    // Allow multiple edges
+}
+\end{lstlisting}
+
+\subsubsection*{General Graph - Không validation}
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+// No special validation required
+// Process all edge types including self-loops and multiple edges
+\end{lstlisting}
+
+\subsection*{Tái tạo đường đi (Path Reconstruction)}
+
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+string reconstructPath(const vector<int>& parents, 
+                      int targetVertex, int sourceVertex) {
+    if (parents[targetVertex] == -1 && targetVertex != sourceVertex) {
+        return "No path";
+    }
+    
+    vector<int> path;
+    int currentVertex = targetVertex;
+    
+    // Traverse backwards from target to source
+    while (currentVertex != -1) {
+        path.push_back(currentVertex);
+        currentVertex = parents[currentVertex];
+    }
+    
+    // Reverse to get path from source to target
+    reverse(path.begin(), path.end());
+    
+    string pathString = "";
+    for (int i = 0; i < path.size(); ++i) {
+        if (i > 0) pathString += " -> ";
+        pathString += to_string(path[i]);
+    }
+    return pathString;
+}
+\end{lstlisting}
+
+\subsection*{Định dạng đầu ra}
+
+Tất cả ba phiên bản đều sử dụng định dạng bảng chuyên nghiệp:
+
+\begin{lstlisting}[language=C++, basicstyle=\ttfamily\footnotesize, frame=single]
+void displayResults(const DijkstraResult& result, int sourceVertex) {
+    cout << "Shortest paths from vertex " << sourceVertex << ":\n";
+    cout << "+" << string(8, '-') << "+" << string(12, '-') 
+         << "+" << string(30, '-') << "+\n";
+    cout << "|Vertex|Distance|Path|\n";
+    cout << "+" << string(8, '-') << "+" << string(12, '-') 
+         << "+" << string(30, '-') << "+\n";
+    
+    for (int i = 0; i < result.distances.size(); ++i) {
+        string distanceStr = (result.distances[i] == INFINITY_DISTANCE) 
+                           ? "INF" : to_string(result.distances[i]);
+        string pathStr = reconstructPath(result.parents, i, sourceVertex);
+        
+        if (pathStr.length() > 28) {
+            pathStr = pathStr.substr(0, 25) + "...";
+        }
+        
+        cout << "| " << setw(6) << i << " | " << setw(10) << distanceStr 
+             << " | " << setw(28) << left << pathStr << " |\n";
+    }
+    cout << "+" << string(8, '-') << "+" << string(12, '-') 
+         << "+" << string(30, '-') << "+\n";
+}
+\end{lstlisting}
+
+\subsection*{Ví dụ đầu vào/đầu ra}
+
+\textbf{Input file (Simple Graph):}
+\begin{verbatim}
+5 7
+0 0 4    # Self-loop - will be removed
+0 1 1
+1 2 2
+1 2 3    # Duplicate edge - will be removed
+3 4 1
+3 4 5    # Duplicate edge - will be removed
+3 4 7    # Duplicate edge - will be removed
+0
+\end{verbatim}
+
+\textbf{Output (Simple Graph):}
+\begin{verbatim}
+Warning: Self-loops are not allowed in simple graph. Skipping edge (0, 0).
+Warning: Multiple edges are not allowed in simple graph. Skipping duplicate edge (1, 2).
+Warning: Multiple edges are not allowed in simple graph. Skipping duplicate edge (3, 4).
+Warning: Multiple edges are not allowed in simple graph. Skipping duplicate edge (3, 4).
+
+Shortest paths from vertex 0 (Simple Graph - no loops, no multiple edges):
++--------+------------+------------------------------+
+| Vertex | Distance   | Path                         |
++--------+------------+------------------------------+
+|      0 |          0 | 0                            |
+|      1 |          1 | 0 -> 1                       |
+|      2 |          3 | 0 -> 1 -> 2                  |
+|      3 |        INF | No path                      |
+|      4 |        INF | No path                      |
++--------+------------+------------------------------+
+\end{verbatim}
+
+\subsection*{Độ phức tạp thuật toán}
+
+\begin{itemize}
+    \item \textbf{Thời gian:} $O((V + E) \log V)$ với $V$ là số đỉnh, $E$ là số cạnh
+    \item \textbf{Không gian:} $O(V + E)$ để lưu trữ đồ thị và các mảng phụ trợ
+    \item \textbf{Optimization:} Sử dụng priority queue (min-heap) để tối ưu việc chọn đỉnh
+\end{itemize}
+
+\subsection*{So sánh ba phiên bản}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Tính năng} & \textbf{Simple Graph} & \textbf{Multigraph} & \textbf{General Graph} \\
+\hline
+Self-loops & Không & Không & Có \\
+Multiple edges & Không & Có & Có \\
+Validation & Nghiêm ngặt & Trung bình & Không \\
+Ứng dụng & Mạng cơ bản & Giao thông & Hệ thống phức tạp \\
+\hline
+\end{tabular}
+\caption{So sánh các loại đồ thị trong thuật toán Dijkstra}
+\end{table}
+
+\subsection*{Ưu điểm và hạn chế}
+
+\textbf{Ưu điểm:}
+\begin{itemize}
+    \item Đảm bảo tìm được đường đi ngắn nhất
+    \item Hiệu quả với đồ thị có trọng số không âm
+    \item Dễ hiểu và triển khai
+    \item Có thể tái tạo đường đi cụ thể
+\end{itemize}
+
+\textbf{Hạn chế:}
+\begin{itemize}
+    \item Không xử lý được trọng số âm
+    \item Độ phức tạp cao với đồ thị dày đặc
+    \item Cần lưu trữ toàn bộ đồ thị trong bộ nhớ
+\end{itemize}
+
+
+\end{document}

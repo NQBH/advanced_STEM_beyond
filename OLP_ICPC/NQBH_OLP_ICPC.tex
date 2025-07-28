@@ -212,6 +212,46 @@ Some critical-thinking questions:
 
 %------------------------------------------------------------------------------%
 
+\chapter{Các Cấu Trúc Điều Khiển Trong Lập Trình}
+\minitoc
+
+%------------------------------------------------------------------------------%
+
+\chapter{Lập Trình Đơn Thể \& Tổ Chức Mã Nguồn}
+\minitoc
+
+%------------------------------------------------------------------------------%
+
+\chapter{Thuật Toán \& Lập Trình Cài Đặt}
+\minitoc
+
+%------------------------------------------------------------------------------%
+
+\chapter{Rẽ Nhánh \& Chiến Lược Lập Trình}
+\minitoc
+
+%------------------------------------------------------------------------------%
+
+\chapter{Dữ Liệu Mảng \& Chuỗi Ký Tự}
+\minitoc
+
+%------------------------------------------------------------------------------%
+
+\chapter{Kỹ Thuật Xử Lý Lặp Trong Lập Trình}
+\minitoc
+
+%------------------------------------------------------------------------------%
+
+\chapter{Data Structure -- Dữ Liệu Cấu Trúc}
+\minitoc
+
+%------------------------------------------------------------------------------%
+
+\chapter{Nhập Xuất \& Kỹ Thuật Xử Lý Tập Tin}
+\minitoc
+
+%------------------------------------------------------------------------------%
+
 \part{Programming Techniques -- Kỹ Thuật Lập Trình}
 \minitoc
 
@@ -240,7 +280,7 @@ Thư viện chuẩn STL (Standard Template Library) của C++ cung cấp sẵn k
 \begin{definition}[C++ vector]
     {\rm C++ vector} is a dynamic array that stores collection of elements of same type in contiguous memory. It has the ability to resize itself automatically when an element is inserted or deleted.
 
-    -- {\rm C++ vector} là một mảng động lưu trữ tập hợp các phần tử cùng loại trong bộ nhớ liền kề. Nó có khả năng tự động thay đổi kích thước khi một phần tử được chèn vào hoặc xóa.
+    -- {\rm C++ vector} là 1 mảng động lưu trữ tập hợp các phần tử cùng loại trong bộ nhớ liền kề. Nó có khả năng tự động thay đổi kích thước khi 1 phần tử được chèn vào hoặc xóa.
 \end{definition}
 
 Kiểu {\tt vector<T>} được cài đặt sẵn cho C++ chuẩn để sử dụng mảng gồm các phần tử có kiểu là {\tt T} (sẽ được thay thế bởi 1 kiểu cụ thể khi dùng) \& có kích thước có thể thay đổi.
@@ -1297,7 +1337,7 @@ Output: {\tt5 4 3 2 1}.
 \subsection{Seamless working with functions}
 When arrays are passed to a function, a separate parameter for size is also passed whereas in case of passing a vector to a function, there is no such need as vector maintains variables which keeps track of size of container at all times. Also, it can be easily passed \& returned as both value \& reference.
 
--- Khi mảng được truyền cho một hàm, một tham số riêng cho kích thước cũng được truyền trong khi trong trường hợp truyền một vector cho một hàm, không cần thiết vì vector duy trì các biến theo dõi kích thước của container mọi lúc. Ngoài ra, nó có thể dễ dàng được truyền \& trả về dưới dạng cả giá trị \& tham chiếu.
+-- Khi mảng được truyền cho 1 hàm, 1 tham số riêng cho kích thước cũng được truyền trong khi trong trường hợp truyền 1 vector cho 1 hàm, không cần thiết vì vector duy trì các biến theo dõi kích thước của container mọi lúc. Ngoài ra, nó có thể dễ dàng được truyền \& trả về dưới dạng cả giá trị \& tham chiếu.
 \begin{Verbatim}[numbers=left,xleftmargin=5mm]
 #include <bits/stdc++.h>
 using namespace std;
@@ -6164,6 +6204,432 @@ Bài toán có thể mở rộng từ double thành triple, multiple, or just eq
 
 %------------------------------------------------------------------------------%
 
+\chapter{Algebra -- Đại Số}
+
+%------------------------------------------------------------------------------%
+
+\section{Binary Exponentiation{\tt/}Exponentiation by Squaring -- Lũy Thừa Nhị Phân{\tt/}Lũy Thừa Bằng Phép Bình Phương}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://cp-algorithms.com/algebra/binary-exp.html}{Algorithms for Competitive Programming{\tt/}binary exponentiation}.
+
+    \item \href{https://en.wikipedia.org/wiki/Exponentiation_by_squaring}{Wikipedia{\tt/}exponentiation by squaring}.
+\end{enumerate}
+{\it Binary exponentiation} (also known as {\it exponentiation by squaring}) is a trick which allows to calculate $a^n$ using only $O(\log_2n)$ multiplications (instead of $O(n)$ multiplications required by the naive approach). It also has important applications in many tasks unrelated to arithmetic, since it can be used with any operations that have the property of {\it associativity}: $(x\cdot y)\cdot z = x\cdot(Y\cdot z)$. Most obviously, this applies to modular multiplication, to multiplication of matrices \& to other problems.
+
+-- {\it Lũy thừa nhị phân} (còn được gọi là {\it lũy thừa bằng bình phương}) là 1 mẹo cho phép tính $a^n$ chỉ bằng $O(\log_2n)$ phép nhân (thay vì $O(n)$ phép nhân theo cách tiếp cận ngây thơ). Nó cũng có những ứng dụng quan trọng trong nhiều bài toán không liên quan đến số học, vì nó có thể được sử dụng với bất kỳ phép toán nào có tính chất {\it kết hợp}: $(x\cdot y)\cdot z = x\cdot(Y\cdot z)$. Rõ ràng nhất, điều này áp dụng cho phép nhân môđun, phép nhân ma trận \& cho các bài toán khác.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Algorithm}
+Raising $a$ to the power of $n$ is expressed naively as multiplication by $a$ done $n - 1$ times: $a^n = \prod_{i=1}^n a = a\cdot a\cdots a$ ($n$ terms $a$ \& $n - 1$ multiplications $\cdot$). However, this approach is not practical for large $a$ or $n$.
+\begin{equation*}
+    a^{b + c} = a^ba^c,\ a^{2b} = a^ba^b = (a^b)^2.
+\end{equation*}
+The idea of binary exponentiation is that we split the work using the binary exponentiation of the exponent. Write $n\in\mathbb{N}^\star$ in base 2: $n = \overline{a_ma_{m-1}\ldots a_1a_0}|_2$, where $m = \lfloor\log_2n\rfloor + 1$, e.g., $3^{13} = 3^{1101_2} = 3^8\cdot3^4\cdot3^1$. Since $n$ has exactly $\lfloor\log_2n\rfloor + 1$ digits in base 2, we only need to perform $O(\log_2n)$ multiplications, if we know the powers $\{a^{2^i}\}_{i=0}^{\lfloor\log_2n\rfloor} = a^1,a^2,a^4,a^8,\ldots,a^{2^{\lfloor\log_2n\rfloor}}$. Since we only need to know a fast way to compute those. Luckily this is very easy, since an element in the sequence is just the square of the previous element.
+
+-- Ý tưởng của phép lũy thừa nhị phân là chúng ta chia công việc bằng cách sử dụng phép lũy thừa nhị phân của số mũ. Viết $n\in\mathbb{N}^\star$ trong cơ số 2: $n = \overline{a_ma_{m-1}\ldots a_1a_0}|_2$, trong đó $m = \lfloor\log_2n\rfloor + 1$, ví dụ: $3^{13} = 3^{1101_2} = 3^8\cdot3^4\cdot3^1$. Vì $n$ có đúng $\lfloor\log_2n\rfloor + 1$ chữ số trong cơ số 2, nên ta chỉ cần thực hiện $O(\log_2n)$ phép nhân, nếu ta biết các lũy thừa $\{a^{2^i}\}_{i=0}^{\lfloor\log_2n\rfloor} = a^1,a^2,a^4,a^8,\ldots,a^{2^{\lfloor\log_2n\rfloor}}$. Vì ta chỉ cần biết 1 cách nhanh chóng để tính những lũy thừa đó. May mắn thay, điều này rất dễ dàng, vì 1 phần tử trong chuỗi chỉ là bình phương của phần tử đứng trước nó.
+
+\begin{example}
+    To compute $3^{13}$ fast, we compute $3^1 = 3,3^2 = (3^1)^2 = 3^2 = 9,3^4 = (3^2)^2 = 9^2 = 81,3^8 = (3^4)^2 = 81^2 = 6561$ \& only need to multiply 3 of them (skipping $3^2$ since the corresponding bit in $n$ is not set): $3^{13} = 6561\cdot81\cdot3 = 1594323$.
+
+    -- Để tính $3^{13}$ nhanh, chúng ta tính $3^1 = 3,3^2 = (3^1)^2 = 3^2 = 9,3^4 = (3^2)^2 = 9^2 = 81,3^8 = (3^4)^2 = 81^2 = 6561$ \& chỉ cần nhân 3 trong số chúng (bỏ qua $3^2$ vì bit tương ứng trong $n$ không được thiết lập): $3^{13} = 6561\cdot81\cdot3 = 1594323$.
+\end{example}
+The final complexity of this algorithm is $O(\log_2n)$: we have to compute $\log_2n$ powers of $a$, \& then have to do at most $\log_2n$ multiplications to get the final answer from them. The following recursive approach expresses the same idea:
+
+-- Độ phức tạp cuối cùng của thuật toán này là $O(\log_2n)$: chúng ta phải tính $\log_2n$ lũy thừa của $a$, \& sau đó phải thực hiện tối đa $\log_2n$ phép nhân để có được kết quả cuối cùng từ chúng. Phương pháp đệ quy sau đây thể hiện cùng ý tưởng:
+\begin{equation*}
+    a^n = \left\{\begin{split}
+        &1&&\mbox{if } n = 0,\\
+        &\left(a^{\frac{n}{2}}\right)^2&&\mbox{if } n\in\mathbb{N}^\star,\ n\mbox{ is even},\\
+        &a\left(a^{\frac{n - 1}{2}}\right)^2&&\mbox{if } n\in\mathbb{N},\ n\mbox{ is odd}.\\
+    \end{split}\right.
+\end{equation*}
+{\bf Implementation.} Function only:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+long long binpow(long long a, long long b) {
+    if (b == 0) return 1;
+    long long res = binpow(a, b / 2);
+    if (b % 2) return res * res * a;
+    else return res * res;
+}
+\end{Verbatim}
+Full implementation:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+#define ll long long
+
+ll bin_pow(ll a, ll b) {
+    if (b == 0) return 1;
+    ll res = bin_pow(a, b / 2);
+    if (b % 2) return res * res * a;
+    else return res * res;
+}
+
+int main() {
+    ll a, b;
+    cin >> a >> b;
+    cout << bin_pow(a, b);
+}
+\end{Verbatim}
+The 2nd approach accomplishes the same task without recursion. It computes all the powers in a loop, \& multiplies the ones with the corresponding set bit in $n$. Although the complexity of both approaches is identical, this approach will be faster in practice since we don't have the overload of the recursive calls.
+
+-- Cách tiếp cận thứ 2 hoàn thành cùng 1 nhiệm vụ mà không cần đệ quy. Nó tính toán tất cả các lũy thừa trong 1 vòng lặp, \& nhân các lũy thừa đó với bit set tương ứng trong $n$. Mặc dù độ phức tạp của cả hai cách tiếp cận là như nhau, nhưng cách tiếp cận này sẽ nhanh hơn trong thực tế vì chúng ta không bị quá tải bởi các lệnh gọi đệ quy.
+
+Function only:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+long long binpow(long long a, long long b) {
+    long long res = 1;
+    while (b > 0) {
+        if (b & 1) res = res * a;
+        a = a * a;
+        b >>= 1;
+    }
+    return res;
+}
+\end{Verbatim}
+Full implementation:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+#define ll long long
+
+ll bin_pow(ll a, ll b) {
+    if (b == 0) return 1;
+    ll res = bin_pow(a, b / 2);
+    if (b % 2) return res * res * a;
+    else return res * res;
+}
+
+ll bin_pow_1(ll a, ll b) {
+    ll res = 1;
+    while (b > 0) {
+        if (b & 1) res *= a;
+        a *= a;
+        b >>= 1;
+    }
+    return res;
+}
+
+int main() {
+    ll a, b;
+    cin >> a >> b;
+    cout << bin_pow(a, b) << " " << bin_pow_1(a, b);
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Applications of binary exponentiation -- Ứng dụng của lũy thừa nhị phân}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Effective computation of large exponents module a number -- Tính toán hiệu quả các số mũ lớn mô-đun 1 số}
+
+\begin{problem}
+    Compute $a^b\mbox{ mod } m$.
+\end{problem}
+This is a very common operation, e.g., it is used in computing the \href{https://cp-algorithms.com/algebra/module-inverse.html}{modular multiplicative inverse}.
+
+-- Đây là 1 phép toán rất phổ biến, e.g., nó được sử dụng trong tính toán nghịch đảo nhân mô-đun.
+
+\begin{proof}[Solution]
+    Since we know that the modulo operator does not interfere with multiplications:
+    \begin{equation*}
+        ab\equiv(a\mbox{ mod } m)(b\mbox{ mod } m)(\mbox{ mod } m),\ \forall a,b,m\in\mathbb{Z},\ m\ne0,
+    \end{equation*}
+    we can directly use the same code, \& just replace every multiplication with a modular multiplication:
+
+    -- Vì chúng ta biết rằng toán tử modulo không can thiệp vào phép nhân:
+    \begin{equation*}
+        ab\equiv(a\mbox{ mod } m)(b\mbox{ mod } m)(\mbox{ mod } m),\ \forall a,b,m\in\mathbb{Z},\ m\ne0,
+    \end{equation*}
+    chúng ta có thể sử dụng trực tiếp cùng 1 đoạn mã, \& chỉ cần thay thế mọi phép nhân bằng 1 phép nhân modulo:
+
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+long long binpow(long long a, long long b, long long m) {
+    a %= m;
+    long long res = 1;
+    while (b > 0) {
+        if (b & 1) res = res * a % m;
+        a = a * a % m;
+        b >>= 1;
+    }
+    return res;
+}
+    \end{Verbatim}
+    Full implementation:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+#define ll long long
+
+ll bin_pow(ll a, ll b) {
+    if (b == 0) return 1;
+    ll res = bin_pow(a, b / 2);
+    if (b % 2) return res * res * a;
+    else return res * res;
+}
+
+ll bin_pow_1(ll a, ll b) {
+    ll res = 1;
+    while (b > 0) {
+        if (b & 1) res *= a;
+        a *= a;
+        b >>= 1;
+    }
+    return res;
+}
+
+ll bin_pow_mod(ll a, ll b, ll m) { // compute a^b mod m
+    a %= m;
+    ll res = 1;
+    while (b > 0) {
+        if (b & 1) res = res * a % m;
+        a = a * a % m;
+        b >>= 1;
+    }
+    return res;
+}
+
+int main() {
+    ll a, b, m;
+    cin >> a >> b >> m;
+    cout << bin_pow(a, b) << " " << bin_pow_1(a, b) << bin_pow_mod(a, b, m);
+}
+    \end{Verbatim}
+\end{proof}
+
+\begin{remark}
+    It is possible to speed this algorithm for large $b\gg m$ ($\gg$ means ``much larger than'', not the right shift operator for bit). One has
+    \begin{equation*}
+        x^n\equiv\left\{\begin{split}
+            &x^{n\mbox{ mod }(m - 1)}({\rm mod } m)&&\mbox{if } m \mbox{ is prime},\\
+            &x^{n\mbox{ mod }\phi(m)}(\mbox{mod } m)&&\mbox{if } m \mbox{ is composite},
+        \end{split}\right.
+    \end{equation*}
+    which follows directly from Fermat's little theorem \& Euler's theorem.
+
+    -- Có thể tăng tốc thuật toán này đối với $b\gg m$ lớn ($\gg$ nghĩa là ``lớn hơn nhiều'', không phải toán tử dịch chuyển phải cho bit). Ta có
+    \begin{equation*}
+        x^n\equiv\left\{\begin{split}
+            &x^{n\mbox{ mod }(m - 1)}({\rm mod } m)&&\mbox{nếu } m \mbox{ là số nguyên tố},\\
+            &x^{n\mbox{ mod }\phi(m)}(\mbox{mod } m)&&\mbox{nếu } m \mbox{ là hợp số},
+        \end{split}\right.
+    \end{equation*}
+    được suy ra trực tiếp từ Định lý nhỏ Fermat \& Định lý Euler.
+\end{remark}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Effective computation of Fibonacci numbers -- Tính toán hiệu quả các số Fibonacci}
+
+\begin{problem}
+    Compute $n$th Fibonacci number $F_n$.
+\end{problem}
+
+\begin{proof}[Solution]
+    Here we only go through an overview of the algorithm. To compute the next Fibonacci number, only the 2 previous ones are needed, as $F_n = F_{n-1} + F_{n-2}$, we can build a $2\times2$ matrix that describes this transformation: the transition from $F_i$ \& $F_{i+1}$ to $F_{i+1}$ \& $F_{i+2}$, e.g., applying this transformation to the pair $(F_0,F_1)$ would change it into $(F_1,F_2)$. Therefore, we can raise this transformation matrix to the $n$th power to find $F_n$ in time complexity $O(\log_2n)$.
+
+    -- Ở đây chúng ta chỉ xem qua tổng quan về thuật toán. Để tính số Fibonacci tiếp theo, chỉ cần 2 số trước đó, vì $F_n = F_{n-1} + F_{n-2}$, chúng ta có thể xây dựng ma trận $2\times2$ mô tả phép biến đổi này: phép biến đổi từ $F_i$ \& $F_{i+1}$ sang $F_{i+1}$ \& $F_{i+2}$, ví dụ, áp dụng phép biến đổi này cho cặp $(F_0,F_1)$ sẽ biến nó thành $(F_1,F_2)$. Do đó, chúng ta có thể nâng ma trận biến đổi này lên lũy thừa $n$ để tìm $F_n$ với độ phức tạp thời gian $O(\log_2n)$.
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Applying a permutation $k$ times -- Áp dụng 1 hoán vị $k$ lần}
+
+\begin{problem}[Multiple permutations]
+    Given a sequence of length $n\in\mathbb{N},n\ge2$, apply to it a given permutation $k\in\mathbb{N}^\star$ times.
+
+    -- Cho 1 dãy số có độ dài $n\in\mathbb{N},n\ge2$, áp dụng cho nó 1 hoán vị $k\in\mathbb{N}^\star$ lần.
+\end{problem}
+
+\begin{proof}[Solution]
+    Simply raise the permutation to $k$th power using binary exponentiation, \& then apply it to the sequence. This will give you a time complexity $O(n\log_2k)$.
+
+    -- Chỉ cần nâng hoán vị lên lũy thừa $k$ bằng cách sử dụng phép lũy thừa nhị phân, \& sau đó áp dụng nó vào chuỗi. Thao tác này sẽ cho bạn độ phức tạp thời gian $O(n\log2)$.
+
+    Function only:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+vector<int> applyPermutation(vector<int> sequence, vector<int> permutation) {
+    vector<int> newSequence(sequence.size());
+    for(int i = 0; i < sequence.size(); i++) {
+        newSequence[i] = sequence[permutation[i]];
+    }
+    return newSequence;
+}
+
+vector<int> permute(vector<int> sequence, vector<int> permutation, long long k) {
+    while (k > 0) {
+        if (k & 1) {
+            sequence = applyPermutation(sequence, permutation);
+        }
+        permutation = applyPermutation(permutation, permutation);
+        k >>= 1;
+    }
+    return sequence;
+}
+    \end{Verbatim}
+    Full implementation:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+vector<int> apply_permutation(vector<int> sequence, vector<int> permutation) {
+    vector<int> new_sequence(sequence.size());
+    for (int i = 0; i < sequence.size(); ++i) new_sequence[i] = sequence[permutation[i]];
+        return new_sequence;
+}
+
+vector<int> permute(vector<int> sequence, vector<int> permutation, long long k) {
+    while (k > 0) {
+        if (k & 1) sequence = apply_permutation(sequence, permutation);
+        permutation = apply_permutation(permutation, permutation);
+        k >>= 1;
+    }
+    return sequence;
+}
+
+int main() {
+    int n, k;
+    cin >> n >> k;
+    vector<int> sequence(n), permutation(n), res(n);
+    for (int i = 0; i < n; ++i) cin >> sequence[i];
+    for (int i = 0; i < n; ++i) cin >> permutation[i];
+    res = permute(sequence, permutation, k);
+    for (int i = 0; i < n; ++i) cout << res[i] << " ";
+}
+    \end{Verbatim}
+\end{proof}
+
+\begin{remark}
+    This task can be solved more efficiently in linear time by building the {\rm permutation graph} \& considering each cycle independently. You could then compute $k$ module the size of the cycle \& find the final position for each number which is a part of this cycle.
+
+    -- Bài toán này có thể được giải quyết hiệu quả hơn trong thời gian tuyến tính bằng cách xây dựng {\rm đồ thị hoán vị} \& xem xét từng chu kỳ 1 cách độc lập. Sau đó, bạn có thể tính toán môđun $k$ kích thước của chu kỳ \& tìm vị trí cuối cùng cho mỗi số là 1 phần của chu kỳ này.
+\end{remark}
+
+\begin{problem}[Permutation graph -- Đồ thị hoán vị]
+    Investigate on permutation graph approach to solve the problem of multiple permutations.
+
+    -- Nghiên cứu phương pháp đồ thị hoán vị để giải quyết vấn đề hoán vị bội.
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Fast application of a set of geometric operations to a set of points -- Ứng dụng nhanh 1 tập hợp các phép toán hình học vào 1 tập hợp các điểm}
+
+\begin{problem}
+    Given $n\in\mathbb{N}^\star$ points $p_i$, $i\in[n]$, apply $m\in\mathbb{N}^\star$ transformations to each of these points. Each transformation can be a shift, a scaling or a rotation around a given axis by a given angle. There is also a ``loop'' operation which applies a given list of transformations $k$ times (``loop'' operations can be nested). You should apply all transformations faster than $O(n{\rm length})$ where ${\rm length}$ is the total number of transformations to be applied (after unrolling ``loop'' operations).
+
+    -- Cho $n\in\mathbb{N}^\star$ điểm $p_i$, $i\in[n]$, hãy áp dụng $m\in\mathbb{N}^\star$ phép biến đổi cho mỗi điểm này. Mỗi phép biến đổi có thể là 1 phép dịch chuyển, 1 phép biến đổi tỷ lệ hoặc 1 phép quay quanh 1 trục cho trước theo 1 góc cho trước. Ngoài ra còn có 1 phép toán ``vòng lặp'' áp dụng 1 danh sách các phép biến đổi cho trước $k$ lần (các phép toán ``vòng lặp'' có thể được lồng nhau). Bạn nên áp dụng tất cả các phép biến đổi nhanh hơn $O(n{\rm length})$ trong đó ${\rm length}$ là tổng số phép biến đổi cần áp dụng (sau khi mở các phép toán ``vòng lặp'').
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Number of paths of length $k$ in a graph -- Số đường đi độ dài $k$ trong 1 đồ thị}
+
+\begin{problem}
+    Given a directed unweighted graph of $n\in\mathbb{N}^\star$ vertices, find the number of paths of length $k\in\mathbb{N}^\star$ from any vertex $u$ to any other vertex $v$.
+
+    -- Cho 1 đồ thị có hướng không trọng số gồm $n\in\mathbb{N}^\star$ đỉnh, hãy tìm số đường đi có độ dài $k\in\mathbb{N}^\star$ từ bất kỳ đỉnh $u$ nào đến bất kỳ đỉnh $v$ nào khác.
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Variation of binary exponentiation: multiplying 2 numbers modulo $m$ -- Biến đổi của phép lũy thừa nhị phân: nhân 2 số theo modulo $m$}
+
+\begin{problem}
+    Multiply 2 numbers $a,b\in\mathbb{Z}$ module $m\in\mathbb{Z}^\star$. $a,b$ fit in the built-in data types, but their product is too big to fit in a $64$-bit integer. The idea is to compute $ab(\mbox{mod } m)$ without using bignum arithmetics.
+
+    -- Nhân 2 số $a,b\in\mathbb{Z}$ module $m\in\mathbb{Z}^\star$. $a,b$ phù hợp với các kiểu dữ liệu tích hợp, nhưng tích của chúng quá lớn để vừa với 1 số nguyên $64$-bit. Ý tưởng là tính $ab(\mbox{mod } m)$ mà không cần sử dụng các phép toán số học cho số lớn.
+\end{problem}
+
+\begin{proof}[Solution]
+    We simply apply the binary construction algorithm described above, only performing additions instead of multiplications, i.e., we have ``expanded'' the multiplication of 2 numbers to $O(\log_2m)$ operations of addition \& multiplication by 2 (which, in essence, is an addition).
+
+    -- Chúng ta chỉ cần áp dụng thuật toán xây dựng nhị phân được mô tả ở trên, chỉ thực hiện phép cộng thay vì phép nhân, tức là chúng ta đã ``mở rộng'' phép nhân 2 số thành $O(\log_2m)$ phép toán cộng \& nhân với 2 (về bản chất, đây là phép cộng).
+    \begin{equation*}
+        ab = \left\{\begin{split}
+            &0&&\mbox{if } a = 0,\\
+            &2\cdot\frac{a}{2}\cdot b&&\mbox{if } a\in\mathbb{N}^\star,\ a\mbox{ is even},\\
+            &2\cdot\frac{a - 1}{2} + b\cdot b&&\mbox{if } a\in\mathbb{N}^\star,\ a\mbox{ is odd}.
+        \end{split}\right.
+    \end{equation*}
+\end{proof}
+
+\begin{remark}
+    You can solve this task in a different way by using floating-point operations. 1st compute the expression $\dfrac{ab}{m}$ using floating-point numbers \& cast it to an unsigned integer $q$. Subtract $qm$ from $ab$ using unsigned integer arithmetics \& take it module $m$ to find the answer. This solution looks rather unreliable, but it is very fast, \& very easy to implement, see \href{https://cs.stackexchange.com/questions/77016/modular-multiplication}{Computer Science StackExchange{\tt/}modular multiplication}.
+
+    -- Bạn có thể giải bài toán này theo 1 cách khác bằng cách sử dụng các phép toán dấu phẩy động. Trước tiên, hãy tính biểu thức $\dfrac{ab}{m}$ bằng cách sử dụng các số dấu phẩy động \& ép kiểu nó thành 1 số nguyên không dấu $q$. Trừ $qm$ cho $ab$ bằng cách sử dụng các phép tính số học không dấu \& lấy nó trong mô-đun $m$ để tìm ra đáp án. Giải pháp này trông có vẻ không đáng tin cậy, nhưng nó rất nhanh \& rất dễ triển khai, hãy xem \href{https://cs.stackexchange.com/questions/77016/modular-multiplication}{Computer Science StackExchange{\tt/}phép nhân mô-đun}.
+\end{remark}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Problems: Binary Exponentiation -- Bài Tập: Lũy Thừa Nhị Phân}
+
+\begin{problem}[UVa 1230 - MODEX]
+
+\end{problem}
+
+\begin{problem}[UVa 374 - Big Mod]
+
+\end{problem}
+
+\begin{problem}[UVa 11029 - Leading and Trailing]
+
+\end{problem}
+
+\begin{problem}[Codeforces - Parking Lot]
+
+\end{problem}
+
+\begin{problem}[leetcode - Count good numbers]
+
+\end{problem}
+
+\begin{problem}[Codechef - Chef and Riffles]
+
+\end{problem}
+
+\begin{problem}[Codeforces - Decoding Genome]
+
+\end{problem}
+
+\begin{problem}[Codeforces - Neural Network Country]
+
+\end{problem}
+
+\begin{problem}[Codeforces - Magic Gems]
+
+\end{problem}
+
+\begin{problem}[SPOJ - The last digit]
+
+\end{problem}
+
+\begin{problem}[SPOJ - Locker]
+
+\end{problem}
+
+\begin{problem}[LA - 3722 Jewel-eating Monsters]
+
+\end{problem}
+
+\begin{problem}[SPOJ - Just add it]
+
+\end{problem}
+
+\begin{problem}[Codeforces - Stairs and Lines]
+
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
 \chapter{Ad Hoc Problems}
 \minitoc
 
@@ -6326,46 +6792,6 @@ Unlike mechanism analysis, statistical analysis begins with a partial solution t
 \begin{problem}[\cite{Wu_Wang2018}, 1.3.1., pp. 12--13, Perfection]
 	From the article Number Theory in the 1994 Microsoft Encarta: ``If $a,b,c\in\mathbb{Z}$ s.t. $a = bc$, $a$ is called a multiple of $b$ or of $c$, \& $b$ or $c$ is called a {\rm divisor} or {\rm factor} of $a$. If $c\ne\pm1$, $b$ is called a {\rm proper divisor} of $a$.
 \end{problem}
-
-%------------------------------------------------------------------------------%
-
-\chapter{VNOI}
-\minitoc
-
-%------------------------------------------------------------------------------%
-
-\begin{baitoan}[gcd in Pascal triangle -- ƯCLN trong tam giác Pascal, \url{https://oj.vnoi.info/problem/gpt}]
-	Tam giác Pascal là 1 cách sắp xếp hình học của các hệ số nhị thức vào 1 tam giác. Hàng thứ $n\in\mathbb{N}$ của tam giác bao gồm các hệ số trong khai triển của đa thức $f(x,y) = (x + y)^n$. I.e., phần tử tại cột thứ $k$, hàng thứ $n$ của tam giác Pascal là $C_n^k = \binom{n}{k}$, i.e., tổ hợp chập $k$ của $n$ phần tử $0\le k\le n$. Cho $n\in\mathbb{N}$. Tính ${\rm GPT}(n)$ là ƯCLN của các số nằm giữa 2 số 1 trên hàng thứ $n$ của tam giác Pascal.
-	\item {\sf Input.} Dòng đầu ghi $T$ là số lượng test. $T$ dòng tiếp theo, mỗi dòng ghi 1 số nguyên $n$.
-	\item {\sf Output.} Gồm $T$ dòng, mỗi dòng ghi ${\rm GPT}(n)$ tương ứng.
-	\item {\sf Constraint.} $1\le T\le20$, $2\le n\le10^9$.
-\end{baitoan}
-{\it Phân tích.} Công thức khai triển nhị thức Newton: $(a + b)^n = \sum_{i=0}^n C_n^ia^{n-i}b^i$, $\forall n\in\mathbb{N}$, see, e.g., \href{https://en.wikipedia.org/wiki/Binomial_theorem}{Wikipedia{\tt/}binomial theorem}. Cần tính $\gcd(\{C_n^i;1\le i\le n - 1\}) = \gcd(C_n^1,C_n^2,\ldots,C_n^{n-1})$. Chú ý mỗi hàng của tam giác Pascal có tính chất đối xứng nên chỉ cần xét ``1 nửa'' là đủ. Cụ thể hơn: $C_n^k = C_n^{n-k}$, $\forall k\in\mathbb{N}$, $k\le n$, nên
-\begin{equation*}
-	\{C_n^1,\ldots,C_n^{n-1}\} = \{C_n^1,\ldots,C_n^{\lfloor\frac{n}{2}\rfloor}\} = \left\{\begin{split}
-		&\{C_n^1,\ldots,C_n^{\frac{n-1}{2}}\}&&\mbox{if } n\not{\divby}\ 2,\\
-		&\{C_n^1,\ldots,C_n^{\frac{n}{2}}\}&&\mbox{if } n\divby2,
-	\end{split}\right.
-\end{equation*}
-nên thay vì xét $i = 1,\ldots,n-1$, chỉ cần xét $i = 1,\ldots,\lfloor\frac{n}{2}\rfloor$ là đủ.
-
-Codes:
-\begin{itemize}
-    \item C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C++/gcd_Pascal_triangle.cpp}.
-\end{itemize}
-
-\begin{theorem}
-	\begin{equation*}
-		\gcd\{C_n^i\}_{i=1}^{n-1} = \left\{\begin{split}
-			&p&&\mbox{if } n = p^k\mbox{ for some prime } p\mbox{ \& some } n\in\mathbb{N}^\star,\\
-			&1&&\mbox{if } n\ne p^k\mbox{ for all prime } p\mbox{ \& any } n\in\mathbb{N}^\star.
-		\end{split}\right.
-	\end{equation*}
-\end{theorem}
-See also, e.g.:
-\begin{itemize}
-	\item \href{https://math.stackexchange.com/questions/2067235/gcd-of-binomial-coefficients}{Mathematics StackExchange{\tt/}gcd of binomial coefficients}.
-\end{itemize}
 
 %------------------------------------------------------------------------------%
 
@@ -9153,14 +9579,14 @@ Repeat the above steps. If all vertices are output, the process of topological s
 
 -- {\bf Xóa Cung.}
 \begin{itemize}
-    \item Bước 1: Chọn một đỉnh có bậc vào bằng 0 \& xuất đỉnh đó.
+    \item Bước 1: Chọn 1 đỉnh có bậc vào bằng 0 \& xuất đỉnh đó.
     \item Bước 2: Xóa đỉnh \& xuất cung bắt đầu từ đỉnh đó, tức là bậc vào cho các đỉnh mà tại đó đầu cung giảm 1.
 \end{itemize}
 Lặp lại các bước trên. Nếu tất cả các đỉnh đều được xuất, quá trình sắp xếp tôpô kết thúc; nếu không, tồn tại các chu trình trong đồ thị \& không có sắp xếp tôpô nào trong đồ thị. Độ phức tạp thời gian của thuật toán là $O(|E|)$.
 
 Using the algorithm for deleting arcs once, we can get 1 topological sort. Using the recursive method, this algorithm is applied for all vertices whose in-degree is 0 successively, \& all topological sorts can be obtained.
 
--- Sử dụng thuật toán xóa cung một lần, ta có thể thu được 1 phép sắp xếp tôpô. Sử dụng phương pháp đệ quy, thuật toán này được áp dụng cho tất cả các đỉnh có bậc vào bằng 0 liên tiếp, \& có thể thu được tất cả các phép sắp xếp tôpô.
+-- Sử dụng thuật toán xóa cung 1 lần, ta có thể thu được 1 phép sắp xếp tôpô. Sử dụng phương pháp đệ quy, thuật toán này được áp dụng cho tất cả các đỉnh có bậc vào bằng 0 liên tiếp, \& có thể thu được tất cả các phép sắp xếp tôpô.
 
 \begin{problem}[Following orders, \cite{Wu_Wang2016}, pp. 346--347]
     Order is an important concept in mathematics \& computer science. E.g., Zorn's lemma states: ``a partially ordered set in which every chain has an upper bound contains a maximal element.'' Order is also important in reasoning about the fixed-point semantics of programs.
@@ -9191,27 +9617,27 @@ Using the algorithm for deleting arcs once, we can get 1 topological sort. Using
 \end{problem}
 
 \begin{baitoan}
-    Thứ tự là một khái niệm quan trọng trong toán học \& khoa học máy tính. Ví dụ, định lý Zorn phát biểu: ``một tập hợp được sắp thứ tự một phần trong đó mọi chuỗi có một cận trên đều chứa một phần tử cực đại.'' Thứ tự cũng rất quan trọng trong việc suy luận về ngữ nghĩa điểm bất động của chương trình.
+    Thứ tự là 1 khái niệm quan trọng trong toán học \& khoa học máy tính. Ví dụ, định lý Zorn phát biểu: ``một tập hợp được sắp thứ tự 1 phần trong đó mọi chuỗi có 1 cận trên đều chứa 1 phần tử cực đại.'' Thứ tự cũng rất quan trọng trong việc suy luận về ngữ nghĩa điểm bất động của chương trình.
 
-    Bài toán này không liên quan đến định lý Zorn hay ngữ nghĩa điểm bất động, nhưng lại liên quan đến thứ tự. Cho một danh sách các ràng buộc biến có dạng $x < y$, bạn phải viết một chương trình in ra tất cả các thứ tự của các biến phù hợp với các ràng buộc đó. Ví dụ, cho các ràng buộc $x < y$ \& $x < z$, có 2 thứ tự của các biến $x,y,$ phù hợp với các ràng buộc này: x y z \& x z y.
-    \item {\sf Input.} Đầu vào bao gồm một chuỗi các đặc tả ràng buộc. 1 đặc tả bao gồm 2 dòng: danh sách các biến trên 1 dòng, tiếp theo là danh sách các ràng buộc trên dòng tiếp theo. 1 ràng buộc được đưa ra bởi một cặp biến, trong đó x y biểu thị rằng $x < y$. Tất cả các biến đều là chữ cái thường, một ký tự. Sẽ có ít nhất 2 biến \& không quá $20$ trong một đặc tả. Sẽ có ít nhất 1 ràng buộc \& không quá $50$ trong một đặc tả. Sẽ có ít nhất 1 thứ tự \& không quá $300$ nhất quán với các ràng buộc trong một đặc tả. Đầu vào được kết thúc ở cuối tệp.
-    \item {\sf Đầu ra.} Đối với mỗi đặc tả ràng buộc, tất cả các thứ tự nhất quán với các ràng buộc sẽ được in ra. Các thứ tự được in theo thứ tự từ điển (bảng chữ cái), mỗi dòng 1. Các đầu ra cho các đặc tả ràng buộc khác nhau được phân tách bằng một dòng trống.
+    Bài toán này không liên quan đến định lý Zorn hay ngữ nghĩa điểm bất động, nhưng lại liên quan đến thứ tự. Cho 1 danh sách các ràng buộc biến có dạng $x < y$, bạn phải viết 1 chương trình in ra tất cả các thứ tự của các biến phù hợp với các ràng buộc đó. Ví dụ, cho các ràng buộc $x < y$ \& $x < z$, có 2 thứ tự của các biến $x,y,$ phù hợp với các ràng buộc này: x y z \& x z y.
+    \item {\sf Input.} Đầu vào bao gồm 1 chuỗi các đặc tả ràng buộc. 1 đặc tả bao gồm 2 dòng: danh sách các biến trên 1 dòng, tiếp theo là danh sách các ràng buộc trên dòng tiếp theo. 1 ràng buộc được đưa ra bởi 1 cặp biến, trong đó x y biểu thị rằng $x < y$. Tất cả các biến đều là chữ cái thường, 1 ký tự. Sẽ có ít nhất 2 biến \& không quá $20$ trong 1 đặc tả. Sẽ có ít nhất 1 ràng buộc \& không quá $50$ trong 1 đặc tả. Sẽ có ít nhất 1 thứ tự \& không quá $300$ nhất quán với các ràng buộc trong 1 đặc tả. Đầu vào được kết thúc ở cuối tệp.
+    \item {\sf Đầu ra.} Đối với mỗi đặc tả ràng buộc, tất cả các thứ tự nhất quán với các ràng buộc sẽ được in ra. Các thứ tự được in theo thứ tự từ điển (bảng chữ cái), mỗi dòng 1. Các đầu ra cho các đặc tả ràng buộc khác nhau được phân tách bằng 1 dòng trống.
 \end{baitoan}
 
 \begin{proof}[Solution]
     Every variable (letter) is represented as a vertex, \& a constraint $x < y$ is represented as an arc $(x,y)$. Therefore, a list of constraints is represented as a directed graph:
 
-    -- Mỗi biến (chữ cái) được biểu diễn dưới dạng một đỉnh, và ràng buộc $x < y$ được biểu diễn dưới dạng một cung $(x,y)$. Do đó, danh sách các ràng buộc được biểu diễn dưới dạng một đồ thị có hướng:
+    -- Mỗi biến (chữ cái) được biểu diễn dưới dạng 1 đỉnh, và ràng buộc $x < y$ được biểu diễn dưới dạng 1 cung $(x,y)$. Do đó, danh sách các ràng buộc được biểu diễn dưới dạng 1 đồ thị có hướng:
     \begin{enumerate}
         \item A directed graph is constructed based on the input. Suppose $var$ is the string for a list of variables. Because there are spaces in the string, $var[0],var[2],var[4],\ldots$, are vertices, \& the number of vertices is $\left\lfloor\dfrac{{\rm length}(var)}{2}\right\rfloor + 1$. Suppose $v$ is the string for a list of constraints. Array $pre$ is used to store the sequence for vertices' in-degrees, where $pre[ch]$ is the in-degree for vertex $ch$. Array $pre$ is calculated as follows:
 
-        -- 1 đồ thị có hướng được xây dựng dựa trên dữ liệu đầu vào. Giả sử $var$ là chuỗi cho một danh sách các biến. Vì có khoảng trắng trong chuỗi, nên $var[0],var[2],var[4],\ldots$ là các đỉnh, \& số đỉnh là $\left\lfloor\dfrac{{\rm length}(var)}{2}\right\rfloor + 1$. Giả sử $v$ là chuỗi cho một danh sách các ràng buộc. Mảng $pre$ được dùng để lưu trữ chuỗi bậc vào của các đỉnh, trong đó $pre[ch]$ là bậc vào của đỉnh $ch$. Mảng $pre$ được tính như sau:
+        -- 1 đồ thị có hướng được xây dựng dựa trên dữ liệu đầu vào. Giả sử $var$ là chuỗi cho 1 danh sách các biến. Vì có khoảng trắng trong chuỗi, nên $var[0],var[2],var[4],\ldots$ là các đỉnh, \& số đỉnh là $\left\lfloor\dfrac{{\rm length}(var)}{2}\right\rfloor + 1$. Giả sử $v$ là chuỗi cho 1 danh sách các ràng buộc. Mảng $pre$ được dùng để lưu trữ chuỗi bậc vào của các đỉnh, trong đó $pre[ch]$ là bậc vào của đỉnh $ch$. Mảng $pre$ được tính như sau:
         \begin{verbatim}
 for (int i = 0; i < length of v; i += 4) ++pre[the (i + 2)-th letter in v];
         \end{verbatim}
         \item Get all Topological Sorts through DFS: All Topological Sorts in a directed graph can be obtained through DFS. Initial state is a subsequence $res$ whose length is $dep - 1$:
 
-        -- Lấy tất cả các phép sắp xếp tôpô thông qua DFS: Tất cả các phép sắp xếp tôpô trong một đồ thị có hướng có thể được lấy thông qua DFS. Trạng thái ban đầu là một dãy con $res$ có độ dài là $dep - 1$:
+        -- Lấy tất cả các phép sắp xếp tôpô thông qua DFS: Tất cả các phép sắp xếp tôpô trong 1 đồ thị có hướng có thể được lấy thông qua DFS. Trạng thái ban đầu là 1 dãy con $res$ có độ dài là $dep - 1$:
         \begin{Verbatim}[numbers=left,xleftmargin=5mm]
 dfs(dep, res) {
     If a Topological Sort is gotton (dep == n + 1), then output res & backtrack (return);
@@ -9284,11 +9710,11 @@ public class Main {
 \subsubsection{Topological sort implemented by DFS -- Sắp xếp tôpô cài đặt bởi DFS}
 Suppose $x,y$ are vertices in a directed graph \& $(x,y)$ is an arc. If $x$ is in the set of vertices obtained by ${\rm DFS}(y)$, then ${\rm arc}(x,y)$ is a back edge, \& its time complexity is $O(E)$. There is no cycle in a directed graph iff there is no back edge in the graph.
 
--- Giả sử $x,y$ là các đỉnh trong một đồ thị có hướng \& $(x,y)$ là một cung. Nếu $x$ nằm trong tập các đỉnh thu được bởi ${\rm DFS}(y)$, thì ${\rm arc}(x,y)$ là một cạnh lùi, \& độ phức tạp thời gian của nó là $O(E)$. Không có chu trình trong một đồ thị có hướng nếu và chỉ nếu không có cạnh lùi trong đồ thị.
+-- Giả sử $x,y$ là các đỉnh trong 1 đồ thị có hướng \& $(x,y)$ là 1 cung. Nếu $x$ nằm trong tập các đỉnh thu được bởi ${\rm DFS}(y)$, thì ${\rm arc}(x,y)$ là 1 cạnh lùi, \& độ phức tạp thời gian của nó là $O(E)$. Không có chu trình trong 1 đồ thị có hướng nếu và chỉ nếu không có cạnh lùi trong đồ thị.
 
 Based on it, the algorithm of topological sort implemented by DFS is as follows: Suppose it takes 1 time unit to visit a vertex, the end time when vertex $u$ \& its descendants are all visited is $f[u]$. \& $f[u]$ can be calculated by DFS algorithm as follows. Obviously, if there exists a topological sort in the graph, there is no back edge in DFS traversal for the graph, i.e., for any arc $(u,v)$ in the graph, $f[v] < f[u]$. The topological sequence is stored in a stack {\tt topo}. In {\tt topo}, array $f[]$ for vertices are in descending order from top to bottom.
 
--- Dựa trên đó, thuật toán sắp xếp tôpô được triển khai bởi DFS như sau: Giả sử cần 1 đơn vị thời gian để thăm một đỉnh, thời gian kết thúc khi đỉnh $u$ \& tất cả các đỉnh con của nó được thăm là $f[u]$. \& $f[u]$ có thể được tính bằng thuật toán DFS như sau. Rõ ràng, nếu tồn tại một thuật toán sắp xếp tôpô trong đồ thị, thì không có cạnh lùi nào trong phép duyệt DFS cho đồ thị, tức là, với mọi cung $(u,v)$ trong đồ thị, $f[v] < f[u]$. Dãy tôpô được lưu trữ trong một ngăn xếp {\tt topo}. Trong {\tt topo}, mảng $f[]$ chứa các đỉnh được sắp xếp theo thứ tự giảm dần từ trên xuống dưới.
+-- Dựa trên đó, thuật toán sắp xếp tôpô được triển khai bởi DFS như sau: Giả sử cần 1 đơn vị thời gian để thăm 1 đỉnh, thời gian kết thúc khi đỉnh $u$ \& tất cả các đỉnh con của nó được thăm là $f[u]$. \& $f[u]$ có thể được tính bằng thuật toán DFS như sau. Rõ ràng, nếu tồn tại 1 thuật toán sắp xếp tôpô trong đồ thị, thì không có cạnh lùi nào trong phép duyệt DFS cho đồ thị, tức là, với mọi cung $(u,v)$ trong đồ thị, $f[v] < f[u]$. Dãy tôpô được lưu trữ trong 1 ngăn xếp {\tt topo}. Trong {\tt topo}, mảng $f[]$ chứa các đỉnh được sắp xếp theo thứ tự giảm dần từ trên xuống dưới.
 \begin{Verbatim}[numbers=left,xleftmargin=5mm]
 void DFS-visit(u) { // DFS traversal for subtree whose root is u
     Set a visited mark for u;
@@ -9302,7 +9728,7 @@ void DFS-visit(u) { // DFS traversal for subtree whose root is u
 \end{Verbatim}
 Initially, $time = 0$ \& set unvisited marks to all vertices. For every unvisited vertex $v$, $DFS-visit(v)$ is called. Then stack $topo$ \& $f[]$ can be obtained. If there exists an arc $(u,v)$ in the graph s.t. $f[v] > f[u]$, then $(u,v)$ is a back edge \& topological sort fails; else, all vertices from top to bottom in stack $topo$ constitute a topological sequence. The time complexity for DFS is $O(|E|)$, \& the time complexity for adding all vertices into stack $topo$ is $O(1)$. Therefore, the time complexity for topological sort is $O(|E|)$.
 
--- Ban đầu, $time = 0$ \& đặt các dấu chưa thăm cho tất cả các đỉnh. Với mỗi đỉnh chưa thăm $v$, $DFS-visit(v)$ được gọi. Sau đó, ngăn xếp $topo$ \& $f[]$ có thể thu được. Nếu tồn tại một cung $(u,v)$ trong đồ thị s.t. $f[v] > f[u]$, thì $(u,v)$ là một cạnh sau \& sắp xếp tôpô thất bại; nếu không, tất cả các đỉnh từ trên xuống dưới trong ngăn xếp $topo$ tạo thành một chuỗi tôpô. Độ phức tạp thời gian cho DFS là $O(|E|)$, \& độ phức tạp thời gian để thêm tất cả các đỉnh vào ngăn xếp $topo$ là $O(1)$. Do đó, độ phức tạp thời gian cho sắp xếp tôpô là $O(|E|)$.
+-- Ban đầu, $time = 0$ \& đặt các dấu chưa thăm cho tất cả các đỉnh. Với mỗi đỉnh chưa thăm $v$, $DFS-visit(v)$ được gọi. Sau đó, ngăn xếp $topo$ \& $f[]$ có thể thu được. Nếu tồn tại 1 cung $(u,v)$ trong đồ thị s.t. $f[v] > f[u]$, thì $(u,v)$ là 1 cạnh sau \& sắp xếp tôpô thất bại; nếu không, tất cả các đỉnh từ trên xuống dưới trong ngăn xếp $topo$ tạo thành 1 chuỗi tôpô. Độ phức tạp thời gian cho DFS là $O(|E|)$, \& độ phức tạp thời gian để thêm tất cả các đỉnh vào ngăn xếp $topo$ là $O(1)$. Do đó, độ phức tạp thời gian cho sắp xếp tôpô là $O(|E|)$.
 
 \begin{problem}[Sorting it all out, \cite{Wu_Wang2016}, pp. 348--349]
     An ascending sorted sequence of distinct values is one in which some form of a less than operator is used to order the elements from smallest to largest. E.g., the sorted sequence $A,B,C,D$ implies that $A < B,B < C,C < D$. In this problem, we will give you a set of relations of the form $A < B$ \& ask you to determine whether a sorted order has been specified or not.
@@ -9341,15 +9767,15 @@ Initially, $time = 0$ \& set unvisited marks to all vertices. For every unvisite
 \end{problem}
 
 \begin{baitoan}[Sắp xếp tất cả]
-    Một dãy các giá trị phân biệt được sắp xếp tăng dần là dãy sử dụng một dạng toán tử nhỏ hơn nào đó để sắp xếp các phần tử từ nhỏ đến lớn. Ví dụ: dãy $A,B,C,D$ đã được sắp xếp ngụ ý rằng $A < B,B < C,C < D$. Trong bài toán này, chúng tôi sẽ cung cấp cho bạn một tập hợp các quan hệ có dạng $A < B$ \& yêu cầu bạn xác định xem thứ tự đã được sắp xếp đã được chỉ định hay chưa.
-    \item {\sf Input.} Đầu vào bao gồm nhiều trường hợp bài toán. Mỗi trường hợp bắt đầu bằng một dòng chứa 2 số nguyên dương $n,m\in\mathbb{N}^\star$. Giá trị thứ nhất biểu thị số lượng đối tượng cần sắp xếp, trong đó $2\le n\le26$. Các đối tượng cần sắp xếp sẽ là $n$ ký tự đầu tiên của bảng chữ cái viết hoa. Giá trị thứ hai $m$ biểu thị số lượng quan hệ có dạng $A < B$, sẽ được đưa ra trong trường hợp bài toán này. Tiếp theo sẽ là $m$ dòng, mỗi dòng chứa 1 quan hệ như vậy gồm 3 ký tự: một chữ cái viết hoa, ký tự {\tt<}, \& một chữ cái viết hoa thứ hai. Không có chữ cái nào nằm ngoài phạm vi của $n$ chữ cái đầu tiên của bảng chữ cái. Giá trị $n = m = 0$ biểu thị kết thúc của dữ liệu đầu vào.
+    1 dãy các giá trị phân biệt được sắp xếp tăng dần là dãy sử dụng 1 dạng toán tử nhỏ hơn nào đó để sắp xếp các phần tử từ nhỏ đến lớn. Ví dụ: dãy $A,B,C,D$ đã được sắp xếp ngụ ý rằng $A < B,B < C,C < D$. Trong bài toán này, chúng tôi sẽ cung cấp cho bạn 1 tập hợp các quan hệ có dạng $A < B$ \& yêu cầu bạn xác định xem thứ tự đã được sắp xếp đã được chỉ định hay chưa.
+    \item {\sf Input.} Đầu vào bao gồm nhiều trường hợp bài toán. Mỗi trường hợp bắt đầu bằng 1 dòng chứa 2 số nguyên dương $n,m\in\mathbb{N}^\star$. Giá trị thứ nhất biểu thị số lượng đối tượng cần sắp xếp, trong đó $2\le n\le26$. Các đối tượng cần sắp xếp sẽ là $n$ ký tự đầu tiên của bảng chữ cái viết hoa. Giá trị thứ hai $m$ biểu thị số lượng quan hệ có dạng $A < B$, sẽ được đưa ra trong trường hợp bài toán này. Tiếp theo sẽ là $m$ dòng, mỗi dòng chứa 1 quan hệ như vậy gồm 3 ký tự: 1 chữ cái viết hoa, ký tự {\tt<}, \& 1 chữ cái viết hoa thứ hai. Không có chữ cái nào nằm ngoài phạm vi của $n$ chữ cái đầu tiên của bảng chữ cái. Giá trị $n = m = 0$ biểu thị kết thúc của dữ liệu đầu vào.
     \item {\sf Output.} Đối với mỗi trường hợp bài toán, đầu ra bao gồm 1 dòng. Dòng này phải là 1 trong 3 dòng sau:
     \begin{enumerate}
         \item Dãy đã sắp xếp được xác định sau các quan hệ $xxx$: $yyy\ldots y$
         \item Dãy đã sắp xếp không thể xác định được
         \item Tìm thấy sự không nhất quán sau các quan hệ $xxx$
     \end{enumerate}
-    trong đó $xxx$ là số lượng quan hệ được xử lý tại thời điểm một dãy đã sắp xếp được xác định hoặc một sự không nhất quán được tìm thấy, đứng đầu tiên, \& $yyy\ldots y$ là dãy đã sắp xếp, tăng dần.
+    trong đó $xxx$ là số lượng quan hệ được xử lý tại thời điểm 1 dãy đã sắp xếp được xác định hoặc 1 sự không nhất quán được tìm thấy, đứng đầu tiên, \& $yyy\ldots y$ là dãy đã sắp xếp, tăng dần.
 \end{baitoan}
 
 \begin{proof}[Solution]
@@ -9359,10 +9785,10 @@ Initially, $time = 0$ \& set unvisited marks to all vertices. For every unvisite
         \item If arc $(x,y)$ is added, \& there exists a sorted sequence for $n$ vertices, then a sorted sequence is determined. It can be determined by deleting arcs for the current graph.
         \item After $m$ arcs have been added \& there is no sorted sequence for $n$ vertices, output ``Sorted sequence cannot be determined.''
     \end{enumerate}
-    -- Mục đích của bài toán là xác định xem một chuỗi đã được sắp xếp có tồn tại hay không thông qua thuật toán sắp xếp tôpô. Khi nhập một quan hệ, một cung được thêm vào đồ thị có hướng. Có 3 xác suất:
+    -- Mục đích của bài toán là xác định xem 1 chuỗi đã được sắp xếp có tồn tại hay không thông qua thuật toán sắp xếp tôpô. Khi nhập 1 quan hệ, 1 cung được thêm vào đồ thị có hướng. Có 3 xác suất:
     \begin{enumerate}
-        \item Nếu cung $(x,y)$ được thêm vào, \& $x$ có thể đi đến từ $y$, thì $(x,y)$ là một cạnh sau \& phát hiện ra sự bất nhất quán.
-        \item Nếu cung $(x,y)$ được thêm vào, \& tồn tại một chuỗi đã được sắp xếp cho $n$ đỉnh, thì một chuỗi đã được sắp xếp được xác định. Có thể xác định chuỗi này bằng cách xóa các cung cho đồ thị hiện tại.
+        \item Nếu cung $(x,y)$ được thêm vào, \& $x$ có thể đi đến từ $y$, thì $(x,y)$ là 1 cạnh sau \& phát hiện ra sự bất nhất quán.
+        \item Nếu cung $(x,y)$ được thêm vào, \& tồn tại 1 chuỗi đã được sắp xếp cho $n$ đỉnh, thì 1 chuỗi đã được sắp xếp được xác định. Có thể xác định chuỗi này bằng cách xóa các cung cho đồ thị hiện tại.
         \item Sau khi $m$ cung đã được thêm vào \& không có chuỗi đã được sắp xếp cho $n$ đỉnh, đầu ra ``Không thể xác định được chuỗi đã được sắp xếp.''
     \end{enumerate}
     The set of relations can be represented as a directed graph $G = (V,E)$, where objects to be sorted are represented as vertices, \& relations are represented as arcs. If there is a relation $x < y$, \& $x$ can't be reached from $y$ through DFS, then arc $(x,y)$ is added. The adjacency matrix $g$ for $G$ is defined as follows:
@@ -9374,14 +9800,14 @@ Initially, $time = 0$ \& set unvisited marks to all vertices. For every unvisite
     \end{equation*}
     Array $go$ is used to mark visited vertices, where $go[i] == true$ shows vertex $i$ has been visited; array $f$ is used to show vertices' in-degrees, where $f[i]$ is the in-degree for vertex $i$; $i\in\overline{0,n - 1}$. Sequence $Q$ is used to store vertices whose in-degrees are 0, \& the length of $Q$ is $tot$. If there is an inconsistency found, then {\tt doit = false. finish} is the mark for topological sort. If {\tt finish == true}, there is a topological sort. The process is as follows:
 
-    -- Tập hợp các quan hệ có thể được biểu diễn dưới dạng đồ thị có hướng $G = (V,E)$, trong đó các đối tượng cần sắp xếp được biểu diễn dưới dạng các đỉnh, \& các quan hệ được biểu diễn dưới dạng các cung. Nếu có một quan hệ $x < y$, \& $x$ không thể đến được từ $y$ thông qua DFS, thì cung $(x,y)$ được thêm vào. Ma trận kề $g$ của $G$ được định nghĩa như sau:
+    -- Tập hợp các quan hệ có thể được biểu diễn dưới dạng đồ thị có hướng $G = (V,E)$, trong đó các đối tượng cần sắp xếp được biểu diễn dưới dạng các đỉnh, \& các quan hệ được biểu diễn dưới dạng các cung. Nếu có 1 quan hệ $x < y$, \& $x$ không thể đến được từ $y$ thông qua DFS, thì cung $(x,y)$ được thêm vào. Ma trận kề $g$ của $G$ được định nghĩa như sau:
     \begin{equation*}
         g[i,j] = \left\{\begin{split}
             &1&&\mbox{nếu có cung }(i,j),\\
             &0&&\mbox{nếu không có cung }(i,j),
         \end{split}\right.\ i,j\in\overline{0,n - 1}.
     \end{equation*}
-    Mảng $go$ được sử dụng để đánh dấu các đỉnh đã được thăm, trong đó $go[i] == true$ cho biết đỉnh $i$ đã được thăm; Mảng $f$ được dùng để hiển thị bậc vào của các đỉnh, trong đó $f[i]$ là bậc vào của đỉnh $i$; $i\in\overline{0,n - 1}$. Dãy $Q$ được dùng để lưu trữ các đỉnh có bậc vào bằng 0, \& độ dài của $Q$ là $tot$. Nếu phát hiện thấy sự không nhất quán, thì {\tt doit = false. finish} là dấu hiệu cho phép sắp xếp tôpô. Nếu {\tt finish == true}, thì có một phép sắp xếp tôpô. Quy trình như sau:
+    Mảng $go$ được sử dụng để đánh dấu các đỉnh đã được thăm, trong đó $go[i] == true$ cho biết đỉnh $i$ đã được thăm; Mảng $f$ được dùng để hiển thị bậc vào của các đỉnh, trong đó $f[i]$ là bậc vào của đỉnh $i$; $i\in\overline{0,n - 1}$. Dãy $Q$ được dùng để lưu trữ các đỉnh có bậc vào bằng 0, \& độ dài của $Q$ là $tot$. Nếu phát hiện thấy sự không nhất quán, thì {\tt doit = false. finish} là dấu hiệu cho phép sắp xếp tôpô. Nếu {\tt finish == true}, thì có 1 phép sắp xếp tôpô. Quy trình như sau:
     \begin{Verbatim}[numbers=left,xleftmargin=5mm]
 Input number of objects n & number of relations m;
     Adjacency matrix g falls to 0;
@@ -9493,11 +9919,11 @@ public class Main {
 \end{itemize}
 Let $G = (V,E)$ be a connected graph. A {\it cut vertex} of $G$ is a vertex whose removal disconnects $G$. A {\it bridge} (or a {\it cut edge}) of $G$ is an edge whose removal disconnects $G$. The {\it vertex connectivity} of a graph is the minimum number $k$ of vertices that must be removed to disconnect the graph. \& the {\it edge connectivity} of a graph is the minimum number $k$ of edges that must be removed to disconnect the graph. The vertex \& edge connectivity of a graph show the connectivity of a graph.
 
--- Cho $G = (V,E)$ là một đồ thị liên thông. Một đỉnh cắt của $G$ là một đỉnh mà việc loại bỏ nó sẽ ngắt kết nối $G$. Một cầu (hoặc một cạnh cắt) của $G$ là một cạnh mà việc loại bỏ nó sẽ ngắt kết nối $G$. Tính liên thông đỉnh của một đồ thị là số $k$ đỉnh tối thiểu cần loại bỏ để ngắt kết nối đồ thị. \& tính liên thông cạnh của một đồ thị là số $k$ cạnh tối thiểu cần loại bỏ để ngắt kết nối đồ thị. Tính liên thông đỉnh \& cạnh của một đồ thị thể hiện tính liên thông của một đồ thị.
+-- Cho $G = (V,E)$ là 1 đồ thị liên thông. 1 đỉnh cắt của $G$ là 1 đỉnh mà việc loại bỏ nó sẽ ngắt kết nối $G$. 1 cầu (hoặc 1 cạnh cắt) của $G$ là 1 cạnh mà việc loại bỏ nó sẽ ngắt kết nối $G$. Tính liên thông đỉnh của 1 đồ thị là số $k$ đỉnh tối thiểu cần loại bỏ để ngắt kết nối đồ thị. \& tính liên thông cạnh của 1 đồ thị là số $k$ cạnh tối thiểu cần loại bỏ để ngắt kết nối đồ thị. Tính liên thông đỉnh \& cạnh của 1 đồ thị thể hiện tính liên thông của 1 đồ thị.
 
 A {\it connected component} of a graph $G$ is a connected subgraph of $G$ that is not a proper subgraph of another connected subgraph of $G$. In an unconnected graph, how many connected components without a cut vertex can be obtained? Such connected components are called {\it biconnected components}. A connected subgraph without a cut vertex is also called a {\it block}.
 
--- Thành phần liên thông của đồ thị $G$ là một đồ thị con liên thông của $G$ nhưng không phải là đồ thị con thực sự của một đồ thị con liên thông khác của $G$. Trong một đồ thị không liên thông, có thể thu được bao nhiêu thành phần liên thông không có đỉnh cắt? Các thành phần liên thông như vậy được gọi là các thành phần song liên thông. Một đồ thị con liên thông không có đỉnh cắt cũng được gọi là một khối.
+-- Thành phần liên thông của đồ thị $G$ là 1 đồ thị con liên thông của $G$ nhưng không phải là đồ thị con thực sự của 1 đồ thị con liên thông khác của $G$. Trong 1 đồ thị không liên thông, có thể thu được bao nhiêu thành phần liên thông không có đỉnh cắt? Các thành phần liên thông như vậy được gọi là các thành phần song liên thông. 1 đồ thị con liên thông không có đỉnh cắt cũng được gọi là 1 khối.
 
 The function $low$ is used to get cut vertices \& bridges of a connected graph \& biconnected components of a graph. Suppose $pre[v]$ is the sequence number of vertex $v$ in DFS traversal, i.e., $pre[v]$ is the time that vertex $v$ is visited. Function $low[u]$ is the $pre[v]$ of vertex $v$, which is the earliest visited ancestor of $u$ \& $u$'s descendants, i.e.,
 \begin{equation*}
@@ -9508,7 +9934,7 @@ where $s$ is a child of $u$, \& $(u,w)$ is a back edge.
 \begin{note}
     Need to explain these concepts clearer.
 \end{note}
--- Hàm $low$ được sử dụng để lấy các đỉnh cắt \& cầu của một đồ thị liên thông \& các thành phần song liên thông của đồ thị. Giả sử $pre[v]$ là số thứ tự của đỉnh $v$ trong phép duyệt DFS, tức là $pre[v]$ là thời điểm đỉnh $v$ được thăm. Hàm $low[u]$ là $pre[v]$ của đỉnh $v$, là đỉnh tổ tiên được thăm sớm nhất của $u$ \& các đỉnh con của $u$, tức là,
+-- Hàm $low$ được sử dụng để lấy các đỉnh cắt \& cầu của 1 đồ thị liên thông \& các thành phần song liên thông của đồ thị. Giả sử $pre[v]$ là số thứ tự của đỉnh $v$ trong phép duyệt DFS, tức là $pre[v]$ là thời điểm đỉnh $v$ được thăm. Hàm $low[u]$ là $pre[v]$ của đỉnh $v$, là đỉnh tổ tiên được thăm sớm nhất của $u$ \& các đỉnh con của $u$, tức là,
 \begin{equation*}
     low[u] = \min_{(u,s),(u,w)\in E} \{pre[u],low[s],pre[w]\},
 \end{equation*}
@@ -9524,7 +9950,7 @@ A vertex itself is considered 1 of its ancestors. Therefore, $low[u] = pre[u]$ o
 \end{equation*}
 In the algorithm, $low[u]$ is changed until the DFS subtree whose root is $u$ \& array $low$ \& array $pre$ for $u$ \& its descendants are produced.
 
--- Bản thân một đỉnh được coi là 1 trong các đỉnh tổ tiên của nó. Do đó, $low[u] = pre[u]$ hoặc $low[u] = pre[w]$ có thể đúng. $low[u]$ được tính như sau:
+-- Bản thân 1 đỉnh được coi là 1 trong các đỉnh tổ tiên của nó. Do đó, $low[u] = pre[u]$ hoặc $low[u] = pre[w]$ có thể đúng. $low[u]$ được tính như sau:
 \begin{equation*}
     low[u] = \left\{\begin{split}
         &pre[u]&&\mbox{nếu } u \mbox{ được thăm lần đầu tiên trong DFS},\\
@@ -9546,7 +9972,7 @@ In DFS, edges can be classified into 4 types:
     \item {\it Cạnh nhánh} $T$: Cạnh $(u,v)$ là cạnh nhánh nếu $v$ được thăm lần đầu tiên trong DFS.
     \item {\it Cạnh sau} $B$: Cạnh $(u,v)$ là cạnh sau nếu $u$ là con của $v$ \& $v$ đã được thăm, nhưng tất cả các con của $v$ chưa được thăm.
     \item {\it Cạnh tiến} $F$: Cạnh $(u,v)$ là cạnh tiến nếu $v$ là con của $u$, tất cả các con của $v$ đã được thăm, \& $pre[u] < pre[v]$.
-    \item {\it Cạnh chéo} $C$: Tất cả các cạnh khác $(u,v)$. Ví dụ, $u,v$ không có mối quan hệ tổ tiên-con cháu trong một cây DFS, hoặc $u,v$ nằm trong các cây DFS khác nhau. Tất cả con cháu của $v$ đã được thăm \& $pre[u] > pre[v]$.
+    \item {\it Cạnh chéo} $C$: Tất cả các cạnh khác $(u,v)$. Ví dụ, $u,v$ không có mối quan hệ tổ tiên-con cháu trong 1 cây DFS, hoặc $u,v$ nằm trong các cây DFS khác nhau. Tất cả con cháu của $v$ đã được thăm \& $pre[u] > pre[v]$.
 \end{enumerate}
 
 \begin{enumerate}
@@ -9611,7 +10037,7 @@ void find_bridge(v); { // DFS to find bridges from vertex v
     \end{Verbatim}
     \item {\bf Function $low$ is used to get biconnected components.} A biconnected component is a connected component without a cut vertex. Biconnected components of a graph are partitions of edges of the graph, i.e., every edge must be in a block, \& 2 different blocks don't contain common edges. The key to finding a block in an undirected graph is to find a cut vertex. DFS is used to get $low,pre$ (initial values for $pre[]$ are $-1$) \& calculate blocks in the undirected graph. The process is as follows.
 
-    -- {\bf Hàm $low$ được sử dụng để lấy các thành phần song liên thông.} Thành phần song liên thông là thành phần liên thông không có đỉnh cắt. Các thành phần song liên thông của một đồ thị là các phân hoạch các cạnh của đồ thị, tức là mỗi cạnh phải nằm trong một khối, \& 2 khối khác nhau không chứa các cạnh chung. Chìa khóa để tìm một khối trong đồ thị vô hướng là tìm một đỉnh cắt. DFS được sử dụng để lấy $low,pre$ (giá trị ban đầu của $pre[]$ là $-1$) \& tính toán các khối trong đồ thị vô hướng. Quy trình như sau.
+    -- {\bf Hàm $low$ được sử dụng để lấy các thành phần song liên thông.} Thành phần song liên thông là thành phần liên thông không có đỉnh cắt. Các thành phần song liên thông của 1 đồ thị là các phân hoạch các cạnh của đồ thị, tức là mỗi cạnh phải nằm trong 1 khối, \& 2 khối khác nhau không chứa các cạnh chung. Chìa khóa để tìm 1 khối trong đồ thị vô hướng là tìm 1 đỉnh cắt. DFS được sử dụng để lấy $low,pre$ (giá trị ban đầu của $pre[]$ là $-1$) \& tính toán các khối trong đồ thị vô hướng. Quy trình như sau.
 
     For vertex $v$, $u$ is the parent for $v$: if $u$ is the root, $(u,v)$ is the 1st edge for the block; else, suppose $f$ is $u$'s parent. If $u$ is deleted, $v,f$ aren't connected, \& then $\{f,u,v\}$ isn't biconnected, \& $(u,v)$ is the 1st edge for the new block; else, $(u,v)$ \& $(f,u)$ are in a same block. A stack is used to store vertices in the current block. Suppose $st$ is a stack, $sp$ is the pointer pointing to the top of the stack; $r$ is the number of blocks in the graph; $ans$ is used to store blocks, where all vertices for the $t$th block are stored in $ans[t][0]\ldots ans[t][k]$, \& $ans[t][k + 1] = -1$ (end mark for block $t$, $t\in[r]$);
     \begin{Verbatim}[numbers=left,xleftmargin=5mm]
@@ -10566,7 +10992,7 @@ void shortest_paths(int v0, vector<int>& d, vector<int>& p) {
 
 %------------------------------------------------------------------------------%
 
-\section{All-pairs shortest paths}
+\section{All-pairs shortest paths -- Đường đi ngắn nhất giữa tất cả cặp đỉnh}
 
 %------------------------------------------------------------------------------%
 
@@ -14832,6 +15258,39 @@ The \href{https://en.wikipedia.org/wiki/Aliquot_sum}{aliquot sum} $s(n)$ of $n$ 
 \begin{theorem}
 	For any prime number $p$: (a) $\sigma_0(p) = 2,\sigma_1(p) = p + 1$. (b) $\sigma_0(p^n) = n + 1,,\sigma_1(p^n) = \sum_{i=0}^n p^i = \dfrac{p^{n+1} - 1}{p - 1}$, $\forall n\in\mathbb{N}$. (c) $\sigma_0(p_n\#) = 2^n$ where $p_n\#$ denotes the \href{https://en.wikipedia.org/wiki/Primorial}{primorial}
 \end{theorem}
+
+\begin{baitoan}[gcd in Pascal triangle -- ƯCLN trong tam giác Pascal, \url{https://oj.vnoi.info/problem/gpt}]
+    Tam giác Pascal là 1 cách sắp xếp hình học của các hệ số nhị thức vào 1 tam giác. Hàng thứ $n\in\mathbb{N}$ của tam giác bao gồm các hệ số trong khai triển của đa thức $f(x,y) = (x + y)^n$. I.e., phần tử tại cột thứ $k$, hàng thứ $n$ của tam giác Pascal là $C_n^k = \binom{n}{k}$, i.e., tổ hợp chập $k$ của $n$ phần tử $0\le k\le n$. Cho $n\in\mathbb{N}$. Tính ${\rm GPT}(n)$ là ƯCLN của các số nằm giữa 2 số 1 trên hàng thứ $n$ của tam giác Pascal.
+    \item {\sf Input.} Dòng đầu ghi $T$ là số lượng test. $T$ dòng tiếp theo, mỗi dòng ghi 1 số nguyên $n$.
+    \item {\sf Output.} Gồm $T$ dòng, mỗi dòng ghi ${\rm GPT}(n)$ tương ứng.
+    \item {\sf Constraint.} $1\le T\le20$, $2\le n\le10^9$.
+\end{baitoan}
+{\it Phân tích.} Công thức khai triển nhị thức Newton: $(a + b)^n = \sum_{i=0}^n C_n^ia^{n-i}b^i$, $\forall n\in\mathbb{N}$, see, e.g., \href{https://en.wikipedia.org/wiki/Binomial_theorem}{Wikipedia{\tt/}binomial theorem}. Cần tính $\gcd(\{C_n^i;1\le i\le n - 1\}) = \gcd(C_n^1,C_n^2,\ldots,C_n^{n-1})$. Chú ý mỗi hàng của tam giác Pascal có tính chất đối xứng nên chỉ cần xét ``1 nửa'' là đủ. Cụ thể hơn: $C_n^k = C_n^{n-k}$, $\forall k\in\mathbb{N}$, $k\le n$, nên
+\begin{equation*}
+    \{C_n^1,\ldots,C_n^{n-1}\} = \{C_n^1,\ldots,C_n^{\lfloor\frac{n}{2}\rfloor}\} = \left\{\begin{split}
+        &\{C_n^1,\ldots,C_n^{\frac{n-1}{2}}\}&&\mbox{if } n\not{\divby}\ 2,\\
+        &\{C_n^1,\ldots,C_n^{\frac{n}{2}}\}&&\mbox{if } n\divby2,
+    \end{split}\right.
+\end{equation*}
+nên thay vì xét $i = 1,\ldots,n-1$, chỉ cần xét $i = 1,\ldots,\lfloor\frac{n}{2}\rfloor$ là đủ.
+
+Codes:
+\begin{itemize}
+    \item C++: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/C++/gcd_Pascal_triangle.cpp}.
+\end{itemize}
+
+\begin{theorem}
+    \begin{equation*}
+        \gcd\{C_n^i\}_{i=1}^{n-1} = \left\{\begin{split}
+            &p&&\mbox{if } n = p^k\mbox{ for some prime } p\mbox{ \& some } n\in\mathbb{N}^\star,\\
+            &1&&\mbox{if } n\ne p^k\mbox{ for all prime } p\mbox{ \& any } n\in\mathbb{N}^\star.
+        \end{split}\right.
+    \end{equation*}
+\end{theorem}
+See also, e.g.:
+\begin{itemize}
+    \item \href{https://math.stackexchange.com/questions/2067235/gcd-of-binomial-coefficients}{Mathematics StackExchange{\tt/}gcd of binomial coefficients}.
+\end{itemize}
 
 %------------------------------------------------------------------------------%
 

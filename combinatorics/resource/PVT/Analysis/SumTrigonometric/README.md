@@ -1,0 +1,3 @@
+## **TÍCH PHÂN TRÊN TỔNG LƯỢNG GIÁC**
+
+**Mô tả.** Đồ án nghiên cứu về tính toán tích phân bất định cho các tổng liên quan đến lũy thừa của các hàm lượng giác và lượng giác ngược. Thực hiện tính toán bằng Toán học và viết mã thực thi tính toán tích phân cho tổng $$\displaystyle \sum\limits_{i=0}^n \gamma_i f_i^{\alpha_i}(\beta_i x)$$ với $f_i$ là một trong $12$ hàm lượng giác $\sin, \cos, \tan, \cot, \sec, \csc, \arcsin, \arccos, \arctan, {\rm arccot}, {\rm arcsec}, {\rm arccsc}$. Xem thêm ở [báo cáo](./Reportation/PDF/main.pdf) và [cài đặt chương trình](./Code/main.cpp).

@@ -1,0 +1,74 @@
+\subsection{Các số Stirling}
+\begin{dinhnghia}[Stirling numbers of the 2nd kind]\label{def: stirling 2}
+    Let $s,\,t\in\mathbb{N}$. We define $\displaystyle\stirlingII{s}{t}$ to be the number of ways of putting $s$ distinct balls into $t$ identical boxes with at least 1 ball per box. Equivalently, $\displaystyle\stirlingII{s}{t}$ is the number of ways of partitioning a set of $s$ elements, i.e.,
+\begin{equation*}
+    [s] = \left\{\begin{split}
+        &\{1,\,2,\ldots,\,s\}&&\mbox{if } s > 0,\\
+        &[0] = \varnothing&&\mbox{if } s = 0.
+    \end{split}\right.
+\end{equation*}
+into $t$ nonempty parts. $\displaystyle\stirlingII{s}{t}$ is called a {\rm Stirling number of the 2nd kind} (some denote the Stirling numbers of the 2nd kind by $S(s,\,t)$ or $s_2(s,\,t)$).
+\end{dinhnghia}
+
+\begin{dinhly}[\parencite{shahriari2021invitation}, Thm. 6.9, p. 198]\label{thm: stirling 2: multiset} 
+    Let $s,\,t\in\mathbb{N}$, and let $R = \{\infty\cdot U_1,\,\infty\cdot U_2,\,\ldots,\,\infty\cdot U_t\}$ be a multiset with $t$ types of elements, each with an infinite repetition number. Then the following numbers are equal: (a) The number of ways of placing $s$ distinct balls into $t$ nonempty distinct boxes. (b) The number of $s$-permutations of $R$ that contain each of $U_1,\,\ldots,\,U_t$ at least once. (c) $\displaystyle t!\cdot \stirlingII{s}{t}$.
+\end{dinhly}
+
+\begin{tcolorbox}[breakable]
+    \begin{baitoan}\label{pb:w05:02}
+        Cho $n,\,k\in \mathbb{Z^+}$ và $n \geq k$. Mỗi lần mở ứng dụng ngôn ngữ yêu thích, 1 quảng cáo được chọn ngẫu nhiên trong số $k$ lựa chọn có thể xuất hiện. Giả sử thuật toán có khả năng chọn bất kỳ quảng cáo nào ở mỗi lần là như nhau (uniformly distributed). Tính xác suất sau $n$ lần mở ứng dụng bạn xem đúng $k$ quảng cáo.
+    \end{baitoan}
+\end{tcolorbox}
+
+\textbf{Lời giải 1. }Ở mỗi lượt xem có $k$ cách chọn quảng cáo, nên trong $n$ lượt xem có tất cả $k^n$ cách chọn quảng cáo, hay $|\Omega| = k^n$.
+
+Đặt $A$ là biến cố ``sau $n$ lần mở ứng dụng bạn xem đúng $k$ quảng cáo'', khi đó số trường hợp thuận lợi của $A$ cũng chính là số cách phân hoạch $n$ lượt xem phân biệt vào $k$ loại quảng cáo phân biệt. Theo định lý \ref{thm: stirling 2: multiset}, ta có $\displaystyle |A| = k! \cdot \stirlingII{n}{k}$.
+
+Như vậy xác suất sau $n$ lần mở ứng dụng xem đúng $k$ quảng cáo là $$\mathbb{P}(A) = \dfrac{|A|}{|\Omega|} = \dfrac{(k-1)!}{k^{n-1}}\stirlingII{n}{k}.$$
+
+\textbf{Lời giải 2. }Đặt $A$ là biến cố ``sau $n$ lần mở ứng dụng bạn xem đúng $k$ quảng cáo'', $A_i$ là biến cố ``sau $n$ lần mở ứng dụng không xem được quảng cáo thứ $i$'' (với $i = 1,\,2,\,\ldots,\,k$). Ta có 
+$$\mathbb{P}(A) = 1 - \mathbb{P}(\overline{A}) = 1 - \mathbb{P}\left(\bigcup_{i=1}^k A_i\right),$$
+trong đó $\displaystyle\mathbb{P}(\overline{A}) = \mathbb{P}\left(\bigcup_{i=1}^k A_i\right)$ là xác suất để sau $n$ lần mở ứng dụng chưa xem được ít nhất một quảng cáo.
+
+Theo định lý \ref{thm: inclusion-exclusion: probabilistic version}, ta có $$\mathbb{P}\left(\bigcup_{i=1}^k A_i\right) = \sum_{m=1}^k (-1)^{m-1}\sum_{1 \leq i_1 < i_2 < \ldots < i_m \leq k} \mathbb{P}\left(\bigcap_{j=1}^m A_{i_j}\right).$$
+
+Ta có 
+\begin{itemize}
+    \item $\mathbb{P}(A_i)$: xác suất sau $n$ lần mở ứng dụng không xem được quảng cáo thứ $i$; trong mỗi lượt xem quảng cáo, xác suất không xem được quảng cáo thứ $i$ là $1 - \dfrac{1}{k} = \dfrac{k-1}{k}$, do các lần xem là độc lập nên $$\mathbb{P}(A_i) = \left(\dfrac{k-1}{k}\right)^n,$$ có tất cả $\displaystyle{k \choose 1}$ biến cố $A_i$ như vậy.
+    \item $\mathbb{P}(A_i \cap A_j)\,(i < j)$: xác suất sau $n$ lần mở ứng dụng không xem được quảng cáo thứ $i$ và thứ $j$; trong mỗi lượt xem quảng cáo, xác suất không xem được quảng cáo thứ $i$ và thứ $j$ là $1 - \dfrac{2}{k} = \dfrac{k-2}{k}$, nên $$\mathbb{P}(A_i \cap A_j) = \left(\dfrac{k-2}{k}\right)^n,$$ có tất cả $\displaystyle{k \choose 2}$ biến cố $A_i \cap A_j$ như vậy.
+    \item Tổng quát, $\displaystyle\mathbb{P}\left(\bigcap_{j=1}^m A_{i_j}\right)$: xác suất sau $n$ lần mở ứng dụng không xem được quảng cáo thứ $i_1,\,i_2,\,\ldots,\,i_m$, tương tự trên ta có $$\displaystyle\mathbb{P}\left(\bigcap_{j=1}^m A_{i_j}\right) = \left(\dfrac{k-m}{k}\right)^n,$$ có tất cả $\displaystyle{k \choose m}$ biến cố $\displaystyle \bigcap_{j=1}^m A_{i_j}$ như vậy.
+\end{itemize}
+
+Suy ra $$\mathbb{P}\left(\bigcup_{i=1}^k A_i\right) = \sum_{m=1}^k (-1)^{m-1}{k \choose m}\left(\dfrac{k-m}{k}\right)^n.$$
+
+Như vậy xác suất cần tìm sẽ là $$\mathbb{P}(A) = 1 - \sum_{m=1}^k (-1)^{m-1}{k \choose m}\left(\dfrac{k-m}{k}\right)^n = \sum_{m=0}^k (-1)^{m}{k \choose m}\left(\dfrac{k-m}{k}\right)^n.$$
+
+\begin{tcolorbox}[breakable]
+    \begin{baitoan}\label{pb:w05:01}
+        Cho $n,\,k\in \mathbb{Z^+}$ và $n \geq k$. Mỗi lần mở ứng dụng ngôn ngữ yêu thích, 1 quảng cáo được chọn ngẫu nhiên trong số $k$ lựa chọn có thể xuất hiện. Giả sử thuật toán có khả năng chọn bất kỳ quảng cáo nào ở mỗi lần là như nhau (uniformly distributed). Tính xác suất bạn cần đúng $n$ lần để xem tất cả $k$ quảng cáo.
+    \end{baitoan}
+\end{tcolorbox}
+
+Để cần đúng $n$ lần để xem hết tất cả $k$ quảng cáo thì phải thỏa mãn hai điều kiện:
+\begin{itemize}
+    \item sau $n$ lần mở, tất cả $k$ quảng cáo được xem ít nhất 1 lần;
+    \item sau $n-1$ lần mở, chỉ xem đúng $k-1$ quảng cáo.
+\end{itemize}
+
+\textbf{Lời giải 1. }Theo bài toán \ref{pb:w05:02}, số cách chọn để sau $n-1$ lần mở xem đúng $k-1$ quảng cáo bằng $\displaystyle (k-1)! \cdot \stirlingII{n-1}{k-1}$.
+
+Chọn $k-1$ quảng cáo trong $k$ quảng cáo để xuất hiện trong $n-1$ lần xem đầu tiên, có $\displaystyle{k \choose k-1}$ cách; chọn quảng cáo còn lại để xuất hiện trong lần xem cuối, có 1 cách. 
+
+Do đó tổng số cách chọn $k$ quảng cáo thỏa mãn đề bài bằng $\displaystyle {k \choose k-1} \cdot (k-1)! \cdot \stirlingII{n-1}{k-1}$, như vậy xác suất sẽ bằng $$\dfrac{\displaystyle{k \choose k-1}(k-1)!}{k^n}\stirlingII{n-1}{k-1} = \dfrac{(k-1)!}{k^{n-1}}\stirlingII{n-1}{k-1}.$$
+
+\textbf{Lời giải 2. }Nhận xét rằng, để trong $n$ lần xem đúng $k$ quảng cáo có hai trường hợp
+\begin{itemize}
+    \item trong $n-1$ lần đầu đã xem hết quảng cáo: tức trong $n-1$ lần xem đúng $k$ quảng cáo;
+    \item trong $n-1$ lần đầu chưa xem hết quảng cáo: tức trong $n-1$ lần xem đúng $k-1$ quảng cáo, lần thứ $n$ xem quảng cáo còn lại (ta cần tính xác suất của trường hợp này).
+\end{itemize}
+
+Theo bài toán \ref{pb:w05:02}, xác suất để trong $n$ lần xem đúng $k$ quảng cáo bằng $\displaystyle\sum_{m=0}^k (-1)^{m}{k \choose m}\left(\dfrac{k-m}{k}\right)^n$ và xác suất để trong $n-1$ lần xem đúng $k$ quảng cáo bằng $\displaystyle\sum_{m=0}^k (-1)^{m}{k \choose m}\left(\dfrac{k-m}{k}\right)^{n-1}$. Khi đó xác suất cần tính sẽ bằng 
+
+$$\sum_{m=0}^k (-1)^{m}{k \choose m}\left(\dfrac{k-m}{k}\right)^n - \sum_{m=0}^k (-1)^{m}{k \choose m}\left(\dfrac{k-m}{k}\right)^{n-1} = \sum_{m=0}^k (-1)^{m+1}{k \choose m}\dfrac{m(k-m)^{n-1}}{k^n}.$$
+
+

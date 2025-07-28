@@ -220,6 +220,1112 @@ Some critical-thinking questions:
 \chapter{Pointer Variable \& Dynamic Memory Technique -- Biến Con Trỏ \& Kỹ Thuật Bộ Nhớ Động}
 \minitoc
 
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}. {\sc Trần Đan Thư, Nguyễn Thanh Phương, Đinh Bá Tiến, Trần Minh Triết, Đặng Bình Phương}. {\it Kỹ Thuật Lập Trình}. Chap. 2: Biến Con Trỏ \& Kỹ Thuật Bộ Nhớ Động.
+
+    \item \href{https://www.geeksforgeeks.org/cpp/vector-in-cpp-stl/}{Geeks4Geeks{\tt/}vector in C++ STL}.
+\end{enumerate}
+Nội dung: Kỹ thuật sử dụng ``bộ nhớ động'' trong lập trình, i.e., thành phần dữ liệu có kích thước thay đổi trong quá trình chương trình đang chạy. Đối với C{\tt/}C++, kỹ thuật dùng con trỏ \& bộ nhớ động là thiết yếu.
+
+%------------------------------------------------------------------------------%
+
+\section{Dynamic Array in Standard Template Library -- Mảng Động Trong Thư Viện Chuẩn}
+Thư viện chuẩn STL (Standard Template Library) của C++ cung cấp sẵn kiểu {\tt vector<T>} cho phép lập trình viên khai báo \& sử dụng các mảng có kích thước có thể thay đổi 1 cách dễ dàng, linh hoạt.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Kiểu {\tt vector<T>} trong STL của C++}
+
+\begin{definition}[C++ vector]
+    {\rm C++ vector} is a dynamic array that stores collection of elements of same type in contiguous memory. It has the ability to resize itself automatically when an element is inserted or deleted.
+
+    -- {\rm C++ vector} là một mảng động lưu trữ tập hợp các phần tử cùng loại trong bộ nhớ liền kề. Nó có khả năng tự động thay đổi kích thước khi một phần tử được chèn vào hoặc xóa.
+\end{definition}
+
+Kiểu {\tt vector<T>} được cài đặt sẵn cho C++ chuẩn để sử dụng mảng gồm các phần tử có kiểu là {\tt T} (sẽ được thay thế bởi 1 kiểu cụ thể khi dùng) \& có kích thước có thể thay đổi.
+
+\begin{baitoan}
+    Nhập xuất 1 mảng động gồm $n\in\mathbb{N}^\star$ số thực bằng cách khai thác kiểu {\tt vector<T>} của {\sf C++} với $n$ được nhập vào.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    Khi nhập mảng, quy ước khởi đầu bằng 1 số nguyên quy định số phần tử của mảng (i.e., size of an array or the number of elements in an array). Mảng số thực có kiểu dữ liệu là {\tt vector<float>}, các hàm dùng tham số tham chiếu: \verb|vector<float> &a|.
+
+    C++: dynamic array input \& output: Nhập xuất mảng động các số thực nhờ dùng kiểu {\tt vector<float>}:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void array_input(vector<float> &a) {
+    int n;
+    cin >> n;
+    if (n < 1) return; // invalid size
+    a.resize(n);
+    for (int i = 0; i < a.size(); ++i) cin >> a[i];
+}
+
+void array_output(vector<float> &a) {
+    for (int i = 0; i < a.size(); ++i) cout << a[i] << " ";
+}
+
+int main() {
+    vector<float> a;
+    cout << "Input an array, 1st is the number of elements: " << '\n';
+    array_input(a);
+    cout << "Element(s) in the array: ";
+    array_output(a);
+}
+    \end{Verbatim}
+    Phương thức {\tt resize()}: {\tt a.resize(n)} dùng để tạo ra 1 mảng $n$ phần tử với $n\in\mathbb{N}^\star$ chưa biết trước khi chương trình chạy \& cần được nhập vào. Phương thức {\tt size()} cho biết số lượng các phần tử hiện có trong mảng.
+
+    Trong nhiều tình huống, ta không muốn nhập vào số phần tử của mảng \& quy ước việc nhập dữ liệu sẽ kết thúc khi ấn 1 số phím đặc biệt nào đó:
+
+    C++: Nhập mảng động các số thực, không cần hỏi số lượng phần tử.
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void array_float_input(vector<float> &a) {
+    float x;
+    while (cin >> x) a.push_back(x);
+}
+
+void array_float_output(const vector<float> &a) {
+    for (int i = 0; i < a.size(); ++i) cout << a[i] << " ";
+}
+
+int main() {
+    vector<float> a;
+    cout << "Input an array, press Ctrl X then Enter to stop: " << '\n';
+    array_float_input(a);
+    cout << "Element(s) in the array: ";
+    array_float_output(a);
+}
+    \end{Verbatim}
+    Phương thức \verb|push_back()| dùng để thêm phần tử $x\in\mathbb{R}$ được nhập vào vào cuối mảng $a$: bộ nhớ sẽ được tự động cấp thêm để mảng giãn ra thêm 1 phần tử. Vòng lặp {\tt while()} với điều kiện lặp \verb|cin >> x| dừng khi người dùng ấn phím đặc biệt là {\tt Ctrl X} rồi ấn phím {\tt Enter}, cũng có thể dừng bằng cách thay {\tt Ctrl X} bởi {\tt Ctrl Q} hay  {\tt Ctrl W}, hay 1 vài tổ hợp phím khác.
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Operations on dynamic arrays -- Các thao tác trên mảng động}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|p{15cm}|}
+        \hline
+        {\bf Phương thức} & {\bf Ý nghĩa} \\
+        \hline
+        {\tt size()} & Trả về số phần tử hiện có của mảng \\
+        \hline
+        \verb|resize(int new_size)| & Thay đổi kích thước mảng, kích thước mới quy định bởi tham số \verb|new_size|. Nếu mảng co lại (kích thước mới nhỏ hơn kích thước cũ) thì vài phần tử bị xóa. \\
+        \hline
+        \verb|push_back(T x)| & Thêm phần tử $x$ vào cuối mảng, mảng tự động giãn ra thêm 1 phần tử \\
+        \hline
+        \verb|pop_back()| & Xóa phần tử cuối cùng của mảng, mảng giảm bớt đi 1 phần tử \\
+        \hline
+    \end{tabular}
+    \caption{Các phương thức cơ bản của kiểu {\tt vector<T>}.}
+\end{table}
+Ưu điểm chính của kiểu {\tt vector<T>} là kích thước mảng tự động cập nhật (giãn ra hoặc co lại) khi cần thiết.
+
+\begin{baitoan}
+    Viết các hàm tạo, xuất, ghép, cắt mảng động bằng cách khai thác kiểu {\tt vector<T>} của {\sf C++}.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    C++: \cite[pp. 34--34]{Thu_Phuong_Tien_Triet_Phuong_KTLT}: Minh họa sử dụng kiểu {\tt vector<T>}:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void int_array_make(vector<int>& a, int elements[], int n) { // create dynamic array
+    int i = 0;
+    a.resize(0);
+    while (i < n) {
+        a.push_back(elements[i]);
+        ++i;
+    }
+}
+
+void int_array_out(vector<int>& a, ostream& outDev) { // output dynamic array
+    for (int i = 0; i < a.size(); ++i) outDev << a[i] << " ";
+    outDev << '\n';
+}
+
+void int_array_cat(vector<int>& dest, vector<int>& src) { // concatenate dynamic arrays
+    int dest_size = dest.size(), src_size = src.size();
+    int idx = dest_size, new_size = dest_size + src_size, i = 0;
+    dest.resize(new_size);
+    while (i < src_size) {
+        dest[idx] = src[i];
+        ++idx;
+        ++i;
+    }
+}
+
+void int_array_cut_from(vector<int>& a, int pos, vector<int>& b) { // cut dynamic array
+    int size = a.size(), j = pos;
+    if (j < 0 || j >= size) return;
+    b.resize(0);
+    while (j < size) {
+        b.push_back(a[j]);
+        ++j;
+    }
+    a.resize(pos);
+}
+
+void int_array_insert(vector<int>& a, int pos, int element) { // insert element
+    if (pos < 0 || pos >= a.size()) return;
+    vector<int> b;
+    int_array_cut_from(a, pos, b);
+    a.push_back(element);
+    int_array_cat(a, b);
+}
+
+int main() {
+    int x[] = {3, 5, 2, 4, 9, 7, 8, 6}, n = sizeof(x) / sizeof(x[0]);
+    vector<int> a, b, c;
+    int_array_make(a, x, n);
+    cout << "a: ";
+    int_array_out(a, cout);
+    int_array_cut_from(a, 3, b);
+    cout << "a now: ";
+    int_array_out(a, cout);
+    cout << "b: ";
+    int_array_out(b, cout);
+    int_array_cat(b, a);
+    cout << "b now: ";
+    int_array_out(b, cout);
+    a.pop_back();
+    cout << "a now: ";
+    int_array_out(a, cout);
+    int_array_insert(b, 3, 999);
+    cout << "b now: ";
+    int_array_out(b, cout);
+}
+    \end{Verbatim}
+    Các hàm vừa cài đặt để thao tác trên mảng số nguyên {\tt vector<int>} có thể được viết tổng quát cho mảng gồm các phần tử có kiểu {\tt T} như sau:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+template <class T>
+void array_make(vector<T>& a, T elements[], int n) { // create dynamic array
+    int i = 0;
+    a.resize(0);
+    while (i < n) {
+        a.push_back(elements[i]);
+        ++i;
+    }
+}
+
+template <class T>
+void array_out(vector<T>& a, ostream& outDev) { // output dynamic array
+    for (int i = 0; i < a.size(); ++i) outDev << a[i] << " ";
+    outDev << '\n';
+}
+
+template <class T>
+void array_cat(vector<T>& dest, vector<T>& src) { // concatenate dynamic arrays
+    int dest_size = dest.size(), src_size = src.size(), idx = dest_size, new_size = dest_size + src_size, i = 0;
+    dest.resize(new_size);
+    while (i < src_size) {
+        dest[idx] = src[i];
+        ++idx;
+        ++i;
+    }
+}
+
+template <class T>
+void array_cut_from(vector<T>& a, int pos, vector<T>& b) { // cut dynamic array
+    int size = a.size(), j = pos;
+    if (j < 0 || j >= size) return;
+    b.resize(0);
+    while (j < size) {
+        b.push_back(a[j]);
+        ++j;
+    }
+    a.resize(pos);
+}
+
+template <class T>
+void array_insert(vector<T>& a, int pos, T element) { // insert element
+    if (pos < 0 || pos >= a.size()) return;
+    vector<T> b;
+    array_cut_from(a, pos, b);
+    a.push_back(element);
+    array_cat(a, b);
+}
+
+int main() {
+    int x[] = {3, 5, 2, 4, 9, 7, 8, 6}, n = sizeof(x) / sizeof(x[0]);
+    vector<int> a, b, c;
+    array_make(a, x, n);
+    cout << "a: ";
+    array_out(a, cout);
+    array_cut_from(a, 3, b);
+    cout << "a now: ";
+    array_out(a, cout);
+    cout << "b: ";
+    array_out(b, cout);
+    array_cat(b, a);
+    cout << "b now: ";
+    array_out(b, cout);
+    a.pop_back();
+    cout << "a now: ";
+    array_out(a, cout);
+    array_insert(b, 3, 999);
+    cout << "b now: ";
+    array_out(b, cout);
+}
+    \end{Verbatim}
+    Các hàm này dù thao tác trên mảng kiểu {\tt T} nhưng có thể sử dụng tương tự như các hàm đã viết cho mảng kiểu {\tt int}.
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Create vectors -- Tạo vectors}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://www.geeksforgeeks.org/initialize-a-vector-in-cpp-different-ways/}{Geeks4Geeks{\tt/}8 ways to initialize vector in C++}.
+\end{enumerate}
+Before creating a vector, we must know that a vector is defined as the {\tt std::vector} class template in the {\tt<vector>} header file.
+\begin{verbatim}
+vector<T> v;
+\end{verbatim}
+where {\tt T} is the type of elements \& {\tt v} is the name assigned to the vector.
+
+Now we are creating an instance of {\tt std::vector} class. This requires us to provide the type of elements as template parameter.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    // Creating an empty vector
+    vector<int> v1;
+}
+\end{Verbatim}
+We can also provide the values to be stored in the vector inside {\tt\{\}} curly braces. This process is called {\it initialization}.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+void printVector(vector<int>& v) {
+    for (auto x: v) {
+        cout << x << " ";
+    }
+    cout << endl;
+}
+
+int main() {
+    // Creating a vector of 5 elements from initializer list
+    vector<int> v1 = {1, 4, 2, 3, 5};
+
+    // Creating a vector of 5 elements with default value
+    vector<int> v2(5, 9);
+
+    printVector(v1);
+    printVector(v2);
+}
+\end{Verbatim}
+Output:
+\begin{verbatim}
+1 4 2 3 5
+9 9 9 9 9
+\end{verbatim}
+Statement \verb|vector<int> v1 = {1, 4, 2, 3, 5}| initializes a vector with given values. Statement \verb|vector<int> v2(5, 9)| creates a vector of size 5 where each element initialized to 9.
+
+\begin{remark}
+    Statement \verb|vector<int> v|= $\{v_1,v_2,\ldots,v_n\}$ initializes a vector with given values. Statement \verb|vector<int> v(n, a)| creates a vector of size $n\in\mathbb{N}^\star$ where each element initialized to $a\in\mathbb{Z}$.
+\end{remark}
+Initializing a vector means assigning some initial values to the {\tt std::vector} elements. Here are 8 different ways to initialize a vector in C++.
+
+%------------------------------------------------------------------------------%
+
+\paragraph{Initialize vector in C++ by using initializer list -- Sử dụng danh sách các giá trị khởi tạo.} We can initialize a vector with the list of values enclosed in curly braces {\tt\{\}} known as \href{https://www.geeksforgeeks.org/std-initializer_list-in-cpp-11/}{initializer list}. The value of the list will be assigned sequentially i.e. 1st value will be assigned to the 1st element of vector, 2nd value to 2nd element, $\ldots$, $n$th value to $n$th element. Syntax:
+\begin{verbatim}
+vector<type> v = {val1, val2, val3, ...};
+\end{verbatim}
+where {\tt val1, val2, val3}, $\ldots$ are the initial values, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// C++ Program to initializ std::vector with initializer list
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    // Initializing std::vector with list of multiple values
+    vector<int> v = {11, 23, 45, 89};
+
+    for (auto i : v)
+    cout << i << " ";
+}
+\end{Verbatim}
+Output: {\tt 11 23 45 89}.
+\begin{note}
+    {\tt for (auto i : v)} means for each element of the type that will be determined automatically in the vector {\tt v}.
+\end{note}
+
+%------------------------------------------------------------------------------%
+
+\paragraph{Initialize vector in C++ 1 by 1 initialization.} Vector can be initialized by pushing value 1 by 1. In this method, an empty vector is created, \& elements are added to it 1 by 1 using the \href{https://www.geeksforgeeks.org/vectorpush_back-vectorpop_back-c-stl/}{\tt vector::push\_back()} method. This method is mostly used to initialize vector after declaration. Syntax:
+\begin{verbatim}
+v.push_back(val);
+\end{verbatim}
+where {\tt val} is the value which we have to insert, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// C++ Program to initialize std::vector by pushing values 1 by 1
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<int> v;
+
+    // Pushing Value one by one
+    v.push_back(11);
+    v.push_back(23);
+    v.push_back(45);
+    v.push_back(89);
+
+    for (auto i : v)
+    cout << i << " ";
+}
+\end{Verbatim}
+Output: {\tt11 23 45 89}.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Initialize vector in C++ by with a single value}
+We can initialize all the elements of the vector to a single value. We create a vector of a specified size \& initialize all elements to the same value using vector constructor. Syntax:
+\begin{verbatim}
+vector<type> v(n, val);
+\end{verbatim}
+where $n\in\mathbb{N}$ is the size \& {\tt val} is the initial value, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// C++ Program to initializ the std::vector with specific value
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    // Initializing all the elements of a vector using a single value
+    vector<int> v(5, 11);
+
+    for (auto i : v)
+    cout << i << " ";
+}
+\end{Verbatim}
+Output: {\tt11 11 11 11 11}.
+
+%------------------------------------------------------------------------------%
+
+\paragraph{Initialize vector in C++ from an array.} We can also initialize a vector using plain old static arrays using vector constructor. This works by copying all the elements of the array to the newly created vector. Syntax:
+\begin{verbatim}
+    vector<type> v(arr, arra + n);
+\end{verbatim}
+where {\tt arr} is the array name \& $n\in\mathbb{N}$ is the size of the array, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// C++ Program to initializ the std::vector from another array
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int arr[] = {11, 23, 45, 89};
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    // initialize the std::vector v by arr
+    vector<int> v = {arr, arr + n};
+
+    for (auto i : v)
+    cout << i << " ";
+}
+\end{Verbatim}
+Output: {\tt11 23 45 89}.
+
+%------------------------------------------------------------------------------%
+
+\paragraph{Initialize vector in C++ from another vector.} We can also initialize a newly created vector from an already created vector if they are of same type. Syntax:
+\begin{verbatim}
+vector<type> v2(v1.begin(), v1.end());
+\end{verbatim}
+where {\tt v1} is the already existing vector, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// C++ Program to initializ the std::vector from another vector
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<int> v1 = {11, 23, 45, 89};
+
+    // initialize the vector v2 from vector v1
+    vector<int> v2(v1.begin(), v1.end());
+
+    for (auto i : v2)
+    cout << i << " ";
+    return 0;
+}
+\end{Verbatim}
+Output: {\tt11 23 45 89}.
+
+%------------------------------------------------------------------------------%
+
+\paragraph{Initialize vector in C++ by from any STL container.} Vectors are flexible containers that can be initialized by any other already existing containers e.g. set, multiset, map, etc. if they are of same type. Syntax:
+\begin{verbatim}
+vector<type> v(first, last);
+\end{verbatim}
+where {\tt first, last} are the iterator to the 1st element \& the element just after the last element in the range of STL container.
+
+%------------------------------------------------------------------------------%
+
+\paragraph{Initialize vector in C++ by using {\tt std::fill()} function.} We can also use the \href{https://www.geeksforgeeks.org/fill-and-fill_n-functions-in-c-stl/}{\tt std::fill} function to initialize the whole or a part of a vector to the same value. Syntax:
+\begin{verbatim}
+fill(first, last, val);
+\end{verbatim}
+where {\tt first, last} are the iterator to the 1st element \& the element just after the last element in the range of STL container \& {\tt val} is the value to be initialized with, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// C++ Program to initialize the std::vector using std::fill() method
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<int> v(5);
+
+    // initialize vector v with 11
+    fill(v.begin(), v.end(), 11);
+
+    for (auto i : v)
+    cout << i << " ";
+}
+\end{Verbatim}
+Output: {\tt11 11 11 11 11}.
+
+%------------------------------------------------------------------------------%
+
+\paragraph{Initialize vector in C++ by using {\tt std::iota()} function.} The \href{https://www.geeksforgeeks.org/std-iota-in-cpp/}{\tt std::iota()} function from the {\tt<numeric>} library allows us to initialize a vector with consecutive values starting from the given value. Syntax:
+\begin{verbatim}
+std::iota(first, last, val);
+\end{verbatim}
+where {\tt first, last} are the iterator to the 1st element \& the element just after the last element in the range of the vector \& {\tt val} refers to the starting value, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// C++ Program to initializ the std::vector using std::iota()
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<int> v(5);
+
+    // using std::iota() to initialize vector v with 11
+    iota(v.begin(), v.end(), 11);
+
+    for (auto i : v)
+    cout << i << " ";
+}
+\end{Verbatim}
+Output: {\tt11 12 13 14 15}.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Insert elements -- Chèn phần tử}
+An element can be inserted into a vector using \href{https://www.geeksforgeeks.org/vector-insert-function-in-cpp-stl}{vector insert()} method which takes linear time. But for the insertion at the end, the \href{https://www.geeksforgeeks.org/vectorpush_back-vectorpop_back-c-stl/}{vector {\tt push\_back()}} method can be used, which is much faster, taking only constant time.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<char> v = {'a', 'f', 'd'};
+
+    // Inserting 'z' at the back
+    v.push_back('z');
+
+    // Inserting 'c' at index 1
+    v.insert(v.begin() + 1, 'c');
+
+    for (int i = 0; i < v.size(); i++)
+    cout << v[i] << " ";
+}
+\end{Verbatim}
+Output: {\tt a c f d z}.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Access or update elements -- Tiếp cận hoặc cập nhật các phần tử}
+Just like arrays, vector elements can be accessed using their index inside the \href{https://www.geeksforgeeks.org/vectoroperator-vectoroperator-c-stl/}{[] subscript operator}. While accessing elements, we can also update the value of that index using \href{https://www.geeksforgeeks.org/cpp-assignment-operators/}{assignment operator $=$}. The {\tt[] subscript operator} doesn't check whether the given index exists in the vector or not. So, there is another member method \href{https://www.geeksforgeeks.org/vector-at-in-cpp-stl/}{vector al()} for safely accessing or update elements.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<char> v = {'a', 'c', 'f', 'd', 'z'};
+
+    // accessing & printing values
+    cout << v[3] << endl;
+    cout << v.at(2) << endl;
+
+    // updating values using indexes 3 & 2
+    v[3] = 'D';
+    v.at(2) = 'F';
+
+    cout << v[3] << endl;
+    cout << v.at(2);
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Find vector size -- Tìm cỡ{\tt/}kích thước của vector}
+1 of the common problems with arrays was to keep a separate variable to store the size information. Vector provides the solution to this problem by providing \href{https://www.geeksforgeeks.org/vector-size-in-cpp-stl/}{size()} method.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<char> v = {'a', 'c', 'f', 'd', 'z'};
+
+    // finding size
+    cout << v.size();
+}
+\end{Verbatim}
+Output: {\tt5}.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Traverse vector -- Duyệt vector}
+Vector in C++ can be traversed using indexes in a loop. The indexes start from 0 \& go up to a vector size $- 1$. To iterate through this range, we can use a loop \& determine the size of the vector using the \href{https://www.geeksforgeeks.org/vectorempty-vectorsize-c-stl/}{vector size()} method.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<char> v = {'a', 'c', 'f', 'd', 'z'};
+
+    // traversing vector using range based for loop
+    for (int i = 0; i < v.size(); i++)
+    cout << v[i] << " ";
+}
+\end{Verbatim}
+Output: {\tt a c f d z}.
+
+We can also use a range-based loop for simple traversal.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Delete elements -- Xóa phần tử}
+An element can be deleted from a vector using \href{https://www.geeksforgeeks.org/vector-erase-and-clear-in-cpp/}{vector erase()} but this method needs iterator to the element to be deleted. If only the value of the element is known, then {\tt find()} function is used to find the position of this element.
+
+For the deletion at the end, the \href{https://www.geeksforgeeks.org/vector-pop-back-in-cpp-stl/}{vector {\tt pop\_back()}} method can be used, \& it is much faster, taking only constant time.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<char> v = {'a', 'c', 'f', 'd', 'z'};
+    v.pop_back(); // deleting last element 'z'
+    v.erase(find(v.begin(), v.end(), 'f')); // deleting element 'f'
+
+    for (int i = 0; i < v.size(); i++) cout << v[i] << " ";
+}
+\end{Verbatim}
+Output:
+\begin{verbatim}
+a c f d
+a c d
+\end{verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Other operations -- Các thao tác khác}
+Vector is 1 of the most frequently used containers in C++. It is used in many situations for different purposes. The following examples aim to help you master vector operations beyond the basics.
+
+%------------------------------------------------------------------------------%
+
+\subsection{2D Vector in C++}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://www.geeksforgeeks.org/2d-vector-in-cpp-with-user-defined-size/}{Geeks4Geeks{\tt/}2D vector in C++}.
+
+    \item \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}. {\sc Trần Đan Thư, Nguyễn Thanh Phương, Đinh Bá Tiến, Trần Minh Triết, Đặng Bình Phương}. {\it Kỹ Thuật Lập Trình}. Sect. I.2: Dùng mảng động nhiều chiều nhờ {\tt vector<T>}.
+\end{enumerate}
+Dù kiểu {\tt vector<T>} có vẻ như chỉ được thiết kế cho mảng động 1 chiều, nhưng ta có thể áp dụng kiểu {\tt vector<T>} để lập trình cho các mảng động nhiều chiều, thông dụng nhất là cho vector 2 chiều, i.e., 2D vector.
+
+\begin{baitoan}
+    (a) Phân biệt mảng tĩnh {\tt array} 2D với {\tt vector} 2D của {\sf C++}. (b) Mở rộng cho 3D \& số chiều tổng quát.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    (a) 2D array có dạng là 1 ma trận hình chữ nhật $m\times n$ (ma trận hình vuông khi $m = n$) với ký hiệu toán học dạng $\{a_{ij}\}_{i,j=1}^{m,n}$ hay ký hiệu tin học dạng $\{a[i][j]\}_{i=0,j=0}^{m-1,n-1}$ (0-based indexing) trong khi 2D vector không nhất thiết là 1 ma trận mà có thể là các hàng gồm số phần tử khác nhau, i.e., với ký hiệu toán học dạng $\{\{a_{ij}\}_{j=1}^{n_i}\}_{i=1}^m$ , với $n_i$ là số phần tử của hàng thứ $i$, $\forall i\in[m]$, hay ký hiệu tin học dạng $\{\{a[i][j]\}_{j=0}^{n_i - 1}\}_{i=0}^{m-1}$. (b) $\forall d\in\mathbb{N},d\ge2$, $d$D array có dạng là 1 hình hộp chữ nhật $d$ chiều, trong khi $d$D vector không nhất thiết phải có đủ số phần tử để lấp đầy các chiều để trở thành 1 hình hộp chữ nhật $d$ chiều như $d$D array.
+\end{proof}
+A 2D vector is a vector of the vectors, i.e., each element is a vector in itself. It can be visualized as a matrix where each inner vector represents a row, \& the number of rows represents a row, \& the number of rows represents the maximum columns. A 2D vector is dynamically resizable in both dimensions. Syntax:
+\begin{verbatim}
+vector<vector<data_type>> v;
+\end{verbatim}
+where \verb|data_type| is the type of elements \& {\tt V} is the name assigned to the 2D vector.
+
+Dựa vào kiểu {\tt vector<T>} lập trình viên cũng có thể viết chương trình thao tác trên mảng động nhiều chiều nhờ cách khai báo lồng nhiều lần dưới dạng {\it mảng của mảng}, i.e., array of arrays or vector of vectors.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Creating a 2D vector -- Tạo 1 vector 2D}
+In C++, we can create{\tt/}declare a 2D vector by using the vector container defined in the C++ Standard Template Library (STL). We can simply create a 2D vector by creating a vector with the vector data type. Just like vectors, a 2D vector can be created \& initialized in multiple ways:
+\begin{enumerate}
+    \item {\bf Default.} An empty 2D vector can be created using the declaration:
+    \begin{verbatim}
+vector<vector<data_type>> v;
+    \end{verbatim}
+    It can be filled in later on in the program.
+    \item {\bf With user defined size \& default value.} A vector of a specific size can also be declared \& initialized to the given value as default value.
+    \begin{verbatim}
+vector<vector<T>> v(n, vector<T>(m, value));
+    \end{verbatim}
+    where $n\in\mathbb{N}^\star$ is the number of rows, $m\in\mathbb{N}^\star$ is the number of columns, {\tt val} is the new default value for all of the elements of the vector.
+    \item {\bf Using initializer list.} Vector can also be initialized using a list of values enclosed in {\tt\{\}} braces separated by comma. The list must be nested according to the 2 dimensions as it helps in determining the row size \& column size.
+    \begin{verbatim}
+vector<vector<T>> v = {{x1, x2, ...}, {y1, y2, ...}, ...};
+    \end{verbatim}
+    E.g.:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+void printV(vector<vector<int>>& v) {
+    for (auto i: v) {
+        for (auto j: i) {
+            cout << j << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+int main() {
+    // an empty 2D vector
+    vector<vector<int>> v1;
+
+    // 2D vector with initial size and value
+    vector<vector<int>> v2(2, vector<int>(3, 11));
+
+    // a 2D vector initialized with initializer list
+    vector<vector<int>> v3 = {
+        {1, 2, 3},
+        {4, 5, 6},
+    };
+
+    printV(v1);
+    printV(v2);
+    printV(v3);
+    return 0;
+}
+    \end{Verbatim}
+\end{enumerate}
+Output:
+\begin{verbatim}
+11 11 11
+11 11 11
+
+1 2 3
+4 5 6
+\end{verbatim}
+C++: \cite[p. 37]{Thu_Phuong_Tien_Triet_Phuong_KTLT}: Áp dụng {\tt vector<T>} để tạo mảng vuông 2 chiều:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+typedef vector<float> floats;
+typedef vector<floats> float2D;
+
+void float2D_init(float2D &a, int n) {
+    a.resize(n);
+    for (int i = 0; i < a.size(); ++i) a[i].resize(n);
+}
+
+void float2D_input(float2D &a) {
+    for (int i = 0; i < a.size(); ++i)
+    for (int j = 0; j < a[i].size(); ++j) cin >> a[i][j];
+}
+
+void float2D_output(float2D &a) {
+    for (int i = 0; i < a.size(); ++i) {
+        for (int j = 0; j < a[i].size(); ++j) cout << a[i][j] << '\t';
+        cout << '\n';
+    }
+}
+
+int main() {
+    float2D a;
+    int n;
+    cout << "Size of square array: ";
+    cin >> n;
+    if (n <= 0) {
+        cout << "Invalid size";
+        return 1;
+    }
+    float2D_init(a, n);
+    cout << "Input elements of square array: " << '\n';
+    float2D_input(a);
+    cout << "Elements of square array: " << '\n';
+    float2D_output(a);
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+Basic operations of 2D vector:
+\begin{enumerate}
+    \item Inserting elements in a 2D vector
+    \item Accessing \& updating elements
+    \item Deleting elements
+    \item Traversing the vector
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Inserting elements in a 2D vector}
+In 2D vectors, there are 2 types of insertion:
+\begin{enumerate}
+    \item Insert a new row.
+    \item Insert a value in an existing row.
+\end{enumerate}
+These can be inserted at any given position using \href{https://www.geeksforgeeks.org/vector-insert-function-in-cpp-stl/}{\tt vector\_insert()} \& at the end using \href{https://www.geeksforgeeks.org/vectorpush_back-vectorpop_back-c-stl/}{\tt vector push\_back()}. As vector can dynamically grow, each row can have different size like \href{https://www.geeksforgeeks.org/jagged-array-in-java/}{Java's jagged arrays}, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<vector<int>> v = {{1, 2, 3}, {4, 5, 6}};
+
+    // insert a new row at the end
+    v.push_back({7, 8, 9});
+
+    // insert value in 2nd row at 2nd position
+    v[1].insert(v[1].begin() + 1, 10);
+
+    for (int i = 0; i < v.size(); i++) {
+        for (int j = 0; j < v[i].size(); j++) {
+            cout << v[i][j] << " ";
+        }
+        cout << endl;
+    }
+    return 0;
+}
+\end{Verbatim}
+Output:
+\begin{verbatim}
+1 2 3
+4 10 5 6
+7 8 9
+\end{verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Accessing \& uploading elements}
+As 2D vectors are organized as matrices with row \& column, we need 2 indexes to access an element: 1 for the {\it row number} $i$ \& other for the {\it column number} $j$. We can then use any access method e.g. \href{https://www.geeksforgeeks.org/vectoroperator-vectoroperator-c-stl/}{[] operator} or \href{https://www.geeksforgeeks.org/vector-at-in-cpp-stl/}{vector at()} method.
+
+The value of the accessed element can be changed by assigning a new value using {\tt=} operator, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<vector<int>> v = {{1, 2, 3}, {4, 5, 6}};
+
+    // access 3rd element in 2nd row
+    cout << "3rd element in 2nd row: "<< v[1][2] << endl;
+
+    // access 2nd element in 1st row
+    cout << "2nd element in 1st row: "<<v[0][1]<<endl;
+
+    // updating the 2nd element in 1st row
+    v[0][1] = 9;
+    cout << "2nd element in 1st row after updating: " <<v[0][1]<<endl;
+
+    return 0;
+}
+\end{Verbatim}
+Output:
+\begin{verbatim}
+3rd element in 2nd row: 6
+2nd element in 1st row: 2
+2nd element in 1st row after updating: 9
+\end{verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Deleting elements from a 2D vector}
+Similar to insertion, there are 2 types of deletion in 2D vector:
+\begin{enumerate}
+    \item Delete a row
+    \item Delete a value in an existing row.
+\end{enumerate}
+Elements can be deleted using \href{https://www.geeksforgeeks.org/vector-erase-and-clear-in-cpp/}{vector erase()} for a specific position or range \& using \href{https://www.geeksforgeeks.org/vectorpush_back-vectorpop_back-c-stl/}{vector pop\_back()} to remove the last element, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<vector<int>> v = {{1, 2, 3}, {4, 5, 6}};
+
+    // delete the 2nd row
+    v.erase(v.begin() + 1);
+
+    // delete 2nd element in 1st row
+    v[0].erase(v[0].begin() + 1);
+
+    for (int i = 0; i < v.size(); i++) {
+        for (int j = 0; j < v[i].size(); j++)
+        cout << v[i][j] << " ";
+        cout << endl;
+    }
+
+    return 0;
+}
+\end{Verbatim}
+Output: {\tt1 3}.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Traversing 2D vectors}
+Traversing a 2D vector involves iterating through rows \& columns using nested loops \& access the elements by indexes, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<vector<int>> v = {{1, 2, 3}, {4, 5, 6}};
+
+    // loop through rows
+    for (int i = 0; i < v.size(); i++) {
+        // loop through columns
+        for (int j = 0; j < v[i].size(); j++)
+        cout << v[i][j] << " ";
+        cout << endl;
+    }
+
+    return 0;
+}
+\end{Verbatim}
+Output:
+\begin{verbatim}
+1 2 3
+4 5 6
+\end{verbatim}
+C++ provides more methods to traverse 2D vector.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Finding size of 2D vector}
+Finding the size of a 2D vector involves finding its row size \& column size which can be done using the {\tt vector.size()} method. The size vector used on the outer vector gives the number of rows in the 2D vector while using them on the inner vector gives the number of columns in that row (as all rows can have different number of columns). Syntax:
+\begin{verbatim}
+//finding the number of rows
+int rows = vec.size();
+
+//finding the number of columns
+int rows = vec[0].size();
+\end{verbatim}
+where {\tt vec} is the name of the vector for which the size is to be determined. Since each element of a 2D vector is a vector itself we can use the {\tt size()} method on the elements {\tt vec[0]} to find the size of each row separately, e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    // creating a 2D vector
+    vector<vector<int>> vec = {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 9}
+    };
+
+    // finding the number of rows  (size of the outer vector)
+    int rows = vec.size();
+    cout << "Number of rows: " << rows << endl;
+
+    // finding the number of columns (size of any inner vector first row)
+    int cols = vec[0].size();
+    cout << "Number of columns: " << cols << endl;
+
+    return 0;
+}
+\end{Verbatim}
+Output:
+\begin{verbatim}
+Number of rows: 3
+Number of columns: 3
+\end{verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Common operations \& applications}
+Apart from the basic operations, there are many operations that can be performed on 2D vectors.
+
+%------------------------------------------------------------------------------%
+
+\section{Advantages of Vector Over Array in C++}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://www.geeksforgeeks.org/advantages-of-vector-over-array-in-c/}{Geeks4Geeks{\tt/}advantages of vector over array in C++}.
+\end{enumerate}
+In C++, both vectors \& arrays are used to store collections of elements, but vector offers significant advantages over arrays in terms of flexibility, functionality, \& ease of use. This section explores the benefits of using vectors in C++ programming.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Dynamic resizing}
+Unlike arrays, vectors can dynamically resize themselves, i.e., you don't need to know the size of the vector in advance, it can grow \& shrink according to the number of elements present in it.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<int> v;
+
+    // initial size
+    cout << v.size() << endl;
+
+    // add elements dynamically
+    for (int i = 1; i <= 5; ++i)
+    v.push_back(i);
+
+    // size after inserting elements
+    cout << v.size();
+    return 0;
+}
+\end{Verbatim}
+Output:
+\begin{verbatim}
+0
+5
+\end{verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Built-in functions \& operations}
+Vectors come with a variety of member functions, e.g. \verb|push_back(), pop_back(), insert(), erase()|, \& more, which simplify many operations. Apart from that, vectors can be easily copied from one to another using assignment operator.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<int> v = {1, 2, 3, 4, 5};
+
+    // remove the last element
+    v.pop_back();
+
+    // insert a new element at the beginning
+    v.insert(v.begin(), 0);
+
+    for (auto i : v)
+    cout << i << " ";
+    return 0;
+}
+\end{Verbatim}
+Output: {\tt0 1 2 3 4}.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Memory management}
+Vectors handle memory allocation \& deallocation automatically, whereas arrays require manual allocation \& deallocation.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<int> v = {1, 2, 3};
+
+    // no manual reallocation needed
+    v.push_back(4);
+
+    for (auto i : v)
+    cout << i << " ";
+    return 0;
+}
+\end{Verbatim}
+Output: {\tt1 2 3 4}.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Bounds checking}
+Vector supports bounds checking in {\tt at()} method \& throw an \verb|out_of_range| exception if the index is out of bounds, offering a safer way to access elements.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<int> v = {1, 2, 3, 4};
+
+    try {
+        // attempting to access out of range index
+        cout << v.at(5) << endl;
+    } catch (const out_of_range& e) {
+        cout << "Exception: " << e.what() << endl;
+    }
+
+    return 0;
+}
+\end{Verbatim}
+Output:
+\begin{verbatim}
+Exception: vector::_M_range_check: __n (which is 5) >= this->size() (which is 4)
+\end{verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Standard Template Library (STL) integration}
+Vectors are fully compatible with STL algorithms like sort, find, \verb|remove_if|, making it easier to make use of inbuilt functionality of the language.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    vector<int> v = {1, 4, 3, 2, 5};
+
+    // sort vector
+    sort(v.begin(), v.end());
+
+    // reverse sorted vector
+    reverse(v.begin(), v.end());
+
+    for (auto i : v)
+    cout << i << " ";
+    return 0;
+}
+\end{Verbatim}
+Output: {\tt5 4 3 2 1}.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Seamless working with functions}
+When arrays are passed to a function, a separate parameter for size is also passed whereas in case of passing a vector to a function, there is no such need as vector maintains variables which keeps track of size of container at all times. Also, it can be easily passed \& returned as both value \& reference.
+
+-- Khi mảng được truyền cho một hàm, một tham số riêng cho kích thước cũng được truyền trong khi trong trường hợp truyền một vector cho một hàm, không cần thiết vì vector duy trì các biến theo dõi kích thước của container mọi lúc. Ngoài ra, nó có thể dễ dàng được truyền \& trả về dưới dạng cả giá trị \& tham chiếu.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+// take vector as argument as reference but return by value
+vector<int> rev(vector<int>& v) {
+    reverse(v.begin(), v.end());
+    return v;
+}
+
+int main()  {
+    vector<int> v1 = {1, 2, 3, 4, 5};
+    vector<int> v2 = rev(v1);
+
+    for (auto i: v2) cout << i << " ";
+    return 0;
+}
+\end{Verbatim}
+Output: {\tt5 4 3 2 1}.
+
+%------------------------------------------------------------------------------%
+
+\section{Pointer Variable -- Biến Con Trỏ}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \cite{Thu_Phuong_Tien_Triet_Phuong_KTLT}. {\sc Trần Đan Thư, Nguyễn Thanh Phương, Đinh Bá Tiến, Trần Minh Triết, Đặng Bình Phương}. {\it Kỹ Thuật Lập Trình}. Chap. 1, Sect. II: Biến Con Trỏ.
+\end{enumerate}
+
 %------------------------------------------------------------------------------%
 
 \chapter{Linked Lists -- Danh Sách Liên Kết}

@@ -1,0 +1,69 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{Bài Toán 9: Thuật Toán BFS Trên Multigraph (Đồ Thị Đa Cung)}
+\author{Đồ Án 5.1: Breadth-first Search}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Phát biểu bài toán}
+Cho một đồ thị đa cung hữu hạn $G = (V, E)$, trong đó có thể tồn tại nhiều cạnh nối giữa cùng một cặp đỉnh $(u,v)$.  
+Yêu cầu: Triển khai thuật toán tìm kiếm theo chiều rộng (Breadth-First Search – BFS) trên $G$.
+
+\section*{Đặc điểm của multigraph}
+\begin{itemize}
+    \item Có thể có nhiều hơn một cạnh giữa 2 đỉnh $u$ và $v$
+    \item Có thể có cạnh tự khép (self-loop), ví dụ $(u,u)$
+    \item Danh sách kề có thể chứa nhiều lần cùng một đỉnh kề
+\end{itemize}
+
+\section*{Ý tưởng}
+\begin{itemize}
+    \item Duyệt theo chiều rộng như đồ thị đơn
+    \item Để tránh duyệt lặp qua nhiều cạnh trùng nhau, cần dùng mảng \texttt{visited[]} để đánh dấu đã thăm
+    \item Mỗi đỉnh chỉ được duyệt đúng một lần, bỏ qua các cạnh trùng nếu đỉnh kề đã thăm
+\end{itemize}
+
+\section*{Thuật toán BFS (pseudocode)}
+\begin{verbatim}
+BFS_Multigraph(G, s):
+    visited[v] ← False với mọi v ∈ V
+    Q ← hàng đợi rỗng
+    visited[s] ← True
+    enqueue(Q, s)
+    while Q không rỗng:
+        u ← dequeue(Q)
+        xử lý đỉnh u
+        for mỗi v ∈ adj[u]:  // cho phép lặp
+            if not visited[v]:
+                visited[v] ← True
+                enqueue(Q, v)
+\end{verbatim}
+
+\section*{Chú thích các biến số}
+\begin{itemize}
+    \item \texttt{G}: đồ thị đa cung, biểu diễn bằng danh sách kề có thể chứa trùng
+    \item \texttt{adj[u]}: danh sách các đỉnh kề với $u$, có thể chứa $v$ nhiều lần
+    \item \texttt{s}: đỉnh bắt đầu BFS
+    \item \texttt{visited[v]}: boolean đánh dấu đỉnh $v$ đã được duyệt
+    \item \texttt{Q}: hàng đợi FIFO dùng để duyệt BFS
+    \item \texttt{res}: danh sách kết quả duyệt
+\end{itemize}
+
+\section*{Giải thích xử lý trùng cạnh}
+\begin{itemize}
+    \item Tại vì một đỉnh $v$ có thể xuất hiện nhiều lần trong \texttt{adj[u]}, ta chỉ xét \texttt{visited[v]} đúng một lần
+    \item Ví dụ: nếu $adj[0] = [1,1,2]$, thì đỉnh 1 chỉ được duyệt 1 lần duy nhất
+    \item Điều này sẽ giúp BFS vẫn có độ phức tạp $O(V + E)$ với $E$ là tổng số cung (bao gồm trùng cạnh)
+\end{itemize}
+
+\end{document}

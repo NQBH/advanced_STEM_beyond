@@ -1,0 +1,61 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{Bài Toán 12: Thuật Toán DFS Trên Multigraph (Đồ Thị Đa Cung)}
+\author{Đồ Án 5.2: Depth-first Search}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Phát biểu bài toán}
+Cho một đồ thị đa cung $G = (V, E)$, trong đó có thể tồn tại nhiều cạnh giữa cùng một cặp đỉnh $(u, v)$.  
+Yêu cầu: Triển khai thuật toán tìm kiếm theo chiều sâu (Depth-First Search – DFS) trên $G$.
+
+\section*{Đặc điểm của multigraph}
+\begin{itemize}
+    \item Có thể tồn tại nhiều cạnh giữa một cặp đỉnh
+    \item Có thể tồn tại cạnh tự khép $(u, u)$
+    \item Danh sách kề có thể chứa trùng lặp các đỉnh
+\end{itemize}
+
+\section*{Ý tưởng thuật toán}
+\begin{itemize}
+    \item DFS được triển khai tương tự như với đồ thị đơn
+    \item Mỗi đỉnh của một đồ thị được duyệt đúng một lần, điều này vẫn đúng bất kể đồ thị có chứa các cạnh bội (cạnh trùng) hay không.
+    \item Dùng mảng \texttt{visited[]} để ngăn việc lặp lại duyệt đỉnh
+\end{itemize}
+
+\section*{Thuật toán DFS (pseudocode)}
+\begin{verbatim}
+DFS_Multigraph(G, u):
+    visited[u] ← True
+    xử lý đỉnh u
+    for mỗi v ∈ adj[u]:  // có thể trùng
+        if not visited[v]:
+            DFS_Multigraph(G, v)
+\end{verbatim}
+
+\section*{Chú thích các biến số}
+\begin{itemize}
+    \item \texttt{G}: đồ thị đa cung, biểu diễn dưới dạng danh sách kề (có thể chứa trùng)
+    \item \texttt{adj[u]}: danh sách các đỉnh kề với $u$ (có thể có lặp)
+    \item \texttt{visited[v]}: boolean kiểm tra đỉnh $v$ đã được duyệt chưa
+    \item \texttt{u}: đỉnh hiện tại trong DFS
+    \item \texttt{res}: danh sách các đỉnh được duyệt theo thứ tự
+\end{itemize}
+
+\section*{Xử lý cạnh trùng và self-loop}
+\begin{itemize}
+    \item Cạnh trùng: nếu $adj[u] = [v, v, v]$ thì DFS vẫn chỉ gọi một lần cho $v$
+    \item Cạnh tự khép $(u, u)$: sẽ không gây ra vòng lặp vô hạn nếu kiểm tra \texttt{visited[u]} đúng
+\end{itemize}
+
+\end{document}

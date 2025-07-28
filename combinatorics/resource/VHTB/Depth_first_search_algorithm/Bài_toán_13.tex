@@ -1,0 +1,70 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{Bài Toán 13: Thuật Toán DFS Trên Đồ Thị Tổng Quát}
+\author{Đồ Án 5.2: Depth-first Search}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Phát biểu bài toán}
+Cho một đồ thị tổng quát $G = (V, E)$, không giới hạn kiểu đồ thị.  
+Yêu cầu: Viết thuật toán DFS để duyệt toàn bộ đồ thị, bao gồm cả các thành phần rời rạc, cạnh trùng, cạnh tự khép và đồ thị có hướng hoặc vô hướng.
+
+\section*{Tính chất đồ thị tổng quát}
+\begin{itemize}
+    \item Có thể là đồ thị vô hướng hoặc hữu hướng
+    \item Cho phép nhiều cạnh giữa cùng một cặp đỉnh (đa cung)
+    \item Cho phép self-loop $(u, u)$
+    \item Có thể gồm nhiều thành phần liên thông
+    \item Có thể rỗng
+\end{itemize}
+
+\section*{Ý tưởng thuật toán}
+\begin{itemize}
+    \item Khởi tạo mảng \texttt{visited[]} cho tất cả các đỉnh
+    \item Duyệt DFS từ từng đỉnh chưa thăm → đảm bảo bao phủ toàn bộ đồ thị (gồm nhiều thành phần)
+    \item Mỗi đỉnh chỉ được duyệt đúng một lần, bất kể có bao nhiêu cạnh đi tới nó
+\end{itemize}
+
+\section*{Thuật toán DFS tổng quát (pseudocode)}
+\begin{verbatim}
+DFS_Component(G, u):
+    visited[u] ← True
+    xử lý u
+    for mỗi v ∈ adj[u]:
+        if not visited[v]:
+            DFS_Component(G, v)
+
+General_DFS(G):
+    visited[v] ← False với mọi v ∈ V
+    for mỗi đỉnh u:
+        if not visited[u]:
+            DFS_Component(G, u)
+\end{verbatim}
+
+\section*{Chú thích các biến số}
+\begin{itemize}
+    \item \texttt{G}: đồ thị tổng quát (đa cung, self-loop, rời rạc)
+    \item \texttt{adj[u]}: danh sách các đỉnh kề với $u$ (có thể trùng)
+    \item \texttt{visited[u]}: true nếu đã thăm đỉnh $u$
+    \item \texttt{DFS\_Component}: hàm xử lý một thành phần liên thông
+    \item \texttt{General\_DFS}: vòng lặp chính để bao phủ toàn bộ đồ thị
+\end{itemize}
+
+\section*{Xử lý các trường hợp đặc biệt}
+\begin{itemize}
+    \item \textbf{Cạnh trùng (multiedge):} \texttt{visited[]} đảm bảo duyệt đúng 1 lần
+    \item \textbf{Self-loop:} DFS không gọi lại chính nó nếu đã được đánh dấu
+    \item \textbf{Disconnected graph:} Mỗi thành phần liên thông được duyệt riêng
+\end{itemize}
+
+\end{document}

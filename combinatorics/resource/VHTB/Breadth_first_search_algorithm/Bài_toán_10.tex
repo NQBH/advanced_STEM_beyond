@@ -1,0 +1,73 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{Bài Toán 10: Thuật Toán BFS Trên Đồ Thị Tổng Quát}
+\author{Đồ Án 5.1: Breadth-first Search}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Phát biểu bài toán}
+Cho một đồ thị tổng quát $G = (V, E)$, không giả định đơn, đa cung hay hướng/vô hướng.  
+Viết thuật toán Breadth-First Search (BFS) có khả năng hoạt động chính xác trên mọi loại đồ thị.
+
+\section*{Giả thuyết}
+\begin{itemize}
+    \item Đồ thị có thể có nhiều thành phần liên thông
+    \item Đỉnh có thể có self-loop (tức là $(v,v) \in E$)
+    \item Có thể có nhiều cạnh nối giữa một cặp đỉnh
+    \item Có thể là đồ thị hữu hướng hoặc vô hướng
+    \item Có thể rỗng
+\end{itemize}
+
+\section*{Ý tưởng}
+\begin{itemize}
+    \item Sử dụng BFS tiêu chuẩn cho từng thành phần liên thông
+    \item Duyệt BFS từ mọi đỉnh chưa được thăm để bao phủ toàn bộ đồ thị
+    \item Sử dụng mảng \texttt{visited[]} để tránh lặp chu kỳ, đa cung hoặc self-loop
+\end{itemize}
+
+\section*{Thuật toán BFS tổng quát (pseudocode)}
+\begin{verbatim}
+General_BFS(G):
+    n ← số lượng đỉnh
+    visited[v] ← False ∀ v ∈ V
+    for mỗi đỉnh u từ 0 đến n-1:
+        if not visited[u]:
+            Q ← hàng đợi mới
+            enqueue(Q, u)
+            visited[u] ← True
+            while Q không rỗng:
+                v ← dequeue(Q)
+                xử lý v
+                for mỗi đỉnh w ∈ adj[v]:
+                    if not visited[w]:
+                        visited[w] ← True
+                        enqueue(Q, w)
+\end{verbatim}
+
+\section*{Chú thích các biến số}
+\begin{itemize}
+    \item \texttt{G}: đồ thị tổng quát, có thể có hướng, đa cung, self-loop
+    \item \texttt{adj[v]}: danh sách các đỉnh kề với $v$ (có thể trùng)
+    \item \texttt{visited[v]}: boolean kiểm tra đã duyệt đỉnh $v$
+    \item \texttt{Q}: hàng đợi BFS dùng cho từng thành phần liên thông
+    \item \texttt{res}: danh sách kết quả BFS từ từng component
+\end{itemize}
+
+\section*{Xử lý bài toán}
+\begin{itemize}
+    \item Với self-loop: $(v,v)$ không ảnh hưởng nếu đã kiểm tra \texttt{visited[v]} đúng cách
+    \item Với multigraph: dù có nhiều cạnh trùng, BFS chỉ duyệt 1 lần
+    \item Với đồ thị không liên thông: dùng BFS trên từng thành phần
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,64 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{Bài Toán 6: Tree Edit Distance}
+\author{Đồ Án 4: Duyệt Đồ Thị \& Cây}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Phát biểu bài toán}
+Cho hai cây có gốc $T_1$ và $T_2$. Tính số phép biến đổi tối thiểu cần thiết để biến $T_1$ thành $T_2$ bằng ba thao tác:
+\begin{itemize}
+    \item Insert (thêm nút)
+    \item Delete (xóa nút)
+    \item Rename (đổi nhãn)
+\end{itemize}
+
+\section*{Mục tiêu}
+Tìm khoảng cách edit $TED(T_1, T_2)$ sao cho tổng chi phí nhỏ nhất.
+
+\section*{Thuật toán áp dụng}
+\begin{enumerate}[label=(\alph*)]
+    \item \textbf{Brute-force / Backtracking:} thử tất cả phép biến đổi
+    \item \textbf{Branch-and-bound:} loại bỏ nhánh có chi phí tạm tính $>$ best hiện tại
+    \item \textbf{Divide and Conquer:} chia cây thành các subtree nhỏ
+    \item \textbf{Dynamic Programming:} giải bài toán con bằng quy hoạch động
+\end{enumerate}
+
+\section*{Chi tiết thuật toán (Zhang & Shasha)}
+\begin{itemize}
+    \item Định nghĩa post-order cho mỗi node $i$ trong cây
+    \item Hàm \texttt{ted(i,j)} = chi phí biến subtree rooted tại $i$ thành subtree rooted tại $j$
+    \item Dựng bảng \texttt{dp[i][j]} với công thức:
+    \[
+    dp[i][j] =
+    \begin{cases}
+    dp[i-1][j-1] & \text{nếu } label(i)=label(j)\\
+    \min\begin{cases}
+        dp[i-1][j] + cost(\text{delete}) \\
+        dp[i][j-1] + cost(\text{insert}) \\
+        dp[i-1][j-1] + cost(\text{rename})
+    \end{cases}
+    \end{cases}
+    \]
+\end{itemize}
+
+\section*{Chú thích các biến số}
+\begin{itemize}
+    \item \texttt{T1, T2}: hai cây gốc
+    \item \texttt{dp[i][j]}: khoảng cách edit từ subtree $i$ của $T_1$ tới subtree $j$ của $T_2$
+    \item \texttt{label[i]}: nhãn (tên) của node $i$
+    \item \texttt{l[i]}, \texttt{r[i]}: chỉ số preorder hoặc postorder của node $i$
+    \item \texttt{cost\_ins}, \texttt{cost\_del}, \texttt{cost\_ren}: chi phí các thao tác
+\end{itemize}
+
+\end{document}

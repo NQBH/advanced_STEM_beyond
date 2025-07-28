@@ -1,0 +1,67 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{listings}
+\usepackage{enumitem}
+
+\title{Bài Toán 2: Đếm số phân hoạch $p(n,k)$}
+\author{Đồ Án Phân Hoạch Số Nguyên}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Phát biểu bài toán}
+Cho hai số nguyên dương $n, k \in \mathbb{N}$. Đếm số phân hoạch của $n$ sao cho phần tử lớn nhất trong mỗi phân hoạch không vượt quá $k$. Ký hiệu hàm đếm là $p(n, k)$.
+
+\textbf{Ví dụ:} $p(5,3)$ = 5, gồm các phân hoạch:
+\[
+(3,2), (3,1,1), (2,2,1), (2,1,1,1), (1,1,1,1,1)
+\]
+
+\section*{Công thức đệ quy}
+Công thức đệ quy:
+\[
+p(n,k) = 
+\begin{cases}
+1 & \text{if } n = 0 \\
+0 & \text{if } n < 0 \text{ or } k = 0 \\
+p(n-k,k) + p(n,k-1) & \text{otherwise}
+\end{cases}
+\]
+\textbf{Giải thích:}
+\begin{itemize}
+    \item $p(n-k, k)$ là số phân hoạch của $n$ có ít nhất một phần tử bằng $k$
+    \item $p(n, k-1)$ là số phân hoạch của $n$ có tất cả phần tử nhỏ hơn $k$
+\end{itemize}
+
+\section*{Thuật toán (Quy hoạch động)}
+Khởi tạo mảng hai chiều $dp[n+1][k+1]$, với:
+\begin{itemize}
+    \item $dp[i][j]$ lưu giá trị $p(i, j)$
+    \item Gán $dp[0][j] = 1$ với mọi $j \geq 0$
+    \item Duyệt $i$ từ 1 đến $n$, $j$ từ 1 đến $k$, cập nhật:
+    \[
+    dp[i][j] = dp[i-j][j] + dp[i][j-1] \quad \text{nếu } i \geq j
+    \]
+    ngược lại thì:
+    \[
+    dp[i][j] = dp[i][j-1]
+    \]
+\end{itemize}
+
+\section*{Chú thích các biến}
+\begin{itemize}[itemsep=0pt]
+    \item \texttt{n, k} – đầu vào bài toán
+    \item \texttt{dp[i][j]} – số phân hoạch của $i$ với phần tử lớn nhất $\leq j$
+\end{itemize}
+
+\section*{So sánh}
+Có thể so sánh $p(n)$ (tổng phân hoạch của $n$) với:
+\[
+p(n) = \sum_{k=1}^{n} p(n,k)
+\]
+
+\end{document}

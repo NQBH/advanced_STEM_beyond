@@ -13,7 +13,7 @@ for n in range(1, MAX):
             pk[n][k] = pk[n - 1][k - 1] + pk[n - k][k]
         else:
             pk[n][k] = pk[n - 1][k - 1]
-            
+
         p[n][k] = p[n][k - 1]
         if n >= k:
             p[n][k] += p[n - k][k]

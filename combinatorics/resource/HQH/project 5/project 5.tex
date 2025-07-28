@@ -1,0 +1,658 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\geometry{margin=2cm}
+
+% Code styling
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10}
+}
+
+\title{Đồ án cuối kì}
+\author{Hoàng Quang Huy}
+\date{20/07/2025}
+
+\begin{document}
+
+\maketitle
+
+\section{Project 5: Shortest Path Problems on Graphs}
+
+Dự án này thực hiện thuật toán Dijkstra để giải quyết bài toán tìm đường đi ngắn nhất trên ba loại đồ thị khác nhau:
+\begin{itemize}
+\item Đồ thị đơn (Simple Graph)
+\item Đa đồ thị (Multigraph) 
+\item Đồ thị tổng quát (General Graph)
+\end{itemize}
+
+\textbf{Tài nguyên tham khảo:} Wikipedia/shortest path problem
+
+\section{Bài toán 14: Thuật toán Dijkstra cho Đồ thị đơn}
+
+\textbf{Đề bài:} Let $G = (V, E)$ be a finite simple graph. Implement the Dijkstra's algorithm to find the shortest path problem on $G$.
+
+\begin{lstlisting}[caption={Thuật toán Dijkstra cho đồ thị đơn}]
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>
+#include <algorithm>
+using namespace std;
+
+struct Edge {
+    int to;
+    int weight;
+    
+    Edge(int t, int w) : to(t), weight(w) {}
+};
+
+class SimpleGraph {
+private:
+    int vertices;
+    vector<vector<Edge>> adjList;
+    
+public:
+    SimpleGraph(int v) : vertices(v) {
+        adjList.resize(v);
+    }
+    
+    // Add edge for simple graph (no parallel edges, no self-loops)
+    void addEdge(int from, int to, int weight) {
+        if (from == to) {
+            cout << "Warning: Self-loops not allowed in simple graph" << endl;
+            return;
+        }
+        
+        // Check if edge already exists
+        for (const Edge& e : adjList[from]) {
+            if (e.to == to) {
+                cout << "Warning: Parallel edges not allowed in simple graph" << endl;
+                return;
+            }
+        }
+        
+        adjList[from].push_back(Edge(to, weight));
+        adjList[to].push_back(Edge(from, weight)); // undirected
+    }
+    
+    // Dijkstra's algorithm implementation
+    vector<int> dijkstra(int source, vector<int>& parent) {
+        vector<int> dist(vertices, INT_MAX);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        
+        parent.assign(vertices, -1);
+        dist[source] = 0;
+        pq.push({0, source});
+        
+        while (!pq.empty()) {
+            int u = pq.top().second;
+            int d = pq.top().first;
+            pq.pop();
+            
+            if (d > dist[u]) continue;
+            
+            for (const Edge& edge : adjList[u]) {
+                int v = edge.to;
+                int weight = edge.weight;
+                
+                if (dist[u] + weight < dist[v]) {
+                    dist[v] = dist[u] + weight;
+                    parent[v] = u;
+                    pq.push({dist[v], v});
+                }
+            }
+        }
+        
+        return dist;
+    }
+    
+    // Print shortest path from source to target
+    void printPath(int source, int target, const vector<int>& parent) {
+        if (parent[target] == -1 && source != target) {
+            cout << "No path exists from " << source << " to " << target << endl;
+            return;
+        }
+        
+        vector<int> path;
+        int current = target;
+        while (current != -1) {
+            path.push_back(current);
+            current = parent[current];
+        }
+        
+        reverse(path.begin(), path.end());
+        
+        cout << "Shortest path from " << source << " to " << target << ": ";
+        for (int i = 0; i < path.size(); i++) {
+            cout << path[i];
+            if (i < path.size() - 1) cout << " -> ";
+        }
+        cout << endl;
+    }
+    
+    void printGraph() {
+        cout << "Simple Graph adjacency list:" << endl;
+        for (int i = 0; i < vertices; i++) {
+            cout << "Vertex " << i << ": ";
+            for (const Edge& e : adjList[i]) {
+                cout << "(" << e.to << "," << e.weight << ") ";
+            }
+            cout << endl;
+        }
+    }
+};
+
+int main() {
+    cout << "=== Dijkstra Algorithm for Simple Graph ===" << endl;
+    
+    // Create a simple graph with 6 vertices
+    SimpleGraph graph(6);
+    
+    // Add edges (from, to, weight)
+    graph.addEdge(0, 1, 4);
+    graph.addEdge(0, 2, 3);
+    graph.addEdge(1, 2, 1);
+    graph.addEdge(1, 3, 2);
+    graph.addEdge(2, 3, 4);
+    graph.addEdge(3, 4, 2);
+    graph.addEdge(4, 5, 6);
+    
+    graph.printGraph();
+    cout << endl;
+    
+    int source = 0;
+    vector<int> parent;
+    vector<int> distances = graph.dijkstra(source, parent);
+    
+    cout << "Shortest distances from vertex " << source << ":" << endl;
+    for (int i = 0; i < distances.size(); i++) {
+        cout << "To vertex " << i << ": ";
+        if (distances[i] == INT_MAX) {
+            cout << "INFINITY" << endl;
+        } else {
+            cout << distances[i] << endl;
+        }
+    }
+    cout << endl;
+    
+    // Print shortest paths
+    for (int i = 1; i < 6; i++) {
+        graph.printPath(source, i, parent);
+    }
+    
+    return 0;
+}
+\end{lstlisting}
+
+\section{Bài toán 15: Thuật toán Dijkstra cho Đa đồ thị}
+
+\textbf{Đề bài:} Let $G = (V, E)$ be a finite multigraph. Implement the Dijkstra's algorithm to find the shortest path problem on $G$.
+
+\begin{lstlisting}[caption={Thuật toán Dijkstra cho đa đồ thị}]
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>
+#include <algorithm>
+using namespace std;
+
+struct MultiEdge {
+    int to;
+    int weight;
+    int edgeId; // To distinguish parallel edges
+    
+    MultiEdge(int t, int w, int id) : to(t), weight(w), edgeId(id) {}
+};
+
+class Multigraph {
+private:
+    int vertices;
+    vector<vector<MultiEdge>> adjList;
+    int nextEdgeId;
+    
+public:
+    Multigraph(int v) : vertices(v), nextEdgeId(0) {
+        adjList.resize(v);
+    }
+    
+    // Add edge for multigraph (allows parallel edges, no self-loops for simplicity)
+    void addEdge(int from, int to, int weight) {
+        if (from == to) {
+            cout << "Note: Self-loops allowed but skipped in this implementation" << endl;
+            return;
+        }
+        
+        adjList[from].push_back(MultiEdge(to, weight, nextEdgeId));
+        adjList[to].push_back(MultiEdge(from, weight, nextEdgeId));
+        nextEdgeId++;
+        
+        cout << "Added edge " << from << "-" << to << " with weight " << weight 
+             << " (Edge ID: " << nextEdgeId-1 << ")" << endl;
+    }
+    
+    // Dijkstra's algorithm for multigraph
+    vector<int> dijkstra(int source, vector<int>& parent, vector<int>& usedEdge) {
+        vector<int> dist(vertices, INT_MAX);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        
+        parent.assign(vertices, -1);
+        usedEdge.assign(vertices, -1);
+        dist[source] = 0;
+        pq.push({0, source});
+        
+        while (!pq.empty()) {
+            int u = pq.top().second;
+            int d = pq.top().first;
+            pq.pop();
+            
+            if (d > dist[u]) continue;
+            
+            for (const MultiEdge& edge : adjList[u]) {
+                int v = edge.to;
+                int weight = edge.weight;
+                
+                if (dist[u] + weight < dist[v]) {
+                    dist[v] = dist[u] + weight;
+                    parent[v] = u;
+                    usedEdge[v] = edge.edgeId;
+                    pq.push({dist[v], v});
+                }
+            }
+        }
+        
+        return dist;
+    }
+    
+    void printPath(int source, int target, const vector<int>& parent, const vector<int>& usedEdge) {
+        if (parent[target] == -1 && source != target) {
+            cout << "No path exists from " << source << " to " << target << endl;
+            return;
+        }
+        
+        vector<int> path;
+        vector<int> edges;
+        int current = target;
+        
+        while (current != source && current != -1) {
+            path.push_back(current);
+            edges.push_back(usedEdge[current]);
+            current = parent[current];
+        }
+        
+        if (current == source) {
+            path.push_back(source);
+            reverse(path.begin(), path.end());
+            reverse(edges.begin(), edges.end());
+            
+            cout << "Shortest path from " << source << " to " << target << ": ";
+            for (int i = 0; i < path.size(); i++) {
+                cout << path[i];
+                if (i < path.size() - 1) {
+                    cout << " --(edge " << edges[i] << ")--> ";
+                }
+            }
+            cout << endl;
+        }
+    }
+    
+    void printGraph() {
+        cout << "Multigraph adjacency list:" << endl;
+        for (int i = 0; i < vertices; i++) {
+            cout << "Vertex " << i << ": ";
+            for (const MultiEdge& e : adjList[i]) {
+                cout << "(" << e.to << "," << e.weight << ",E" << e.edgeId << ") ";
+            }
+            cout << endl;
+        }
+    }
+};
+
+int main() {
+    cout << "=== Dijkstra Algorithm for Multigraph ===" << endl;
+    
+    // Create a multigraph with 5 vertices
+    Multigraph graph(5);
+    
+    // Add edges including parallel edges
+    graph.addEdge(0, 1, 10);
+    graph.addEdge(0, 1, 5);  // Parallel edge with different weight
+    graph.addEdge(0, 2, 3);
+    graph.addEdge(1, 2, 2);
+    graph.addEdge(1, 3, 1);
+    graph.addEdge(2, 3, 8);
+    graph.addEdge(2, 3, 4);  // Another parallel edge
+    graph.addEdge(3, 4, 2);
+    
+    cout << endl;
+    graph.printGraph();
+    cout << endl;
+    
+    int source = 0;
+    vector<int> parent, usedEdge;
+    vector<int> distances = graph.dijkstra(source, parent, usedEdge);
+    
+    cout << "Shortest distances from vertex " << source << ":" << endl;
+    for (int i = 0; i < distances.size(); i++) {
+        cout << "To vertex " << i << ": ";
+        if (distances[i] == INT_MAX) {
+            cout << "INFINITY" << endl;
+        } else {
+            cout << distances[i] << endl;
+        }
+    }
+    cout << endl;
+    
+    // Print shortest paths with edge information
+    for (int i = 1; i < 5; i++) {
+        graph.printPath(source, i, parent, usedEdge);
+    }
+    
+    return 0;
+}
+\end{lstlisting}
+
+\section{Bài toán 16: Thuật toán Dijkstra cho Đồ thị tổng quát}
+
+\textbf{Đề bài:} Let $G = (V, E)$ be a general graph. Implement the Dijkstra's algorithm to find the shortest path problem on $G$.
+
+\begin{lstlisting}[caption={Thuật toán Dijkstra cho đồ thị tổng quát}]
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <climits>
+#include <algorithm>
+#include <set>
+using namespace std;
+
+struct GeneralEdge {
+    int to;
+    int weight;
+    int edgeId;
+    bool isSelfLoop;
+    
+    GeneralEdge(int t, int w, int id, bool selfLoop = false) 
+        : to(t), weight(w), edgeId(id), isSelfLoop(selfLoop) {}
+};
+
+class GeneralGraph {
+private:
+    int vertices;
+    vector<vector<GeneralEdge>> adjList;
+    int nextEdgeId;
+    set<pair<int, int>> edgeSet; // To track parallel edges
+    
+public:
+    GeneralGraph(int v) : vertices(v), nextEdgeId(0) {
+        adjList.resize(v);
+    }
+    
+    // Add edge for general graph (allows parallel edges and self-loops)
+    void addEdge(int from, int to, int weight) {
+        bool isSelfLoop = (from == to);
+        
+        if (isSelfLoop) {
+            adjList[from].push_back(GeneralEdge(to, weight, nextEdgeId, true));
+            cout << "Added self-loop at vertex " << from << " with weight " << weight 
+                 << " (Edge ID: " << nextEdgeId << ")" << endl;
+        } else {
+            adjList[from].push_back(GeneralEdge(to, weight, nextEdgeId));
+            adjList[to].push_back(GeneralEdge(from, weight, nextEdgeId));
+            
+            // Check if this creates a parallel edge
+            pair<int, int> edge = {min(from, to), max(from, to)};
+            if (edgeSet.count(edge)) {
+                cout << "Added parallel edge " << from << "-" << to << " with weight " << weight 
+                     << " (Edge ID: " << nextEdgeId << ")" << endl;
+            } else {
+                cout << "Added edge " << from << "-" << to << " with weight " << weight 
+                     << " (Edge ID: " << nextEdgeId << ")" << endl;
+                edgeSet.insert(edge);
+            }
+        }
+        nextEdgeId++;
+    }
+    
+    // Enhanced Dijkstra's algorithm for general graph
+    vector<int> dijkstra(int source, vector<int>& parent, vector<int>& usedEdge) {
+        vector<int> dist(vertices, INT_MAX);
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        vector<bool> visited(vertices, false);
+        
+        parent.assign(vertices, -1);
+        usedEdge.assign(vertices, -1);
+        dist[source] = 0;
+        pq.push({0, source});
+        
+        while (!pq.empty()) {
+            int u = pq.top().second;
+            int d = pq.top().first;
+            pq.pop();
+            
+            if (visited[u]) continue;
+            visited[u] = true;
+            
+            for (const GeneralEdge& edge : adjList[u]) {
+                int v = edge.to;
+                int weight = edge.weight;
+                
+                // Handle self-loops specially
+                if (edge.isSelfLoop) {
+                    cout << "Processing self-loop at vertex " << u << " (weight: " << weight << ")" << endl;
+                    continue; // Self-loops don't contribute to shortest paths to other vertices
+                }
+                
+                if (!visited[v] && dist[u] + weight < dist[v]) {
+                    dist[v] = dist[u] + weight;
+                    parent[v] = u;
+                    usedEdge[v] = edge.edgeId;
+                    pq.push({dist[v], v});
+                }
+            }
+        }
+        
+        return dist;
+    }
+    
+    void printPath(int source, int target, const vector<int>& parent, const vector<int>& usedEdge) {
+        if (parent[target] == -1 && source != target) {
+            cout << "No path exists from " << source << " to " << target << endl;
+            return;
+        }
+        
+        if (source == target) {
+            cout << "Path from " << source << " to " << target << ": " << source << " (same vertex)" << endl;
+            return;
+        }
+        
+        vector<int> path;
+        vector<int> edges;
+        int current = target;
+        
+        while (current != source && current != -1) {
+            path.push_back(current);
+            edges.push_back(usedEdge[current]);
+            current = parent[current];
+        }
+        
+        if (current == source) {
+            path.push_back(source);
+            reverse(path.begin(), path.end());
+            reverse(edges.begin(), edges.end());
+            
+            cout << "Shortest path from " << source << " to " << target << ": ";
+            for (int i = 0; i < path.size(); i++) {
+                cout << path[i];
+                if (i < path.size() - 1) {
+                    cout << " --(E" << edges[i] << ")--> ";
+                }
+            }
+            cout << endl;
+        }
+    }
+    
+    void printGraph() {
+        cout << "General Graph adjacency list:" << endl;
+        for (int i = 0; i < vertices; i++) {
+            cout << "Vertex " << i << ": ";
+            for (const GeneralEdge& e : adjList[i]) {
+                cout << "(" << e.to << "," << e.weight << ",E" << e.edgeId;
+                if (e.isSelfLoop) cout << ",SELF";
+                cout << ") ";
+            }
+            cout << endl;
+        }
+    }
+    
+    void printGraphStatistics() {
+        int totalEdges = nextEdgeId;
+        int selfLoops = 0;
+        int parallelEdges = 0;
+        
+        set<pair<int, int>> uniqueEdges;
+        for (int i = 0; i < vertices; i++) {
+            for (const GeneralEdge& e : adjList[i]) {
+                if (e.isSelfLoop) {
+                    selfLoops++;
+                } else if (i <= e.to) { // Count each undirected edge once
+                    pair<int, int> edge = {i, e.to};
+                    if (uniqueEdges.count(edge)) {
+                        parallelEdges++;
+                    } else {
+                        uniqueEdges.insert(edge);
+                    }
+                }
+            }
+        }
+        
+        cout << "Graph Statistics:" << endl;
+        cout << "Total vertices: " << vertices << endl;
+        cout << "Total edges: " << totalEdges << endl;
+        cout << "Self-loops: " << selfLoops << endl;
+        cout << "Parallel edges: " << parallelEdges << endl;
+        cout << "Unique edges: " << uniqueEdges.size() << endl;
+    }
+};
+
+int main() {
+    cout << "=== Dijkstra Algorithm for General Graph ===" << endl;
+    
+    // Create a general graph with 6 vertices
+    GeneralGraph graph(6);
+    
+    // Add various types of edges
+    graph.addEdge(0, 1, 4);
+    graph.addEdge(0, 2, 3);
+    graph.addEdge(1, 1, 2);    // Self-loop
+    graph.addEdge(1, 2, 1);
+    graph.addEdge(1, 2, 5);    // Parallel edge with different weight
+    graph.addEdge(2, 3, 2);
+    graph.addEdge(3, 3, 1);    // Another self-loop
+    graph.addEdge(3, 4, 3);
+    graph.addEdge(2, 4, 8);
+    graph.addEdge(2, 4, 6);    // Another parallel edge
+    graph.addEdge(4, 5, 2);
+    graph.addEdge(0, 5, 10);
+    
+    cout << endl;
+    graph.printGraphStatistics();
+    cout << endl;
+    graph.printGraph();
+    cout << endl;
+    
+    int source = 0;
+    vector<int> parent, usedEdge;
+    vector<int> distances = graph.dijkstra(source, parent, usedEdge);
+    
+    cout << endl << "Shortest distances from vertex " << source << ":" << endl;
+    for (int i = 0; i < distances.size(); i++) {
+        cout << "To vertex " << i << ": ";
+        if (distances[i] == INT_MAX) {
+            cout << "INFINITY" << endl;
+        } else {
+            cout << distances[i] << endl;
+        }
+    }
+    cout << endl;
+    
+    // Print shortest paths
+    for (int i = 0; i < 6; i++) {
+        graph.printPath(source, i, parent, usedEdge);
+    }
+    
+    return 0;
+}
+\end{lstlisting}
+
+\section{So sánh và Phân tích}
+
+\subsection{Độ phức tạp thuật toán}
+
+Đối với tất cả ba loại đồ thị, độ phức tạp của thuật toán Dijkstra là:
+\begin{itemize}
+\item \textbf{Thời gian:} $O((V + E) \log V)$ khi sử dụng priority queue
+\item \textbf{Không gian:} $O(V + E)$ để lưu trữ đồ thị và các mảng phụ trợ
+\end{itemize}
+
+\subsection{Đặc điểm của từng loại đồ thị}
+
+\textbf{Đồ thị đơn (Simple Graph):}
+\begin{itemize}
+\item Không có cạnh song song
+\item Không có khuyên (self-loop)
+\item Thuật toán Dijkstra hoạt động hiệu quả nhất
+\end{itemize}
+
+\textbf{Đa đồ thị (Multigraph):}
+\begin{itemize}
+\item Cho phép cạnh song song
+\item Thuật toán tự động chọn cạnh có trọng số nhỏ nhất trong các cạnh song song
+\item Cần theo dõi ID của cạnh được sử dụng
+\end{itemize}
+
+\textbf{Đồ thị tổng quát (General Graph):}
+\begin{itemize}
+\item Cho phép cả cạnh song song và khuyên
+\item Khuyên thường không ảnh hưởng đến đường đi ngắn nhất giữa các đỉnh khác nhau
+\item Cần xử lý đặc biệt cho khuyên
+\end{itemize}
+
+\subsection{Ứng dụng thực tế}
+
+\begin{itemize}
+\item \textbf{Định tuyến mạng:} Tìm đường đi ngắn nhất giữa các router
+\item \textbf{GPS Navigation:} Tìm đường đi ngắn nhất giữa hai địa điểm
+\item \textbf{Game Development:} Pathfinding cho NPC
+\item \textbf{Social Networks:} Tìm mức độ kết nối giữa người dùng
+\end{itemize}
+
+\section{Kết luận}
+
+Thuật toán Dijkstra là một trong những thuật toán quan trọng nhất trong lý thuyết đồ thị để giải quyết bài toán đường đi ngắn nhất. Việc triển khai thuật toán cho các loại đồ thị khác nhau đòi hỏi:
+
+\begin{itemize}
+\item Hiểu rõ đặc điểm của từng loại đồ thị
+\item Xử lý các trường hợp đặc biệt như cạnh song song và khuyên
+\item Tối ưu hóa cấu trúc dữ liệu để đạt hiệu suất tốt nhất
+\end{itemize}
+
+Ba implementation cung cấp nền tảng vững chắc để giải quyết các bài toán đường đi ngắn nhất trong thực tế.
+
+\end{document}

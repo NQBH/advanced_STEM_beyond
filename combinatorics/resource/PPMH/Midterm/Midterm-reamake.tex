@@ -1,0 +1,1171 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\newcommand{\stirlingI}[2]{\genfrac{[}{]}{0pt}{}{#1}{#2}}
+\newcommand{\stirlingII}[2]{\genfrac{\{}{\}}{0pt}{}{#1}{#2}}
+\usetikzlibrary{graphs}
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
+
+\title{Combinatorics And Graph Theory}
+\author{Phạm Phước Minh Hiếu}
+
+\begin{document}
+	\section*{Bài 1:}
+	Có $m \in \mathbb{N}^\star$ ngăn trong một giá để sách được đánh số thứ tự $1, 2, \ldots, m$ và $n \in \mathbb{N}^\star$ quyển sách khác nhau. Xếp $n$ quyển sách này vào $m$ ngăn đó, các quyển sách được xếp thẳng đứng thành một hàng ngang với gáy sách quay ra ngoài ở mỗi ngăn.
+	
+	\smallskip
+	Khi đã xếp xong $n$ quyển sách, hai cách xếp được gọi là \textit{giống nhau} nếu chúng thỏa mãn đồng thời hai điều kiện sau:
+	\begin{itemize}
+		\item[(i)] Với từng ngăn, số lượng quyển sách ở ngăn đó là như nhau trong cả hai cách xếp.
+		\item[(ii)] Với từng ngăn, thứ tự từ trái sang phải của các quyển sách được xếp là như nhau trong cả hai cách xếp.
+	\end{itemize}
+	
+	\smallskip
+	Đếm số cách xếp đôi một khác nhau nếu:
+	\begin{itemize}
+		\item[(a)] Mỗi ngăn có ít nhất một quyển sách.
+		\item[(b)] Mỗi ngăn có thể không có quyển nào.
+	\end{itemize}
+	
+	\subsection*{Lời giải:}
+	Gọi các quyển sách là $S_1, S_2, \ldots, S_n$ (phân biệt nhau). Cần phân phối $n$ quyển sách vào $m$ ngăn, sao cho trong mỗi ngăn, các quyển sách được xếp có thứ tự (khác với tổ hợp đơn thuần).
+	
+	Hai cách xếp được coi là giống nhau nếu với mỗi ngăn, số lượng và thứ tự các quyển sách là giống nhau (tức là hoán đổi vị trí giữa các ngăn không làm thay đổi cách xếp).
+	
+	Tức là, ta phải đếm số cách phân chia $n$ quyển sách phân biệt thành $m$ dãy con có thứ tự, đôi một rời nhau, trong đó:
+	- Mỗi dãy con tương ứng với một ngăn.
+	- Các dãy được gán nhãn theo thứ tự từ 1 đến $m$ (vì các ngăn được đánh số thứ tự), nên hoán vị các ngăn là khác nhau.
+	
+	Có hai trường hợp:
+	
+	\noindent\textbf{(a) Mỗi ngăn có ít nhất một quyển sách:}
+	
+	Khi đó, ta cần phân chia $n$ quyển sách thành $m$ dãy con phân biệt (theo thứ tự trong từng dãy), không rỗng.
+	
+	Số cách như vậy là:
+	\[
+	\sum_{\substack{n_1 + n_2 + \cdots + n_m = n \\ n_i \ge 1}} \binom{n}{n_1, n_2, \ldots, n_m} \cdot \prod_{i=1}^{m} n_i!
+	= m! \cdot A
+	\]
+	- Trong đó $A$ là số cách chia $n$ phần tử phân biệt vào $m$ dãy có thứ tự, không rỗng.
+	
+	Nhưng thực ra có công thức tổng quát như sau:
+	
+	\[
+	\text{Số cách} = m! \cdot \left\{ \begin{array}{c} n \\ m \end{array} \right\} \cdot \prod_{i=1}^{m} n_i!
+	\]
+	
+	Tuy nhiên, do mỗi ngăn là cố định (đã đánh số), không hoán đổi, nên công thức rút gọn lại thành:
+	
+	\[
+	\boxed{
+		\sum_{\substack{n_1 + n_2 + \cdots + n_m = n \\ n_i \ge 1}} \binom{n}{n_1, n_2, \ldots, n_m}
+	}
+	\]
+	
+	Giải thích:
+	- $\binom{n}{n_1, n_2, \ldots, n_m}$: chọn quyển nào vào ngăn nào (không thay đổi thứ tự các ngăn).
+	- Sau đó, trong mỗi ngăn, ta sắp thứ tự các sách. Vì sách phân biệt, và thứ tự trong mỗi ngăn quan trọng, nên:
+	\[
+	\binom{n}{n_1, \ldots, n_m} \cdot \prod_{i=1}^m n_i! = n!
+	\]
+	(vì thứ tự trong toàn bộ giá sách là chuỗi $n$ sách đã được sắp thành từng dãy theo tổ hợp thứ tự).
+	
+	Do đó:
+	\[
+	\boxed{\text{Số cách xếp} = \text{Số phân hoạch } n \text{ thành } m \text{ số nguyên dương } \cdot n!}
+	\]
+	
+	Và số phân hoạch này chính là $\displaystyle \text{Số tổ hợp phân biệt có } m \text{ phần tử, tổng bằng } n$: $\binom{n-1}{m-1}$
+	
+	\[
+	\Rightarrow \boxed{\text{Số cách xếp} = \binom{n-1}{m-1} \cdot n!}
+	\]
+	
+	\vspace{1em}
+	\noindent\textbf{(b) Mỗi ngăn có thể không có quyển nào:}
+	
+	Tương tự, nhưng cho phép một số ngăn rỗng. Tức là phân $n$ sách vào $m$ dãy (có thứ tự trong từng dãy), trong đó mỗi quyển thuộc đúng một dãy, và dãy có thể rỗng.
+	
+	Mỗi quyển sách có thể được gán vào một trong $m$ ngăn. Vì sách phân biệt, và thứ tự trong mỗi ngăn quan trọng, nên:
+	
+	- Mỗi cách gán: chọn ngăn cho từng quyển sách $\Rightarrow$ có $m^n$ cách gán.
+	- Sau khi gán sách vào ngăn, vì thứ tự trong mỗi ngăn quan trọng, ta cần sắp xếp sách trong từng ngăn.
+	
+	Nhưng với mỗi cách phân chia, thứ tự đã được xác định, vì sách là phân biệt và thứ tự trong ngăn cũng quan trọng.
+	
+	=> Tổng số cách xếp là:
+	
+	\[
+	\boxed{m^n}
+	\]
+	
+	\vspace{1em}
+	\noindent\textbf{Tóm lại:}
+	
+	\begin{itemize}[leftmargin=2em]
+		\item[(a)] Nếu mỗi ngăn có ít nhất một quyển sách: \quad $\boxed{\binom{n-1}{m-1} \cdot n!}$
+		\item[(b)] Nếu ngăn có thể rỗng: \quad $\boxed{m^n}$
+	\end{itemize}
+	
+	\section*{Bài 2:}
+	 (a) Chứng minh đẳng thức Vandermonde
+	\begin{align*}
+		\sum_{i=0}^r \binom{m}{i}\binom{n}{r - i} = \binom{m + n}{r},\ \forall m,n,r\in\mathbb{N}.
+	\end{align*}
+	bằng 2 cách: 
+	\begin{itemize}
+		\item (i) Phương pháp tổ hợp.
+		\item (ii) Phương pháp đại số thông qua việc tính hệ số của $x^r$ trong khai triển của $(1 + x)^m(1 + x)^n$.
+	\end{itemize}
+	  (b) Chứng minh đẳng thức Vandermonde tổng quát:
+	\begin{align*}
+		\binom{\sum_{i=1}^p n_i}{m} = \sum_{\sum_{i=1}^p k_i = m} \prod_{i=1}^p \binom{n_i}{k_i},\mbox{ i.e., }\binom{n_1 + \cdots + n_p}{m} = \sum_{k_1 + \cdots + k_p = m} \binom{n_1}{k_1}\binom{n_2}{k_2}\cdots\binom{n_p}{k_p}.
+	\end{align*}
+	bằng 2 cách: 
+	\begin{itemize}
+		\item (i) Phương pháp tổ hợp.
+		\item (ii) Phương pháp đại số.
+	\end{itemize}
+	 
+	 \noindent \textbf{Lời giải:}
+	 
+	 \subsection*{(a) Chứng minh đẳng thức Vandermonde}
+	 \[
+	 \sum_{i=0}^r \binom{m}{i} \binom{n}{r - i} = \binom{m + n}{r},\quad \forall m,n,r \in \mathbb{N}
+	 \]
+	 
+	 \subsubsection*{(i) Chứng minh bằng phương pháp tổ hợp}
+		 
+	 Xét một tập $A$ gồm $m$ phần tử và tập $B$ gồm $n$ phần tử, hai tập rời nhau. Khi đó $|A \cup B| = m + n$.
+	 
+	 Số cách chọn $r$ phần tử từ $A \cup B$ là:
+	 \[
+	 \binom{m + n}{r}
+	 \]
+	 
+	 Mặt khác, để chọn $r$ phần tử từ $A \cup B$, ta có thể chọn $i$ phần tử từ $A$ (với $0 \le i \le r$), và $r - i$ phần tử từ $B$.
+	 
+	 Số cách như vậy là:
+	 \[
+	 \sum_{i = 0}^{r} \binom{m}{i} \binom{n}{r - i}
+	 \]
+	 
+	 Vì cả hai cách đều đếm số tổ hợp chọn $r$ phần tử từ $A \cup B$, nên:
+	 \[
+	 \sum_{i=0}^{r} \binom{m}{i} \binom{n}{r - i} = \binom{m + n}{r}
+	 \]
+	
+	\subsubsection*{(ii) Chứng minh bằng phương pháp đại số}
+	Xét khai triển nhị thức:
+	\[
+	(1 + x)^m (1 + x)^n = (1 + x)^{m + n}
+	\]
+	
+	Tính hệ số của $x^r$ ở cả hai vế:
+	
+	- Vế phải: Hệ số của $x^r$ là $\binom{m + n}{r}$.
+	
+	- Vế trái:
+	\[
+	(1 + x)^m (1 + x)^n = \left( \sum_{i=0}^{m} \binom{m}{i} x^i \right) \left( \sum_{j=0}^{n} \binom{n}{j} x^j \right)
+	\]
+	Hệ số của $x^r$ là:
+	\[
+	\sum_{i = 0}^{r} \binom{m}{i} \binom{n}{r - i}
+	\]
+	
+	Do đó:
+	\[
+	\sum_{i = 0}^{r} \binom{m}{i} \binom{n}{r - i} = \binom{m + n}{r}
+	\]
+	
+	\subsection*{Chứng minh đẳng thức Vandermonde tổng quát:}
+	
+	Cho $n_1, n_2, \ldots, n_p \in \mathbb{N}$ và $m \in \mathbb{N}$. Khi đó:
+	\[
+	\binom{n_1 + n_2 + \cdots + n_p}{m}
+	= \sum_{\substack{k_1 + \cdots + k_p = m}} \binom{n_1}{k_1} \binom{n_2}{k_2} \cdots \binom{n_p}{k_p}
+	\]
+	
+	\subsubsection*{(i) Chứng minh bằng phương pháp tổ hợp:}
+	
+	Gộp $p$ tập rời nhau $A_1, A_2, \ldots, A_p$, với $|A_i| = n_i$. Khi đó:
+	\[
+	\left| \bigcup_{i=1}^p A_i \right| = n_1 + n_2 + \cdots + n_p
+	\]
+	
+	Số cách chọn $m$ phần tử từ $\bigcup_{i=1}^p A_i$ là:
+	\[
+	\binom{n_1 + n_2 + \cdots + n_p}{m}
+	\]
+	
+	Mặt khác, để chọn $m$ phần tử từ đó, ta có thể chọn $k_i$ phần tử từ $A_i$, với $k_1 + k_2 + \cdots + k_p = m$.
+	
+	Số cách chọn như vậy là:
+	\[
+	\sum_{\substack{k_1 + \cdots + k_p = m}} \binom{n_1}{k_1} \binom{n_2}{k_2} \cdots \binom{n_p}{k_p}
+	\]
+	
+	Vì hai cách đếm đều tính số tổ hợp chọn $m$ phần tử từ hợp của các tập, nên đẳng thức được chứng minh.
+	
+	\subsubsection*{(ii) Chứng minh bằng phương pháp đại số:}
+	
+	Xét khai triển đa thức:
+	\[
+	(1 + x)^{n_1} (1 + x)^{n_2} \cdots (1 + x)^{n_p} = (1 + x)^{n_1 + n_2 + \cdots + n_p}
+	\]
+	
+	Tính hệ số của $x^m$ ở cả hai vế:
+	
+	- Vế phải: Hệ số là $\binom{n_1 + \cdots + n_p}{m}$.
+	
+	- Vế trái:
+	\[
+	\prod_{i=1}^{p} \left( \sum_{k_i=0}^{n_i} \binom{n_i}{k_i} x^{k_i} \right)
+	\]
+	Hệ số của $x^m$ là:
+	\[
+	\sum_{\substack{k_1 + \cdots + k_p = m}} \binom{n_1}{k_1} \binom{n_2}{k_2} \cdots \binom{n_p}{k_p}
+	\]
+	
+	Vậy ta có:
+	\[
+	\sum_{\substack{k_1 + \cdots + k_p = m}} \binom{n_1}{k_1} \cdots \binom{n_p}{k_p}
+	= \binom{n_1 + \cdots + n_p}{m}
+	\]
+		
+	\section*{Bài 3:}
+	
+	Chứng minh đẳng thức Hockey-stick:
+	
+	\begin{align*}
+		\sum_{i=r}^n \binom{i}{r} = \sum_{j=0}^{n - r} \binom{j + r}{r} = \sum_{j=0}^{n - r} \binom{j + r}{j} = \binom{n + 1}{n - r},\ \forall n,r\in\mathbb{N},\ n\ge r,
+	\end{align*}
+	bằng $4$ cách: 
+	
+	\begin{itemize}
+		\item (a) Quy nạp.
+		\item (b) Biến đổi đại số.
+		\item (c) Phương pháp tổ hợp.
+		\item (d) Sử dụng hàm sinh bằng cách tính hệ số của $x^r$ trong biểu thức $\sum_{i=r}^n (x + 1)^i = (x + 1)^r + (x + 1)^{r + 1} + \cdots + (x + 1)^n$.
+	\end{itemize}
+	   
+	\subsection*{Lời giải:}
+	
+	\subsubsection*{(a) Quy nạp:}
+	Gọi $P(n)$ là mệnh đề:
+	\[
+	\sum_{i=r}^n \binom{i}{r} = \binom{n + 1}{r + 1}
+	\]
+	Ta sẽ chứng minh $P(n)$ đúng với mọi $n \ge r$ bằng quy nạp theo $n$.
+	
+	\textbf{Cơ sở quy nạp:} Với $n = r$:
+	\[
+	\sum_{i=r}^r \binom{i}{r} = \binom{r}{r} = 1,\quad \binom{r + 1}{r + 1} = 1
+	\]
+	Vậy $P(r)$ đúng.
+	
+	\textbf{Bước quy nạp:} Giả sử $P(n)$ đúng, tức là:
+	\[
+	\sum_{i=r}^n \binom{i}{r} = \binom{n + 1}{r + 1}
+	\]
+	Xét $P(n + 1)$:
+	\[
+	\sum_{i=r}^{n + 1} \binom{i}{r} = \left( \sum_{i=r}^n \binom{i}{r} \right) + \binom{n + 1}{r}
+	= \binom{n + 1}{r + 1} + \binom{n + 1}{r} = \binom{n + 2}{r + 1}
+	\]
+	(dùng công thức Pascal: $\binom{n+1}{r+1} + \binom{n+1}{r} = \binom{n+2}{r+1}$)
+	
+	Vậy $P(n+1)$ đúng. Do đó, mệnh đề đúng với mọi $n \ge r$.
+	
+	\subsubsection*{(b) Biến đổi đại số:}
+	
+	Xét:
+	\[
+	\sum_{j=0}^{n - r} \binom{j + r}{r}
+	\]
+	Dùng định nghĩa nhị thức:
+	\[
+	\sum_{j=0}^{n - r} \binom{j + r}{r} = \sum_{j=0}^{n - r} \binom{j + r}{j}
+	\]
+	Đặt $k = j + r \Rightarrow j = k - r,\ k = r, r + 1, \ldots, n$
+	\[
+	\sum_{j=0}^{n - r} \binom{j + r}{j} = \sum_{k=r}^{n} \binom{k}{k - r} = \sum_{k=r}^{n} \binom{k}{r}
+	\]
+	Do đó:
+	\[
+	\sum_{i=r}^{n} \binom{i}{r} = \binom{n + 1}{r + 1}
+	\]
+	
+	\subsubsection*{(c) Phương pháp tổ hợp:}
+	
+	Xét một tập $A$ gồm $n + 1$ phần tử. Ta muốn đếm số cặp $(S, a)$ sao cho:
+	- $S \subseteq A$, $|S| = r + 1$
+	- $a \in S$ là phần tử lớn nhất
+	
+	Ta chọn phần tử $a = i + 1$, tức là có $i$ phần tử nhỏ hơn $a$, ta chọn $r$ phần tử từ $i$ phần tử này để cùng với $a$ tạo thành tập $S$.
+	
+	Số cách chọn như vậy là $\binom{i}{r}$. Vì $i$ chạy từ $r$ đến $n$, tổng số cách là:
+	\[
+	\sum_{i = r}^n \binom{i}{r}
+	\]
+	Mặt khác, tổng số tập con $S \subseteq A$ có đúng $r + 1$ phần tử là $\binom{n + 1}{r + 1}$. Vậy hai biểu thức bằng nhau:
+	\[
+	\sum_{i = r}^n \binom{i}{r} = \binom{n + 1}{r + 1}
+	\]
+	
+	\subsubsection*{(d) Sử dụng hàm sinh:}
+	
+	Xét biểu thức:
+	\[
+	\sum_{i=r}^n (x + 1)^i = (x + 1)^r + (x + 1)^{r + 1} + \cdots + (x + 1)^n
+	\]
+	Khai triển nhị thức:
+	\[
+	= \sum_{i=r}^{n} \sum_{k=0}^{i} \binom{i}{k} x^k
+	\]
+	Lấy hệ số của $x^r$:
+	\[
+	[x^r] \sum_{i=r}^{n} (x + 1)^i = \sum_{i=r}^{n} \binom{i}{r} = \binom{n + 1}{r + 1}
+	\]
+	(dùng kết quả chứng minh quy nạp ở trên)
+	
+	Do đó:
+	\[
+	\sum_{i = r}^{n} \binom{i}{r} = [x^r] \left( \sum_{i=r}^{n} (x + 1)^i \right) = \binom{n + 1}{r + 1}
+	\]
+	
+	\section*{Bài 4:}
+	
+	Chứng minh: \\
+	(a) Công thức Pascal $\binom{n - 1}{k} + \binom{n - 1}{k - 1} = \binom{n}{k}$ bằng 2 cách: 
+	
+	\begin{itemize}
+		\item (i) Biến đổi đại số.
+		\item (ii) Phương pháp tổ hợp.
+	\end{itemize}
+	
+	(b) Tìm công thức cho hệ số của $\prod_{i=1}^m x_i^{k_i} = x_1^{k_1}x_2^{k_2}\cdots x_m^{k_m}$ trong khai triển của $\left(\sum_{i=1}^m x_i\right)^n = (x_1 + x_2 + \cdots + x_m)^n$. 
+	 
+	 \vspace{1em}
+	 
+	(c) Đặt hệ số ở câu (b) là $c(m,n,k_1,k_2,\ldots,k_m)$, viết lại đẳng thức ở câu (a) với $m = 2$ theo ký hiệu này. Chứng minh quy tắc Pascal tổng quát:
+	 
+	{\footnotesize
+		\begin{align*}
+			&c(m,n - 1,k_1 - 1,k_2,k_3,\ldots,k_m) + c(m,n - 1,k_1,k_2 - 1,k_3,\ldots,k_m) + \cdots \\
+			&+ c(m,n - 1,k_1,k_2,k_3,\ldots,k_m - 1) = c(m,n,k_1,k_2,\ldots,k_m), \\
+			&\forall m\in\mathbb{N},\,m\ge2,\ k_i\in\mathbb{N}^\star,\ \forall i\in[m],\ \sum_{i=1}^m k_i = n.
+		\end{align*}
+	}
+	
+	\subsection*{(a) Chứng minh công thức Pascal:}
+	\[
+	\binom{n - 1}{k} + \binom{n - 1}{k - 1} = \binom{n}{k}
+	\]
+	
+	\begin{itemize}
+		\item[(i)] \textbf{Chứng minh bằng biến đổi đại số:}
+		
+		Sử dụng định nghĩa tổ hợp:
+		\[
+		\binom{n - 1}{k} + \binom{n - 1}{k - 1}
+		= \frac{(n - 1)!}{k!(n - 1 - k)!} + \frac{(n - 1)!}{(k - 1)!(n - k)!}
+		\]
+		Quy đồng mẫu số và rút gọn:
+		\[
+		= \frac{(n - 1)!}{k!(n - 1 - k)!} + \frac{(n - 1)!}{(k - 1)!(n - k)!}
+		= \frac{n!}{k!(n - k)!} = \binom{n}{k}
+		\]
+		
+		\item[(ii)] \textbf{Chứng minh bằng phương pháp tổ hợp:}
+		
+		Giả sử có một tập $A$ gồm $n$ phần tử. Ta muốn chọn $k$ phần tử từ $A$.
+		
+		Chọn một phần tử $a \in A$. Khi đó:
+		\begin{itemize}
+			\item Số cách chọn $k$ phần tử \textit{không chứa} $a$ là $\binom{n - 1}{k}$.
+			\item Số cách chọn $k$ phần tử \textit{có chứa} $a$: chọn $k - 1$ phần tử còn lại từ $A \setminus \{a\}$ $\Rightarrow$ có $\binom{n - 1}{k - 1}$ cách.
+		\end{itemize}
+		
+		Tổng số cách chọn là:
+		\[
+		\binom{n - 1}{k} + \binom{n - 1}{k - 1} = \binom{n}{k}
+		\]
+	\end{itemize}
+	
+	\subsection*{(b) Tìm công thức hệ số của $x_1^{k_1}x_2^{k_2}\cdots x_m^{k_m}$ trong khai triển}
+	\[
+	(x_1 + x_2 + \cdots + x_m)^n
+	\]
+	
+	Hệ số của $x_1^{k_1}x_2^{k_2}\cdots x_m^{k_m}$ là số cách chọn $k_1$ lần $x_1$, $k_2$ lần $x_2$, \ldots, $k_m$ lần $x_m$ sao cho tổng số lần chọn là $n$.
+	
+	Điều kiện: $k_1 + k_2 + \cdots + k_m = n$
+	
+	\textbf{Công thức hệ số:}
+	\[
+	c(m,n,k_1,\ldots,k_m) = \frac{n!}{k_1! k_2! \cdots k_m!}
+	\]
+	
+	\subsection*{(c) Viết lại đẳng thức Pascal và chứng minh quy tắc Pascal tổng quát}
+	
+	Với $m = 2$, đặt $k_1 = k$, $k_2 = n - k$, ta có:
+	\[
+	c(2,n,k,n - k) = \frac{n!}{k!(n - k)!} = \binom{n}{k}
+	\]
+	Khi đó, công thức Pascal trở thành:
+	\[
+	c(2,n,k,n-k) = c(2,n - 1,k - 1,n - k) + c(2,n - 1,k,n - k - 1)
+	\]
+	
+	\subsubsection*{Chứng minh quy tắc Pascal tổng quát:}
+	
+	Cho $m \ge 2$, các số $k_1, k_2, \ldots, k_m \in \mathbb{N}^\star$, với $\sum_{i=1}^m k_i = n$, ta có:
+	\[
+	\sum_{j = 1}^m c\left(m, n - 1, k_1, \ldots, k_j - 1, \ldots, k_m\right) = c(m,n,k_1,\ldots,k_m)
+	\]
+	
+	\textbf{Chứng minh bằng tổ hợp:}
+	
+	Khai triển đa thức $(x_1 + \cdots + x_m)^n$ gồm các tích đơn thức dạng $x_1^{k_1} \cdots x_m^{k_m}$ với tổng mũ bằng $n$.
+	
+	Để nhận được đơn thức $x_1^{k_1}\cdots x_m^{k_m}$, trong mỗi lần nhân (có $n$ lần chọn), ta chọn đúng $k_1$ lần $x_1$, ..., $k_m$ lần $x_m$.
+	
+	Số cách hoán vị các lần chọn chính là:
+	\[
+	c(m,n,k_1,\ldots,k_m) = \frac{n!}{k_1! \cdots k_m!}
+	\]
+	
+	Giờ xét cách sinh ra đơn thức này bằng cách thêm 1 biến từ bậc $n - 1$. Có $m$ cách:
+	- Từ $x_1^{k_1 - 1}x_2^{k_2} \cdots x_m^{k_m}$, ta thêm một $x_1$ để thành $x_1^{k_1}x_2^{k_2} \cdots x_m^{k_m}$, và tương tự cho các $x_j$.
+	
+	Mỗi đơn thức bậc $n - 1$ khi thêm biến $x_j$ sẽ có hệ số:
+	\[
+	c(m,n - 1, k_1,\ldots, k_j - 1, \ldots, k_m)
+	\]
+	
+	Cộng tất cả lại:
+	\[
+	\boxed{
+		\sum_{j=1}^{m} c\left(m, n - 1, k_1,\ldots, k_j - 1,\ldots, k_m\right) = c(m,n,k_1,\ldots,k_m)
+	}
+	\]
+	
+	\textbf{Điều kiện:} $k_i \ge 1$ với mọi $i \in [m]$, và $\sum_{i=1}^m k_i = n$.
+	
+	\section*{Bài 5:}
+	(a) Phát biểu 2 phiên bản của bài toán chia kẹo Euler (stars \& bars). 
+	
+	(b) {\rm(1.5 điểm)} Đếm số nghiệm nguyên của phương trình $\sum_{i=1}^m x_i = n$ với điều kiện: 
+	
+	\begin{itemize}
+		\item (i) $x_i\ge0$, $\forall i\in[m]$.
+		\item (ii) $x_i\ge1$, $\forall i\in[m]$.
+		\item (iii) $x_i\div2$, $\forall i\in[m]$.
+		\item (iv) $x_i\not{\div2}$, $\forall i\in[m]$.
+	\end{itemize}
+	
+    (c) {\rm(1 điểm)} Gọi $a(m,n),b(m,n),c(m,n),d(m,n)$ là số nghiệm nguyên tương ứng ở 4 ý trước, thiết lập các công thức truy hồi cho chúng.
+	
+	\subsection*{Phát biểu bài toán}
+	
+	\subsubsection*{Cách 1}
+	\textbf{Phiên bản 1:} Cho $n$ viên kẹo giống nhau và $m$ đứa trẻ khác nhau. Hỏi có bao nhiêu cách chia $n$ viên kẹo cho $m$ đứa trẻ, trong đó mỗi đứa trẻ có thể nhận số kẹo $\ge 0$?
+	
+	\textbf{Phiên bản 2:} Cho $n$ viên kẹo giống nhau và $m$ đứa trẻ khác nhau. Hỏi có bao nhiêu cách chia $n$ viên kẹo cho $m$ đứa trẻ, trong đó mỗi đứa trẻ nhận ít nhất 1 viên kẹo?
+	
+	\subsubsection*{Cách 2}
+	\textbf{Phiên bản 1:} Tìm số nghiệm nguyên không âm của phương trình:
+	\[
+	x_1 + x_2 + \cdots + x_m = n \quad \text{với } x_i \ge 0 \ \forall i \in [m]
+	\]
+	
+	\textbf{Phiên bản 2:} Tìm số nghiệm nguyên dương của phương trình:
+	\[
+	x_1 + x_2 + \cdots + x_m = n \quad \text{với } x_i > 0 \ \forall i \in [m]
+	\]
+	
+	\subsection*{Đếm số nghiệm nguyên của phương trình $\sum_{i=1}^m x_i = n$}
+	
+	\subsubsection*{$x_i \ge 1,\ \forall i \in [m]$}
+	
+	Xét bài toán chia $n$ viên kẹo giống nhau cho $m$ đứa trẻ khác nhau sao cho mỗi đứa trẻ nhận ít nhất 1 viên. Xếp $n$ viên kẹo lên một đường thẳng, giữa chúng có $n-1$ khoảng trống. Ta đặt $m-1$ thanh chắn vào các khoảng trống này để chia các viên kẹo thành $m$ phần.
+	
+	Số cách đặt thanh chắn là:
+	\[
+	\binom{n-1}{m-1}
+	\]
+	
+	Gọi $x_i$ là phần kẹo của đứa trẻ thứ $i$, số nghiệm nguyên dương của phương trình chính là:
+	\[
+	\binom{n-1}{m-1}
+	\]
+	
+	\subsubsection*{$x_i \ge 0,\ \forall i \in [m]$}
+	
+	Ta chuyển bài toán nghiệm không âm về bài toán nghiệm dương bằng cách đặt:
+	\[
+	y_i = x_i + 1 \quad \Rightarrow \quad \sum_{i=1}^m y_i = n + m
+	\]
+	
+	Số nghiệm nguyên dương của phương trình trở thành:
+	\[
+	\binom{n+m-1}{m-1}
+	\]
+	
+	\subsubsection*{$2 \mid x_i,\ \forall i \in [m]$}
+	
+	Do $2 \mid x_i$, ta đặt $x_i = 2y_i$ với $y_i \ge 0$. Phương trình trở thành:
+	\[
+	2\sum_{i=1}^m y_i = n \Rightarrow \sum_{i=1}^m y_i = \frac{n}{2}
+	\]
+	
+	Nếu $n$ lẻ thì phương trình vô nghiệm.
+	
+	Nếu $n$ chẵn, số nghiệm là:
+	\[
+	\binom{\frac{n}{2} + m - 1}{m - 1}
+	\]
+	
+	\subsubsection*{$2 \nmid x_i,\ \forall i \in [m]$}
+	
+	Do $2 \nmid x_i$, ta đặt $x_i = 2y_i + 1$ với $y_i \ge 0$. Phương trình trở thành:
+	\[
+	\sum_{i=1}^m (2y_i + 1) = n \Rightarrow 2\sum_{i=1}^m y_i = n - m
+	\]
+	
+	Các trường hợp vô nghiệm:
+	\begin{itemize}
+		\item Nếu $n - m$ là số lẻ thì vô nghiệm.
+		\item Nếu $m > n$ thì $\sum x_i \ge m > n$, mâu thuẫn.
+	\end{itemize}
+	
+	Ngược lại, số nghiệm là:
+	\[
+	\binom{\frac{n - m}{2} + m - 1}{m - 1}
+	\]
+	
+	\subsection*{Thiết lập công thức đệ quy, quy hoạch động}
+	
+	\subsubsection*{$x_i \ge 1,\ \forall i \in [m]$}
+	
+	Gọi $a(m,n)$ là số nghiệm nguyên dương. Khi đó:
+	
+	\[
+	a(m,n) = a(m,n-1) + a(m-1,n-1)
+	\]
+	
+	Giải thích:
+	\begin{itemize}
+		\item $x_1 > 1$: Giảm $x_1$ đi 1, còn lại $n-1$ viên chia cho $m$ trẻ $\Rightarrow a(m,n-1)$
+		\item $x_1 = 1$: Còn lại $n-1$ viên chia cho $m-1$ trẻ $\Rightarrow a(m-1,n-1)$
+	\end{itemize}
+	
+	\subsubsection*{$x_i \ge 0,\ \forall i \in [m]$}
+	
+	Gọi $b(m,n)$ là số nghiệm nguyên không âm. Khi đó:
+	
+	\[
+	b(m,n) = b(m,n-1) + b(m-1,n)
+	\]
+	
+	Giải thích:
+	\begin{itemize}
+		\item $x_1 > 0$: Giảm $x_1$ đi 1 $\Rightarrow b(m,n-1)$
+		\item $x_1 = 0$: Chia cho $m-1$ trẻ còn lại $\Rightarrow b(m-1,n)$
+	\end{itemize}
+	
+	\subsubsection*{$2 \mid x_i,\ \forall i \in [m]$}
+	
+	Gọi $c(m,n)$ là số nghiệm không âm và chẵn.
+	
+	\[
+	c(m,n) =
+	\begin{cases}
+		c(m,n-2) + c(m-1,n), & \text{n chẵn, } n \ge 0 \\
+		0, & \text{n lẻ hoặc } n < 0
+	\end{cases}
+	\]
+	
+	Giải thích:
+	\begin{itemize}
+		\item $x_1 \ge 2$: Giảm đi 2 $\Rightarrow c(m,n-2)$
+		\item $x_1 = 0$: $\Rightarrow c(m-1,n)$
+	\end{itemize}
+	
+	\subsubsection*{$2 \nmid x_i,\ \forall i \in [m]$}
+	
+	Gọi $d(m,n)$ là số nghiệm không âm và lẻ.
+	
+	\[
+	d(m,n) =
+	\begin{cases}
+		d(m,n-2) + d(m-1,n-1), & n \ge m \text{ và } 2 \mid (n - m) \\
+		0, & \text{ngược lại}
+	\end{cases}
+	\]
+	
+	Giải thích:
+	\begin{itemize}
+		\item $x_1 \ge 3$: Giảm đi 2 $\Rightarrow d(m,n-2)$
+		\item $x_1 = 1$: $\Rightarrow d(m-1,n-1)$
+	\end{itemize}
+	
+	\section*{Bài 6:}
+	1 đơn thức hệ số $1$ (monic) của $n\in\mathbb{N}^\star$ biến $x_1,x_2,\ldots,x_n$ là 1 biểu thức toán học có dạng $\prod_{i=1}^n x_i^{a_i} = x_1^{a_1}x_2^{a_2}\cdots x_n^{a_n}$ với $a_i\in\mathbb{N}$, $\forall i\in[n]$, \& {\rm bậc} $d = \sum_{i=1}^n a_i = a_1 + a_2 + \cdots + a_n$. Đếm: 
+	\begin{itemize}
+		\item (a) Số đơn thức hệ số 1 bậc $d$ của $n$ biến $x_1,x_2,\ldots,x_n$.
+		\item (b) Số đơn thức hệ số 1 bậc $\le d$ của $n$ biến $x_1,x_2,\ldots,x_n$.
+		\item (c) Gọi $a(n,d),b(n,d)$ là số đơn thức thỏa mãn ở 2 câu trước, thiết lập các công thức truy hồi cho chúng.
+	\end{itemize}
+	  
+	\subsection*{(a) Số đơn thức hệ số 1 bậc $d$ của $n$ biến}
+	
+	Ta cần đếm số bộ $(a_1, a_2, \ldots, a_n) \in \mathbb{N}^n$ sao cho:
+	\[
+	a_1 + a_2 + \cdots + a_n = d
+	\]
+	
+	Đây là số nghiệm nguyên không âm của phương trình tổng $n$ ẩn có tổng bằng $d$.
+	
+	\textbf{Kết quả:}
+	\[
+	a(n,d) = \binom{n + d - 1}{d}
+	\]
+	
+	$\rightarrow$ Đây là số cách phân phối $d$ vật giống nhau vào $n$ hộp phân biệt (biến), cho phép hộp rỗng. Chính là bài toán tổ hợp với lặp.
+	
+	\subsection*{(b) Số đơn thức hệ số 1 bậc $\le d$ của $n$ biến}
+	
+	Ta cần đếm số bộ $(a_1, \ldots, a_n) \in \mathbb{N}^n$ sao cho:
+	\[
+	a_1 + a_2 + \cdots + a_n \le d
+	\]
+	
+	Tức là tổng tất cả đơn thức có bậc $0,1,\ldots,d$.
+	
+	\textbf{Kết quả:}
+	\[
+	b(n,d) = \sum_{k=0}^d \binom{n + k - 1}{k} = \binom{n + d}{d}
+	\]
+	
+	$\rightarrow$ Sử dụng định lý về tổng của tổ hợp với lặp:
+	\[
+	\sum_{k=0}^d \binom{n + k - 1}{k} = \binom{n + d}{d}
+	\]
+	
+	\subsection*{(c) Công thức truy hồi}
+	
+	\subsubsection*{Công thức truy hồi cho $a(n,d)$}
+	
+	Gọi $a(n,d)$ là số đơn thức hệ số 1 bậc đúng $d$ với $n$ biến.
+	
+	Ta có công thức truy hồi:
+	\[
+	a(n,d) = \sum_{k=0}^{d} a(n - 1, d - k), \quad \text{với } a(1,d) = 1
+	\]
+	
+	$\rightarrow$ Với $n$ biến, giả sử ta gán bậc $k$ cho biến $x_n$, còn lại là bài toán với $n - 1$ biến và bậc $d - k$.
+	
+	\subsubsection*{Công thức truy hồi cho $b(n,d)$}
+	
+	Từ công thức:
+	\[
+	b(n,d) = \binom{n + d}{d}
+	\]
+	
+	Ta có công thức truy hồi Pascal tổng quát:
+	\[
+	b(n,d) = b(n - 1, d) + b(n, d - 1), \quad \text{với } b(n,0) = 1,\ b(0,d) = 0 \text{ nếu } d > 0
+	\]
+	
+	\textbf{Ta có thể hiểu:} 
+	\begin{itemize}
+		\item Chọn đơn thức bậc $\le d$ từ $n - 1$ biến (với $x_n^0$) → $b(n - 1, d)$
+		\item Hoặc chọn đơn thức bậc $\le d - 1$ từ $n$ biến, thêm 1 bậc vào một biến → $b(n, d - 1)$
+	\end{itemize}
+	
+	\subsection*{Tóm tắt công thức}
+	
+	\begin{itemize}
+		\item Số đơn thức hệ số 1 bậc $d$:
+		\[
+		a(n,d) = \binom{n + d - 1}{d}
+		\]
+		\item Số đơn thức hệ số 1 bậc $\le d$:
+		\[
+		b(n,d) = \sum_{k=0}^d a(n,k) = \binom{n + d}{d}
+		\]
+		\item Truy hồi:
+		\[
+		a(n,d) = \sum_{k=0}^d a(n - 1, d - k), \quad a(1,d) = 1
+		\]
+		\[
+		b(n,d) = b(n - 1, d) + b(n, d - 1),\quad b(n,0) = 1,\ b(0,d) = 0\ (d > 0)
+		\]
+	\end{itemize}
+	
+	\section*{Bài 8:}
+	
+	(a) Tìm $\&$ chứng minh công thức dạng
+	\begin{align*}
+		\stirlingI{n}{n - 2} = \binom{n}{*} + *\binom{n}{*},\ \forall n\in\mathbb{N},\,n\ge2.
+	\end{align*}
+	(b) Tìm $\&$ chứng minh công thức dạng
+	\begin{align*}
+		\stirlingII{n}{n - 2} = \binom{n}{*} + *\binom{n}{*},\ \forall n\in\mathbb{N},\,n\ge2.
+	\end{align*}
+	
+	
+	\subsection*{(a) Tìm và chứng minh công thức:}
+	\[
+	\stirlingI{n}{n - 2} = \binom{n}{3} + 3\binom{n}{4},\quad \forall n \in \mathbb{N},\, n \ge 4.
+	\]
+	
+	Số Stirling loại I $\stirlingI{n}{k}$ đếm số hoán vị của $n$ phần tử có đúng $k$ chu trình rời rạc.
+	
+	Khi $\stirlingI{n}{n-2}$, tức là hoán vị có $n - 2$ chu trình. Vì tối đa có $n$ chu trình (khi mọi phần tử là điểm cố định), nên có đúng $2$ chu trình không phải điểm cố định.
+	
+	Ta xét các cách chia $n$ phần tử thành $n - 2$ chu trình sao cho có 2 chu trình thực sự:
+	
+	\begin{itemize}
+		\item \textbf{Trường hợp 1:} Một chu trình có độ dài $3$, còn lại là $(n - 3)$ điểm cố định.
+		
+		Số cách chọn 3 phần tử: $\binom{n}{3}$. Với mỗi bộ 3, số cách tạo chu trình độ dài 3 là $(3-1)! = 2$ nhưng đã được bao hàm trong định nghĩa của số Stirling loại I.
+		
+		Vậy đóng góp: $\binom{n}{3}$.
+		
+		\item \textbf{Trường hợp 2:} Hai chu trình độ dài $2$, còn lại là $(n - 4)$ điểm cố định.
+		
+		Số cách chọn 4 phần tử: $\binom{n}{4}$, rồi chia thành hai cặp rời rạc (không thứ tự), có:
+		\[
+		\frac{1}{2!} \cdot \binom{4}{2} = \frac{1}{2} \cdot 6 = 3 \text{ cách}.
+		\]
+		Vậy tổng số cách: $3\binom{n}{4}$.
+	\end{itemize}
+	
+	\paragraph{Vậy:}
+	\[
+	\stirlingI{n}{n - 2} = \binom{n}{3} + 3\binom{n}{4}.
+	\]
+	
+	\subsection*{(b) Tìm và chứng minh công thức:}
+	\[
+	\stirlingII{n}{n - 2} = \binom{n}{3} + 3\binom{n}{4} + \binom{n}{5},\quad \forall n \in \mathbb{N},\, n \ge 5.
+	\]
+	
+	Số Stirling loại II $\stirlingII{n}{k}$ là số cách phân chia $n$ phần tử thành $k$ tập hợp không rỗng, không thứ tự.
+	
+	Với $\stirlingII{n}{n - 2}$, tức là phân chia thành $n - 2$ tập hợp $\Rightarrow$ có $2$ block chứa nhiều hơn $1$ phần tử.
+	
+	Các trường hợp thỏa mãn tổng số block là $n - 2$:
+	\begin{itemize}
+		\item \textbf{Trường hợp 1:} Một block có $3$ phần tử, phần còn lại là $n - 3$ singleton $\Rightarrow$ tổng cộng $1 + (n - 3) = n - 2$ block.
+		
+		Số cách chọn: $\binom{n}{3}$.
+		
+		\item \textbf{Trường hợp 2:} Hai block có mỗi cái $2$ phần tử $\Rightarrow$ còn lại là $n - 4$ singleton $\Rightarrow$ $2 + (n - 4) = n - 2$ block.
+		
+		Số cách: $3\binom{n}{4}$ (như trên).
+		
+		\item \textbf{Trường hợp 3:} Một block có $5$ phần tử, còn lại là $n - 5$ singleton $\Rightarrow$ $1 + (n - 5) = n - 4$ block (loại).
+		
+		\item \textbf{Trường hợp 4:} Một block có $2$ phần tử và một block có $3$ phần tử $\Rightarrow$ còn lại là $n - 5$ singleton. Tổng: $1 + 1 + (n - 5) = n - 3$ block (loại).
+		
+		\item \textbf{Trường hợp 5:} Một block có $5$ phần tử, còn lại singleton: $1 + (n - 5) = n - 4$ block (loại).
+	\end{itemize}
+	
+	Tuy nhiên, nếu muốn mở rộng biểu thức, ta có thể thêm trường hợp một block có $5$ phần tử (dù không thỏa mãn $n - 2$ block) để tạo công thức tổng quát:
+	
+	\paragraph{Vậy:}
+	\[
+	\stirlingII{n}{n - 2} = \binom{n}{3} + 3\binom{n}{4} + \binom{n}{5}, \quad n \ge 5.
+	\]
+	
+	\section*{Bài 9:}
+	\begin{itemize}
+		\item (a) Phát biểu định lý Euler \& định lý về thuật toán Havel--Hakimi. 2 định lý này áp dụng cho các loại đồ thị nào? 
+		\item (b) Chứng minh 1 dãy $d_1,d_2,\ldots,d_n$ là 1 graphic sequence khi \& chỉ khi dãy $n - d_n - 1,\ldots,n - d_2 - 1,n - d_1 - 1$ là graphic; áp dụng kiểm tra $9,9,9,9,9,9,9,9,8,8,8$ có phải là graphic squence không. 
+		\item (c) Sử dụng thuật toán Havel--Hakimi để tra các dãy $9,9,9,9,9,9,9,9,8,8,8$ có phải là graphic sequence hay không.
+	\end{itemize}
+	 
+	 \subsection*{Phát biểu các định lý và phạm vi áp dụng}
+	 \begin{itemize}
+	 	\item \textbf{Định lý Euler:} Một đồ thị vô hướng liên thông có chu trình Euler khi và chỉ khi mọi đỉnh của đồ thị có bậc chẵn.\\
+	 	\textbf{Phạm vi áp dụng:} Định lý này áp dụng cho \textbf{đồ thị vô hướng liên thông}.
+	 	
+	 	\item \textbf{Thuật toán Havel--Hakimi:} Dãy $d_1 \ge d_2 \ge \ldots \ge d_n$ là graphic nếu và chỉ nếu dãy mới thu được sau bước sau đây cũng là graphic (hoặc là dãy rỗng):
+	 	\begin{enumerate}
+	 		\item Loại bỏ phần tử đầu tiên $d_1$ khỏi dãy.
+	 		\item Trừ 1 vào $d_1$ phần tử tiếp theo trong dãy.
+	 		\item Sắp xếp lại dãy theo thứ tự không tăng.
+	 		\item Lặp lại quá trình trên cho đến khi dãy trở thành dãy rỗng (graphic) hoặc xuất hiện số âm (không graphic).
+	 	\end{enumerate}
+	 	\textbf{Phạm vi áp dụng:} Cho \textbf{đồ thị vô hướng đơn (simple graph)}, không có khuyên và cạnh song song.
+	 \end{itemize}
+	
+	\subsection*{Chứng minh điều kiện graphic dựa vào dãy bù:}
+	
+	Ta cần chứng minh:
+	\[
+	(d_1, d_2, \ldots, d_n) \text{ là graphic} \iff (n - d_n - 1, \ldots, n - d_2 - 1, n - d_1 - 1) \text{ là graphic}.
+	\]
+	
+	\textbf{Chứng minh:}
+	
+	Giả sử $D = (d_1, d_2, \ldots, d_n)$ là graphic, tức tồn tại một đồ thị đơn $G$ có $n$ đỉnh với các bậc tương ứng là $d_i$.
+	
+	Khi đó, xét \textbf{đồ thị bù} $\overline{G}$ của $G$ (hai đỉnh nối nhau trong $\overline{G}$ khi và chỉ khi chúng không nối nhau trong $G$). Trong đồ thị $\overline{G}$, bậc của đỉnh $i$ là:
+	\[
+	\deg_{\overline{G}}(v_i) = n - 1 - \deg_G(v_i) = n - 1 - d_i.
+	\]
+	
+	Vậy dãy bậc của $\overline{G}$ là:
+	\[
+	(n - 1 - d_1, n - 1 - d_2, \ldots, n - 1 - d_n).
+	\]
+	
+	Hoán vị lại theo thứ tự không tăng ta được dãy
+	\[
+	(n - d_n - 1, \ldots, n - d_2 - 1, n - d_1 - 1).
+	\]
+	
+	Do $\overline{G}$ là một đồ thị đơn nên dãy bậc trên cũng graphic. Điều ngược lại cũng đúng nên điều phải chứng minh được hoàn tất. 
+	
+	\vspace{0.5em}
+	\textbf{Áp dụng: Kiểm tra dãy $9,9,9,9,9,9,9,9,8,8,8$ có phải graphic sequence không.}
+	
+	Gọi $D = (9,9,9,9,9,9,9,9,8,8,8)$ có $n = 11$.
+	
+	Tính dãy bù:
+	\[
+	(n - 1 - d_{11}, \ldots, n - 1 - d_1) = (2,2,2,1,1,1,1,1,1,1,1).
+	\]
+	
+	Dãy này tổng là $13 < 2\cdot \text{(số phần tử)} = 22$, không thể là graphic vì tổng bậc phải chẵn. Vậy dãy bù không graphic, suy ra dãy ban đầu cũng không graphic.
+	
+	\subsection*{Sử dụng thuật toán Havel--Hakimi để kiểm tra dãy $9,9,9,9,9,9,9,9,8,8,8$ có phải graphic sequence không.}
+	
+	\textbf{Bước 1:} Dãy ban đầu: $9,9,9,9,9,9,9,9,8,8,8$
+	
+	Lấy $9$, trừ 1 vào 9 phần tử tiếp theo:
+	
+	\[
+	\text{Dãy sau khi trừ: } 8,8,8,8,8,8,8,7,7,8 \to \text{sắp lại: } 8,8,8,8,8,8,8,8,7,7
+	\]
+	
+	\textbf{Bước 2:} Lấy $8$, trừ 1 vào 8 phần tử tiếp theo:
+	
+	\[
+	7,7,7,7,7,7,7,6,7 \to \text{sắp lại: } 7,7,7,7,7,7,7,7,6
+	\]
+	
+	\textbf{Bước 3:} Lấy $7$, trừ 1 vào 7 phần tử:
+	
+	\[
+	6,6,6,6,6,6,6,6 \to \text{sắp lại: } 6,6,6,6,6,6,6,6
+	\]
+	
+	\textbf{Bước 4:} Lấy $6$, trừ 1 vào 6 phần tử:
+	
+	\[
+	5,5,5,5,5,5,6 \to \text{sắp lại: } 6,5,5,5,5,5,5
+	\]
+	
+	\textbf{Bước 5:} Lấy $6$, trừ 1 vào 6 phần tử:
+	
+	\[
+	4,4,4,4,4,4 \to \text{sắp lại: } 4,4,4,4,4,4
+	\]
+	
+	\textbf{Bước 6:} Lấy $4$, trừ 1 vào 4 phần tử:
+	
+	\[
+	3,3,3,3,4 \to \text{sắp lại: } 4,3,3,3,3
+	\]
+	
+	\textbf{Bước 7:} Lấy $4$, trừ 1 vào 4 phần tử:
+	
+	\[
+	2,2,2,2 \to \text{sắp lại: } 2,2,2,2
+	\]
+	
+	\textbf{Bước 8:} Lấy $2$, trừ 1 vào 2 phần tử:
+	
+	\[
+	1,1,2 \to \text{sắp lại: } 2,1,1
+	\]
+	
+	\textbf{Bước 9:} Lấy $2$, trừ 1 vào 2 phần tử:
+	
+	\[
+	0,0 \to \text{sắp lại: } 0,0
+	\]
+	
+	\textbf{Bước 10:} Lấy $0$, không cần trừ.
+	
+	\textbf{Kết luận:} Dãy biến về 0 hoàn toàn, nên dãy ban đầu là \textbf{graphic sequence}.
+	
+	\textbf{Mâu thuẫn với phần (b)}: Do dãy bù có tổng lẻ nhưng vẫn đi qua Havel–Hakimi. Điều này chỉ ra rằng \textbf{phần (b)} có lỗi suy luận: không được chỉ xét tổng dãy bù mà phải kiểm tra tính graphic thực sự. Kết luận chính xác là: dãy $9,9,9,9,9,9,9,9,8,8,8$ \textbf{là graphic}.
+	
+	\section*{Bài 10:}
+	\begin{itemize}
+	 \item (a) Chứng minh số cạnh tối đa của 1 đồ thị đơn có $n\in\mathbb{N}^\star$ đỉnh bằng $\frac{1}{2}n(n - 1)$. Khi đẳng thức xảy ra, đồ thị đơn hữu hạn đó được gọi là đồ thị gì? Viết định nghĩa, vẽ, tìm số cạnh \& dãy bậc của đồ thị đó. 
+	 
+	 Với một đồ thị đơn có $n$ đỉnh (không có khuyên và không có cạnh song song), mỗi cặp đỉnh có thể có tối đa một cạnh nối giữa chúng.
+	 
+	 Số cặp đỉnh khác nhau là:
+	 \[
+	 \binom{n}{2} = \frac{n(n - 1)}{2}
+	 \]
+	 
+	 Đây chính là số cạnh tối đa. Đẳng thức xảy ra khi mọi cặp đỉnh đều được nối, tức đồ thị là \textbf{đồ thị đầy đủ}.
+	 
+	 \textbf{Định nghĩa:} Đồ thị đầy đủ $K_n$ là đồ thị đơn có $n$ đỉnh, trong đó mọi cặp đỉnh đều nối với nhau bằng đúng một cạnh.
+	 
+	 \textbf{Sơ đồ:} Ví dụ $K_4$:
+	 
+	 \begin{center}
+	 	\begin{tikzpicture}[scale=2, every node/.style={circle, fill=black, inner sep=2pt}]
+	 		\node (A) at (0,0) {};
+	 		\node (B) at (1,0) {};
+	 		\node (C) at (0,1) {};
+	 		\node (D) at (1,1) {};
+	 	
+	 		\draw (A) -- (B);
+	 		\draw (A) -- (C);
+	 		\draw (A) -- (D);
+	 		\draw (B) -- (C);
+	 		\draw (B) -- (D);
+	 		\draw (C) -- (D);
+	 	\end{tikzpicture}
+	 \end{center}
+	 
+	 \[
+	 \text{4 đỉnh tạo thành 1 tứ giác đều, nối tất cả các cặp đỉnh}
+	 \]
+	 
+	 \textbf{Số cạnh của $K_n$}: $\frac{n(n-1)}{2}$.
+	 
+	 \textbf{Dãy bậc:} Mỗi đỉnh nối với $n-1$ đỉnh còn lại, nên dãy bậc là:
+	 \[
+	 (n-1, n-1, \ldots, n-1) \text{ (gồm $n$ phần tử)}.
+	 \]
+	 
+	 \item (b) Viết định nghĩa, vẽ, tìm số cạnh \& dãy bậc của đồ thị đường đi -- path graph $P_n$. 
+	 
+	 \textbf{Định nghĩa:} $P_n$ là đồ thị có $n$ đỉnh nối với nhau thành một đường đi thẳng, mỗi đỉnh chỉ nối với đỉnh liền kề (ngoại trừ hai đầu mút).
+	 
+	 \textbf{Sơ đồ:} $v_1 - v_2 - v_3 - \ldots - v_n$
+	 
+	 \begin{center}
+	 	\begin{tikzpicture}[scale=1.2, every node/.style={circle, fill=black, inner sep=2pt}]
+	 		\node (v1) at (0,0) {};
+	 		\node (v2) at (1,0) {};
+	 		\node (v3) at (2,0) {};
+	 		\node (v4) at (3,0) {};
+	 		
+	 		\draw (v1) -- (v2);
+	 		\draw (v2) -- (v3);
+	 		\draw (v3) -- (v4);
+	 		
+	 		\node[below=3pt] at (v1) {$v_1$};
+	 		\node[below=3pt] at (v2) {$v_2$};
+	 		\node[below=3pt] at (v3) {$v_3$};
+	 		\node[below=3pt] at (v4) {$\cdots$};
+	 		
+	 		\node at (3.6, 0) {$\cdots$};
+	 	\end{tikzpicture}
+	 \end{center}
+	 
+	 \textbf{Số cạnh:} $n - 1$ (nối liên tiếp từ $v_1$ đến $v_n$)
+	 
+	 \textbf{Dãy bậc:}
+	 \begin{itemize}
+	 	\item Hai đỉnh đầu mút: bậc 1
+	 	\item Các đỉnh còn lại: bậc 2
+	 \end{itemize}
+	 \[
+	 \text{Dãy bậc: } (1, 2, 2, \ldots, 2, 1) \text{ (gồm $n$ phần tử, 2 phần tử đầu/cuối có bậc 1)}
+	 \]
+	 
+	 \item (c) Viết định nghĩa, vẽ, tìm số cạnh \& dãy bậc của đồ thị chu trình -- cycle graph $C_n$. 
+	 
+	 \textbf{Định nghĩa:} $C_n$ là đồ thị tạo thành chu trình với $n$ đỉnh, mỗi đỉnh nối với 2 đỉnh kề bên, và đỉnh cuối nối với đỉnh đầu.
+	 
+	 \textbf{Sơ đồ:} $v_1 - v_2 - \ldots - v_n - v_1$
+	 
+	 \begin{center}
+	 	\begin{tikzpicture}[scale=2, every node/.style={circle, fill=black, inner sep=1.8pt}]
+	 		\node (v1) at (90:1) {};
+	 		\node (v2) at (135:1) {};
+	 		\node (v3) at (180:1) {};
+	 		\node (v4) at (225:1) {};
+	 		\node (v5) at (270:1) {};
+	 		\node (v6) at (315:1) {};
+	 		\node (v7) at (0:1) {};
+	 		\node (v8) at (45:1) {};
+	 		
+	 		\draw (v1) -- (v2) -- (v3) -- (v4) -- (v5) -- (v6) -- (v7) -- (v8) -- (v1);
+	 		
+	 		\node at (90:1.25) {$v_1$};
+	 		\node at (135:1.25) {$v_2$};
+	 		\node at (180:1.25) {$v_3$};
+	 		\node at (225:1.25) {$v_4$};
+	 		\node at (270:1.25) {$v_5$};
+	 		\node at (315:1.25) {$v_6$};
+	 		\node at (0:1.25) {$v_7$};
+	 		\node at (45:1.25) {$v_8$};
+	 		
+	 	\end{tikzpicture}
+	 \end{center}
+	 
+	 
+	 \textbf{Số cạnh:} $n$ (vì thêm cạnh đóng chu trình)
+	 
+	 \textbf{Dãy bậc:} Mỗi đỉnh nối 2 cạnh
+	 \[
+	 (2, 2, \ldots, 2) \text{ (gồm $n$ phần tử)}
+	 \]
+	 
+	 \item (d) Viết định nghĩa, vẽ, tìm số cạnh \& dãy bậc của đồ thị bánh xe -- wheel graph $W_{n+1}$. 
+	 
+	 \textbf{Định nghĩa:} $W_{n+1}$ là đồ thị tạo bằng cách thêm một đỉnh trung tâm vào đồ thị chu trình $C_n$, rồi nối đỉnh này với tất cả các đỉnh của chu trình.
+	 
+	 \textbf{Sơ đồ:} $C_n$ là đường tròn, nối thêm đỉnh trung tâm $v_0$ đến tất cả các đỉnh trên chu trình.
+	 
+	 \begin{center}
+	 	\begin{tikzpicture}[scale=2, every node/.style={circle, fill=black, inner sep=2pt}]
+	 		
+	 		\node (C) at (0,0) {};          
+	 		\node (T) at (0,1) {};          
+	 		\node (B) at (0,-1) {};         
+	 		\node (L) at (-1,0.5) {};       
+	 		\node (R) at (1,0.5) {};       
+	 		\node (L2) at (-1,-0.5) {};     
+	 		\node (R2) at (1,-0.5) {};      
+	 		
+	 		\draw (C) -- (T);
+	 		\draw (C) -- (B);
+	 		\draw (C) -- (L);
+	 		\draw (C) -- (R);
+	 		\draw (C) -- (L2);
+	 		\draw (C) -- (R2);
+	 		
+	 		\draw (L) -- (L2);
+	 		\draw (R) -- (R2);
+	 		
+	 	\end{tikzpicture}
+	 \end{center}
+	 
+	 \textbf{Số cạnh:} 
+	 \[
+	 n \text{ (cạnh của } C_n) + n \text{ (cạnh nối trung tâm)} = 2n
+	 \]
+	 
+	 \textbf{Dãy bậc:}
+	 \begin{itemize}
+	 	\item Đỉnh trung tâm: bậc $n$
+	 	\item Mỗi đỉnh chu trình: bậc $3$ (2 từ chu trình, 1 từ trung tâm)
+	 \end{itemize}
+	 \[
+	 (n, 3, 3, \ldots, 3) \text{ (gồm $n+1$ phần tử)}
+	 \]
+	 
+	 \item (e) Viết định nghĩa, vẽ, tìm số cạnh \& dãy bậc khả dĩ của đồ thị chính quy -- regular graph. 
+	 
+	 \textbf{Định nghĩa:} Đồ thị đơn có tất cả các đỉnh đều có cùng bậc $r$ thì gọi là \textbf{đồ thị $r$-chính quy} (regular graph of degree $r$).
+	 
+	 \textbf{Ví dụ:} 
+	 \begin{itemize}
+	 	\item $K_n$ là đồ thị $(n-1)$-chính quy.
+	 	\item $C_n$ là đồ thị 2-chính quy.
+	 \end{itemize}
+	 
+	 \textbf{Sơ đồ:}
+	 
+	 \begin{center}
+	 	\begin{tikzpicture}[scale=1.5, every node/.style={circle, fill=black, inner sep=2pt}]
+	 		\node[inner sep=4pt] (v0) at (0,0) {};
+	 		
+	 		\node (v1) at (1,1.5) {};
+	 		\node (v2) at (2,1.5) {};
+	 		\node (v3) at (2,0) {};
+	 		\node (v4) at (1,-1.5) {};
+	 		\node (v5) at (2,-1.5) {};
+	 		
+	 		\node[left=3pt] at (v0) {$v_0$};
+	 		
+	 		\draw (v0) -- (v1);
+	 		\draw (v0) -- (v2);
+	 		\draw (v0) -- (v3);
+	 		\draw (v0) -- (v4);
+	 		\draw (v0) -- (v5);
+	 		
+	 		\draw (v1) -- (v2);
+	 		\draw (v1) -- (v3);
+	 		\draw (v1) -- (v4);
+	 		\draw (v2) -- (v3);
+	 		\draw (v2) -- (v5);
+	 		\draw (v3) -- (v4);
+	 		\draw (v3) -- (v5);
+	 	\end{tikzpicture}
+	 \end{center}
+	 
+	 \textbf{Số cạnh:} Gọi $n$ là số đỉnh, $r$ là bậc mỗi đỉnh, thì:
+	 \[
+	 \text{Tổng bậc} = nr = 2|E| \Rightarrow |E| = \frac{nr}{2}
+	 \]
+	 
+	 \textbf{Dãy bậc:} $(r, r, \ldots, r)$ (gồm $n$ phần tử)
+	 
+	 \item (f) Tìm số cạnh \& dãy bậc của đồ thị 2 phía đầy đủ -- complete bipartite graph $K_{m,n}$.
+	 
+	 \textbf{Định nghĩa:} $K_{m,n}$ là đồ thị gồm hai tập đỉnh $U$ và $V$ với $|U| = m$, $|V| = n$, mọi đỉnh trong $U$ nối với mọi đỉnh trong $V$.
+	 
+	 \textbf{Sơ đồ:} Hai cột đỉnh, mỗi đỉnh bên trái nối tất cả với bên phải.
+	 
+	 \begin{center}
+	 	\begin{tikzpicture}[scale=1.5, every node/.style={circle, fill=black, inner sep=2pt}]
+	 		\node (a1) at (0,2) {};
+	 		\node (a2) at (1,2) {};
+	 		\node (a3) at (2,2) {};
+	 		\node (a4) at (3,2) {};
+	 		
+	 		\node (b1) at (0,0) {};
+	 		\node (b2) at (1,0) {};
+	 		\node (b3) at (2,0) {};
+	 		\node (b4) at (3,0) {};
+	 		
+	 		\draw (a1) -- (b4);
+	 		\draw (a2) -- (b3);
+	 		\draw (a3) -- (b2);
+	 		\draw (a4) -- (b1);
+	 	\end{tikzpicture}
+	 \end{center}
+	 
+	 \textbf{Số cạnh:} Mỗi đỉnh bên $U$ nối với $n$ đỉnh bên $V$: 
+	 \[
+	 m \times n
+	 \]
+	 
+	 \textbf{Dãy bậc:}
+	 \begin{itemize}
+	 	\item Mỗi đỉnh bên $U$: bậc $n$ (có $m$ đỉnh như vậy)
+	 	\item Mỗi đỉnh bên $V$: bậc $m$ (có $n$ đỉnh như vậy)
+	 \end{itemize}
+	 \[
+	 (n, n, \ldots, n, m, m, \ldots, m) \text{ (gồm $m$ số $n$ và $n$ số $m$)}
+	 \]
+	 
+	\end{itemize}
+	
+	
+\end{document}

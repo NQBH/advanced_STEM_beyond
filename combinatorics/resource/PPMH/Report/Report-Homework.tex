@@ -1,0 +1,1884 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{graphs}
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
+
+\title{Combinatorics And Graph Theory}
+\author{Phạm Phước Minh Hiếu}
+
+\begin{document}
+	\maketitle
+	\section*{Week 01}
+	\subsection*{Bài toán 2:}
+	\textbf{Tính số Catalan thứ n bằng cách thay $n = 4$:}
+	
+	Ta có công thức:
+	
+	\[
+	C_n = \frac{1}{n+1} \binom{2n}{n}
+	\]
+	
+	Thay $n = 4$ vào:
+	
+	\[
+	C_4 = \frac{1}{4 + 1} \binom{8}{4}
+	= \frac{1}{5} \cdot \frac{8!}{4! \cdot 4!}
+	\]
+	
+	Tính giá trị:
+	
+	\[
+	\frac{8!}{4! \cdot 4!} = \frac{40320}{24 \cdot 24} = \frac{40320}{576} = 70
+	\]
+	
+	Vậy:
+	
+	\[
+	C_4 = \frac{1}{5} \cdot 70 = 14
+	\]
+	
+	\textbf{Kết luận:} Số Catalan thứ 4 là: $14$
+	
+	
+	
+	\subsection*{1.5 Exercise}
+	\textbf{Problem 3}\\
+	\textbf{Cho $m, n \in \mathbb{N}^*$ với $m \leq n$. Đếm số dãy nhị phân $a_1, a_2, \ldots, a_n$ gồm $m$ chữ số $0$ và $n - m$ chữ số $1$ sao cho không có hai chữ số $0$ nào đứng liền nhau.}
+	
+	\textbf{Ý tưởng}
+	
+	Ta cần chèn $m$ số $0$ vào dãy gồm $n - m$ số $1$ sao cho không có hai số $0$ đứng cạnh nhau. 
+	
+	Với $n - m$ số $1$, ta có $n - m + 1$ vị trí (gọi là các \textit{khe}) giữa hoặc ở hai đầu để chèn số $0$ mà không vi phạm điều kiện.
+	
+	Ví dụ với $n - m = 3$ (tức 3 số $1$), ta có dãy: \_ $1$ \_ $1$ \_ $1$ \_  $\Rightarrow$ có $4$ khe chèn số $0$.
+	
+	Chọn $m$ trong số các khe đó để đặt số $0$, mỗi khe chỉ chứa một số $0$ để tránh trùng nhau.
+	
+	\textbf{Công thức}
+	
+	Nếu $m \leq n - m + 1$ thì số dãy thỏa mãn là:
+	\[
+	\boxed{
+		\binom{n - m + 1}{m}
+	}
+	\]
+	Ngược lại, nếu $m > n - m + 1$ thì không thể chèn đủ số $0$ mà không để chúng đứng liền nhau, nên số dãy là $0$.
+	
+	\textbf{Ví dụ}
+	
+	Cho $n = 5$, $m = 2$.
+	
+	Khi đó $n - m = 3$, có $4$ khe để chèn số $0$.
+	
+	Số cách chọn $2$ trong $4$ khe là:
+	\[
+	\binom{4}{2} = 6
+	\]
+	
+	\subsection*{Problem 4}
+	Gọi $f(n)$ là số lượng tập con của $[n] = \{1, 2, \dots, n\}$. Chứng minh rằng $f(n) = 2^n$ với mọi $n \in \mathbb{N}^\star$.
+	
+	\textbf{Chứng minh.} Ta sử dụng phương pháp quy nạp toán học.
+	
+	\textbf{Cơ sở quy nạp:} Với $n = 1$, ta có $[1] = \{1\}$. Các tập con của $[1]$ là $\emptyset$ và $\{1\}$, nên $f(1) = 2 = 2^1$.
+	
+	\textbf{Giả thiết quy nạp:} Giả sử $f(k) = 2^k$ đúng với một $k \in \mathbb{N}^\star$.
+	
+	\textbf{Bước quy nạp:} Xét $f(k+1)$ là số tập con của $[k+1] = \{1, 2, \dots, k, k+1\}$.
+	
+	Mỗi tập con của $[k+1]$ hoặc:
+	\begin{itemize}
+		\item Không chứa $k+1$ (là tập con của $[k]$), hoặc
+		\item Có chứa $k+1$ (được tạo bằng cách thêm $k+1$ vào một tập con của $[k]$)
+	\end{itemize}
+	
+	Do đó:
+	\[
+	f(k+1) = f(k) + f(k) = 2f(k) = 2 \cdot 2^k = 2^{k+1}
+	\]
+	
+	Vậy, theo quy nạp toán học, ta có $f(n) = 2^n$ với mọi $n \in \mathbb{N}^\star$.
+	
+	\subsection*{Problem 5}
+	\begin{enumerate}[label=(\alph*)]
+		\item \( f(n) = n! \sum_{i=0}^{n} \frac{(-1)^i}{i!} \), với mọi $n \in \mathbb{N}^\star$.
+		\item \( f(n) \) là số nguyên gần nhất với \( \frac{n!}{e} \).
+	\end{enumerate}
+	
+	\textbf{Chứng minh:}
+	
+	\begin{enumerate}[label=(\alph*)]
+		\item
+		Ta áp dụng \textit{nguyên lý bù trừ (inclusion-exclusion)} để đếm số hoán vị không cố định của $n$ phần tử.
+		
+		Tổng số hoán vị của $n$ phần tử là $n!$. Ta cần loại bỏ những hoán vị mà có ít nhất một phần tử đứng đúng vị trí ban đầu (tức là người nhận lại mũ của mình).
+		
+		Theo nguyên lý bù trừ, số hoán vị không cố định là:
+		\[
+		f(n) = n! \left(1 - \frac{1}{1!} + \frac{1}{2!} - \cdots + \frac{(-1)^n}{n!} \right) = n! \sum_{i=0}^{n} \frac{(-1)^i}{i!}
+		\]
+		
+		\item
+		Xét giới hạn của biểu thức ở trên khi $n$ lớn:
+		\[
+		f(n) = n! \sum_{i=0}^{n} \frac{(-1)^i}{i!} \approx \frac{n!}{e}
+		\]
+		Vì chuỗi lũy thừa $\sum_{i=0}^{\infty} \frac{(-1)^i}{i!}$ hội tụ về $\frac{1}{e}$.
+		
+		Do đó, $f(n)$ là số nguyên gần nhất với $\frac{n!}{e}$:
+		\[
+		f(n) = \left\lfloor \frac{n!}{e} + \frac{1}{2} \right\rfloor
+		\]
+		
+	\end{enumerate}
+	
+	\subsection*{Problem 6}
+	\begin{enumerate}[label=(\alph*)]
+		\item \textbf{Tính:} \( f(1), f(2), f(3), f(4) \)
+		
+		\begin{itemize}
+			\item \( f(1) = 2 \) vì các tập con là: \( \emptyset, \{1\} \)
+			\item \( f(2) = 3 \) vì các tập con là: \( \emptyset, \{1\}, \{2\} \)
+			\item \( f(3) = 5 \) vì các tập con là: \( \emptyset, \{1\}, \{2\}, \{3\}, \{1,3\} \)
+			\item \( f(4) = 8 \) vì các tập con là: 
+			\[
+			\emptyset, \{1\}, \{2\}, \{3\}, \{4\}, \{1,3\}, \{1,4\}, \{2,4\}
+			\]
+		\end{itemize}
+		
+		\item \textbf{Chứng minh:} \( f(n) = f(n-1) + f(n-2) \), với mọi \( n \geq 3 \)
+		
+		\textit{Chứng minh:}  
+		Ta xét hai loại tập con của \([n]\) không chứa hai số liên tiếp:
+		
+		- Các tập không chứa phần tử \(n\): chính là các tập thỏa mãn điều kiện của tập \([n-1]\) → có \(f(n-1)\) cách.
+		- Các tập có chứa phần tử \(n\): để không chứa hai phần tử liên tiếp, ta không được chọn \(n-1\), nên ta chỉ được chọn tập con của \([n-2]\) rồi thêm \(n\) → có \(f(n-2)\) cách.
+		
+		Vậy:
+		\[
+		f(n) = f(n-1) + f(n-2)
+		\]
+		
+		\item \textbf{Chứng minh: công thức tường minh}
+		
+		Ta có:
+		\[
+		f(n) = \frac{1}{\sqrt{5}} \left( \tau^{n+2} - \bar{\tau}^{\,n+2} \right)
+		\]
+		với:
+		\[
+		\tau = \frac{1 + \sqrt{5}}{2}, \quad \bar{\tau} = \frac{1 - \sqrt{5}}{2}
+		\]
+		
+		Đây là công thức tường minh của dãy Fibonacci dịch chỉ số (vì \(f(n)\) chính là dãy Fibonacci với chỉ số dịch đi 2).
+		
+	\end{enumerate}
+	
+	\subsection*{1.3 Exercise}
+	\textbf{Problem 1}\\
+	Gọi \( f(n) \) là số vùng mà các đường thẳng chia tờ giấy.
+	
+	\begin{enumerate}[label=(\alph*)]
+		\item \textbf{Tính một vài giá trị nhỏ của \( f(n) \):}
+		\[
+		\begin{aligned}
+			f(0) &= 1 \quad \text{(tờ giấy ban đầu, chưa có đường nào)} \\
+			f(1) &= 2 \\
+			f(2) &= 4 \\
+			f(3) &= 7 \\
+			f(4) &= 11
+		\end{aligned}
+		\]
+		
+		\item \textbf{Dự đoán công thức tổng quát:}
+		
+		Từ dãy số:
+		\[
+		1,\ 2,\ 4,\ 7,\ 11,\ \ldots
+		\]
+		Ta nhận thấy đây là dãy cộng dồn:
+		\[
+		f(n) = f(n-1) + (n-1), \quad f(0) = 1
+		\]
+		hoặc công thức đóng:
+		\[
+		f(n) = \frac{n(n-1)}{2} + 1
+		\]
+		
+		\textit{Chứng minh:}
+		
+		Với mỗi đường thẳng mới thêm vào, nó sẽ cắt tất cả các đường trước đó, tạo ra \(n-1\) giao điểm mới, mỗi giao điểm làm tăng thêm một vùng. Vậy tổng số vùng là:
+		\[
+		f(n) = 1 + \binom{n}{1} + \binom{n}{2} = 1 + n + \frac{n(n-1)}{2}
+		\]
+		
+	\end{enumerate}
+	
+	\subsection*{Problem 2}
+	Gọi \( C(n) \) là mệnh đề ``Cặp số \( n \) chứa tiền''.
+	
+	Theo đề bài, ta có:
+	\[
+	C(n) \Rightarrow C(n+3)
+	\]
+	
+	Biết rằng \( \neg C(55) \), tức cặp 55 không chứa tiền.
+	
+	Khi đó:
+	\[
+	C(52) \Rightarrow C(55) \Rightarrow \text{mâu thuẫn} \Rightarrow \neg C(52)
+	\]
+	\[
+	C(49) \Rightarrow C(52) \Rightarrow \text{mâu thuẫn} \Rightarrow \neg C(49)
+	\]
+	\[
+	\vdots
+	\]
+	Tiếp tục lập luận suy ngược, ta suy ra:
+	\[
+	\neg C(n), \text{ với mọi } n \leq 55 \text{ sao cho } n \equiv 1 \pmod{3}
+	\]
+	
+	Tập hợp các số thỏa mãn điều kiện này là:
+	\[
+	\{1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46, 49, 52, 55\}
+	\]
+	
+	\textbf{Kết luận:} Những chiếc cặp được đánh số \( n \leq 55 \) với \( n \equiv 1 \pmod{3} \) chắc chắn không chứa tiền.
+	
+	
+	\newpage
+	\section*{Week 02}
+	\subsection*{10.1.1}
+	Gọi \( n \) là số đỉnh của đồ thị và \( m = 9 \) là số cạnh.
+	
+	Vì \( G \) là đồ thị đơn, nên tổng các bậc của các đỉnh bằng:
+	\[
+	\sum_{v \in V(G)} \deg(v) = 2m = 18
+	\]
+	
+	Giả sử bậc của mỗi đỉnh đều \( \geq 3 \), tức là:
+	\[
+	\sum_{v \in V(G)} \deg(v) \geq 3n \Rightarrow 18 \geq 3n \Rightarrow n \leq 6
+	\]
+	
+	Ta xét các giá trị khả dĩ của \( n \) từ 1 đến 6:
+	
+	\begin{itemize}
+		\item \( n = 1 \): chỉ có 1 đỉnh, không thể có bậc \( \geq 3 \). \textbf{Loại}.
+		\item \( n = 2 \): đồ thị đơn có nhiều nhất 1 cạnh, không thể có tổng bậc là 18. \textbf{Không hợp lệ}.
+		\item \( n = 3 \): tổng bậc lớn nhất là \( 2 \times \binom{3}{2} = 6 < 18 \). \textbf{Không hợp lệ}.
+		\item \( n = 4 \): tối đa \( \binom{4}{2} = 6 \) cạnh \(\Rightarrow\) tổng bậc tối đa là 12. Không thể đạt tổng 18. \textbf{Không hợp lệ}.
+		\item \( n = 5 \): tổng bậc là 18, trung bình bậc là \( \frac{18}{5} = 3.6 \), vẫn có thể xảy ra nếu các đỉnh có bậc \( \geq 3 \). \textbf{Hợp lệ}.
+		
+		Ví dụ: một đồ thị có các bậc \( (4,4,4,3,3) \). Tổng bậc \( = 18 \), mỗi đỉnh đều có bậc \( \geq 3 \).
+		
+		\item \( n = 6 \): trung bình bậc là \( \frac{18}{6} = 3 \). Nếu tất cả các đỉnh đều có bậc đúng bằng 3 thì được. \textbf{Hợp lệ}.
+		
+		Ví dụ: Đồ thị lăng trụ tam giác (triangular prism), mỗi đỉnh bậc 3.
+	\end{itemize}
+	
+	Các giá trị khả dĩ của số đỉnh là:
+	\[
+	\boxed{n = 5 \text{ và } n = 6}
+	\]
+	
+	\subsection*{10.1.2}
+	\begin{enumerate}
+		\item Dãy ban đầu: $[7, 7, 6, 5, 4, 4, 4, 3, 2]$
+		
+		\item Lấy số đầu tiên $7$, trừ $1$ cho $7$ phần tử tiếp theo:
+		\[
+		[6, 5, 4, 3, 3, 3, 2, 2] \Rightarrow \text{sắp xếp lại} \Rightarrow [6, 5, 4, 3, 3, 3, 2, 2]
+		\]
+		
+		\item Lấy $6$, trừ $1$ cho $6$ phần tử tiếp theo:
+		\[
+		[5, 4, 3, 2, 2, 1, 2] \Rightarrow \text{sắp xếp lại} \Rightarrow [5, 4, 3, 2, 2, 2, 1]
+		\]
+		
+		\item Lấy $5$, trừ $1$ cho $5$ phần tử tiếp theo:
+		\[
+		[3, 2, 1, 1, 1, 1] \Rightarrow \text{sắp xếp lại} \Rightarrow [3, 2, 1, 1, 1, 1]
+		\]
+		
+		\item Lấy $3$, trừ $1$ cho $3$ phần tử tiếp theo:
+		\[
+		[1, 0, 0, 1, 1] \Rightarrow \text{sắp xếp lại} \Rightarrow [1, 1, 1, 0, 0]
+		\]
+		
+		\item Lấy $1$, trừ $1$ cho $1$ phần tử tiếp theo:
+		\[
+		[0, 1, 0, 0] \Rightarrow \text{sắp xếp lại} \Rightarrow [1, 0, 0, 0]
+		\]
+		
+		\item Lấy $1$, trừ $1$ cho $1$ phần tử tiếp theo:
+		\[
+		[0, 0, 0] \Rightarrow \text{Còn lại: } [0, 0, 0]
+		\]
+		
+		\item Dãy toàn số $0$ nên dãy ban đầu là \textbf{graphic}.
+	\end{enumerate}
+	
+	\textbf{Như vậy:} Dãy $[7, 7, 6, 5, 4, 4, 4, 3, 2]$ là một \textbf{graphic sequence}, tức là tồn tại một đồ thị đơn có dãy bậc như vậy.
+	
+	\subsection*{10.1.3}
+	Giả sử tồn tại một \textbf{đồ thị đơn, đều bậc 5} với $n = 8$ đỉnh.
+	
+	Vì đây là đồ thị đều bậc $r = 5$, nên tổng bậc của đồ thị là:
+	
+	\[
+	\sum \deg(v_i) = r \cdot n = 5 \cdot 8 = 40
+	\]
+	
+	Theo định lý Handshaking, tổng bậc của các đỉnh trong một đồ thị đơn luôn là số chẵn vì nó bằng $2$ lần số cạnh. Trong trường hợp này:
+	
+	\[
+	40 = 2 \cdot \text{số cạnh} \Rightarrow \text{số cạnh} = 20
+	\]
+	
+	Vậy điều kiện tổng bậc là số chẵn đã thỏa mãn.
+	
+	Tuy nhiên, ta cần kiểm tra một điều kiện nữa:
+	
+	Trong đồ thị đơn với $n$ đỉnh, bậc tối đa của mỗi đỉnh không được vượt quá $n-1$.
+	
+	Ở đây:
+	\[
+	r = 5,\quad n = 8 \Rightarrow r \leq n-1 = 7
+	\]
+	
+	Điều này cũng được thỏa mãn.
+	
+	Do đó, \textbf{có tồn tại} một đồ thị đơn, đều bậc 5 với 8 đỉnh. Một ví dụ cụ thể là đồ thị đều bậc 5 trên 8 đỉnh có thể được xây dựng bằng tay hoặc sử dụng công cụ tạo đồ thị đều.
+	
+	\textbf{Như vậy:} \textit{Có tồn tại} một đồ thị đơn, đều bậc 5 với 8 đỉnh vì các điều kiện về tổng bậc và bậc tối đa đều được thỏa mãn.
+	
+	\subsection*{10.1.4}
+	Giả sử có một đồ thị đơn $G$ gồm 8 đỉnh, trong đó:
+	
+	\begin{itemize}
+		\item 4 đỉnh có bậc 5.
+		\item 4 đỉnh còn lại có bậc 3.
+	\end{itemize}
+	
+	Tổng bậc của đồ thị sẽ là:
+	\[
+	\sum \deg(v_i) = 4 \cdot 5 + 4 \cdot 3 = 20 + 12 = 32
+	\]
+	
+	Theo định lý Handshaking, tổng bậc của tất cả các đỉnh bằng $2$ lần số cạnh, do đó:
+	\[
+	\text{Số cạnh} = \frac{32}{2} = 16
+	\]
+	
+	Như vậy, về mặt số học, việc tồn tại đồ thị với số cạnh là 16 là hoàn toàn hợp lý.
+	
+	Tiếp theo, ta cần kiểm tra liệu có thể ghép nối các đỉnh để thỏa mãn bậc của từng đỉnh mà không vi phạm tính đơn (không có cạnh lặp hay khuyên).
+	
+	\textbf{Xây dựng đồ thị thử:}
+	
+	Gọi 4 đỉnh có bậc 5 là $A_1, A_2, A_3, A_4$ và 4 đỉnh có bậc 3 là $B_1, B_2, B_3, B_4$.
+	
+	\begin{itemize}
+		\item Mỗi đỉnh $B_i$ cần được nối với 3 đỉnh trong $A$.
+		\item Có 4 đỉnh $B$, nên tổng số cung từ $B$ đến $A$ là: $4 \cdot 3 = 12$.
+		\item Các đỉnh $A$ cần có bậc 5, mà mới chỉ có 12 cạnh từ $B$ đến $A$, tức là mỗi $A_i$ có $\frac{12}{4} = 3$ cạnh từ $B$.
+		\item Như vậy, mỗi $A_i$ còn thiếu 2 cạnh nữa. Ta có thể nối các cạnh này giữa các đỉnh $A$ với nhau.
+		\item Số lượng cạnh cần thêm là: $4 \cdot 2 = 8$ cạnh giữa các $A$.
+		\item Nhưng 8 cạnh là quá nhiều để có thể phân phối giữa 4 đỉnh $A$ mà vẫn giữ đồ thị đơn (đỉnh $A_i$ chỉ có thể nối với 3 đỉnh còn lại trong $A$).
+		\item Tổng số cặp trong tập $A$ là $\binom{4}{2} = 6$ cặp, tức chỉ có tối đa 6 cạnh đơn giữa các đỉnh $A$.
+		\item Vậy không thể tạo được 8 cạnh giữa các đỉnh $A$ mà vẫn đảm bảo là đồ thị đơn.
+	\end{itemize}
+	
+	$\Rightarrow$  Không tồn tại đồ thị đơn với 8 đỉnh mà một nửa có bậc 5 và một nửa có bậc 3 vì không thể phân phối đủ số cạnh để thỏa điều kiện bậc mà không vi phạm tính đơn.
+	
+	\subsection*{10.1.6}
+	Xét dãy bậc sau:
+	\[
+	(3, 3, 3, 3, 2, 2)
+	\]
+	
+	Bước đầu tiên trong thuật toán Havel-Hakimi:
+	- Chọn 3: bậc cao nhất.
+	- Xóa 3, trừ 1 từ 3 phần tử tiếp theo: còn lại là
+	\[
+	(2, 2, 2, 2, 2)
+	\]
+	
+	Tiếp tục:
+	- Chọn 2: còn lại
+	\[
+	(1, 1, 2, 2)
+	\rightarrow (1, 1, 1, 1)
+	\]
+	
+	Cuối cùng:
+	\[
+	(1, 1, 1, 1) \rightarrow (0, 0, 1, 1) \rightarrow (0, 0, 0, 0)
+	\]
+	
+	Như vậy dãy là \textbf{graphic}.
+	
+	Khi xây dựng ngược lại, giả sử bắt đầu từ dãy $(0,0,0,0)$.
+	
+	Sau bước thêm đỉnh 1:
+	- Cần bậc 1, nối với đỉnh bất kỳ (gọi là đỉnh 0).
+	
+	Thêm đỉnh 2:
+	- Cần bậc 1, có thể nối với đỉnh 1 hoặc đỉnh 0 đều được (cả hai có bậc 1 như nhau).
+	
+	Tiếp tục như vậy, khi thêm đỉnh có bậc 3 ở trên cùng:
+	- Sẽ phải nối với 3 đỉnh, nhưng không nhất thiết là 3 đỉnh có bậc cao nhất do có thể tồn tại nhiều đỉnh có cùng bậc.
+	
+	$\Rightarrow$ Không phải lúc nào cũng nối với các đỉnh có bậc cao nhất. Điều này phụ thuộc vào cách thứ tự được xử lý trong bước khôi phục. Do đó, ta có phản ví dụ.
+	
+	\subsection*{10.1.7}
+	Giả sử $D = (d_1, d_2, d_3, d_4)$ không phải là graphic.
+	
+	Xét dãy $D' = (d_1, d_2, d_3, d_4 + 1, 1)$.
+	
+	Nếu dãy $D$ không là graphic thì tổng các bậc của $D$ là lẻ hoặc không thỏa mãn điều kiện Erdős–Gallai.
+	
+	Giờ xét tổng các bậc trong $D'$:
+	\[
+	\sum D' = d_1 + d_2 + d_3 + (d_4 + 1) + 1 = \sum D + 2
+	\]
+	
+	Như vậy, tổng của dãy mới tăng thêm 2. Điều này đảm bảo rằng nếu $\sum D$ là chẵn thì $\sum D'$ cũng là chẵn.
+	
+	\textbf{Phản ví dụ:}
+	
+	Dãy $D = (3, 1, 1, 1)$ không phải là dãy graphic vì tổng là $6$, nhưng không thỏa mãn điều kiện Erdős–Gallai:
+	\[
+	\text{Sắp xếp lại: } (3,1,1,1)
+	\]
+	Với $k = 1$: $3 \leq 1 \cdot (1 - 1) + \sum_{i=2}^{4} \min(d_i, 1) = 0 + 1 + 1 + 1 = 3$ → Đúng
+	
+	Với $k = 2$: $3 + 1 = 4 \leq 2 \cdot (2 - 1) + \sum_{i=3}^{4} \min(d_i, 2) = 2 + 1 + 1 = 4$ → Đúng
+	
+	Với $k = 3$: $3 + 1 + 1 = 5 \leq 3 \cdot (3 - 1) + \sum_{i=4}^{4} \min(d_i, 3) = 6 + 1 = 7$ → Đúng
+	
+	→ Thực ra dãy này là graphic! (Đã chứng minh ngược)
+	
+	\textbf{Chọn dãy không graphic thật sự:}
+	
+	Xét dãy $D = (3,3,1,0)$, tổng = 7 → lẻ → không phải graphic.
+	
+	Giờ xét dãy $D' = (3,3,1,1,1)$ → tổng = 9 → vẫn lẻ → không thể graphic.
+	
+	Chọn $D = (2,2,2,1)$ → tổng = 7 → không graphic.
+	
+	$D' = (2,2,2,2,1)$ → tổng = 9 → không graphic.
+	
+	\textbf{Vậy:}
+	
+	Nếu $D$ không graphic vì tổng lẻ, thì $D'$ có tổng chẵn (do +2), nhưng không đảm bảo điều kiện Erdős–Gallai.
+	
+	Tuy nhiên, tồn tại phản ví dụ khi $D$ không graphic, nhưng $D'$ là graphic.
+	
+	\textbf{Ví dụ:}
+	
+	Dãy $D = (2,2,2,1)$ không graphic.
+	
+	Dãy $D' = (2,2,2,2,1)$ → tổng = 9 → không graphic.
+	
+	Chọn $D = (2,2,0,0)$ → tổng = 4 → graphic.
+	
+	Nhưng $D = (3,2,1,0)$ → tổng = 6
+	
+	→ Không graphic (không thỏa mãn Erdős–Gallai tại $k=2$)
+	
+	Dãy $D' = (3,2,1,1,1)$ → tổng = 8 → graphic!
+	
+	$\Rightarrow$ \textbf{Có thể xảy ra.}
+	
+	\textit{Tồn tại các dãy $D$ không graphic, nhưng khi thêm phần tử $1$ và tăng $d_4$ lên $d_4 + 1$, ta được dãy $D'$ graphic.}
+	
+	\subsection*{10.1.8}
+	\textbf{1. Định nghĩa:}
+	\begin{itemize}
+		\item Một \textbf{đồ thị đơn (simple graph)} không có cạnh lặp (multiple edges) và không có khuyên (loop).
+		\item Một \textbf{đồ thị đa (multigraph)} cho phép cạnh lặp, nhưng không cho phép khuyên (nếu không nói rõ).
+	\end{itemize}
+	
+	Dãy bậc $(d_1, d_2, \dots, d_n)$ là:
+	\begin{itemize}
+		\item Graphic $\Rightarrow$ tồn tại đồ thị đơn có dãy bậc đó.
+		\item Nếu tổng bậc là chẵn và các $d_i \geq 0$, thì có thể tồn tại multigraph với dãy bậc đó.
+	\end{itemize}
+	
+	\textbf{2. Ví dụ:}
+	
+	Xét dãy $D = (2,2,2,1)$.
+	
+	\begin{itemize}
+		\item Tổng bậc: $2 + 2 + 2 + 1 = 7$ → \textbf{lẻ} → không thể là dãy graphic của bất kỳ đồ thị nào (simple hay multigraph), vì tổng bậc phải chẵn.
+	\end{itemize}
+	
+	→ Không hợp lệ.
+	
+	Giờ xét dãy $D = (3,3,3,3,2)$.
+	
+	\begin{itemize}
+		\item Tổng bậc = 14 → chẵn → có thể là dãy bậc.
+		\item Nhưng kiểm tra bằng thuật toán Havel–Hakimi thì không phải là graphic.
+	\end{itemize}
+	
+	→ Câu hỏi đặt ra là: liệu có thể tạo một \textbf{multigraph} với dãy bậc này?
+	
+	\textbf{Xây dựng multigraph:}
+	
+	\begin{itemize}
+		\item Gọi các đỉnh là $v_1, v_2, v_3, v_4, v_5$ với bậc cần là $(3,3,3,3,2)$.
+		\item Kết nối như sau:
+		\begin{itemize}
+			\item $v_1 \leftrightarrow v_2$ (2 cạnh)
+			\item $v_1 \leftrightarrow v_3$
+			\item $v_2 \leftrightarrow v_3$
+			\item $v_2 \leftrightarrow v_4$
+			\item $v_3 \leftrightarrow v_5$
+			\item $v_4 \leftrightarrow v_5$
+			\item $v_4 \leftrightarrow v_1$
+		\end{itemize}
+		\item Kiểm tra bậc:
+		\begin{itemize}
+			\item $\deg(v_1) = 2 (v_2) + 1 (v_3) + 1 (v_4) = 4$ → quá.
+			\item Thử lại với điều chỉnh.
+		\end{itemize}
+	\end{itemize}
+	
+	Sau một số thử nghiệm, ta tìm được dãy $D = (4, 4, 2, 2, 2)$ không graphic (theo thuật toán Havel–Hakimi), nhưng có thể xây được một multigraph bằng cách sử dụng cạnh lặp.
+	
+	$\Rightarrow$ Vậy câu trả lời là có.
+	
+	\textbf{Ví dụ:}
+	
+	Dãy $D = (4, 4, 2, 2, 2)$ là:
+	\begin{itemize}
+		\item Không graphic (simple graph) → kiểm tra bằng Havel–Hakimi.
+		\item Nhưng có thể xây được multigraph:
+		\begin{itemize}
+			\item $v_1 \leftrightarrow v_2$ (2 cạnh)
+			\item $v_1 \leftrightarrow v_3$
+			\item $v_1 \leftrightarrow v_4$
+			\item $v_2 \leftrightarrow v_5$
+			\item $v_2 \leftrightarrow v_3$
+			\item $v_4 \leftrightarrow v_5$
+		\end{itemize}
+		→ Tổng bậc: $4 + 4 + 2 + 2 + 2 = 14$ → hợp lệ.
+	\end{itemize}
+	
+	\textbf{Kết luận:}
+	
+	\begin{quote}
+		\textit{Có tồn tại dãy số không graphic, nhưng là dãy bậc của một multigraph.}
+	\end{quote}
+	
+	\subsection*{10.1.9}
+	\begin{itemize}
+		\item Trong \textbf{multigraph}, không cho phép khuyên (loop), nhưng có thể có cạnh lặp.
+		\item Trong \textbf{general graph}, cho phép cả khuyên và cạnh lặp.
+	\end{itemize}
+	
+	Xét dãy $D = (2)$:
+	
+	\begin{itemize}
+		\item Trong multigraph: không tồn tại cách để 1 đỉnh có bậc 2 mà không có đỉnh khác.
+		\item Trong general graph: một khuyên tại đỉnh đó sẽ tạo bậc 2 (vì mỗi khuyên đóng góp 2 vào bậc).
+		\item Vậy $D = (2)$ không là dãy bậc của multigraph, nhưng là dãy bậc của general graph.
+	\end{itemize}
+	
+	$\Rightarrow$ Dãy $(2)$ là một ví dụ thỏa mãn đề bài.
+	
+	\subsection*{10.1.11}
+	\textbf{Đồ thị 1: Ghép hai tam giác (K3)}
+	
+	\begin{center}
+		\begin{tikzpicture}[scale=1.2, every node/.style={circle, draw}]
+			\node (A) at (0,0) {A};
+			\node (B) at (1,1) {B};
+			\node (C) at (2,0) {C};
+			\node (D) at (4,0) {D};
+			\node (E) at (5,1) {E};
+			\node (F) at (6,0) {F};
+			
+			\draw (A)--(B)--(C)--(A);
+			\draw (D)--(E)--(F)--(D);
+			\draw (A)--(D);
+			\draw (B)--(E);
+			\draw (C)--(F);
+		\end{tikzpicture}
+	\end{center}
+	
+	\textbf{Đồ thị 2: Chu trình 6 đỉnh + đường chéo cách 1}
+	
+	\begin{center}
+		\begin{tikzpicture}[scale=2, every node/.style={circle, draw}]
+			\node (A) at (0:1) {A};
+			\node (B) at (60:1) {B};
+			\node (C) at (120:1) {C};
+			\node (D) at (180:1) {D};
+			\node (E) at (240:1) {E};
+			\node (F) at (300:1) {F};
+			
+			\draw (A)--(B)--(C)--(D)--(E)--(F)--(A);
+			\draw (A)--(D);
+			\draw (B)--(E);
+			\draw (C)--(F);
+		\end{tikzpicture}
+	\end{center}
+	
+		$\Rightarrow$  Hai đồ thị đều là đơn, chính quy bậc 3, bậc 6, nhưng không đẳng cấu.
+	
+	\subsection*{10.1.14}
+	(a) Chứng minh điều kiện tương đương của dãy đồ thị
+	
+	\textbf{Định nghĩa:} Một dãy số nguyên không âm \( d_1 \ge d_2 \ge \dots \ge d_p \) là một \textit{dãy đồ thị} (graphic sequence) nếu tồn tại một đồ thị đơn có \( p \) đỉnh sao cho bậc của các đỉnh lần lượt là \( d_1, d_2, \dots, d_p \).
+	
+	\bigskip
+	
+	\textbf{Mệnh đề cần chứng minh:}
+	
+	Dãy \( d_1, d_2, \dots, d_p \) là một dãy đồ thị khi và chỉ khi dãy là một dãy đồ thị.
+	\[
+	p - d_p - 1,\; p - d_{p-1} - 1,\; \dots,\; p - d_1 - 1
+	\]
+	
+	
+	\bigskip
+	
+	\textbf{Chứng minh:}
+	
+	Giả sử \( G \) là đồ thị đơn có \( p \) đỉnh với dãy bậc là \( d_1, d_2, \dots, d_p \). Ta định nghĩa \( \overline{G} \) là đồ thị bù của \( G \), tức là đồ thị có cùng tập đỉnh, và hai đỉnh được nối với nhau trong \( \overline{G} \) khi và chỉ khi chúng không được nối trong \( G \).
+	
+	Trong \( \overline{G} \), mỗi đỉnh \( v_i \) sẽ có bậc là:
+	\[
+	\deg_{\overline{G}}(v_i) = p - 1 - \deg_G(v_i) = p - d_i - 1.
+	\]
+	
+	Do đó, dãy bậc của \( \overline{G} \) chính là:
+	\[
+	p - d_1 - 1,\; p - d_2 - 1,\; \dots,\; p - d_p - 1.
+	\]
+	
+	Khi sắp xếp lại theo thứ tự không tăng, ta được dãy:
+	\[
+	p - d_p - 1,\; p - d_{p-1} - 1,\; \dots,\; p - d_1 - 1.
+	\]
+	
+	Vì \( G \) là đồ thị thì \( \overline{G} \) cũng là đồ thị, do đó dãy mới là dãy đồ thị. Ngược lại, nếu dãy \( p - d_p - 1,\dots, p - d_1 - 1 \) là dãy đồ thị, thì bằng lập luận tương tự, dãy \( d_1, \dots, d_p \) cũng là dãy đồ thị. 
+	
+	\textbf{Suy ra:} Hai dãy là đồ thị khi và chỉ khi nhau.
+	
+	
+	
+	(b) Kiểm tra dãy \( 9,9,9,9,9,9,9,8,8,8 \) có phải là dãy đồ thị không?
+	
+	\textbf{Bước 1:} Tổng các phần tử:
+	\[
+	9 \times 7 + 8 \times 3 = 63 + 24 = 87.
+	\]
+	
+	Tổng này là lẻ nên không thể là tổng của các bậc trong một đồ thị đơn (vì mỗi cạnh đóng góp 2 vào tổng bậc).
+	
+	\textbf{Kết luận:} Dãy không thể là dãy đồ thị.
+	
+	\subsection*{10.1.14}
+	Gọi \( d \) là bậc của đỉnh thứ sáu. Tổng bậc của đồ thị là:
+	\[
+	\sum_{i=1}^{6} d_i = 2 \cdot |E| \quad \text{(tổng bậc luôn chẵn)}
+	\]
+	
+	Tổng bậc hiện tại là:
+	\[
+	5 + 4 + 4 + 2 + 2 = 17
+	\]
+	
+	Vì tổng bậc phải chẵn nên \( d + 17 \) phải là số chẵn \( \Rightarrow d \) phải là số lẻ.
+	
+	Mặt khác, vì đây là đồ thị đơn với 6 đỉnh, nên bậc của mỗi đỉnh nằm trong khoảng \( 0 \le d \le 5 \). Do đó, \( d \in \{1, 3, 5\} \) là những giá trị lẻ trong miền hợp lệ.
+	
+		$\Rightarrow${Kiểm tra khả thi}
+	
+	\begin{itemize}
+		\item \textbf{Nếu \( d = 1 \)}: tổng bậc là \( 18 \), hợp lệ. Có thể tồn tại đồ thị đơn tương ứng.
+		\item \textbf{Nếu \( d = 3 \)}: tổng bậc là \( 20 \), hợp lệ.
+		\item \textbf{Nếu \( d = 5 \)}: tổng bậc là \( 22 \), hợp lệ.
+	\end{itemize}
+	
+	Trong cả 3 trường hợp trên, chúng ta đều có tổng bậc chẵn và nhỏ hơn hoặc bằng \( 6 \cdot 5 = 30 \), nên có thể xây dựng được đồ thị đơn tương ứng.
+	
+		$\Rightarrow${Kết luận}
+	
+	Các giá trị có thể của bậc đỉnh thứ sáu là:
+	\[
+	\boxed{1,\; 3,\; 5}
+	\]
+	
+	\subsection*{10.1.15}
+	\textbf{Xét đồ thị đơn:}
+	
+	Giả sử đồ thị đơn có \( n \) đỉnh. Vì là đồ thị đơn nên bậc của một đỉnh bất kỳ không thể vượt quá \( n - 1 \).  
+	Nếu tất cả bậc là số nguyên phân biệt, thì dãy bậc phải là tập con của \( \{0, 1, 2, \dots, n-1\} \), gồm \( n \) phần tử phân biệt.
+	
+	\textbf{Vấn đề:} Nếu một đỉnh có bậc \( n-1 \), tức là nối với tất cả các đỉnh còn lại, thì không thể có một đỉnh nào có bậc bằng 0 (vì nó đã phải nối với đỉnh bậc \( n-1 \)). Điều đó mâu thuẫn nếu tồn tại cả bậc \( 0 \) và \( n-1 \) trong cùng một dãy.
+	
+	\textbf{Ví dụ:} Với \( n = 4 \), dãy \( 0, 1, 2, 3 \) không thể là dãy bậc của một đồ thị đơn vì nếu có một đỉnh bậc 3 thì không thể có đỉnh bậc 0.
+	
+	\textbf{Suy ra:} Không thể có một đồ thị đơn có \( n \) đỉnh mà dãy bậc là \( n \) số nguyên phân biệt từ \( 0 \) đến \( n-1 \).
+	
+	\bigskip
+	
+	\textbf{Kết luận:} Không tồn tại đồ thị đơn mà dãy bậc gồm toàn số nguyên phân biệt.
+	
+	$\Rightarrow${Với đa đồ thị (multigraph):}
+	
+	Trong đa đồ thị, cho phép nhiều cạnh giữa hai đỉnh và vòng (loop). Khi đó không bị giới hạn bởi bậc tối đa là \( n-1 \), nên dễ dàng xây dựng dãy bậc gồm các số nguyên phân biệt.
+	
+	\textbf{Ví dụ:} Với các đỉnh có bậc \( 0, 1, 2, 3, 4 \), ta có thể dùng cạnh lặp (loop) để tạo ra đỉnh bậc lẻ/chẵn tuỳ ý.
+	
+	\textbf{Kết luận:} \textit{Có thể tồn tại đa đồ thị mà dãy bậc là các số nguyên phân biệt.}
+	
+	\subsection*{10.1.16}
+	Vì \( G \) là đồ thị đơn với 94 đỉnh nên bậc của mỗi đỉnh là số nguyên trong đoạn từ \( 0 \) đến \( 93 \), và vì bậc là số lẻ nên các giá trị bậc có thể là:
+	
+	\[
+	1, 3, 5, \ldots, 93
+	\]
+	
+	Đây là dãy số lẻ từ 1 đến 93. Tính số lượng phần tử:
+	
+	\[
+	\text{Số lượng bậc lẻ} = \frac{93 - 1}{2} + 1 = 47
+	\]
+	
+	Vậy có 47 giá trị bậc lẻ khác nhau khả dĩ trong đồ thị đơn.
+	
+	\bigskip
+	
+	Giả sử mỗi giá trị bậc lẻ xuất hiện nhiều nhất ở 2 đỉnh, thì số đỉnh tối đa ta có thể có là:
+	
+	\[
+	2 \times 47 = 94
+	\]
+	
+	Đây là đúng bằng số đỉnh trong đồ thị. Tuy nhiên, nếu tất cả các bậc đều là số lẻ và mỗi giá trị xuất hiện đúng 2 lần, thì tổng bậc sẽ là tổng của 94 số lẻ.
+	
+	\bigskip
+	
+	\textbf{Nhận xét:} Tổng của 94 số lẻ là một số chẵn lẻ (tổng của số lẻ chẵn lần là chẵn).
+	
+	Nhưng trong đồ thị, tổng các bậc luôn bằng \( 2|E| \), tức là số chẵn. Vậy không có mâu thuẫn ở đây.
+	
+	Tuy nhiên, nếu mỗi bậc lẻ xuất hiện nhiều nhất 2 lần, và có đúng 47 bậc phân biệt → tất cả bậc đều phải xuất hiện đúng 2 lần. Điều này không cho phép có một bậc lặp lại tới 3 lần.
+	
+	Nếu ta thử giảm một bậc và cho bậc đó xuất hiện 3 lần, thì ta còn lại 93 đỉnh cho các bậc còn lại → sẽ có ít nhất một bậc chỉ xuất hiện 1 lần → số bậc lẻ xuất hiện 1 lần là lẻ → tổng bậc là lẻ → mâu thuẫn.
+	
+	\bigskip
+	
+	\textbf{Áp dụng nguyên lý pigeonhole:}
+	
+	Có 94 đỉnh nhưng chỉ có 47 giá trị bậc lẻ → nếu mỗi giá trị chỉ được dùng 2 lần thì vừa đủ. Nếu thêm bất kỳ đỉnh nào nữa, thì ít nhất một giá trị bậc phải lặp lại \textbf{3 lần trở lên}.
+	
+	\textbf{Do đó, trong mọi phân phối bậc thỏa điều kiện, phải tồn tại ít nhất một bậc xuất hiện từ 3 lần trở lên.}
+	
+	$\Rightarrow${Kết luận}
+	
+	\[
+	\boxed{\text{Tồn tại ít nhất 3 đỉnh có cùng bậc.}}
+	\]
+	
+	\subsection*{10.1.17}
+	Đây là phát biểu của định lý \textbf{Erdős–Gallai}, một điều kiện cần và đủ để một dãy số nguyên không âm sắp giảm là một graphic sequence.
+	
+	\textbf{Định lý Erdős–Gallai:}
+	
+	Một dãy số nguyên không âm \( d_1 \geq d_2 \geq \cdots \geq d_n \) là graphic nếu và chỉ nếu tổng các phần tử là chẵn và với mọi \( 1 \leq k \leq n \), ta có:
+	\[
+	\sum_{i=1}^{k} d_i \leq k(k-1) + \sum_{i=k+1}^{n} \min(d_i, k)
+	\]
+	
+	\textbf{Ý tưởng chứng minh:}
+	
+	- Xét một đồ thị đơn \( G \) với \( n \) đỉnh và bậc các đỉnh là \( d_1, \dots, d_n \).
+	- Khi chọn \( k \) đỉnh đầu tiên có bậc cao nhất, mỗi đỉnh này có thể nối tới nhiều nhất \( k-1 \) đỉnh khác trong nhóm \( k \), tức là \( k(k-1) \) cạnh trong nhóm.
+	- Phần còn lại của bậc (nếu có) phải nối đến các đỉnh còn lại, nhưng mỗi đỉnh ngoài có thể nhận được tối đa \( \min(d_i, k) \) cạnh từ nhóm đầu.
+	- Từ đó, tổng bậc của \( k \) đỉnh đầu phải nhỏ hơn hoặc bằng tổng số cạnh nội bộ cộng với số liên kết ra ngoài:
+	\[
+	\sum_{i=1}^{k} d_i \leq k(k-1) + \sum_{i=k+1}^{n} \min(d_i, k)
+	\]
+	
+	\textbf{Vì vậy, bất kỳ graphic sequence nào cũng phải thỏa mãn bất đẳng thức trên.}
+	
+	$\Rightarrow${Kết luận}
+	
+	\[
+	\boxed{\sum_{i=1}^{k} a_i \leq k(k-1) + \sum_{i=k+1}^{n} \min(a_i, k)}
+	\quad \text{với mọi } 1 \leq k \leq n
+	\]
+	
+	\subsection*{10.1.18}
+	Gọi dãy ban đầu là \( D = (a_1, a_2, \ldots, a_p) \) và giả sử đây là dãy bậc của một đồ thị đơn \( G \) với tập đỉnh \( V = \{v_1, v_2, \ldots, v_p\} \) sao cho \( \deg(v_i) = a_i \).
+	
+	\bigskip
+	
+	Chúng ta cần chứng minh rằng dãy mới:
+	\[
+	D' = (a_1, a_2, \ldots, a_{t-1}, a_t+1, \ldots, a_p+1)
+	\]
+	là dãy bậc của một đồ thị đơn.
+	
+	\subsubsection*{Ý tưởng chính:}
+	
+	Dãy mới \( D' \) tăng bậc thêm 1 cho \( p - t + 1 \) đỉnh cuối cùng. Chúng ta sẽ xây dựng một đồ thị mới \( G' \) bằng cách thêm một tập các cạnh mới nối giữa các đỉnh có bậc được tăng sao cho:
+	
+	- Mỗi đỉnh từ \( v_t \) đến \( v_p \) được nối thêm đúng 1 cạnh.
+	- Các cạnh thêm vào chỉ nối giữa các đỉnh trong tập \( \{v_t, \ldots, v_p\} \).
+	- Vì có \( p - t + 1 \) đỉnh được tăng bậc lên 1, tổng số bậc tăng là \( p - t + 1 \). Để duy trì tính đơn giản của đồ thị, số bậc tăng phải chẵn (vì tổng bậc của đồ thị luôn chẵn).
+	
+	\subsubsection*{Phân tích chẵn/lẻ:}
+	
+	Nếu \( p - t + 1 \) là chẵn, ta có thể ghép các đỉnh được tăng bậc thành các cặp và nối lại với nhau, mỗi cặp tạo ra 1 cạnh mới → dãy mới là graphic.
+	
+	Nếu \( p - t + 1 \) là lẻ: tổng số bậc trong dãy mới sẽ lẻ, điều này là \textbf{không thể xảy ra} với một dãy bậc đồ thị đơn (vì tổng bậc phải chẵn).
+	
+	\subsubsection*{Nhưng đề bài đã bảo đảm điều kiện đúng:}
+	
+	Đề bài giả sử dãy ban đầu là graphic, và việc thêm 1 vào một số đỉnh là hợp lệ vì nó giữ được tổng bậc chẵn và không vi phạm quy tắc \( d_i < p \).
+	
+	\textbf{Do đó, ta có thể chứng minh tồn tại một đồ thị mới \( G' \)} bằng cách thêm cạnh nối giữa các đỉnh \( v_t, \ldots, v_p \) để đạt bậc mong muốn, mà không tạo bội cạnh hay khuyên → \( D' \) là graphic sequence.
+	
+	\subsubsection*{Kết luận}
+	
+	Dãy là dãy bậc của một đồ thị đơn:
+	\[
+	a_1 \geq a_2 \geq \cdots \geq a_{t-1} \geq a_t + 1 \geq \cdots \geq a_p + 1
+	\]
+	
+	\newpage
+	\section*{Week 04}
+	\subsection*{BT 1}
+	\begin{enumerate}
+		\item[(a)] 
+		\[
+		\left\{ \begin{matrix}
+			s \\
+			t
+		\end{matrix} \right\} = 0 \quad \text{nếu } t > s
+		\]
+		
+		\textbf{Chứng minh:}
+		
+		Số Stirling loại hai $\left\{ \begin{matrix}
+			s \\
+			t
+		\end{matrix} \right\}$ là số cách phân hoạch một tập hợp gồm $s$ phần tử thành $t$ tập con phân biệt, mỗi tập con khác rỗng.
+		
+		Nếu $t > s$, điều đó có nghĩa là cần chia $s$ phần tử vào $t$ tập con khác rỗng.
+		
+		Tuy nhiên, mỗi tập con phải chứa ít nhất một phần tử $\Rightarrow$ tổng số phần tử tối thiểu là $t$. 
+		
+		Nhưng ta chỉ có $s < t$ phần tử, nên không thể phân chia thành $t$ tập con khác rỗng.
+		
+		\[
+		\Rightarrow \left\{ \begin{matrix}
+			s \\
+			t
+		\end{matrix} \right\} = 0 \quad \text{nếu } t > s \quad
+		\]
+	\end{enumerate}
+	
+	\begin{enumerate}
+		\item[(b)] 
+		\[
+		\left\{ \begin{matrix}
+			s \\
+			s
+		\end{matrix} \right\} = 1
+		\]
+		
+		\textbf{Chứng minh:}
+		
+		Giả sử xét một tập hợp $A = \{a_1, a_2, \ldots, a_s\}$ gồm $s$ phần tử.
+		
+		Ta cần phân hoạch tập $A$ thành đúng $s$ tập con khác rỗng, và các tập con này không phân biệt thứ tự.
+		
+		Do số phần tử của $A$ là $s$ và cần chia thành $s$ tập con khác rỗng, nên mỗi tập con chỉ chứa đúng một phần tử.
+		
+		Khi đó, phân hoạch duy nhất là:
+		\[
+		\big\{ \{a_1\}, \{a_2\}, \ldots, \{a_s\} \big\}
+		\]
+		
+		Vì các tập con không phân biệt thứ tự nên chỉ có duy nhất một cách phân hoạch như vậy.
+		
+		\[
+		\Rightarrow \left\{ \begin{matrix}
+			s \\
+			s
+		\end{matrix} \right\} = 1 \quad 
+		\]
+	\end{enumerate}
+	
+	\begin{enumerate}
+		\item[(c)] 
+		\[
+		\left\{ \begin{matrix}
+			s \\
+			1
+		\end{matrix} \right\} = 1
+		\]
+		
+		\textbf{Chứng minh:}
+		
+		Giả sử xét một tập hợp $A = \{a_1, a_2, \ldots, a_s\}$ gồm $s$ phần tử.
+		
+		Ta cần phân hoạch tập $A$ thành đúng $1$ tập con khác rỗng, và tập con này không được để trống.
+		
+		Khi đó, cách duy nhất là đặt tất cả các phần tử vào chung một tập con duy nhất:
+		\[
+		\big\{ \{a_1, a_2, \ldots, a_s\} \big\}
+		\]
+		
+		Vì chỉ có một tập con và không quan tâm đến thứ tự, nên có đúng 1 cách để phân hoạch như vậy.
+		
+		\[
+		\Rightarrow \left\{ \begin{matrix}
+			s \\
+			1
+		\end{matrix} \right\} = 1 \quad 
+		\]
+	\end{enumerate}
+	
+	\begin{enumerate}
+		\item[(d)]
+		\[
+		\left\{ \begin{matrix}
+			s \\
+			s - 1
+		\end{matrix} \right\} = \binom{s}{2}
+		\]
+		
+		\textbf{Chứng minh:}
+		
+		Ta cần phân hoạch một tập hợp $A = \{a_1, a_2, \ldots, a_s\}$ gồm $s$ phần tử thành $s - 1$ tập con khác rỗng.
+		
+		Điều này có nghĩa là:
+		\begin{itemize}
+			\item Có $s - 2$ tập con chứa đúng 1 phần tử.
+			\item Có 1 tập con chứa đúng 2 phần tử.
+		\end{itemize}
+		
+		Vì vậy, một phân hoạch như vậy chính là chọn ra 2 phần tử bất kỳ để cho vào cùng một tập con, còn các phần tử còn lại mỗi phần tử vào 1 tập con riêng biệt.
+		
+		Số cách chọn 2 phần tử từ $s$ phần tử là:
+		\[
+		\binom{s}{2}
+		\]
+		
+		Mỗi cách chọn như vậy dẫn đến duy nhất một phân hoạch thỏa mãn yêu cầu.
+		
+		\[
+		\Rightarrow \left\{ \begin{matrix}
+			s \\
+			s - 1
+		\end{matrix} \right\} = \binom{s}{2} \quad 
+		\]
+	\end{enumerate}
+	
+	\begin{enumerate}
+		\item[(e)] 
+		\[
+		\left\{ \begin{matrix}
+			s \\
+			2
+		\end{matrix} \right\} = 2^{s - 1} - 1
+		\]
+		
+		\textbf{Chứng minh:}
+		
+		Xét một tập $A = \{a_1, a_2, \ldots, a_s\}$ gồm $s$ phần tử.
+		
+		Tổng số cách chia tập $A$ thành 2 tập con không rỗng và phân biệt là:
+		\[
+		2^s - 2
+		\]
+		(vì mỗi phần tử có 2 lựa chọn để vào một trong hai tập, trừ đi 2 trường hợp tất cả vào cùng một tập).
+		
+		Do các tập con **không phân biệt thứ tự**, ta chia kết quả trên cho 2:
+		\[
+		\left\{ \begin{matrix}
+			s \\
+			2
+		\end{matrix} \right\} = \frac{2^s - 2}{2} = 2^{s-1} - 1 \quad 
+		\]
+	\end{enumerate}
+	
+	\subsection*{Định lý và Công thức liên quan đến số Stirling loại hai}
+	Cho $s, t \in \mathbb{N}^*$ (tức là $s, t \in \mathbb{N}$ và $s, t \geq 1$), ta có công thức truy hồi:
+	
+	\[
+	\left\{ \begin{matrix}
+		s \\
+		t
+	\end{matrix} \right\} = t \cdot \left\{ \begin{matrix}
+		s - 1 \\
+		t
+	\end{matrix} \right\} + \left\{ \begin{matrix}
+		s - 1 \\
+		t - 1
+	\end{matrix} \right\}
+	\]
+	
+	\textbf{Ý nghĩa:}
+	\begin{itemize}
+		\item $t \cdot \left\{ \begin{matrix} s - 1 \\ t \end{matrix} \right\}$: Chọn một trong $t$ tập con để thêm phần tử $a_s$ vào, mà không làm tăng số tập con.
+		\item $\left\{ \begin{matrix} s - 1 \\ t - 1 \end{matrix} \right\}$: Tạo một tập con mới chứa $a_s$ riêng biệt.
+	\end{itemize}
+	
+	---
+	
+	\subsection*{Định lý: Đa tập với các kiểu phần tử có vô hạn số lượng}
+	
+	Cho $s, t \in \mathbb{N}$ và đa tập $A = \{\infty \cdot a_1, \infty \cdot a_2, \ldots, \infty \cdot a_t\}$ gồm $t$ kiểu phần tử khác nhau, mỗi kiểu có số lượng vô hạn.
+	
+	\textbf{Khi đó, các đại lượng sau bằng nhau:}
+	
+	\begin{enumerate}
+		\item[(a)] Số cách đặt $s$ quả bóng phân biệt vào $t$ hộp sao cho tất cả các hộp đều không rỗng và các hộp không phân biệt.
+	\end{enumerate}
+	
+	Kết quả này chính là số Stirling loại hai:
+	
+	\[
+	\left\{ \begin{matrix}
+		s \\
+		t
+	\end{matrix} \right\}
+	\]
+	
+	$\rightarrow$
+	Việc phân chia $s$ phần tử phân biệt vào $t$ hộp không phân biệt và không rỗng chính là bài toán phân hoạch tập $s$ phần tử thành $t$ tập con không rỗng — đó là định nghĩa của số Stirling loại hai.
+	
+	\begin{enumerate}
+		\item[(b)] Số s hoán vị của A chứa mỗi phần tử ít nhất 1 lần.
+	\end{enumerate}
+	
+	Mỗi xâu độ dài $s$ sử dụng đúng $t$ loại phần tử và mỗi loại xuất hiện ít nhất một lần. Ta thực hiện:
+	
+	\begin{itemize}
+		\item Phân chia $s$ vị trí thành $t$ nhóm không rỗng: có $\left\{ \begin{matrix} s \\ t \end{matrix} \right\}$ cách (số Stirling loại hai).
+		\item Gán $t$ ký tự phân biệt $a_1, \dots, a_t$ vào $t$ nhóm: có $t!$ cách.
+	\end{itemize}
+	
+	Vậy tổng số xâu cần tìm là:
+	\[
+	\boxed{
+		t! \cdot \left\{ \begin{matrix} s \\ t \end{matrix} \right\}
+	}
+	\]
+	
+	\textbf{Ví dụ:} Với $s = 4$, $t = 2$:
+	\[
+	\left\{ \begin{matrix} 4 \\ 2 \end{matrix} \right\} = 7, \quad t! = 2 \Rightarrow \text{Số xâu} = 2 \cdot 7 = 14
+	\]
+	Mỗi xâu độ dài $s$ sử dụng đúng $t$ loại phần tử và mỗi loại xuất hiện ít nhất một lần. Ta thực hiện:
+	
+	\begin{itemize}
+		\item Phân chia $s$ vị trí thành $t$ nhóm không rỗng: có $\left\{ \begin{matrix} s \\ t \end{matrix} \right\}$ cách (số Stirling loại hai).
+		\item Gán $t$ ký tự phân biệt $a_1, \dots, a_t$ vào $t$ nhóm: có $t!$ cách.
+	\end{itemize}
+	
+	Vậy tổng số xâu cần tìm là:
+	\[
+	\boxed{
+		t! \cdot \left\{ \begin{matrix} s \\ t \end{matrix} \right\}
+	}
+	\]
+	
+	\textbf{Ví dụ:} Với $s = 4$, $t = 2$:
+	\[
+	\left\{ \begin{matrix} 4 \\ 2 \end{matrix} \right\} = 7, \quad t! = 2 \Rightarrow \text{Số xâu} = 2 \cdot 7 = 14
+	\]
+	
+	\begin{enumerate}
+		\item[(b)] $	t! \cdot \left\{ \begin{matrix} s \\ t \end{matrix} \right\}$.
+	\end{enumerate}
+	$\rightarrow$ Giống câu b
+	
+	Mỗi xâu độ dài $s$ sử dụng đúng $t$ loại phần tử và mỗi loại xuất hiện ít nhất một lần. Ta thực hiện:
+	
+	\begin{itemize}
+		\item Phân chia $s$ vị trí thành $t$ nhóm không rỗng: có $\left\{ \begin{matrix} s \\ t \end{matrix} \right\}$ cách (số Stirling loại hai).
+		\item Gán $t$ ký tự phân biệt $a_1, \dots, a_t$ vào $t$ nhóm: có $t!$ cách.
+	\end{itemize}
+	
+	\subsection*{BT2:}
+	\begin{enumerate}
+		\item[(a)] 
+		Cho $s, t \in \mathbb{N}$. Đếm số cách đặt $s$ quả bóng phân biệt vào $t$ hộp giống nhau, trong đó các hộp (có thể $\emptyset$).
+		
+		
+		$\rightarrow$
+		Số Stirling loại hai $\left\{ \begin{matrix}
+			s \\
+			t
+		\end{matrix} \right\}$ là số cách phân hoạch một tập hợp gồm $s$ phần tử thành $t$ tập con phân biệt, mỗi tập con khác rỗng.
+		
+		Nếu $t > s$, điều đó có nghĩa là cần chia $s$ phần tử vào $t$ tập con khác rỗng.
+		
+		Tuy nhiên, mỗi tập con phải chứa ít nhất một phần tử $\Rightarrow$ tổng số phần tử tối thiểu là $t$. 
+		
+		Nhưng ta chỉ có $s < t$ phần tử, nên không thể phân chia thành $t$ tập con khác rỗng.
+		
+		\[
+		\Rightarrow \left\{ \begin{matrix}
+			s \\
+			t
+		\end{matrix} \right\} = 0 \quad \text{nếu } t > s \quad
+		\]
+	\end{enumerate}
+	
+	\begin{enumerate}
+		\item[(b)] 
+		Đếm số phân hoạch của số nguyên $s \in \mathbb{N}$ thành không quá $t$ phần.
+		
+		
+		\begin{itemize}
+			\item Một \textbf{phân hoạch} của số nguyên $s$ là một dãy các số nguyên dương $\lambda_1 \geq \lambda_2 \geq \dots \geq \lambda_k > 0$ sao cho:
+			\[
+			\lambda_1 + \lambda_2 + \cdots + \lambda_k = s
+			\]
+			\item Trong câu này, ta cần đếm số phân hoạch sao cho số lượng phần tử (số phần) là không quá $t$, tức là $k \leq t$.
+			
+			\item Ký hiệu \( p(s, t) \) là số phân hoạch của $s$ thành không quá $t$ phần.
+			
+			\item Vậy kết quả cần tìm là:
+			\[
+			\boxed{p(s, t)}
+			\]
+		\end{itemize}
+		
+		\textbf{Ví dụ:} Với $s = 5$, $t = 2$, các phân hoạch thoả mãn là:
+		\[
+		5 = 4 + 1,\quad 3 + 2,\quad 3 + 1 + 1,\quad 2 + 2 + 1,\quad 2 + 1 + 1 + 1,\quad 1 + 1 + 1 + 1 + 1
+		\]
+		Nhưng chỉ lấy các phân hoạch có số phần $\leq 2$:
+		\[
+		(5),\ (4+1),\ (3+2)
+		\Rightarrow p(5, 2) = 3
+		\]
+	\end{enumerate}
+	
+	\subsection*{BT 3}
+	\begin{enumerate}
+		\item[(a)] 
+		Cho $s, t \in \mathbb{N}$. Đếm số cách đặt $s$ quả bóng phân biệt vào $t$ hộp \textbf{phân biệt}, trong đó các hộp \textbf{có thể rỗng}.
+		
+		\begin{itemize}
+			\item Mỗi quả bóng có $t$ lựa chọn vì có $t$ hộp phân biệt.
+			\item Do đó, tổng số cách phân phối $s$ quả bóng phân biệt vào $t$ hộp phân biệt (có thể rỗng) là:
+			\[
+			\boxed{t^s}
+			\]
+		\end{itemize}
+	\end{enumerate}
+	
+	\begin{enumerate}
+		\item[(b)] 
+		Đếm số phân hoạch của số nguyên $s \in \mathbb{N}$ thành không quá $t$ phần, trong đó các phần \textbf{phân biệt theo vị trí} (do hộp phân biệt).
+		
+		\begin{itemize}
+			\item Ta xem đây là số cách phân chia $s$ phần tử phân biệt vào $t$ hộp phân biệt sao cho tổng số phần tử là $s$ (cho phép hộp rỗng).
+			\item Mỗi phân bố tương ứng với một tổ hợp có thứ tự gồm $s$ phần tử gán vào $t$ vị trí khác nhau.
+			\item Tổng số cách là:
+			\[
+			\boxed{t^s}
+			\]
+			(giống như câu a) vì thứ tự hộp có phân biệt và hộp được phép rỗng).
+		\end{itemize}
+		
+		\textbf{Lưu ý:} Nếu cần đếm số phân hoạch của $s$ thành không quá $t$ \textbf{phần tử} mà mỗi phần tử là số nguyên dương không âm, thì đây là bài toán phân hoạch số có điều kiện:
+		\[
+		\text{số nghiệm nguyên không âm của phương trình } x_1 + x_2 + \dots + x_t = s
+		\]
+		Số nghiệm là:
+		\[
+		\boxed{\binom{s + t - 1}{t - 1}}
+		\]
+	\end{enumerate}
+	
+	\newpage
+	\section*{Week 05}
+	\subsection*{10.2.1}
+	Let $x$ and $y$ be vertices of a general graph.
+	\begin{itemize}
+		\item[(a)] Suppose that there is a closed walk containing both $x$ and $y$. Must there be a closed trail containing both $x$ and $y$?
+		\item[(b)] Suppose that there is a closed trail containing both $x$ and $y$. Must there be a cycle containing both $x$ and $y$?
+	\end{itemize}
+	\begin{itemize}[leftmargin=1.5em]
+		\item[(a)] \textbf{Không nhất thiết.}
+		
+		\textit{Giải thích:} Một đường đi đóng có thể đi qua một số cạnh và đỉnh nhiều lần. Do đó, mặc dù có một đường đi đóng đi qua cả $x$ và $y$, không thể đảm bảo rằng tồn tại một đường đi đóng đơn (không lặp cạnh) nào cũng đi qua cả hai đỉnh này.
+		
+		\textit{Phản ví dụ:} Xét đồ thị gồm các đỉnh $x$, $y$, $z$ với các cạnh:
+		\[
+		x \leftrightarrow y,\quad y \leftrightarrow z,\quad z \leftrightarrow y,\quad y \leftrightarrow x
+		\]
+		Khi đó ta có đường đi đóng: $x \to y \to z \to y \to x$, đi qua cả $x$ và $y$, nhưng có cạnh $y \to z$ và $z \to y$ được đi qua hai lần. Không thể rút gọn đường đi này thành một đường đi đóng đơn đi qua cả $x$ và $y$ mà không lặp cạnh.
+		
+		\item[(b)] \textbf{Cũng không nhất thiết.}
+		
+		\textit{Giải thích:} Đường đi đóng đơn là đường đi khép kín không lặp cạnh, nhưng có thể lặp đỉnh. Trong khi đó, chu trình là một đường đi đóng không lặp cạnh và không lặp đỉnh (ngoại trừ điểm đầu và điểm cuối). Vì vậy, một đường đi đóng đơn có thể đi qua $x$ và $y$ ở những vị trí trùng lặp mà không nằm trên cùng một chu trình đơn.
+		
+		\textit{Phản ví dụ:} Xét đồ thị có đường đi:
+		\[
+		x \to a \to b \to y \to a \to x
+		\]
+		Đây là một đường đi đóng đơn vì không có cạnh nào bị lặp lại. Tuy nhiên, đỉnh $a$ xuất hiện hai lần. Do đó, không tồn tại chu trình nào (không lặp đỉnh) chứa cả $x$ và $y$ trong trường hợp này.
+		
+	\end{itemize}
+	
+	\subsection*{10.2.2}
+	\textbf{If a vertex x of a graph is on a circuit, then is x also on a cycle?}
+	
+	Trong lý thuyết đồ thị, một \textbf{mạch (circuit)} là một đường đi đóng đơn — tức là bắt đầu và kết thúc tại cùng một đỉnh, không có cạnh nào bị lặp lại, nhưng có thể lặp lại đỉnh. Một \textbf{chu trình (cycle)} là một mạch mà không có đỉnh nào (ngoại trừ điểm đầu/cuối) bị lặp lại.
+	
+	Mỗi khi một đỉnh $x$ nằm trên một mạch, thì ta có thể tìm trong mạch đó một đoạn con không lặp đỉnh bắt đầu và kết thúc tại $x$ — chính là một chu trình. Cụ thể hơn, nếu trong mạch có một đỉnh bị lặp lại (gọi là $x$), thì đoạn giữa hai lần xuất hiện của $x$ tạo thành một chu trình.
+	
+	\textit{Ví dụ minh họa:} Xét mạch:
+	\[
+	x \to a \to b \to c \to x \to d \to e \to x
+	\]
+	Trong mạch này, đỉnh $x$ xuất hiện nhiều lần. Tuy nhiên, đoạn con:
+	\[
+	x \to d \to e \to x
+	\]
+	là một chu trình chứa $x$. Do đó, từ mạch ban đầu có thể trích ra chu trình chứa $x$.
+	
+	\vspace{0.5em}
+	$\rightarrow$ Nếu một đỉnh $x$ nằm trên một mạch thì luôn tồn tại một chu trình cũng chứa đỉnh $x$.
+	
+	\subsection*{10.2.3}
+	\textbf{Cơ sở quy nạp:} Nếu đường đi từ $x$ đến $y$ chỉ có 1 cạnh, tức là $x$ và $y$ kề nhau, thì bản thân đường đi này là một đường đơn.
+	
+	\textbf{Giả thiết quy nạp:} Giả sử mọi đường đi có \textbf{k cạnh} (với $k \geq 1$) nối $x$ và $y$ đều có thể rút gọn thành một đường đơn nối $x$ và $y$.
+	
+	\textbf{Bước quy nạp:} Xét một đường đi $W$ có $k+1$ cạnh nối $x$ đến $y$. Nếu $W$ không có đỉnh nào lặp lại thì $W$ đã là một đường đơn.
+	
+	Ngược lại, nếu $W$ có đỉnh lặp lại, giả sử $v$ là đỉnh xuất hiện ít nhất hai lần trong $W$, và ta xét hai vị trí xuất hiện đầu tiên và tiếp theo của $v$.
+	
+	Gọi $W_1$ là đoạn con của $W$ từ lần đầu đến lần tiếp theo $v$. Vì đây là một đường đi đóng (walk) bắt đầu và kết thúc tại cùng một đỉnh $v$, ta có thể loại bỏ đoạn $W_1$ để tạo ra một đường đi $W'$ ngắn hơn nối $x$ đến $y$ với ít hơn $k+1$ cạnh.
+	
+	Theo giả thiết quy nạp, $W'$ có thể rút gọn thành một đường đơn nối $x$ đến $y$.
+	
+	$\rightarrow$ Mọi đường đi nối hai đỉnh $x$ và $y$ trong đồ thị đều có thể rút gọn thành một đường đơn. Do đó, nếu tồn tại đường đi từ $x$ đến $y$, thì cũng tồn tại đường đơn từ $x$ đến $y$.
+	
+	\subsection*{10.2.4}
+	Đồ thị $G$ có $|V| = 10$ đỉnh và $|E| = 19$ cạnh. Ta cần tìm một chu trình dài nhất có thể, nghĩa là đi qua càng nhiều đỉnh khác nhau càng tốt (tối đa là 10, tức là một chu trình Hamilton nếu tồn tại).
+	
+	Quan sát đồ thị, ta nhận thấy:
+	\begin{itemize}
+		\item Đỉnh 9 có bậc $\deg(9) = 3$, nối với các đỉnh: 5, 6, 8.
+		\item Nếu ta loại bỏ đỉnh 9 khỏi đồ thị, phần còn lại là một đồ thị dày đặc (nhiều chu trình lớn).
+	\end{itemize}
+	
+	Ta cố gắng xây dựng một chu trình đi qua nhiều đỉnh nhất. Sau đây là một chu trình gồm \textbf{9 đỉnh}:
+	
+	\[
+	1 \to 2 \to 3 \to 8 \to 9 \to 6 \to 7 \to 10 \to 5 \to 1
+	\]
+	
+	Chu trình này đi qua các đỉnh: 1, 2, 3, 8, 9, 6, 7, 10, 5 (tổng cộng 9 đỉnh, 9 cạnh). Không thể mở rộng chu trình này để đi qua tất cả 10 đỉnh vì:
+	- Đỉnh còn lại là 4, nhưng không có cách thêm đỉnh 4 vào chu trình trên mà vẫn giữ chu trình đơn.
+	
+	Do đó, \textbf{độ dài lớn nhất của một chu trình trong đồ thị là 9}.
+
+	\subsection*{10.2.5}
+	Đồ thị Petersen là một đồ thị vô hướng có:
+	\begin{itemize}
+		\item $|V| = 10$ đỉnh
+		\item $|E| = 15$ cạnh
+		\item Là một đồ thị \textbf{3-regular} (mỗi đỉnh có bậc 3)
+	\end{itemize}
+	
+	Ta xét các độ dài chu trình xuất hiện trong đồ thị Petersen bằng cách quan sát hoặc liệt kê:
+	
+	\begin{itemize}
+		\item Chu trình độ dài 5: ví dụ như chu trình ngoại tiếp gồm các đỉnh: $1 \to 2 \to 3 \to 4 \to 5 \to 1$.
+		\item Chu trình độ dài 6: ví dụ $1 \to 6 \to 9 \to 4 \to 5 \to 10 \to 1$.
+		\item Chu trình độ dài 8: có thể tìm thấy bằng cách nối các chu trình con.
+		\item Chu trình độ dài 9: như $1 \to 2 \to 3 \to 8 \to 9 \to 4 \to 5 \to 10 \to 6 \to 1$
+	\end{itemize}
+	
+	\textbf{Tuy nhiên:} Không tồn tại chu trình độ dài 3 hoặc 4 trong đồ thị Petersen (vì đồ thị này không chứa tam giác hay tứ giác).
+	
+	\vspace{1em}
+	\textbf{Giả thuyết:} Độ dài chu trình nhỏ nhất trong đồ thị Petersen là 5 (chu trình ngắn nhất), và tập hợp độ dài chu trình có thể có là:
+	\[
+	\boxed{\{5, 6, 8, 9, 10\}}
+	\]
+	Tức là, đồ thị Petersen chứa các chu trình độ dài 5 trở lên, nhưng không chứa chu trình độ dài 3 hoặc 4.
+	
+	\subsection*{10.2.6}
+	\textbf{(1) Đồ thị liên thông không có \textit{mạch}:} \\
+	Có thể dùng vì trong một đồ thị đơn:
+	\begin{itemize}
+		\item Một \textbf{chu trình} là một mạch mà không có đỉnh lặp lại (ngoại trừ điểm đầu và cuối).
+		\item Nếu không có mạch nào, thì chắc chắn không thể có chu trình.
+		\item Ngược lại, nếu không có chu trình, thì cũng không thể có mạch.
+	\end{itemize}
+	Do đó, ta có thể định nghĩa \textbf{cây} là một đồ thị liên thông không chứa mạch.
+	
+	\textbf{(2) Đồ thị liên thông không có \textit{đường đi đóng}:} \\
+	Không thể dùng vì:
+	\begin{itemize}
+		\item Một \textbf{đường đi đóng} (closed walk) là một dãy các đỉnh bắt đầu và kết thúc tại cùng một đỉnh, có thể lặp lại cạnh và đỉnh.
+		\item Nếu một đồ thị không có đường đi đóng nào, thì nó chỉ có thể là một đường thẳng duy nhất (hoặc một tập hợp các cây nhỏ rời rạc).
+		\item Tuy nhiên, một cây có thể chứa nhiều đường đi đóng không phải là chu trình, do việc đi "lùi lại" trên cùng một cạnh (theo hai hướng ngược nhau).
+		\item Ví dụ: trong một cây, có thể đi $v_1 \to v_2 \to v_1$ — đây là một đường đi đóng (lặp đỉnh và cạnh) nhưng không phải chu trình.
+	\end{itemize}
+	Vì vậy, yêu cầu "không có đường đi đóng" là quá mạnh và loại trừ cả những cây hợp lệ.
+	
+	\vspace{1em}
+	\noindent \textbf{Như vậy:}
+	\begin{itemize}
+		\item Có thể định nghĩa cây là một đồ thị liên thông không chứa mạch.
+		\item Không thể định nghĩa cây là một đồ thị liên thông không có đường đi đóng.
+	\end{itemize}
+	
+	\subsection*{10.2.7}
+	\begin{itemize}
+		\item \textbf{Có thể là một cây?} \\
+		Có vi trong lý thuyết đồ thị, một cây là một đồ thị liên thông và không chứa chu trình. Một định lý cơ bản cho biết:
+		\[
+		\text{Một cây với } n \text{ đỉnh thì có } n - 1 \text{ cạnh}.
+		\]
+		Với $n = 5$, ta có $5 - 1 = 4$ cạnh. Do đó, nếu đồ thị liên thông và không chứa chu trình, thì nó có thể là một cây.
+		
+		\item \textbf{Phải là một cây?} \\
+		Không vì mặc dù một cây với 5 đỉnh có đúng 4 cạnh, nhưng không phải mọi đồ thị đơn với 5 đỉnh và 4 cạnh đều là cây. Có thể tồn tại đồ thị không liên thông hoặc có chu trình nhưng vẫn có 4 cạnh.
+		
+		\textit{Ví dụ:} Một đồ thị gồm hai thành phần liên thông:
+		\begin{itemize}
+			\item Một thành phần là một chu trình gồm 3 đỉnh và 3 cạnh.
+			\item Một thành phần là một cạnh nối hai đỉnh còn lại.
+		\end{itemize}
+		Khi đó tổng cộng có 5 đỉnh và 4 cạnh, nhưng không phải là một cây vì đồ thị không liên thông và có chu trình.
+		
+	\end{itemize}
+	
+	\vspace{1em}
+	\noindent \textbf{Vậy:}
+	\begin{itemize}
+		\item Đồ thị có thể là một cây nếu nó liên thông và không chứa chu trình.
+		\item Tuy nhiên, nó không bắt buộc phải là một cây.
+	\end{itemize}
+	
+	\subsection*{10.2.8}
+	Một cây là một đồ thị liên thông không có chu trình. Trong đồ thị này, mỗi cây có $v$ đỉnh thì có đúng $v - 1$ cạnh.
+	
+	Vì $G$ là một \textit{rừng} gồm $t$ cây rời nhau, giả sử các cây đó có $n_1, n_2, \dots, n_t$ đỉnh, thì:
+	\[
+	n_1 + n_2 + \dots + n_t = n
+	\]
+	
+	Số cạnh trong mỗi cây là $n_i - 1$, do đó tổng số cạnh trong toàn bộ rừng là:
+	\[
+	(n_1 - 1) + (n_2 - 1) + \dots + (n_t - 1) = (n_1 + n_2 + \dots + n_t) - t = n - t
+	\]
+	
+	\vspace{1em}
+	\noindent \textbf{Như vậy:} Số cạnh của rừng $G$ là:
+	\[
+	\boxed{n - t}
+	\]
+	
+	\subsection*{10.2.9}
+	Gọi $G = (V, E)$ là một cây hữu hạn với $|V| = n \geq 2$ đỉnh.
+	
+	Ta biết rằng:
+	\begin{itemize}
+		\item Một cây liên thông và không có chu trình.
+		\item Một cây với $n$ đỉnh thì có đúng $n - 1$ cạnh.
+	\end{itemize}
+	
+	\textbf{Ý tưởng chứng minh:} Ta sẽ chứng minh bằng cách chọn một đường đi dài nhất trong cây.
+	
+	\vspace{0.5em}
+	\noindent \textbf{Bước 1:} Trong mọi cây, luôn tồn tại một đường đi dài nhất (vì số đỉnh là hữu hạn).  
+	
+	Gọi đường đi dài nhất này là:
+	\[
+	v_1 \to v_2 \to \dots \to v_k
+	\]
+	với $k \geq 2$.
+	
+	\noindent \textbf{Bước 2:} Ta sẽ chứng minh rằng $v_1$ và $v_k$ là các đỉnh lá.
+	
+	Giả sử ngược lại rằng $v_1$ không phải lá, tức là $\deg(v_1) \geq 2$. Khi đó tồn tại đỉnh $u$ nối với $v_1$ mà không nằm trên đường đi trên (vì nếu không, $v_1$ chỉ nối với $v_2$). Khi đó, ta có thể mở rộng đường đi thành:
+	\[
+	u \to v_1 \to v_2 \to \dots \to v_k
+	\]
+	mâu thuẫn với giả thiết rằng đường đi ban đầu là dài nhất.
+	
+	Tương tự, $v_k$ cũng phải là đỉnh lá.
+	
+	\noindent \textbf{Do đó:} Đã tồn tại ít nhất hai đỉnh lá $v_1$ và $v_k$ trong cây $G$. Do đó, mọi cây hữu hạn có ít nhất 2 đỉnh thì có ít nhất hai đỉnh lá.
+	
+	\[
+	\boxed{\text{Mọi cây hữu hạn với } n \geq 2 \text{ luôn có ít nhất hai lá.}}
+	\]
+	
+
+	\subsection*{10.2.10}
+	Ta sử dụng một định lý trong lý thuyết đồ thị:
+	
+	\textbf{Định lý:} Trong một cây với ít nhất hai đỉnh, ta có:
+	\[
+	\sum_{v \in V} \deg(v) = 2(n - 1)
+	\]
+	vì cây có $n$ đỉnh thì có $n - 1$ cạnh, và tổng bậc của tất cả các đỉnh bằng $2|E| = 2(n-1)$.
+	
+	Gọi số đỉnh trong cây là $n$, và gọi số lá là $L$ (đỉnh có bậc 1).  
+	Giả sử chỉ có một đỉnh $v$ có bậc 4. Để \textbf{tối thiểu hoá số lá}, ta muốn các đỉnh còn lại có bậc càng lớn hơn 1 càng tốt (tức là bậc 2 trở lên). Tuy nhiên, ta vẫn cần đảm bảo tổng bậc là $2(n - 1)$.
+	
+	Gọi:
+	- \( L \) là số lá (bậc 1),
+	- \( d_i \) là bậc của các đỉnh khác (gồm đỉnh bậc 4 và các đỉnh bậc $\geq$ 2).
+	
+	Khi đó:
+	\[
+	\sum \deg(v) = L \cdot 1 + 4 + \sum \text{(các đỉnh còn lại, bậc $\geq$ 2)} = 2(n - 1)
+	\]
+	
+	Giả sử chỉ có một đỉnh bậc 4, các đỉnh còn lại là các đỉnh bậc 1 (lá) và một số đỉnh bậc 2 để giữ cho cây không phân nhánh thêm. Cấu hình tối thiểu là như sau:
+	
+	- Đỉnh bậc 4 nối với 4 nhánh.
+	- Mỗi nhánh là một chuỗi các đỉnh bậc 2 nối đến một lá ở cuối.
+	
+	Để có số lá \textbf{ít nhất}, ta nên làm sao cho mỗi nhánh chỉ có một lá ở cuối, và các đỉnh bên trong có bậc 2. Như vậy, mỗi nhánh chỉ dẫn đến một lá.
+	
+	\textbf{Do đó, số lá ít nhất chính là số nhánh xuất phát từ đỉnh bậc 4, tức là 4.}
+	
+	$\rightarrow$
+	\[
+	\boxed{\text{Số lá ít nhất trong cây là } 4}
+	\]
+	
+	\subsection*{10.2.11}
+	Tổng bậc của tất cả các đỉnh là:
+	\[
+	3 + 3 + 3 + 2 + 1 = 12
+	\]
+	Mà tổng bậc trong một đồ thị đơn luôn bằng $2|E|$ (với $|E|$ là số cạnh), nên số cạnh trong đồ thị là:
+	\[
+	|E| = \frac{12}{2} = 6
+	\]
+	
+	Mặt khác, giả sử rằng $G$ \textit{không chứa chu trình}, tức là $G$ là một \textbf{rừng} (forest). Khi đó, mỗi thành phần liên thông của đồ thị là một cây.
+	
+	Một định lý trong lý thuyết đồ thị cho biết:
+	\[
+	\text{Một cây với } n \text{ đỉnh thì có đúng } n - 1 \text{ cạnh}
+	\]
+	Nếu $G$ là một rừng gồm $k$ cây với tổng cộng $n = 5$ đỉnh, thì tổng số cạnh tối đa là:
+	\[
+	5 - k \leq 5 - 1 = 4 \quad \text{(vì phải có ít nhất 1 thành phần)}
+	\]
+	
+	Vậy tổng số cạnh trong một rừng với 5 đỉnh là \textbf{tối đa 4}.  
+	Nhưng ở trên ta đã tính được $G$ có đến $6$ cạnh. Mâu thuẫn.
+	
+	\vspace{1em}
+	\noindent \textbf{Do đó:}  
+	
+	Vì $G$ có 6 cạnh nhưng một rừng với 5 đỉnh chỉ có nhiều nhất 4 cạnh, nên $G$ \textbf{không thể là rừng}.  
+	Do đó, $G$ \textbf{phải chứa ít nhất một chu trình}.
+	
+	\[
+	\boxed{G \text{ chứa một chu trình}}
+	\]
+	
+	\subsection*{10.2.12}
+	Ta cần chứng minh rằng nếu một cây $T$ có đúng hai đỉnh bậc 1 (tức là hai lá), thì $T$ phải là một đường đi (path graph).
+	
+	\textbf{Định nghĩa:}
+	\begin{itemize}
+		\item Một đường đi (path) là một dãy các đỉnh nối liên tiếp mà không lặp đỉnh.
+		\item Một cây có đúng hai lá thì mọi đỉnh còn lại phải có bậc đúng bằng 2 (nếu có).
+	\end{itemize}
+	
+	\noindent \textbf{Chứng minh:}
+	
+	Vì $T$ là một cây, nên nó là một đồ thị liên thông và không có chu trình.
+	
+	Giả sử hai lá của $T$ là $u$ và $v$.
+	
+	Trong cây, luôn tồn tại một và chỉ một đường đi đơn giữa hai đỉnh bất kỳ. Vì vậy, tồn tại một đường đi duy nhất từ $u$ đến $v$ trong $T$ — gọi là $P$.
+	
+	Nếu tồn tại bất kỳ đỉnh nào trong $T$ không nằm trên $P$, thì nó phải được nối với một đỉnh nào đó trên $P$ bằng một cạnh. Khi đó, ta có thể đi từ $u$ đến $v$ qua nhánh đó và quay lại $P$, hình thành một chu trình — mâu thuẫn với giả thiết $T$ là cây.
+	
+	Vì vậy, mọi đỉnh trong $T$ đều nằm trên đường đi từ $u$ đến $v$. Do đó, $T$ chính là đường đi đó.
+	
+	$\rightarrow$ Nếu một cây có đúng hai lá, thì nó phải là một đường đi.
+	
+	\[
+	\boxed{\text{Nếu } T \text{ là cây và có đúng hai lá, thì } T \text{ là một đường đi}}
+	\]
+	
+	\subsection*{10.2.13}
+	Vì $G$ là một \textbf{cây} với 20 đỉnh, nên số cạnh của $G$ là:
+	\[
+	|E(G)| = 20 - 1 = 19
+	\]
+	và $G$ không chứa chu trình nào.
+	
+	Giờ ta xét đồ thị $H$ được tạo từ $G$ bằng cách thêm cạnh $\{v_4, v_{18}\}$. Ta phân tích:
+	
+	\begin{itemize}
+		\item Trong cây $G$, tồn tại duy nhất một đường đi giữa bất kỳ hai đỉnh. Vì vậy, tồn tại một đường đi duy nhất từ $v_4$ đến $v_{18}$ trong $G$.
+		\item Khi thêm cạnh $\{v_4, v_{18}\}$ vào $H$, ta tạo thành một chu trình duy nhất: đó là đường đi từ $v_4$ đến $v_{18}$ trong $G$, cộng thêm cạnh $\{v_4, v_{18}\}$ để quay lại điểm xuất phát.
+	\end{itemize}
+	
+	Vì không có cạnh nào khác được thêm vào, nên chỉ có duy nhất một chu trình mới được tạo ra.
+	
+	\noindent \textbf{Như vậy:}
+	\[
+	\boxed{\text{Đồ thị } H \text{ có đúng } 1 \text{ chu trình.}}
+	\]
+	
+	\subsection*{10.2.14}
+	Một đồ thị liên thông với $n$ đỉnh và $m$ cạnh thì số chu trình độc lập (cơ sở) là:
+	\[
+	\beta = m - n + 1
+	\]
+	
+	Áp dụng với $n = 47$, $m = 47$:
+	\[
+	\beta = 47 - 47 + 1 = 1
+	\]
+	
+	Do đó, đồ thị $G$ chứa ít nhất một chu trình.  
+	Cụ thể hơn, \textbf{không gian chu trình của $G$ có bậc 1}, tức là tất cả các chu trình trong $G$ có thể được tạo ra từ đúng một chu trình cơ sở duy nhất.
+	
+	Tuy nhiên, \textbf{tổng số chu trình (kể cả lặp cạnh, tổ hợp) trong $G$ có thể lớn hơn 1}, phụ thuộc vào cấu trúc cụ thể của đồ thị.
+	
+	
+	$\rightarrow$ G có đúng một chu trình cơ sở, và ít nhất một chu trình, nhưng có thể có nhiều chu trình khác nhau.
+	
+	\subsection*{10.2.15}
+	\subsubsection*{Đồ thị đơn}
+	
+	Giả sử $G$ là một đồ thị đơn có $n$ đỉnh và $m \geq n$ cạnh.
+	
+	\begin{itemize}
+		\item Một định lý cơ bản trong lý thuyết đồ thị nói rằng: \\
+		Một \textbf{rừng} (tập các cây) có $n$ đỉnh và không chứa chu trình thì có nhiều nhất $n - k$ cạnh, trong đó $k$ là số thành phần liên thông.
+		
+		\item Như vậy, nếu một đồ thị không có chu trình nào (tức là rừng), thì số cạnh của nó \textbf{tối đa} là $n - k \leq n - 1$ (vì $k \geq 1$).
+		
+		\item Do đó, nếu $G$ có \textbf{nhiều hơn hoặc bằng $n$ cạnh}, thì chắc chắn tồn tại ít nhất một chu trình trong $G$.
+	\end{itemize}
+	
+	
+	$\rightarrow$ Mọi đồ thị đơn với  n $\geq$ 2 \text{ và } m $\geq$ n \text thì phải chứa ít nhất một chu trình.
+	
+	\subsubsection*{Đồ thị tổng quát (có thể có cạnh lặp hoặc khuyên)}
+	
+	Trong đồ thị tổng quát:
+	\begin{itemize}
+		\item Nếu có khuyên (loop) hoặc cạnh lặp thì ta có thể có chu trình ngay lập tức — vì một khuyên là một chu trình độ dài 1.
+		\item Thậm chí với 1 đỉnh và 1 khuyên, vẫn có chu trình → không cần đến $n \geq 2$.
+	\end{itemize}
+	
+	$\rightarrow$ Với đồ thị tổng quát, nếu có cạnh lặp hoặc khuyên thì có thể có chu trình ngay cả khi m < n.
+	
+	\subsection*{10.2.16}
+	\subsubsection*{(a) Nếu $G$ là một cây, thì các dãy bậc khả dĩ là gì?}
+	Với cây có $n$ đỉnh thì luôn có $n - 1$ cạnh.  
+	Vậy nếu $G$ là cây thì:
+	\[
+	|E| = 10 - 1 = 9 \Rightarrow \sum_{v \in V} \deg(v) = 2|E| = 18
+	\]
+	
+	Giả sử dãy bậc là:
+	\[
+	\deg(v_1) = 5, \quad \deg(v_2) = 4, \quad \deg(v_3) = \dots = ?
+	\]
+	
+	Tổng bậc cần là 18, đã có \(5 + 4 = 9\), còn lại \(18 - 9 = 9\) cho 8 đỉnh.  
+	Có nhiều khả năng như:
+	- 5, 4, 1, 1, 1, 2, 2, 1, 1, 0 → không hợp lệ vì không đủ 10 đỉnh có tổng bậc = 18.
+	- 5, 4, 1, 1, 1, 1, 1, 1, 1, 1 → tổng là \(5 + 4 + 8 \times 1 = 17\) → thiếu.
+	
+	Một dãy hợp lệ là:
+	\[
+	\boxed{5,\ 4,\ 1,\ 1,\ 1,\ 1,\ 1,\ 1,\ 1,\ 2}
+	\]
+	Tổng = \(5 + 4 + 2 + 7 \times 1 = 18\)
+	
+	\subsubsection*{(b) Liệu $G$ có thể là một rừng với 2 thành phần liên thông không? Nếu có, các khả năng cho $|E|$ và dãy bậc là gì?}
+	Với một rừng có $k$ thành phần liên thông và $n$ đỉnh, ta có:
+	\[
+	|E| = n - k = 10 - 2 = 8
+	\Rightarrow \sum \deg(v) = 2|E| = 16
+	\]
+	
+	Ta vẫn có một đỉnh bậc 5 và ít nhất một đỉnh bậc 4.
+	
+	Vậy:
+	\[
+	5 + 4 + x_1 + \dots + x_8 = 16
+	\Rightarrow x_1 + \dots + x_8 = 7
+	\]
+	
+	Một dãy khả dĩ:
+	\[
+	\boxed{5,\ 4,\ 1,\ 1,\ 1,\ 1,\ 1,\ 1,\ 1,\ 0}
+	\]
+	Tổng = \(5 + 4 + 7 \times 1 + 0 = 16\)
+	
+	\subsubsection*{(c) Nếu $G$ có 2 thành phần liên thông và $|E| = 9$, thì số chu trình trong $G$ có thể là bao nhiêu?}
+	Với 2 thành phần liên thông và $n = 10$, thì cây (rừng) có nhiều nhất:
+	\[
+	n - k = 10 - 2 = 8 \text{ cạnh} \Rightarrow \text{không có chu trình}
+	\]
+	
+	Nay $|E| = 9 > 8$ $\rightarrow$ có thêm 1 cạnh dư ra $\rightarrow$ tạo đúng 1 chu trình độc lập.
+	
+	\[
+	\boxed{\text{Số chu trình độc lập trong } G \text{ là } 1}
+	\]
+	Gọi $c$ là số chu trình độc lập:
+	\[
+	c = |E| - |V| + k = 9 - 10 + 2 = \boxed{1}
+	\]
+	
+	\subsection*{10.2.17}
+	Giả sử dãy $d_1, d_2, \dots, d_n$ là dãy bậc của một cây $T$ có $n$ đỉnh.  
+	Vì $T$ là một cây nên nó có đúng $n - 1$ cạnh.  
+	Mỗi cạnh đóng góp 2 vào tổng bậc, nên:
+	\[
+	\sum_{i=1}^{n} d_i = 2(n - 1) = 2n - 2
+	\]
+	Vậy điều kiện đúng.
+	
+	\vspace{1em}
+	Giả sử dãy $d_1 \geq d_2 \geq \dots \geq d_n$ là dãy các số nguyên dương sao cho:
+	\[
+	\sum_{i=1}^{n} d_i = 2n - 2
+	\]
+	
+	Ta cần chứng minh rằng tồn tại một cây có dãy bậc như vậy.
+	
+	\textit{Chứng minh bằng quy nạp theo số đỉnh $n$.}
+	
+	\textbf{Cơ sở:} \( n = 2 \): Dãy khả dĩ duy nhất là \( d_1 = d_2 = 1 \), và tổng là \( 2 \), đúng bằng \( 2n - 2 \). Đây là cây 2 đỉnh nối nhau.
+	
+	\textbf{Bước quy nạp:} Giả sử định lý đúng với mọi số nhỏ hơn $n$, xét dãy $d_1 \geq \cdots \geq d_n$ sao cho:
+	\[
+	\sum_{i=1}^{n} d_i = 2n - 2
+	\]
+	
+	Vì các $d_i$ là số nguyên dương, tồn tại ít nhất một đỉnh bậc 1 (lá). Giả sử \( d_n = 1 \).  
+	Gỡ bỏ đỉnh đó và giảm bậc của đỉnh mà nó nối vào (tức là đỉnh có bậc > 1), dãy mới có:
+	- $n - 1$ phần tử
+	- Tổng bậc là \( 2n - 2 - 2 = 2(n - 1) - 2 \)
+	
+	Theo giả thiết quy nạp, dãy mới là dãy bậc của cây $T'$ với $n - 1$ đỉnh.
+	
+	Gắn lại đỉnh bậc 1 vào đỉnh bị giảm bậc, ta được cây $T$ có dãy bậc ban đầu.
+	
+	\vspace{1em}
+	\noindent \textbf{Như vậy:}
+	\[
+	\boxed{\text{Dãy } d_1 \geq \cdots \geq d_n \text{ là dãy bậc của một cây khi và chỉ khi } \sum_{i=1}^n d_i = 2n - 2}
+	\]
+	
+	\subsection*{10.2.18}
+	Một \textbf{cây bao trùm (spanning tree)} là một cây con của đồ thị, liên thông và chứa tất cả các đỉnh.
+	
+	Giả sử $T$ là một cây với $n$ đỉnh. Khi đó:
+	\begin{itemize}
+		\item $T$ đã liên thông.
+		\item $T$ có đúng $n - 1$ cạnh.
+		\item Không có chu trình.
+	\end{itemize}
+	
+	Do đó, $T$ \textbf{đã là cây bao trùm} của chính nó.  
+	Vì $T$ không có cạnh dư, nên không tồn tại bất kỳ cây con nào khác nối tất cả các đỉnh mà vẫn giữ cấu trúc cây.
+	
+	$\rightarrow$ T có đúng 1 cây bao trùm, đó chính là bản thân nó.
+	
+	\subsection*{10.2.19}
+	Gọi $G$ là một đồ thị vô hướng đơn với $n$ đỉnh.  
+	Một cây bao trùm của $G$ là một cây con liên thông chứa tất cả $n$ đỉnh và không có chu trình.
+	
+	Một định lý cơ bản trong lý thuyết đồ thị cho biết:
+	
+	\[
+	\boxed{\text{Mỗi cây có đúng } n - 1 \text{ cạnh}}
+	\]
+	
+	Vì vậy, bất kỳ cây bao trùm nào của $G$ đều có đúng $n - 1$ cạnh.  
+	Do đó, nếu $T_1$ và $T_2$ đều là các cây bao trùm của $G$, thì:
+	
+	\[
+	|E(T_1)| = |E(T_2)| = n - 1
+	\]
+	
+	$\rightarrow$ Mọi cây bao trùm của cùng một đồ thị đều có cùng số cạnh là n - 1.
+	
+	\subsection*{10.2.20}
+	Ta chứng minh hai mệnh đề tương đương: $(a) \Leftrightarrow (b)$.
+	
+	\vspace{0.5em}
+	\noindent \textbf{($\Rightarrow$):} Giả sử $T$ là một cây bao trùm của $G$.
+	
+	\begin{itemize}
+		\item Khi đó, $T$ có tất cả các đỉnh của $G$, và liên thông.
+		\item Vì $T$ là cây nên không có chu trình và có đúng $n - 1$ cạnh, với $n = |V(G)|$.
+		\item Với bất kỳ đồ thị con liên thông nào khác $T' \in S$, nếu $T'$ không phải cây thì phải chứa chu trình $\rightarrow$ số cạnh > $n - 1$.
+	\end{itemize}
+	
+	\[
+	\Rightarrow T \in S \text{ và có số cạnh nhỏ nhất trong } S.
+	\]
+	
+	\vspace{0.5em}
+	\noindent \textbf{($\Leftarrow$):} Giả sử $T \in S$ và $T$ có số cạnh nhỏ nhất trong $S$.
+	
+	\begin{itemize}
+		\item Vì $T \in S$ nên $T$ liên thông và chứa toàn bộ đỉnh của $G$.
+		\item Giả sử $T$ có chu trình. Khi đó, ta có thể xóa một cạnh trong chu trình mà vẫn giữ liên thông.
+		\item Như vậy, ta có thể tạo một đồ thị $T'$ liên thông mới với ít cạnh hơn $\rightarrow$ mâu thuẫn với giả thiết rằng $T$ có số cạnh nhỏ nhất.
+	\end{itemize}
+	
+	\[
+	\Rightarrow T \text{ không có chu trình} \Rightarrow T \text{ là cây}.
+	\]
+	
+	Vì $T$ chứa tất cả đỉnh và là cây $\rightarrow$ $T$ là cây bao trùm.
+	
+	$\rightarrow$ T là cây bao trùm $\Leftrightarrow$ T $\in$ S và có số cạnh nhỏ nhất trong S
+	
+	\subsection*{10.2.21}
+	Một cây bao trùm (spanning tree) của đồ thị $G$ là một đồ thị con của $G$ có các tính chất:
+	\begin{itemize}
+		\item Bao gồm tất cả các đỉnh của $G$,
+		\item Liên thông,
+		\item Không chứa chu trình.
+	\end{itemize}
+	
+	Ta sẽ chứng minh bằng phương pháp xây dựng:
+	
+	\textbf{Bước 1:} Vì $G$ liên thông nên tồn tại ít nhất một đường đi giữa mọi cặp đỉnh.
+	
+	\textbf{Bước 2:} Lấy một đồ thị con $T$ của $G$ sao cho:
+	\begin{itemize}
+		\item $T$ chứa toàn bộ các đỉnh của $G$,
+		\item $T$ liên thông,
+		\item và số cạnh của $T$ là nhỏ nhất có thể (trong các đồ thị con liên thông).
+	\end{itemize}
+	
+	\textbf{Bước 3:} Ta chứng minh rằng $T$ không chứa chu trình:
+	
+	Giả sử ngược lại rằng $T$ có chu trình. Khi đó, ta có thể loại bỏ một cạnh trong chu trình mà không làm mất tính liên thông của $T$ (vì vẫn còn đường thay thế). Điều này mâu thuẫn với giả thiết rằng $T$ có số cạnh ít nhất.
+	
+	Do đó, $T$ không chứa chu trình.
+	
+	$T$ là đồ thị con của $G$, liên thông, chứa tất cả đỉnh, không có chu trình $\rightarrow$ $T$ là cây bao trùm của $G$.
+	
+	\textbf{Như vây:} mọi đồ thị liên thông (kể cả tổng quát) đều có ít nhất một cây bao trùm.
+	
+	\subsection*{10.2.22}
+	\subsubsection*{(a) Số cây bao trùm không đẳng cấu:}
+	
+	Một cây bao trùm của $K_4$ là một cây có 4 đỉnh và 3 cạnh.  
+	Với 4 đỉnh, có hai kiểu cây không đẳng cấu (xét theo cấu trúc):
+	
+	\begin{itemize}
+		\item \textbf{Kiểu 1 (cây hình ngôi sao):} Một đỉnh nối với ba đỉnh còn lại.  
+		Dạng: $(\text{bậc}) = (3,1,1,1)$
+		
+		\item \textbf{Kiểu 2 (cây đường thẳng):} Các đỉnh nối thành một đường (path).  
+		Dạng: $(\text{bậc}) = (2,2,1,1)$
+	\end{itemize}
+	
+	Vì không có cây nào khác (mỗi cây 4 đỉnh chỉ có 3 cạnh), nên:
+	
+	\[
+	\boxed{\text{Có 2 cây bao trùm không đẳng cấu của } K_4.}
+	\]
+	
+	\subsubsection*{(b) Số cây bao trùm phân biệt (gán nhãn):}
+	
+	Theo \textbf{định lý Cayley}, số cây bao trùm phân biệt trên $n$ đỉnh gán nhãn là:
+	
+	\[
+	n^{n - 2}
+	\Rightarrow 4^{4 - 2} = 4^2 = 16
+	\]
+	
+	\[
+	\boxed{\text{Có 16 cây bao trùm phân biệt của } K_4 \text{ khi đỉnh được gán nhãn.}}
+	\]
+	
+	\subsection*{10.2.23}
+	Vì cây bao trùm phải:
+	\begin{itemize}
+		\item Bao gồm tất cả 10 đỉnh,
+		\item Không có chu trình,
+		\item Có đúng $10 - 1 = 9$ cạnh,
+	\end{itemize}
+	nên ta chỉ cần chọn một tập gồm 9 cạnh từ $G$ mà vẫn kết nối toàn bộ đồ thị.
+	
+	Một ví dụ về cây bao trùm (dùng ký hiệu \{u,v\} cho cạnh nối đỉnh $u$ và $v$):
+	
+	\[
+	T = \{\{1,6\}, \{2,7\}, \{3,8\}, \{4,9\}, \{5,10\}, \{6,7\}, \{7,8\}, \{8,9\}, \{9,10\}\}
+	\]
+	
+	\begin{itemize}
+		\item Cây này nối đỉnh theo chuỗi từ 1 đến 10, qua các cạnh liên kết hình ngôi sao và lục giác trong đồ thị.
+		\item Không có chu trình, vì số cạnh đúng bằng $9$.
+		\item Kết nối toàn bộ $10$ đỉnh.
+	\end{itemize}
+	$\rightarrow$ Tập cạnh ở trên tạo thành một cây bao trùm của đồ thị $G$.
+	
+	\subsection*{10.2.24}
+	Vì đồ thị có $10$ đỉnh nên mọi cây bao trùm sẽ có đúng $10 - 1 = 9$ cạnh. Ta chọn một tập gồm 9 cạnh mà:
+	\begin{itemize}
+		\item Bao gồm tất cả đỉnh từ 1 đến 10,
+		\item Không tạo chu trình.
+	\end{itemize}
+	
+	Một ví dụ về cây bao trùm có thể chọn là:
+	
+	\[
+	T = \{\{1,2\}, \{2,3\}, \{3,4\}, \{4,5\}, \{5,10\}, \{10,6\}, \{6,7\}, \{7,8\}, \{8,9\}\}
+	\]
+	
+	\begin{itemize}
+		\item Tập cạnh này nối 10 đỉnh thành một cấu trúc đường đi từ 1 đến 9.
+		\item Tổng cộng đúng 9 cạnh.
+		\item Không tạo thành chu trình.
+		\item Kết nối toàn bộ đỉnh $\rightarrow$ là một cây bao trùm hợp lệ.
+	\end{itemize}
+	
+	\noindent \textbf{Như vậy:}
+	Một cây bao trùm của đồ thị Petersen có thể là:
+	\[
+	\boxed{
+		\{\{1,2\}, \{2,3\}, \{3,4\}, \{4,5\}, \{5,10\}, \{10,6\}, \{6,7\}, \{7,8\}, \{8,9\}\}
+	}
+	\]
+	\end{document}

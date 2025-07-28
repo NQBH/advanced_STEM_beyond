@@ -1,0 +1,71 @@
+#include <iostream>
+#include <vector>
+#include <stack>
+
+// Depth-first search algorithm for a finite multigraph (no loops, repeated edges allowed)
+// Author: Nguyễn Ngọc Thạch
+// This program performs DFS traversal on a multigraph starting from a given vertex.
+
+using namespace std;
+
+// Recursive DFS for multigraph
+void dfs_recursive(const vector<vector<int>>& adj, vector<bool>& visited, int vertex) {
+    visited[vertex] = true;
+    cout << vertex << " ";
+    for (int neighbor : adj[vertex]) {
+        if (!visited[neighbor]) {
+            dfs_recursive(adj, visited, neighbor);
+        }
+    }
+}
+
+// Iterative DFS for multigraph
+void dfs_iterative(const vector<vector<int>>& adj, int start) {
+    int n = adj.size();
+    vector<bool> visited(n, false);
+    stack<int> s;
+    s.push(start);
+    while (!s.empty()) {
+        int vertex = s.top();
+        s.pop();
+        if (!visited[vertex]) {
+            visited[vertex] = true;
+            cout << vertex << " ";
+            for (int i = adj[vertex].size() - 1; i >= 0; --i) {
+                int neighbor = adj[vertex][i];
+                if (!visited[neighbor]) {
+                    s.push(neighbor);
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    int n, m;
+    cout << "Enter number of vertices and edges: ";
+    cin >> n >> m;
+    vector<vector<int>> adj(n);
+    cout << "Enter edges (u v) for each edge (0-indexed vertices, no loops):\n";
+    for (int i = 0; i < m; ++i) {
+        int u, v;
+        cin >> u >> v;
+        if (u == v) {
+            cout << "Loops are not allowed in a multigraph. Skipping edge (" << u << ", " << v << ").\n";
+            continue;
+        }
+        adj[u].push_back(v);
+        adj[v].push_back(u); // Undirected multigraph
+    }
+    int start;
+    cout << "Enter starting vertex: ";
+    cin >> start;
+    cout << "\nDFS using recursion: ";
+    vector<bool> visited(n, false);
+    dfs_recursive(adj, visited, start);
+    cout << endl;
+    cout << "DFS using iteration: ";
+    dfs_iterative(adj, start);
+    cout << endl;
+    return 0;
+}

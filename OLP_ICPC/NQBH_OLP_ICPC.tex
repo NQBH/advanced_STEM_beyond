@@ -6221,7 +6221,7 @@ Bài toán có thể mở rộng từ double thành triple, multiple, or just eq
 
 %------------------------------------------------------------------------------%
 
-\subsection{Algorithm}
+\subsection{Algorithm \& implementation -- Thuật toán \& cài đặt}
 Raising $a$ to the power of $n$ is expressed naively as multiplication by $a$ done $n - 1$ times: $a^n = \prod_{i=1}^n a = a\cdot a\cdots a$ ($n$ terms $a$ \& $n - 1$ multiplications $\cdot$). However, this approach is not practical for large $a$ or $n$.
 \begin{equation*}
     a^{b + c} = a^ba^c,\ a^{2b} = a^ba^b = (a^b)^2.
@@ -6457,17 +6457,13 @@ int main() {
     \begin{Verbatim}[numbers=left,xleftmargin=5mm]
 vector<int> applyPermutation(vector<int> sequence, vector<int> permutation) {
     vector<int> newSequence(sequence.size());
-    for(int i = 0; i < sequence.size(); i++) {
-        newSequence[i] = sequence[permutation[i]];
-    }
+    for(int i = 0; i < sequence.size(); i++) newSequence[i] = sequence[permutation[i]];
     return newSequence;
 }
 
 vector<int> permute(vector<int> sequence, vector<int> permutation, long long k) {
     while (k > 0) {
-        if (k & 1) {
-            sequence = applyPermutation(sequence, permutation);
-        }
+        if (k & 1) sequence = applyPermutation(sequence, permutation);
         permutation = applyPermutation(permutation, permutation);
         k >>= 1;
     }
@@ -6529,6 +6525,118 @@ int main() {
     -- Cho $n\in\mathbb{N}^\star$ điểm $p_i$, $i\in[n]$, hãy áp dụng $m\in\mathbb{N}^\star$ phép biến đổi cho mỗi điểm này. Mỗi phép biến đổi có thể là 1 phép dịch chuyển, 1 phép biến đổi tỷ lệ hoặc 1 phép quay quanh 1 trục cho trước theo 1 góc cho trước. Ngoài ra còn có 1 phép toán ``vòng lặp'' áp dụng 1 danh sách các phép biến đổi cho trước $k$ lần (các phép toán ``vòng lặp'' có thể được lồng nhau). Bạn nên áp dụng tất cả các phép biến đổi nhanh hơn $O(n{\rm length})$ trong đó ${\rm length}$ là tổng số phép biến đổi cần áp dụng (sau khi mở các phép toán ``vòng lặp'').
 \end{problem}
 
+\begin{proof}[Solution]
+    Let's look at how the different types of transformations change the coordinates:
+    \begin{itemize}
+        \item {\it Shift operation}: adds a different constant to each of the coordinates.
+        \item {\it Scaling operation}: multiplies each of the coordinates by a different constant.
+        \item {\it Rotation operation}: the transformation is more complicated, but each of the new coordinates still can be represented as a linear combination of the old ones.
+    \end{itemize}
+    Each of the transformations can be represented as a linear operation on the coordinates. Thus, a transformation can be written as a $4\times4$ matrix of the form
+    \begin{equation*}
+        \begin{pmatrix}
+            a_{11} & a_{12} & a_{13} & a_{14}\\
+            a_{21} & a_{22} & a_{23} & a_{24}\\
+            a_{31} & a_{32} & a_{33} & a_{34}\\
+            a_{41} & a_{42} & a_{43} & a_{44}
+        \end{pmatrix}
+    \end{equation*}
+    that, when multiplied by a vector with the old coordinates \& an unit gives a new vector with the new coordinates \& an unit:
+    \begin{equation*}
+        \begin{pmatrix}
+            x & y & z & 1
+        \end{pmatrix}\begin{pmatrix}
+        a_{11} & a_{12} & a_{13} & a_{14}\\
+        a_{21} & a_{22} & a_{23} & a_{24}\\
+        a_{31} & a_{32} & a_{33} & a_{34}\\
+        a_{41} & a_{42} & a_{43} & a_{44}
+        \end{pmatrix} = \begin{pmatrix}
+            x' & y' & z' & 1
+        \end{pmatrix}.
+    \end{equation*}
+    -- Hãy cùng xem các loại phép biến đổi khác nhau thay đổi tọa độ như thế nào:
+    \begin{itemize}
+        \item {\it Phép dịch chuyển}: thêm một hằng số khác nhau vào mỗi tọa độ.
+        \item {\it Phép chia tỷ lệ}: nhân mỗi tọa độ với một hằng số khác nhau.
+        \item {\it Phép xoay}: Phép biến đổi này phức tạp hơn, nhưng mỗi tọa độ mới vẫn có thể được biểu diễn dưới dạng tổ hợp tuyến tính của các tọa độ cũ.
+    \end{itemize}
+    Mỗi phép biến đổi có thể được biểu diễn dưới dạng một phép toán tuyến tính trên các tọa độ. Do đó, một phép biến đổi có thể được viết dưới dạng ma trận $4\times4$ có dạng
+    \begin{equation*}
+        \begin{pmatrix}
+            a_{11} & a_{12} & a_{13} & a_{14}\\
+            a_{21} & a_{22} & a_{23} & a_{24}\\
+            a_{31} & a_{32} & a_{33} & a_{34}\\
+            a_{41} & a_{42} & a_{43} & a_{44}
+        \end{pmatrix}
+    \end{equation*}
+    rằng, khi nhân với một vectơ có tọa độ cũ \& một đơn vị, ta được một vectơ mới có tọa độ mới \& một đơn vị:
+    \begin{equation*}
+        \begin{pmatrix}
+            x & y & z & 1
+        \end{pmatrix}\begin{pmatrix}
+            a_{11} & a_{12} & a_{13} & a_{14}\\
+            a_{21} & a_{22} & a_{23} & a_{24}\\
+            a_{31} & a_{32} & a_{33} & a_{34}\\
+            a_{41} & a_{42} & a_{43} & a_{44}
+        \end{pmatrix} = \begin{pmatrix}
+            x' & y' & z' & 1
+        \end{pmatrix}.
+    \end{equation*}
+
+    \begin{remark}[Why introduce a fictitious 4th coordinate? -- Tại sao lại đưa vào tọa độ thứ 4 hư cấu?]
+        That is the beauty of homogeneous coordinates, which find great application in computer graphics. Without this, it would not be possible to implement affine operations like the shift operation as a single matrix multiplication, as it requires us to add a constant to the coordinates. The affine transformation becomes a linear transformation in the higher dimension.
+
+        -- Đó chính là vẻ đẹp của tọa độ đồng nhất, một ứng dụng tuyệt vời trong đồ họa máy tính. Nếu không có nó, sẽ không thể triển khai các phép toán affine như phép dịch chuyển dưới dạng phép nhân ma trận đơn, vì nó đòi hỏi chúng ta phải thêm một hằng số vào tọa độ. Phép biến đổi affine trở thành phép biến đổi tuyến tính ở chiều cao hơn.
+    \end{remark}
+    Here are some examples of how transformations are represented in matrix form:
+    \begin{itemize}
+        \item {\it Shift operation}: shift $x$ coordinate by $5$, $y$ coordinate by $7$ \& $z$ coordinate by $9$:
+        \begin{equation*}
+            \begin{pmatrix}
+                1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\ 0 & 0 & 1 & 0\\5 & 7 & 9 & 1
+            \end{pmatrix}.
+        \end{equation*}
+        \item {\it Scaling operation}: scale the $x$ coordinate by $10$ \& the other 2 by $5$:
+        \begin{equation*}
+            {\rm diag}(10,5,5,1) = \begin{pmatrix}
+                10 & 0 & 0 & 0\\0 &  & 0 & 0\\0 & 0 & 5 & 0\\0 & 0 & 0 & 1
+            \end{pmatrix}
+        \end{equation*}
+        \item {\it Rotation operation}: rotate $\theta$ degrees around the $x$ axis following the right-hand rule (counter-clockwise direction).
+        \begin{equation*}
+            \begin{pmatrix}
+                1 & 0 & 0 & 0\\0 & \cos\theta & -\sin\theta & 0\\0 & \sin\theta & \cos\theta & 0\\0 & 0 & 0 & 1
+            \end{pmatrix}.
+        \end{equation*}
+    \end{itemize}
+    -- Dưới đây là một số ví dụ về cách biểu diễn phép biến đổi dưới dạng ma trận:
+    \begin{itemize}
+        \item {\it Phép dịch chuyển}: dịch chuyển tọa độ $x$ đi $5$, tọa độ $y$ đi $7$ \& tọa độ $z$ đi $9$:
+        \begin{equation*}
+            \begin{pmatrix}
+                1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\ 0 & 0 & 1 & 0\\5 & 7 & 9 & 1
+            \end{pmatrix}.
+        \end{equation*}
+        \item {\it Phép toán tỷ lệ}: chia tỷ lệ tọa độ $x$ thành $10$ \& 2 tọa độ còn lại thành $5$:
+        \begin{equation*}
+            {\rm diag}(10,5,5,1) = \begin{pmatrix}
+
+                10 & 0 & 0 & 0\\0 & & 0 & 0\\0 & 0 & 5 & 0\\0 & 0 & 0 & 1
+            \end{pmatrix}
+        \end{equation*}
+        \item {\it Phép toán quay}: quay $\theta$ độ quanh trục $x$ theo quy tắc bàn tay phải (hướng ngược chiều kim đồng hồ).
+
+        \begin{equation*}
+            \begin{pmatrix}
+                1 & 0 & 0 & 0\\0 & \cos\theta & -\sin\theta & 0\\0 & \sin\theta & \cos\theta & 0\\0 & 0 & 0 & 1
+            \end{pmatrix}.
+        \end{equation*}
+    \end{itemize}
+    Now, once every transformation is described as a matrix, the sequence of transformations can be described as a product of these matrices, \& a ``loop'' of $k$ repetitions can be described as the matrix raised to the power of $k$ (which can be calculated using binary exponentiation in $O(\log_2k)$). This way, the matrix which represents all transformations can be calculated 1st in $O(m\log_2k)$, \& then it can be applied to each of the $n$ points in $O(n)$ for a total complexity of $O(n + m\log_2k)$.
+
+    -- Bây giờ, một khi mọi phép biến đổi được mô tả như một ma trận, chuỗi các phép biến đổi có thể được mô tả như một tích của các ma trận này, \& một ``vòng lặp'' gồm $k$ phép lặp lại có thể được mô tả như ma trận nâng lên lũy thừa của $k$ (có thể được tính toán bằng cách sử dụng phép lũy thừa nhị phân trong $O(\log_2k)$). Theo cách này, ma trận biểu diễn tất cả các phép biến đổi có thể được tính toán đầu tiên trong $O(m\log_2k)$, \& sau đó có thể được áp dụng cho mỗi $n$ điểm trong $O(n)$ với tổng độ phức tạp là $O(n + m\log_2k)$.
+\end{proof}
+
 %------------------------------------------------------------------------------%
 
 \subsubsection{Number of paths of length $k$ in a graph -- Số đường đi độ dài $k$ trong 1 đồ thị}
@@ -6538,6 +6646,18 @@ int main() {
 
     -- Cho 1 đồ thị có hướng không trọng số gồm $n\in\mathbb{N}^\star$ đỉnh, hãy tìm số đường đi có độ dài $k\in\mathbb{N}^\star$ từ bất kỳ đỉnh $u$ nào đến bất kỳ đỉnh $v$ nào khác.
 \end{problem}
+
+\begin{proof}[Solution]
+    The algorithm consists of raising the adjacency matrix $M$ of the graph (a matrix where $m_{ij} = 1$ if there is an edge from $i$ to $j$, or 0 otherwise) to the $k$th power. Now $m_{ij}$ will be the number of paths of length $k$ from $i$ to $j$. The time complexity of this solution is $O(n^3\log_2k)$.
+
+    -- Thuật toán bao gồm việc nâng ma trận kề $M$ của đồ thị (một ma trận với $m_{ij} = 1$ nếu có cạnh từ $i$ đến $j$, hoặc 0 nếu không) lên lũy thừa $k$. Bây giờ $m_{ij}$ sẽ là số đường đi có độ dài $k$ từ $i$ đến $j$. Độ phức tạp thời gian của giải pháp này là $O(n^3\log_2k)$.
+\end{proof}
+
+\begin{remark}
+    In \href{https://cp-algorithms.com/graph/fixed_length_paths.html}{Algorithms for Competitive Programming{\tt/}number of paths of fixed length{\tt/}shortest paths of fixed length}, another variation of this problem is considered: when the edges are weighted \& it is required to find the minimum weight path containing exactly $k$ edges. This problem can be also solved by exponentiation of the adjacency matrix. The matrix would have the weight of the edge from $i$ to $j$, or $\infty$ if there is no such edge. Instead of the usual operation of multiplying 2 matrices, a modified one should be used: instead of multiplication, both values are added, \& instead of a summation, a minimum is taken, i.e., ${\rm res}_{ij} = \min_{k\in[n]} a_{ik} + b_{kj}$.
+
+    -- Trong \href{https://cp-algorithms.com/graph/fixed_length_paths.html}{Algorithms for Competitive Programming{\tt/}số đường đi có độ dài cố định{\tt/}đường đi ngắn nhất có độ dài cố định}, một biến thể khác của bài toán này được xem xét: khi các cạnh được gán trọng số \& cần tìm đường đi có trọng số nhỏ nhất chứa đúng $k$ cạnh. Bài toán này cũng có thể được giải bằng cách lũy thừa ma trận kề. Ma trận sẽ có trọng số của cạnh từ $i$ đến $j$, hoặc $\infty$ nếu không có cạnh nào như vậy. Thay vì phép toán thông thường là nhân 2 ma trận, nên sử dụng một phép toán đã sửa đổi: thay vì nhân, cả hai giá trị được cộng lại, \& thay vì tổng, lấy giá trị nhỏ nhất, tức là ${\rm res}_{ij} = \min_{k\in[n]} a_{ik} + b_{kj}$.
+\end{remark}
 
 %------------------------------------------------------------------------------%
 
@@ -6627,6 +6747,292 @@ int main() {
 \begin{problem}[Codeforces - Stairs and Lines]
 
 \end{problem}
+
+%------------------------------------------------------------------------------%
+
+\section{Euclidean Algorithm for Computing the Greatest Common Divisor (GCD) -- Thuật Toán Euclid để Tính Ước Chung Lớn Nhất (ƯCLN)}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://cp-algorithms.com/algebra/euclid-algorithm.html}{Algorithms for Competitive Programming{\tt/}Euclidean algorithm for computing the greatest common divisor}.
+
+    \item \href{https://www.geeksforgeeks.org/dsa/euclidean-algorithms-basic-and-extended/}{Geeks4Geeks{\tt/}Euclidean algorithms (basic \& extended)}.
+
+    \item \href{https://en.wikipedia.org/wiki/Euclidean_algorithm}{Wikipedia{\tt/}Euclidean algorithm}.
+\end{enumerate}
+Give $a,b\in\mathbb{N}$, we have to find their greatest common divisor (abbr., gcd), i.e., the largest number which is a divisor of both $a,b$. It is common denoted by $\gcd(a,b)$. Mathematically it is defined as
+\begin{equation*}
+    \gcd(a,b) = \max\{k\in\mathbb{N}^\star;k|a,\ k|b\} = \max\{k\in\mathbb{N}^\star;a\divby k,\ b\divby k\},
+\end{equation*}
+where the symbol $|$ denotes divisibility, i.e., ``$k|a$'' means ``$k$ divides $a$'', i.e., $a$ is divisible by $k$.
+
+-- Cho $a,b\in\mathbb{N}$, ta phải tìm ước chung lớn nhất (viết tắt là ƯCLN), tức là số lớn nhất là ước chung của cả $a,b$. Nó là số chung được ký hiệu là $\gcd(a,b)$. Về mặt toán học, nó được định nghĩa là
+\begin{equation*}
+    \gcd(a,b) = \max\{k\in\mathbb{N}^\star;k|a,\ k|b\} = \max\{k\in\mathbb{N}^\star;a\divby k,\ b\divby k\},
+\end{equation*}
+trong đó ký hiệu $|$ biểu thị tính chia hết, tức là ``$k|a$'' nghĩa là ``$k$ chia hết cho $a$'', tức là $a$ chia hết cho $k$.
+
+When 1 of the numbers is 0, while the other is nonzero, their greatest common divisor, by definition, is the 2nd number. When both numbers are 0, their greatest common divisor is undefined (it can be any arbitrarily large number), but it is convenient to define it as 0 as well to preserve the associativity of gcd, which gives us a simple rule: if 1 of the number is 0, their greatest common divisor is the other number, i.e.,
+\begin{equation*}
+    \gcd(a,0)\left\{\begin{split}
+        &= a&&\mbox{if } a\in\mathbb{Z}^\star,\\
+        &\coloneqq0&&\mbox{if } a = 0.
+    \end{split}\right.
+\end{equation*}
+
+-- Khi 1 trong hai số bằng 0, trong khi số kia khác 0, theo định nghĩa, ước chung lớn nhất của chúng là số thứ 2. Khi cả hai số đều bằng 0, ước chung lớn nhất của chúng không được xác định (nó có thể là bất kỳ số lớn tùy ý nào), nhưng cũng thuận tiện khi định nghĩa nó là 0 để bảo toàn tính kết hợp của UCLN, điều này cho ta một quy tắc đơn giản: nếu 1 trong hai số bằng 0, ước chung lớn nhất của chúng là số kia.
+
+The Euclidean algorithm allows to find the greatest common divisor of 2 number $a,b\in\mathbb{Z}$ in $O(\log_2\min\{|a|,|b|\})$. Since the function is associative, to find the gcd of $\ge2$ numbers, we can do $\gcd(a,b,c) = \gcd(a,\gcd(b,c))$ \& so forth.
+
+-- Thuật toán Euclid cho phép tìm ước chung lớn nhất của 2 số $a,b\in\mathbb{Z}$ trong $O(\log_2\min\{|a|,|b|\})$. Vì hàm này có tính kết hợp, nên để tìm ước chung lớn nhất của $\ge2$ số, ta có thể viết $\gcd(a,b,c) = \gcd(a,\gcd(b,c))$ \& vân vân.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Algorithm \& implementation -- Thuật toán \& cài đặt}
+Originally, the Euclidean algorithm was formulated as follows: subtract the smaller number from the larger one until 1 of the numbers is 0. Indeed, if $g$ divides $a$ \& $b$, it also divides $a - b$. On the other hand, if $g$ divides $a - b$ \& $b$, then it also divides $a = b + (a - b)$, i.e., the sets of the common divisors of $\{a,b\}$ \& $\{b,a - b\}$ coincide.
+
+-- Ban đầu, thuật toán Euclid được xây dựng như sau: trừ số nhỏ hơn cho số lớn hơn cho đến khi 1 trong các số bằng 0. Thật vậy, nếu $g$ chia hết cho $a$ \& $b$, thì nó cũng chia hết cho $a - b$. Mặt khác, nếu $g$ chia hết cho $a - b$ \& $b$, thì nó cũng chia hết cho $a = b + (a - b)$, tức là các tập hợp ước chung của $\{a,b\}$ \& $\{b,a - b\}$ trùng nhau.
+
+Note that $a$ remains the larger number until $b$ is subtracted from it at least $\lfloor\frac{a}{b}\rfloor$ times. Therefore, to speed things up, $a - b$ is substituted with $a - \lfloor\frac{a}{b}\rfloor b = a\mbox{ mod } b$. Then the algorithm is formulated in an extremely simple way:
+\begin{equation*}
+    \gcd(a,b) = \left\{\begin{split}
+        &a&&\mbox{if } b = 0,\\
+        &\gcd(b,a\mbox{ mod } b)&&\mbox{otherwise}.
+    \end{split}\right.
+\end{equation*}
+-- Lưu ý rằng $a$ vẫn là số lớn hơn cho đến khi $b$ được trừ đi ít nhất $\lfloor\frac{a}{b}\rfloor$ lần. Do đó, để tăng tốc độ, $a - b$ được thay thế bằng $a - \lfloor\frac{a}{b}\rfloor b = a\mbox{ mod } b$. Sau đó, thuật toán được xây dựng theo một cách cực kỳ đơn giản:
+\begin{equation*}
+    \gcd(a,b) = \left\{\begin{split}
+        &a&&\mbox{nếu } b = 0,\\
+        &\gcd(b,a\mbox{ mod } b)&&\mbox{nếu không}.
+    \end{split}\right.
+\end{equation*}
+Implementation:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+int gcd(int a, int b) {
+    if (b == 0) return a;
+    else return gcd(b, a % b);
+}
+\end{Verbatim}
+Using the ternary operator in C++, we can write it as a 1-liner:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+int gcd(int a, int b) {
+    return b ? gcd(b, a % b) : a;
+}
+\end{Verbatim}
+Here is a non-recursive implementation:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+int gcd(int a, int b) {
+    while(b) {
+        a %= b;
+        swap(a, b);
+    }
+    return a;
+}
+\end{Verbatim}
+Fully implementation:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+
+int gcd(int a, int b) {
+    if (b == 0) return a;
+    else return gcd (b, a % b);
+}
+
+int gcd_1(int a, int b) {
+    return b ? gcd (b, a % b) : a;
+}
+
+int gcd_2(int a, int b) {
+    while (b) {
+        a %= b;
+        swap(a, b);
+    }
+    return a;
+}
+
+int main() {
+    int a, b;
+    cin >> a >> b;
+    cout << gcd(a, b) << " " << gcd_1(a, b) << " " << gcd_2(a, b);
+}
+\end{Verbatim}
+
+\begin{note}
+    Since C++17, {\tt gcd} is implemented as a \href{https://en.cppreference.com/w/cpp/numeric/gcd.html}{standard function} in C++.
+
+    -- Kể từ C++17, {\tt gcd} được triển khai như một hàm chuẩn trong C++.
+\end{note}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Time complexity -- Độ phức tạp thời gian}
+The running time of the algorithm is estimated by Lam\'e's theorem, which establishes a surprising connection between the Euclidean algorithm \& the Fibonacci sequence:
+
+-- Thời gian chạy của thuật toán được ước tính theo định lý Lam\'e, định lý này thiết lập mối liên hệ đáng ngạc nhiên giữa thuật toán Euclid và chuỗi Fibonacci:
+
+\begin{theorem}[Lam\'e's]
+    If $a,b\in\mathbb{N}^\star,a > b$ \& $b < F_n$ for some $n\in\mathbb{N}^\star$, the Euclidean algorithm performs at most $n - 2$ recursive calls.
+\end{theorem}
+Moreover, it is possible to show that the upper bound of this theorem is optimal. When $a = F_n,b = F_{n-1}$, $\gcd(a,b)$ will perform exactly $n - 2$ recursive calls, i.e., consecutive Fibonacci numbers are the (?) worst case input for Euclid's algorithm. Given that Fibonacci numbers grow exponentially (due to Binet formula), we get that the Euclidean algorithm works in $O(\log_2\min\{a,b\})$.
+
+-- Hơn nữa, có thể chứng minh rằng giới hạn trên của định lý này là tối ưu. Khi $a = F_n,b = F_{n-1}$, $\gcd(a,b)$ sẽ thực hiện đúng $n - 2$ lệnh gọi đệ quy, tức là, các số Fibonacci liên tiếp là (?) đầu vào trường hợp xấu nhất cho thuật toán Euclid. Do các số Fibonacci tăng theo cấp số nhân (do công thức Binet), ta có thuật toán Euclid hoạt động trong $O(\log_2\min\{a,b\})$.
+
+Another way to estimate the complexity is to notice that $a\mbox{ mod } b$ for the case $a\ge b$ is at least 2 times smaller than $a$, so the larger number is reduced at least in half on each iteration of the algorithm. Applying this reasoning to the case when we compute the gcd of the set of numbers $a_1,\ldots,a_n\le C$, this also allows us to estimate the total runtime as $O(n + \log_2C)$, rather than $O(n\log_2C)$, since every nontrivial iteration of the algorithm reduces the current gcd candidate by at least a factor of 2.
+
+-- 1 cách khác để ước tính độ phức tạp là lưu ý rằng $a\mbox{ mod } b$ trong trường hợp $a\ge b$ nhỏ hơn ít nhất 2 lần so với $a$, do đó, số lớn hơn sẽ giảm ít nhất một nửa sau mỗi lần lặp của thuật toán. Áp dụng lập luận này vào trường hợp tính UCLN của tập hợp các số $a_1,\ldots,a_n\le C$, điều này cũng cho phép chúng ta ước tính tổng thời gian chạy là $O(n + \log_2C)$, thay vì $O(n\log_2C)$, vì mỗi lần lặp không tầm thường của thuật toán đều làm giảm ứng viên UCLN hiện tại đi ít nhất một hệ số là 2.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Least common multiple (lcm) -- Bội chung nhỏ nhất (BCNN)}
+Calculating the least common multiple (commonly denoted lcm) can be reduced to calculating the gcd with the following simple formula:
+\begin{equation*}
+    {\rm lcm}(a,b) = \frac{ab}{\gcd(a,b)},\ \forall a,b\in\mathbb{Z}^\star.
+\end{equation*}
+Thus, lcm can be calculated using the Euclidean algorithm with the same time complexity. A possible implementation, that cleverly avoids integer overflows by 1st dividing $a$ with the gcd, is:
+
+-- Việc tính bội chung nhỏ nhất (thường được ký hiệu là LCM) có thể được rút gọn thành phép tính UCLN với công thức đơn giản sau:
+\begin{equation*}
+    {\rm LCM}(a,b) = \frac{ab}{\gcd(a,b)},\ \forall a,b\in\mathbb{Z}^\star.
+\end{equation*}
+Do đó, LCM có thể được tính bằng thuật toán Euclid với cùng độ phức tạp thời gian. Một cách triển khai khả thi, khéo léo tránh tràn số nguyên bằng cách chia $a$ cho UCLN, là:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+int lcm(int a, int b) {
+    return a / gcd(a, b) * b;
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Binary gcd -- gcd nhị phân}
+The binary gcd algorithm is an optimization to the normal Euclidean algorithm. The slow part of the normal algorithm are the modulo operations. Modulo operations, although we see them as $O(1)$, are a lot slower than simpler operations like addition, subtraction or bitwise operations. So it would be better to avoid those.
+
+-- Thuật toán GCD nhị phân là một phép tối ưu hóa cho thuật toán Euclidean thông thường. Phần chậm nhất của thuật toán thông thường là các phép toán modulo. Các phép toán modulo, mặc dù chúng ta thấy chúng là $O(1)$, chậm hơn nhiều so với các phép toán đơn giản hơn như cộng, trừ hoặc các phép toán bitwise. Vì vậy, tốt hơn hết là nên tránh chúng.
+
+It turns out, that you can design a fast gcd algorithm that avoids modulo operations. It is based on a few properties:
+\begin{itemize}
+    \item If both numbers are even, then we can factor out a 2 of both \& compute the gcd of the remaining numbers: $\gcd(2a,2b) = 2\gcd(a,b)$.
+    \item If 1 of the numbers is even \& the other one is odd, then we can remove the factor 2 from the even one: $\gcd(2a,b) = \gcd(a,b)$ if $b$ is odd.
+    \item If both numbers are odd, then subtracting 1 number of the other one will not change the gcd: $\gcd(a,b) = \gcd(b,a - b)$.
+\end{itemize}
+Using only these 3 properties, \& some fast bitwise functions from GCC, we can implement a fast version:
+
+-- Hóa ra, bạn có thể thiết kế một thuật toán GCD nhanh, tránh các phép toán modulo. Thuật toán này dựa trên một vài tính chất:
+\begin{itemize}
+    \item Nếu cả hai số đều chẵn, thì ta có thể phân tích 2 của cả hai \& tính GCD của các số còn lại: $\gcd(2a,2b) = 2\gcd(a,b)$.
+    \item Nếu 1 trong hai số là số chẵn \& số còn lại là số lẻ, thì ta có thể loại bỏ thừa số 2 khỏi số chẵn: $\gcd(2a,b) = \gcd(a,b)$ nếu $b$ là số lẻ.
+    \item Nếu cả hai số đều lẻ, thì việc trừ 1 của số còn lại sẽ không làm thay đổi GCD: $\gcd(a,b) = \gcd(b,a - b)$.
+\end{itemize}
+Chỉ cần sử dụng 3 thuộc tính này, \& một số hàm bitwise nhanh từ GCC, chúng ta có thể triển khai một phiên bản nhanh:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+int gcd_3(int a, int b) {
+    if (!a || !b) return a | b;
+    unsigned shift = __builtin_ctz(a | b);
+    a >>= __builtin_ctz(a);
+    do {
+        b >>= __builtin_ctz(b);
+        if (a > b) swap(a,b);
+        b -= a;
+    } while (b);
+    return a << shift;
+}
+\end{Verbatim}
+
+\begin{remark}[Redundancy of optimized gcd]
+    Such an optimization is usually unnecessary, \& most programming languages already have a $\gcd$ function in their standard libraries, e.g., {\sf C++17} has such a function {\tt std::gcd} in the {\tt numeric} header.
+
+    -- Việc tối ưu hóa như vậy thường không cần thiết, \& hầu hết các ngôn ngữ lập trình đều có hàm $\gcd$ trong thư viện chuẩn của chúng, ví dụ: {\sf C++17} có hàm như vậy {\tt std::gcd} trong tiêu đề {\tt numeric}.
+\end{remark}
+
+\begin{problem}[\href{https://csacademy.com/contest/archive/task/gcd/}{CSAcademy{\tt/}gcd}]
+    We say that an integer $d$ is a divisor of another integer $a$ if the fraction $\frac{a}{d}$ is also an integer. Given $a,b\in\mathbb{N}^\star$, compute the largest number which is a divisor of both $a$ \& $b$.
+    \item {\sf Input.} The 1st line contains the 2 integers $a,b$.
+    \item {\sf Output.} Output a single number representing the greatest common divisor.
+    \item {\sf Constraints.} $a,b\in[10^9]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|gcd.inp| & \verb|gcd.out| \\
+            \hline
+            10 20 & 10 \\
+            \hline
+            6 10 & 2 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+C++: (can use any of gcd functions)
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+
+int gcd(int a, int b) {
+    if (b == 0) return a;
+    else return gcd (b, a % b);
+}
+
+int gcd_1(int a, int b) {
+    return b ? gcd (b, a % b) : a;
+}
+
+int gcd_2(int a, int b) {
+    while (b) {
+        a %= b;
+        swap(a, b);
+    }
+    return a;
+}
+
+int gcd_3(int a, int b) {
+    if (!a || !b) return a | b;
+    unsigned shift = __builtin_ctz(a | b);
+    a >>= __builtin_ctz(a);
+    do {
+        b >>= __builtin_ctz(b);
+        if (a > b) swap(a,b);
+        b -= a;
+    } while (b);
+    return a << shift;
+}
+
+int main() {
+    int a, b;
+    cin >> a >> b;
+    cout << gcd_3(a, b);
+}
+\end{Verbatim}
+
+\begin{problem}[\href{https://codeforces.com/contest/1916/problem/B}{CodeForces{\tt/}2 divisors}]
+    A certain number $x\in[10^9]$ is chosen. You are given 2 integers $a,b$, which are the 2 largest divisors of the number $x$. At the same time, the condition $1\le a < b < x$ is satisfied. For the given numbers $a,b$, you need to find the value of $x$.
+    \item {\sf Input.} Each test consists of several test cases. The 1st line contains a single integer $t\in[10^4]$ -- the number of test cases. Then follows the description of the test cases. The only line of each test cases contains 2 integers $a,b$ s.t. $1\le a < b\le10^9$. It is guaranteed that $a,b$ are the 2 largest divisors for some number $x\in[10^9] $.
+    \item {\sf Output.} For each test case, output the number $x$, s.t. $a,b$ are the 2 largest divisors of $x$. If there are several answers, print any of them.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|2_divisor.inp| & \verb|2_divisor.out| \\
+            \hline
+            8 & 6 \\
+            2 3 & 4 \\
+            1 2 & 33 \\
+            3 11 & 25 \\
+            1 5 & 20 \\
+            5 10 & 12 \\
+            4 6 & 27 \\
+            3 9 & 1000000000 \\
+            250000000 500000000 &  \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{proof}[Solution]
+
+\end{proof}
 
 %------------------------------------------------------------------------------%
 

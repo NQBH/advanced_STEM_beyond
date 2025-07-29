@@ -6204,7 +6204,7 @@ Bài toán có thể mở rộng từ double thành triple, multiple, or just eq
 
 %------------------------------------------------------------------------------%
 
-\chapter{Algebra -- Đại Số}
+\chapter{Algebra \& Number Theory -- Đại Số \& Lý Thuyết Số}
 
 %------------------------------------------------------------------------------%
 
@@ -6893,7 +6893,7 @@ Thus, lcm can be calculated using the Euclidean algorithm with the same time com
 
 -- Việc tính bội chung nhỏ nhất (thường được ký hiệu là LCM) có thể được rút gọn thành phép tính UCLN với công thức đơn giản sau:
 \begin{equation*}
-    {\rm LCM}(a,b) = \frac{ab}{\gcd(a,b)},\ \forall a,b\in\mathbb{Z}^\star.
+    {\rm lcm}(a,b) = \frac{ab}{\gcd(a,b)},\ \forall a,b\in\mathbb{Z}^\star.
 \end{equation*}
 Do đó, LCM có thể được tính bằng thuật toán Euclid với cùng độ phức tạp thời gian. Một cách triển khai khả thi, khéo léo tránh tràn số nguyên bằng cách chia $a$ cho UCLN, là:
 \begin{Verbatim}[numbers=left,xleftmargin=5mm]
@@ -7031,8 +7031,425 @@ int main() {
 \end{problem}
 
 \begin{proof}[Solution]
-
+    +++
 \end{proof}
+
+%------------------------------------------------------------------------------%
+
+\section{Euclidean Algorithm for Computing the Greatest Common Divisor -- Thuật Toán Euclid Mở Rộng để Tính ƯCLN}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://cp-algorithms.com/algebra/extended-euclid-algorithm.html}{Algorithms for Competitive Programming{\tt/}extended Euclidean algorithm}.
+\end{enumerate}
+While the Euclidean algorithm calculates only the greatest common divisor (gcd) of 2 integers $a,b\in\mathbb{Z}$, the extended version also finds a way to represent gcd in terms of a linear combination of $a,b$, i.e., 2 coefficients $x,y\in\mathbb{Z}$ for which
+\begin{equation*}
+    ax + by = \gcd(a,b).
+\end{equation*}
+By B\'ezout's identity, we can always find such a representation (i.e., its existence is guaranteed), e.g., $\gcd(55,80) = 5$, therefore we can represent 5 as a linear combination with the terms $55,80$, e.g., $55\cdot3 + 80\cdot(-2) = 5$. A more general form of that problem is discussed in \href{https://cp-algorithms.com/algebra/linear-diophantine-equation.html}{Algorithms for Competitive Programming{\tt/}linear Diophantine equations}. It will build upon this algorithm.
+
+-- Trong khi thuật toán Euclid chỉ tính ước chung lớn nhất (ƯCLN) của 2 số nguyên $a,b\in\mathbb{Z}$, phiên bản mở rộng cũng tìm ra cách biểu diễn UCLN theo tổ hợp tuyến tính của $a,b$, tức là 2 hệ số $x,y\in\mathbb{Z}$ sao cho
+\begin{equation*}
+    ax + by = \gcd(a,b).
+\end{equation*}
+Theo đồng nhất thức B\'ezout, ta luôn có thể tìm thấy một biểu diễn như vậy (tức là sự tồn tại của nó được đảm bảo), ví dụ, $\gcd(55,80) = 5$, do đó ta có thể biểu diễn 5 dưới dạng tổ hợp tuyến tính với các số hạng $55,80$, ví dụ, $55\cdot3 + 80\cdot(-2) = 5$. Một dạng tổng quát hơn của bài toán này được thảo luận trong \href{https://cp-algorithms.com/algebra/linear-diophantine-equation.html}{Algorithms for Competitive Programming{\tt/}phương trình Diophantine tuyến tính}. Bài viết này sẽ được xây dựng dựa trên thuật toán này.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Algorithm \& implementation -- Thuật toán \& cài đặt}
+Denote $g\coloneqq\gcd(a,b)$ in this section. The changes to the original algorithm are very simple. If we recall the algorithm, we can see that the algorithm ends with $b = 0,a = g$. For these parameters we can easily find coefficients, namely $g\cdot1 + 0\cdot0 = g$. Starting from these coefficients $(x,y) = (1,0)$, we can go backwards up the recursive calls. All we need to do is to figure out how the coefficients $x,y$ change during the transition from $(a,b)$ to $(b,a\mbox{ mod } b)$.
+
+-- Ký hiệu $g\coloneqq\gcd(a,b)$ trong phần này. Các thay đổi so với thuật toán ban đầu rất đơn giản. Nếu chúng ta nhớ lại thuật toán, ta có thể thấy thuật toán kết thúc với $b = 0,a = g$. Với các tham số này, ta có thể dễ dàng tìm được các hệ số, cụ thể là $g\cdot1 + 0\cdot0 = g$. Bắt đầu từ các hệ số này $(x,y) = (1,0)$, ta có thể quay ngược lại các lệnh gọi đệ quy. Tất cả những gì chúng ta cần làm là tìm ra cách các hệ số $x,y$ thay đổi trong quá trình chuyển đổi từ $(a,b)$ sang $(b,a\mbox{ mod } b)$.
+
+Assume that we found the coefficients $(x_1,y_1)$ for $(b,a\mbox{ mod } b)$:
+\begin{equation*}
+    b\cdot x_1 + (a\mbox{ mod } b)\cdot y_1 = g,
+\end{equation*}
+\& we want to find the pair $(x,y)$ for $(a,b)$: $ax + by = g$. We can represent $a\mbox{ mod } b$ as
+\begin{equation*}
+    a\mbox{ mod } b = a - \left\lfloor\frac{a}{b}\right\rfloor b.
+\end{equation*}
+Substituting this expression in the coefficient equation of $(x_1,y_1)$ gives:
+\begin{equation*}
+    g = bx_1 + (a\mbox{ mod } b)y_1 = bx_1 + \left(a - \left\lfloor\frac{a}{b}\right\rfloor b\right)y_1.,
+\end{equation*}
+\& after rearranging the terms:
+\begin{equation*}
+    g = ay_1 + b\left(x_1 - y_1\left\lfloor\frac{a}{b}\right\rfloor\right).
+\end{equation*}
+We found these values of $x,y$:
+\begin{equation*}
+    \left\{\begin{split}
+        x &= y_1,\\
+        y &= x_1 - y_1\left\lfloor\frac{a}{b}\right\rfloor.
+    \end{split}\right.
+\end{equation*}
+Implementation:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+int gcd(int a, int b, int& x, int& y) {
+    if (b == 0) {
+        x = 1;
+        y = 0;
+        return a;
+    }
+    int x1, y1;
+    int d = gcd(b, a % b, x1, y1);
+    x = y1;
+    y = x1 - y1 * (a / b);
+    return d;
+}
+\end{Verbatim}
+The recursive function above returns the gcd \& the values of coefficients to $x,y$ (which are passed by reference to the function). This implementation of extendeded Euclidean algorithm produces correct results for negative integers as well, i.e., on $\mathbb{Z}$ instead of just $\mathbb{N}$.
+
+-- Hàm đệ quy ở trên trả về UCLN \& các giá trị hệ số cho $x,y$ (được truyền qua tham chiếu đến hàm). Việc triển khai thuật toán Euclid mở rộng này cũng tạo ra kết quả chính xác cho các số nguyên âm, tức là trên $\mathbb{Z}$ thay vì chỉ trên $\mathbb{N}$.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Iterative version of extended Euclidean algorithm -- Phiên bản lặp của thuật toán Euclid mở rộng}
+It is also possible to write the extended Euclidean algorithm in an iterative way. Because it avoids recursion, the code will run a little bit faster than the recursive one.
+
+-- Ta cũng có thể viết thuật toán Euclid mở rộng theo cách lặp. Vì tránh được đệ quy, mã sẽ chạy nhanh hơn một chút so với thuật toán đệ quy.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+int gcd_iterative(int a, int b, int& x, int& y) { // // iterative extended Euclidean algorithm
+    x = 1;
+    y = 0;
+    int x1 = 0, y1 = 1, a1 = a, b1 = b;
+    while (b1) {
+        int q = a1 / b1;
+        tie(x, x1) = make_tuple(x1, x - q * x1);
+        tie(y, y1) = make_tuple(y1, x - q * y1);
+        tie(a1, b1) = make_tuple(b1, a1 - q * b1);
+    }
+    return a1;
+}
+\end{Verbatim}
+Full implementation:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+
+int gcd(int a, int b, int& x, int& y) { // extended Euclidean algorithm
+    if (b == 0) {
+        x = 1;
+        y = 0;
+        return a;
+    }
+    int x1, y1;
+    int d = gcd(b, a % b, x1, y1);
+    x = y1;
+    y = x1 - y1 * (a / b);
+    return d;
+}
+
+int gcd_iterative(int a, int b, int& x, int& y) { // // iterative extended Euclidean algorithm
+    x = 1;
+    y = 0;
+    int x1 = 0, y1 = 1, a1 = a, b1 = b;
+    while (b1) {
+        int q = a1 / b1;
+        tie(x, x1) = make_tuple(x1, x - q * x1);
+        tie(y, y1) = make_tuple(y1, x - q * y1);
+        tie(a1, b1) = make_tuple(b1, a1 - q * b1);
+    }
+    return a1;
+}
+
+int main() {
+    int a, b, x = 1, y = 0;
+    cin >> a >> b;
+    cout << gcd(a, b, x, y) << " " << gcd_iterative(a, b, x, y);
+}
+\end{Verbatim}
+If you look closely at the variables {\tt a1, b1}, you can notice that they take exactly the same values as in the iterative version of the normal Euclidean algorithm. So the algorithm will at least compute the correct gcd.
+
+-- Nếu bạn xem xét kỹ các biến {\tt a1, b1}, bạn có thể nhận thấy chúng có cùng giá trị như trong phiên bản lặp của thuật toán Euclid thông thường. Vì vậy, thuật toán ít nhất sẽ tính được UCLN chính xác.
+
+To see why the algorithm computes the correct coefficients, consider that the following invariants hold at any given time (before the while loop begins \& at the end of each iteration):
+\begin{align*}
+    xa + yb &= a_1,\\
+    x_1a + y_1b &= b_1.
+\end{align*}
+Let the values at the end of an iteration be denoted by a prime ', \& assume $q = \frac{a_1}{b_1}$. From the Euclidean algorithm, we have
+\begin{equation*}
+    a_1' = b_1,\ b_1' = a_1 - qb_1.
+\end{equation*}
+For the 1st invariant to hold, the following should be true:
+\begin{align*}
+    x'a + y'b &= a_1' = b,\\
+    x'a + y'b &= x_1a + y_1b.
+\end{align*}
+Similarly for the 2nd invariant, the following should hold:
+\begin{align*}
+    x_1'a + y_1'b &= a_1 - qb_1,\\
+    x_1'a + y_1'b &= (x - qx_1)a + (y - qy_1)b.
+\end{align*}
+By comparing the coefficients of $a,b$, the update equations for each variable can be derived, ensuring that the invariants are maintained throughout the algorithm. At the end we know that $a_1$ contains the gcd $\gcd(a,b)$, so $xa + yb = g$, i.e., we have found the required coefficients.
+
+-- Để hiểu tại sao thuật toán tính toán các hệ số chính xác, hãy xét rằng các bất biến sau đây được duy trì tại bất kỳ thời điểm nào (trước khi vòng lặp while bắt đầu \& ở cuối mỗi lần lặp):
+\begin{align*}
+    xa + yb &= a_1,\\
+    x_1a + y_1b &= b_1.
+\end{align*}
+Giả sử các giá trị ở cuối mỗi lần lặp được ký hiệu là một số nguyên tố ', \& giả sử $q = \frac{a_1}{b_1}$. Từ thuật toán Euclid, ta có
+\begin{equation*}
+    a_1' = b_1,\ b_1' = a_1 - qb_1.
+\end{equation*}
+Để bất biến thứ nhất được duy trì, thì điều sau đây phải đúng:
+\begin{align*}
+    x'a + y'b &= a_1' = b,\\
+    x'a + y'b &= x_1a + y_1b.
+\end{align*}
+Tương tự với bất biến thứ 2, điều sau đây cũng đúng:
+\begin{align*}
+    x_1'a + y_1'b &= a_1 - qb_1,\\
+    x_1'a + y_1'b &= (x - qx_1)a + (y - qy_1)b.
+\end{align*}
+Bằng cách so sánh các hệ số của $a,b$, ta có thể suy ra các phương trình cập nhật cho từng biến, đảm bảo các bất biến được duy trì trong suốt thuật toán. Cuối cùng, ta biết rằng $a_1$ chứa UCLN $\gcd(a,b)$, do đó $xa + yb = g$, tức là ta đã tìm được các hệ số cần thiết.
+
+You can even optimize the code more, \& remove the variable $a_1,b_1$ from the code, \& just reuse $a,b$. However if you do so, you lose the ability to argue about the invariants.
+
+-- Bạn thậm chí có thể tối ưu hóa mã hơn nữa, \& xóa biến $a_1,b_1$ khỏi mã, \& chỉ cần sử dụng lại $a,b$. Tuy nhiên, nếu làm vậy, bạn sẽ mất khả năng tranh luận về các bất biến.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Problems: Extended Euclidean algorithm -- Bài tập: Thuật toán Euclid mở rộng}
+
+\begin{problem}[UVA - 10104 - Euclid Problem]
+
+\end{problem}
+
+\begin{problem}[GYM - (J) Once Upon A Time]
+
+\end{problem}
+
+\begin{problem}[UVA - 12775 - Gift Dilemma]
+
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
+\section{Linear Diophantine Equation -- Phương Trình Diophantine{\tt/}Nghiệm Nguyên Tuyến Tính}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://cp-algorithms.com/algebra/linear-diophantine-equation.html}{Algorithms for Competitive Programming{\tt/}linear Diophantine equation}.
+
+    \item \cite{Binh_PTNN}. {\sc Vũ Hữu Bình}. {\it Phương Trình Nghiệm Nguyên \& Kinh Nghiệm Giải}.
+
+    \item \href{https://en.wikipedia.org/wiki/Diophantine_equation}{Wikipedia{\tt/}Diophantine equations}.
+\end{enumerate}
+
+\begin{definition}[Linear Diophantine equation]
+    A {\rm linear Diophantine equation} (in $2$ variables) is an equation of the general form $ax + by = c$, where $a,b,c\in\mathbb{Z}$ are given integers, \& $x,y\in\mathbb{Z}$ are unknown integers.
+\end{definition}
+
+\begin{dinhnghia}[Phương trình Diophantine{\tt/}nghiệm nguyên tuyến tính]
+    1 {\rm phương trình Diophantine tuyến tính} (với $2$ biến) là một phương trình có dạng tổng quát $ax + by = c$, trong đó $a,b,c\in\mathbb{Z}$ là các số nguyên đã cho, \& $x,y\in\mathbb{Z}$ là các số nguyên chưa biết.
+\end{dinhnghia}
+In this section, we consider several classical problems on these equations:
+\begin{itemize}
+    \item finding 1 solution
+    \item finding all solutions
+    \item finding the number of solutions \& the solutions themselves in a given interval
+    \item finding a solution with minimum value of $x + y$.
+\end{itemize}
+{\bf The degenerate case.} A degenerate case that need to be taken care of is when $a = b = 0$. It is easy to see that we either have no solutions of infinitely many solutions, depending on whether $c = 0$ or not. In the rest of this article, we will ignore this case.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Analytic solution -- Nghiệm giải tích}
+When $a\ne0,b\ne0$, the equation $ax + by = c$ can be equivalently treated as either of the following:
+\begin{align*}
+    ax&\equiv c(\mbox{mod } b),\\
+    by&\equiv c(\mbox{mod } a).
+\end{align*}
+W.l.o.g., assume that $b\ne0$ \& consider the 1st equation. When $a$ \& $b$ are co-prime, the solution to it is given as
+\begin{equation*}
+    x\equiv ca^{-1}(\mbox{mod } b),
+\end{equation*}
+where $a^{-1}$ is the \href{https://cp-algorithms.com/algebra/module-inverse.html}{modular inverse} of $a$ modulo $b$.
+
+-- Khi $a\ne0,b\ne0$, phương trình $ax + by = c$ có thể được coi tương đương như một trong hai phương trình sau:
+\begin{align*}
+    ax&\equiv c(\mbox{mod } b),\\
+    by&\equiv c(\mbox{mod } a).
+\end{align*}
+Ví dụ: giả sử $b\ne0$ \& xét phương trình thứ nhất. Khi $a$ \& $b$ nguyên tố cùng nhau, nghiệm của nó được cho như sau
+\begin{equation*}
+    x\equiv ca^{-1}(\mbox{mod } b),
+\end{equation*}
+trong đó $a^{-1}$ là nghịch đảo môđun của $a$ modulo $b$.
+
+When $a,b$ are not co-prime, values of $ax$ modulo $b$ for all integer $x$ are divisible by $g = \gcd(a,b)$ , so the solution only exists when $c$ is divisible by $g$. In this case, 1 of solutions can be found by reducing the equation by $g$:
+\begin{equation*}
+    \frac{a}{g}x\equiv\frac{c}{g}\left(\mbox{mod }\frac{b}{g}\right).
+\end{equation*}
+By the definition of $g$, the numbers $\frac{a}{g},\frac{b}{g}$ are co-prime, so the solution is given explicitly as
+\begin{equation*}
+    \left\{\begin{split}
+        x&\equiv\frac{c}{g}\left(\frac{a}{g}\right)^{-1}\left(\mbox{mod }\frac{b}{g}\right),\\
+        y &= \frac{c - ax}{b}.
+    \end{split}\right.
+\end{equation*}
+-- Khi $a, b$ không nguyên tố cùng nhau, các giá trị $ax$ modulo $b$ với mọi số nguyên $x$ đều chia hết cho $g = \gcd(a, b)$, do đó nghiệm chỉ tồn tại khi $c$ chia hết cho $g$. Trong trường hợp này, ta có thể tìm được 1 nghiệm bằng cách rút gọn phương trình đi $g$:
+\begin{equation*}
+    \frac{a}{g}x\equiv\frac{c}{g}\left(\mbox{mod }\frac{b}{g}\right).
+\end{equation*}
+Theo định nghĩa của $g$, các số $\frac{a}{g},\frac{b}{g}$ là các số nguyên tố cùng nhau, do đó nghiệm được đưa ra một cách rõ ràng là
+\begin{equation*}
+    \left\{\begin{split}
+        x&\equiv\frac{c}{g}\left(\frac{a}{g}\right)^{-1}\left(\mbox{mod }\frac{b}{g}\right),\\
+        y &= \frac{c - ax}{b}.
+    \end{split}\right.
+\end{equation*}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Algorithmic solution -- Nghiệm thuật toán}
+B\'ezout's lemma (also called B\'ezout's identity) is a useful result that can be used to understand the following solution.
+
+-- Bổ đề B\'ezout (còn gọi là định danh B\'ezout) là một kết quả hữu ích có thể được sử dụng để hiểu giải pháp sau.
+
+\begin{lemma}[B\'ezout's]
+    Given $a,b\in\mathbb{Z}$, there exists $x,y\in\mathbb{Z}$ s.t. $ax + by = \gcd(a,b)$. Moreover, $\gcd(a,b)$ is the least such positive integer that can be written as $ax + by$; all integers of the form $ax + by$ are multiples of $g$.
+
+    -- Cho $a,b\in\mathbb{Z}$, tồn tại $x,y\in\mathbb{Z}$ sao cho $ax + by = \gcd(a,b)$. Hơn nữa, $\gcd(a,b)$ là số nguyên dương nhỏ nhất có thể viết dưới dạng $ax + by$; mọi số nguyên có dạng $ax + by$ đều là bội số của $g$.
+\end{lemma}
+To find 1 solution of the Diophantine equation with 2 unknowns, you can use the extended Euclidean algorithm. 1st, assume that $a,b\in\mathbb{N}$. When we apply extended Euclidean algorithm for $a,b$, we can find their greatest common divisor $g\coloneqq\gcd(a,b)$ \& 2 numbers $x_g,y_g\in\mathbb{Z}$ s.t.
+\begin{equation*}
+    ax_g + by_g = g.
+\end{equation*}
+If $c$ is divisible by $g = \gcd(a,b)$, then the given Diophantine equation has a solution, otherwise it does not have any solution. The proof is straightforward: a linear combination of 2 numbers is divisible by their common divisor.
+
+-- Để tìm 1 nghiệm của phương trình Diophantine với 2 ẩn số, bạn có thể sử dụng thuật toán Euclid mở rộng. 1. Giả sử $a,b\in\mathbb{N}$. Khi áp dụng thuật toán Euclid mở rộng cho $a,b$, ta có thể tìm ước chung lớn nhất của chúng là $g\coloneqq\gcd(a,b)$ \& 2 số $x_g,y_g\in\mathbb{Z}$ s.t.
+\begin{equation*}
+    ax_g + by_g = g.
+\end{equation*}
+Nếu $c$ chia hết cho $g = \gcd(a,b)$, thì phương trình Diophantine đã cho có nghiệm, ngược lại thì vô nghiệm. Chứng minh rất đơn giản: một tổ hợp tuyến tính của 2 số chia hết cho ước chung của chúng.
+
+Now suppose that $c$ is divisible by $g$, then we have
+\begin{equation*}
+    ax_g\cdot\frac{c}{g} + by_g\cdot\frac{c}{g} = c.
+\end{equation*}
+Therefore 1 of the solutions of the Diophantine equation is
+\begin{equation*}
+    x_0 = x_g\cdot\frac{c}{g},\ y_0 = y_g\cdot\frac{c}{g}.
+\end{equation*}
+The above idea still works when $a$ or $b$ or both of them are negative. We only need to change the sign of $x_0,y_0$ when necessary. Finally, we can implement this idea as follows (note that this code does not consider the case $a = b = 0$):
+
+-- Bây giờ giả sử $c$ chia hết cho $g$, thì ta có
+\begin{equation*}
+    ax_g\cdot\frac{c}{g} + by_g\cdot\frac{c}{g} = c.
+\end{equation*}
+Do đó, 1 trong các nghiệm của phương trình Diophantine là
+\begin{equation*}
+    x_0 = x_g\cdot\frac{c}{g}, y_0 = y_g\cdot\frac{c}{g}.
+\end{equation*}
+Ý tưởng trên vẫn đúng khi $a$ hoặc $b$ hoặc cả hai đều âm. Ta chỉ cần đổi dấu của $x_0,y_0$ khi cần thiết. Cuối cùng, ta có thể triển khai ý tưởng này như sau (lưu ý rằng đoạn mã này không xét trường hợp $a = b = 0$):
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+int gcd(int a, int b, int& x, int& y) {
+    if (b == 0) {
+        x = 1;
+        y = 0;
+        return a;
+    }
+    int x1, y1;
+    int d = gcd(b, a % b, x1, y1);
+    x = y1;
+    y = x1 - y1 * (a / b);
+    return d;
+}
+
+bool find_any_solution(int a, int b, int c, int& x0, int& y0, int& g) {
+    g = gcd(abs(a), abs(b), x0, y0);
+    if (c % g) return false;
+    x0 *= c / g;
+    y0 *= c / g;
+    if (a < 0) x0 = -x0;
+    if (b < 0) y0 = -y0;
+    return true;
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Getting all solutions -- Thu hoạch tất cả cá nghiệm}
+From 1 solution $(x_0,y_0)$, we can obtain all the solutions of the given equation. Let $g\coloneqq\gcd(a,b)$ \& let $x_0,y_0\in\mathbb{Z}$ s.t.
+\begin{equation*}
+    ax_0 + by_0 = c.
+\end{equation*}
+Now we should see that adding $\frac{b}{g}$ to $x_0$, \& at the same time subtracting $\frac{a}{g}$ from $y_0$ will not break the equality:
+\begin{equation*}
+    a\left(x_0 + \frac{b}{g}\right) + b\left(y_0 - \frac{a}{g}\right) = ax_0 + by_0 + a\cdot\frac{b}{g} - b\cdot\frac{a}{g} = c.
+\end{equation*}
+Obviously, this process can be repeated again, so all pairs of integers of the form
+\begin{equation*}
+    (x,y) = \left(x_0 + k\cdot\frac{b}{g},y_0 - k\cdot\frac{a}{g}\right)
+\end{equation*}
+solutions of the given Diophantine equation are. Since the equation is linear, all solutions lie on the same line, \& by the definition of $g$ this is the set of all possible solutions of the given Diophantine equation.
+
+-- Từ 1 nghiệm $(x_0,y_0)$, ta có thể thu được tất cả các nghiệm của phương trình đã cho. Cho $g\coloneqq\gcd(a,b)$ \& cho $x_0,y_0\in\mathbb{Z}$ s.t.
+\begin{equation*}
+    ax_0 + by_0 = c.
+\end{equation*}
+Bây giờ chúng ta thấy rằng việc cộng $\frac{b}{g}$ vào $x_0$, \& đồng thời trừ $\frac{a}{g}$ khỏi $y_0$ sẽ không phá vỡ đẳng thức:
+\begin{equation*}
+    a\left(x_0 + \frac{b}{g}\right) + b\left(y_0 - \frac{a}{g}\right) = ax_0 + by_0 + a\cdot\frac{b}{g} - b\cdot\frac{a}{g} = c.
+\end{equation*}
+Hiển nhiên, quá trình này có thể được lặp lại, do đó mọi cặp số nguyên có dạng
+\begin{equation*}
+    (x,y) = \left(x_0 + k\cdot\frac{b}{g},y_0 - k\cdot\frac{a}{g}\right)
+\end{equation*}
+
+nghiệm của phương trình Diophantine đã cho là. Vì phương trình là tuyến tính, mọi nghiệm đều nằm trên cùng một đường thẳng, \& theo định nghĩa của $g$ thì đây là tập hợp tất cả các nghiệm khả dĩ của phương trình Diophantine đã cho.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Finding the number of solutions \& the solutions in a given interval -- Tìm số nghiệm \& các nghiệm trong một khoảng cho trước}
+From the previous subsection, it should be clear that if we don't impose any restrictions on the solutions, there would be infinite number of them. So in this sect, we add some restrictions on the interval of $x,y$, \& we will try to count \& enumerate all the solutions.
+
+-- Từ phần trước, có thể thấy rõ rằng nếu chúng ta không áp đặt bất kỳ hạn chế nào lên các nghiệm, thì sẽ có vô số nghiệm. Vì vậy, trong phần này, chúng ta thêm một số hạn chế vào khoảng $x,y$, \& chúng ta sẽ thử đếm \& liệt kê tất cả các nghiệm.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Find the solution with minimum value of $x + y$ -- Tìm nghiệm có giá trị nhỏ nhất là $x + y$}
+
+\begin{baitoan}
+    Tìm nghiệm nguyên của phương trình Diophantine tuyến tính $ax + by = c$ với $x + y$ nhỏ nhất.
+\end{baitoan}
+
+\begin{baitoan}
+    Tìm nghiệm nguyên của phương trình Diophantine tuyến tính $ax + by = c$ với $f(x,y)$ nhỏ nhất hoặc lớn nhất với $f:\mathbb{Z}^2\to\mathbb{R}$ là 1 hàm số cho trước, i.e., tìm
+    \begin{equation*}
+        \min_{(x,y)\in\mathbb{Z}^2,\ ax + by = c} f(x,y).
+    \end{equation*}
+\end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Problem: Linear Diophantine equations -- Bài tập: Phương trình Diophantine tuyến tính}
+
+\begin{problem}[Spoj - Crucial Equation]
+
+\end{problem}
+
+\begin{problem}[SGU 106]
+
+\end{problem}
+
+\begin{problem}[Codeforces - Ebony and Ivory]
+
+\end{problem}
+
+\begin{problem}[Codechef - Get AC in one go]
+
+\end{problem}
+
+\begin{problem}[LightOj - Solutions to an equation]
+
+\end{problem}
+
+\begin{problem}[Atcoder - F - S = 1]
+
+\end{problem}
 
 %------------------------------------------------------------------------------%
 

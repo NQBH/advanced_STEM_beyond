@@ -9246,6 +9246,71 @@ int main() {
 	\item {\sf Constraints.} $n\in[10^6]$.
 \end{problem}
 
+\begin{baitoan}[Tổ hợp xúc xắc]
+    Đếm số cách tạo tổng $n\in\mathbb{N}^\star$ bằng cách gieo xúc xắc 1 lần hoặc nhiều hơn. Mỗi lần gieo sẽ cho ra kết quả nằm trong khoảng từ $1$ \& $6$. Ví dụ: nếu $n = 3$, thì có $4$ cách: $3 = 1 + 1 + 1 = 1 + 2 = 2 + 1 = 3$.
+    \item {\sf Input.} Dòng đầu vào duy nhất chứa một số nguyên $n\in\mathbb{N}^\star$.
+    \item {\sf Output.} In ra số cách của mô-đun $10^9 + 7$.
+    \item {\sf Ràng buộc.} $n\in[10^6]$.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    Denote by ${\rm dp}[n]$ the number of ways to make sum $n$ by using numbers from 1 to 6. Summing over the possibilities gives
+    \begin{equation*}
+        {\rm dp}[n] = \sum_{i=1}^6 {\rm dp}[n - i] = {\rm dp}[n - 1] + {\rm dp}[n - 2] + {\rm dp}[n - 3] + {\rm dp}[n - 4] + {\rm dp}[n - 5] + {\rm dp}[n - 6].
+    \end{equation*}
+    We initialize by ${\rm dp}[0] = 1$ since there is 1 way with sum zero ($\emptyset$). Time complexity: $O(n)$.
+
+    C++:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n, mod = 1e9 + 7;
+    cin >> n;
+    vector<int> dp(n + 1, 0);
+    dp[0] = 1;
+    for (int i = 1; i <= n; ++i)
+        for (int j = 1; j <= 6 && j <= i; ++j) (dp[i] += dp[i - j]) %= mod;
+    cout << dp[n];
+}
+    \end{Verbatim}
+\end{proof}
+Có thể dễ dàng mở rộng bài toán từ tập $[6]$ thành tập $[m]$ với $m\in\mathbb{N}^\star$ được nhập vào:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int m, n, mod = 1e9 + 7;
+    cin >> n >> m;
+    vector<int> dp(n + 1, 0);
+    dp[0] = 1;
+    for (int i = 1; i <= n; ++i)
+        for (int j = 1; j <= m && j <= i; ++j) (dp[i] += dp[i - j]) %= mod;
+    cout << dp[n];
+}
+\end{Verbatim}
+hoặc 1 tập $\{a_1,a_2,\ldots,a_m\}\subset\mathbb{N}^\star$ cho trước:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int m, n, mod = 1e9 + 7;
+    cin >> n >> m;
+    vector<int> dp(n + 1, 0), a(m);
+    for (int i = 0; i < m; ++i) cin >> a[i];
+    dp[0] = 1;
+    for (int i = 1; i <= n; ++i)
+        for (int j = 0; j < m && a[j] <= i; ++j) (dp[i] += dp[i - a[j]]) %= mod;
+    cout << dp[n];
+}
+\end{Verbatim}
+
 \begin{problem}[\href{https://cses.fi/problemset/task/1634}{CSES Problem Set{\tt/}minimizing coins}]
 	Consider a money system consisting of $n$ coins. Each coin has a positive integer value. Your task is to produce a sum of money $x$ using the available coins in such a way that the number of coins is minimal. E.g., if the coins are $\{1,5,7\}$ \& the desired sum is $11$, an optimal solution is $5 + 5 + 1$ which requires $3$ coins.
 	\item {\sf Input.} The 1st input line has 2 integer $n,x\in\mathbb{N}^\star$: the number of coins \& the desired sum of money. The 2nd line has $n$ distinct integers $\{c_i\}_{i=1}^n = c_1,c_2,\ldots,c_n$: the value of each coin.

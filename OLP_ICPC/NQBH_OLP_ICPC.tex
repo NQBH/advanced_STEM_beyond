@@ -9872,7 +9872,107 @@ int main() {
 \end{baitoan}
 
 \begin{proof}[Solution]
+    Define ${\rm dp}[i]$ as the number of ways to build a tower of height $i$, $\forall i\in\mathbb{N}$. The next index means if the tile at the $i$th place is split or not, i.e., if ${\rm dp}[i][0]$ then the $i$th tile is split (2 tiles of $1\times 1$) \& if ${\rm dp}[i][0]$ then the $i$th tile is not split, i.e., we have a single tile of $2\times1$. So, ${\rm dp}[i][0]$ is the number of ways to build a tower of height $i$ s.t. the top tile is split (2 tiles of size $1\times1$) \& ${\rm dp}[i][1]$ means number of ways to build a tower of height $i$ s.t. the top tile is continuous (1 tile of size $2\times1$). For the recursive function, if the last tile is split ${\rm dp}[i][0]$, it can have the following options:
+    \begin{enumerate}
+        \item It can extend both the split tiles at $i - 1$: ${\rm dp}[i - 1][0]$.
+        \item It can extend on the left split tile at $i - 1$: ${\rm dp}[i - 1][0]$.
+        \item It can extend on the right split tile at $i - 1$: ${\rm dp}[i - 1][0]$.
+        \item It can extend none of the split tiles at $i - 1$ but add its own: ${\rm dp}[i - 1][0]$.
+    \end{enumerate}
+    i.e., $4{\rm dp}[i - 1][0]$. \& the last case, it can add split tiles over the continuous tile of $i - 1$th height: ${\rm dp}[i - 1][1]$. Thus:
+    \begin{equation*}
+        {\rm dp}[i][0] = 4{\rm dp}[i - 1][0] + {\rm dp}[i - 1][1].
+    \end{equation*}
+    Similarly if the last tile is continuous ${\rm dp}[i][1]$:
+    \begin{enumerate}
+        \item It can extend the continuous tile at $i - 1$: ${\rm dp}[i - 1][1]$.
+        \item It cannot extend the continuous tile at $i - 1$: ${\rm dp}[i - 1][1]$.
+        \item It can add a continuous tile over split tiles of $i - 1$: ${\rm dp}[i - 1][0]$.
+    \end{enumerate}
+    Thus,
+    \begin{equation*}
+        {\rm dp}[i][1] = 2{\rm dp}[i - 1][1] + {\rm dp}[i - 1][0].
+    \end{equation*}
 
+    -- Định nghĩa ${\rm dp}[i]$ là số cách xây một tòa tháp có chiều cao $i$, $\forall i\in\mathbb{N}$. Chỉ số tiếp theo có nghĩa là viên gạch ở vị trí $i$ có bị tách hay không, tức là nếu ${\rm dp}[i][0]$ thì viên gạch thứ $i$ bị tách (2 viên gạch có kích thước $1\times 1$) \& nếu ${\rm dp}[i][0]$ thì viên gạch thứ $i$ không bị tách, tức là chúng ta có một viên gạch duy nhất có kích thước $2\times1$. Vì vậy, ${\rm dp}[i][0]$ là số cách xây một tòa tháp có chiều cao $i$ s.t. viên gạch trên cùng bị tách (2 viên gạch có kích thước $1\times1$) \& ${\rm dp}[i][1]$ có nghĩa là số cách xây một tòa tháp có chiều cao $i$ s.t. ô trên cùng là liên tục (1 ô có kích thước $2\times1$). Đối với hàm đệ quy, nếu ô cuối cùng được chia ${\rm dp}[i][0]$, nó có thể có các tùy chọn sau:
+    \begin{enumerate}
+        \item Nó có thể mở rộng cả hai ô đã chia tại $i - 1$: ${\rm dp}[i - 1][0]$.
+        \item Nó có thể mở rộng trên ô đã chia bên trái tại $i - 1$: ${\rm dp}[i - 1][0]$.
+        \item Nó có thể mở rộng trên ô đã chia bên phải tại $i - 1$: ${\rm dp}[i - 1][0]$.
+        \item Nó không thể mở rộng bất kỳ ô nào đã chia tại $i - 1$ nhưng có thể thêm ô của riêng nó: ${\rm dp}[i - 1][0]$.
+    \end{enumerate}
+    tức là $4{\rm dp}[i - 1][0]$. \& trường hợp cuối cùng, nó có thể thêm các ô chia trên ô liên tục có chiều cao $i - 1$: ${\rm dp}[i - 1][1]$. Do đó:
+    \begin{equation*}
+        {\rm dp}[i][0] = 4{\rm dp}[i - 1][0] + {\rm dp}[i - 1][1].
+    \end{equation*}
+    Tương tự, nếu ô cuối cùng là liên tục ${\rm dp}[i][1]$:
+    \begin{enumerate}
+        \item Nó có thể mở rộng ô liên tục tại $i - 1$: ${\rm dp}[i - 1][1]$.
+        \item Nó không thể mở rộng ô liên tục tại $i - 1$: ${\rm dp}[i - 1][1]$.
+        \item Nó có thể thêm một ô liên tục trên các ô chia tách $i - 1$: ${\rm dp}[i - 1][0]$.
+    \end{enumerate}
+    Do đó,
+    \begin{equation*}
+        {\rm dp}[i][1] = 2{\rm dp}[i - 1][1] + {\rm dp}[i - 1][0].
+    \end{equation*}
+    C++:
+    \begin{enumerate}
+        \item \url{https://codeforces.com/blog/entry/70018}:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+#define ll long long
+ll dp[10000005][2];
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    int t, mod = 1e9 + 7;
+    cin >> t;
+    while (t--) {
+        ll n;
+        cin >> n;
+        dp[1][0] = 1; dp[1][1] = 1;
+        for (int i = 2; i <= n; ++i) {
+            dp[i][0] = (4 * dp[i - 1][0] + dp[i - 1][1]) % mod;
+            dp[i][1] = (dp[i - 1][0] + 2 * dp[i - 1][1]) % mod;
+        }
+        cout << (dp[n][0] + dp[n][1]) % mod << '\n';
+    }
+}
+        \end{Verbatim}
+
+        \begin{remark}
+            Use {\tt int} array instead of vector in the code, otherwise the following code gets a TLE:
+            \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+#define ll long long
+vector<vector<int>> dp(10000005, vector<int> (2));
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    int t, mod = 1e9 + 7;
+    cin >> t;
+    while (t--) {
+        ll n;
+        cin >> n;
+        dp[1][0] = 1; dp[1][1] = 1;
+        for (int i = 2; i <= n; ++i) {
+            dp[i][0] = (4 * dp[i - 1][0] + dp[i - 1][1]) % mod;
+            dp[i][1] = (dp[i - 1][0] + 2 * dp[i - 1][1]) % mod;
+        }
+        cout << (dp[n][0] + dp[n][1]) % mod << '\n';
+    }
+}
+            \end{Verbatim}
+            -- Sử dụng mảng {\tt int} thay vì vector trong mã, nếu không, mã sau sẽ nhận được TLE.
+        \end{remark}
+    \end{enumerate}
 \end{proof}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1639}{CSES Problem Set{\tt/}edit distance}]
@@ -9899,6 +9999,48 @@ int main() {
 		\end{tabular}
 	\end{table}
 \end{problem}
+
+\begin{baitoan}[Chỉnh sửa khoảng cách]
+    Khoảng cách chỉnh sửa {\rm} giữa 2 chuỗi là số thao tác tối thiểu cần thiết để chuyển đổi 1 chuỗi thành chuỗi còn lại. Các thao tác được phép là:
+    \begin{itemize}
+        \item Thêm 1 ký tự vào chuỗi.
+        \item Xóa 1 ký tự khỏi chuỗi.
+        \item Thay thế 1 ký tự trong chuỗi.
+    \end{itemize}
+    E.g., khoảng cách chỉnh sửa giữa {\tt LOVE} \& {\tt MOVIE} là $2$, vì trước tiên bạn có thể thay thế {\tt L} bằng {\tt M}, \& sau đó thêm {\tt I}. Tính khoảng cách chỉnh sửa giữa 2 chuỗi.
+    \item {\sf Input.} Dòng đầu vào đầu tiên chứa một chuỗi chứa $n\in\mathbb{N}^\star$ ký tự giữa {\tt A--Z}. Dòng đầu vào thứ 2 chứa một chuỗi ký tự $m\in\mathbb{N}^\star$ nằm giữa {\tt A--Z}.
+    \item {\sf Đầu ra.} In ra 1 số nguyên: khoảng cách chỉnh sửa giữa các chuỗi.
+    \item {\sf Ràng buộc.} $m,n\in[5000]$.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    This is a classic problem called {\it edit distance}. We call the input strings $a,b$ \& refer to the 1st $i$ characters of $a$ by $a[:i]$. Define ${\rm dp}[i][j]$ as the minimum number of moves to change $a[:i]$ to $b[:j]$.  When we calculate ${\rm dp}[i][j]$, there are 4 possibilities to consider the rightmost operation. We check all of them \& take the cheapest one.
+    \begin{enumerate}
+        \item We deleted character $a[i - 1]$. This took 1 operation, \& we still need to change $a[:i - 1]$ to $b[:j]$, which costs $1 + {\rm dp}[i - 1][j]$ operations.
+        \item We added character $b[j - 1]$ to the end of $a[:i]$. This took 1 operation, \& we still need to change $a[:i]$ to $b[:j - 1]$, which costss $1 + {\rm dp}[i][j - 1]$ operations.
+        \item We replace $a[i - 1]$ with $b[j - 1]$. This took 1 operation, \& we will need to change $a[:i - 1]$ to $b[:j - 1]$, which costs $1 + {\rm dp}[i - 1][j - 1]$ operations.
+        \item $a[i - 1]$ was already equal to $b[j - 1]$, so we just need to change $a[:i - 1]$ to $B[:j - 1]$, which costs ${\rm dp}[i - 1][j - 1]$ operations. This possibility can be viewed as a replace operation where we don't actually need to replace $a[i - 1]$.
+    \end{enumerate}
+    Time complexity $O(|a||b|)$ where $|a|,|b|$ are the lengths of 2 string $a,b$.
+
+    -- Đây là một bài toán kinh điển được gọi là {\it edit distance}. Ta gọi các chuỗi đầu vào $a,b$ \& tham chiếu đến $i$ ký tự đầu tiên của $a$ bằng $a[:i]$. Định nghĩa ${\rm dp}[i][j]$ là số bước di chuyển tối thiểu để biến $a[:i]$ thành $b[:j]$. Khi ta tính ${\rm dp}[i][j]$, có 4 khả năng để xem xét phép toán ngoài cùng bên phải. Ta kiểm tra tất cả các khả năng đó \& chọn phương án rẻ nhất.
+    \begin{enumerate}
+        \item Ta đã xóa ký tự $a[i - 1]$. Việc này chỉ mất 1 thao tác, \& ta vẫn cần phải biến $a[:i - 1]$ thành $b[:j]$, tốn $1 + {\rm dp}[i - 1][j]$ phép toán.
+        \item Ta đã thêm ký tự $b[j - 1]$ vào cuối $a[:i]$. Việc này chỉ mất 1 thao tác, \& chúng ta vẫn cần phải đổi $a[:i]$ thành $b[:j - 1]$, tốn $1 + {\rm dp}[i][j - 1]$ thao tác.
+        \item Chúng ta thay $a[i - 1]$ bằng $b[j - 1]$. Việc này chỉ mất 1 thao tác, \& chúng ta sẽ cần phải đổi $a[:i - 1]$ thành $b[:j - 1]$, tốn $1 + {\rm dp}[i - 1][j - 1]$ thao tác.
+        \item $a[i - 1]$ đã bằng $b[j - 1]$, vì vậy chúng ta chỉ cần đổi $a[:i - 1]$ thành $B[:j - 1]$, tốn ${\rm dp}[i - 1][j - 1]$ thao tác. Khả năng này có thể được xem như một thao tác thay thế mà chúng ta không thực sự cần phải thay thế $a[i - 1]$.
+    \end{enumerate}
+    Độ phức tạp thời gian $O(|a||b|)$ trong đó $|a|,|b|$ là độ dài của 2 chuỗi $a,b$.
+
+    C++:
+    \begin{enumerate}
+        \item
+    \end{enumerate}
+\end{proof}
+
+\begin{remark}[SED vs. TED: string edit distance vs. tree edit distance]
+    Bài toán chỉnh sửa khoảng cách trên đây so sánh 2 chuỗi strings. Bài toán tree edit distance trong Lý thuyết Đồ thị chỉnh sửa khoảng cách trên 2 cây.
+\end{remark}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/3403}{CSES Problem Set{\tt/}longest common subsequence}]
 	Given 2 arrays of integers, find their longest common subsequence. A subsequence is a sequence of array elements from left to right that can contain gaps. A common subsequence is a subsequence that appears in both arrays.

@@ -10410,7 +10410,7 @@ int main() {
 	\end{table}
 \end{problem}
 
-\begin{problem}[\href{https://cses.fi/problemset/task/1145}{CSES Problem Set{\tt/}increasing subsequence}]
+\begin{problem}[\href{https://cses.fi/problemset/task/1145}{CSES Problem Set{\tt/}increasing subsequence} (longest increasing subsequence, LIS)]
 	You are given an array containing $n\in\mathbb{N}^\star$ integers. Determine the longest increasing subsequence in the array, i.e., the longest subsequence where every element is larger than the previous one. A subsequence is a sequence that can be derived from the array by deleting some elements without changing the order of the remaining elements.
 	\item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the size of the array. After this there are $n$ integers $x_1,x_2,\ldots,x_n$: the contents of the array.
 	\item {\sf Output.} Print the length of the longest increasing subsequence.
@@ -10437,8 +10437,42 @@ int main() {
 \end{baitoan}
 
 \begin{proof}[Solution]
-    This is a classical problem called {\it Longest Increasing Subsequence} or LIS for short. Define ${\rm dp}[x]$ as the minimum ending value of an increasing subsequence of length $x + 1$, using the elements considered so far. We add elements 1 by 1 from left to right. Say we want to add a new value $v$. For this to be part of an increasing subsequence, the previous value in the subsequence must be lower than $v$. +++
+    This is a classical problem called {\it Longest Increasing Subsequence} or LIS for short. Define ${\rm dp}[x]$ as the minimum ending value of an increasing subsequence of length $x + 1$, using the elements considered so far. We add elements 1 by 1 from left to right. Say we want to add a new value $v$. For this to be part of an increasing subsequence, the previous value in the subsequence must be lower than $v$. Therefore we need to extend the current longest increasing subsequence ending in a value less than $v$, i.e., we want to find the rightmost element in the dp array (as the position corresponds to the length of the subsequence), with value less than $v$. Say it is at position $x$. We can put $v$ as a new candidate for ending value at position $x + 1$ (since we have an increasing subsequence of length $x + 1 + 1$, which ends on $v$). Since $x$ was the rightmost position with value less than $v$, changing ${\rm dp}[x + 1]$ to $v$ can only make the value smaller (better), so we can always set ${\rm dp}[x + 1] = v$ without checking if it is an improvement 1st.
+
+    -- Đây là một bài toán kinh điển được gọi là {\it Longest Increasing Subsequence} hay viết tắt là LIS. Định nghĩa ${\rm dp}[x]$ là giá trị kết thúc nhỏ nhất của một dãy con tăng dần có độ dài $x + 1$, sử dụng các phần tử đã xét cho đến nay. Chúng ta thêm các phần tử 1 theo 1 từ trái sang phải. Giả sử chúng ta muốn thêm một giá trị mới $v$. Để giá trị này là một phần của một dãy con tăng dần, giá trị trước đó trong dãy con phải nhỏ hơn $v$. Do đó, chúng ta cần mở rộng dãy con tăng dần dài nhất hiện tại có giá trị kết thúc nhỏ hơn $v$, tức là chúng ta muốn tìm phần tử ngoài cùng bên phải trong mảng dp (vì vị trí tương ứng với độ dài của dãy con), có giá trị nhỏ hơn $v$. Giả sử nó ở vị trí $x$. Chúng ta có thể đặt $v$ làm ứng cử viên mới cho giá trị kết thúc ở vị trí $x + 1$ (vì chúng ta có một dãy con tăng dần có độ dài $x + 1 + 1$, kết thúc tại $v$). Vì $x$ là vị trí cực phải có giá trị nhỏ hơn $v$, nên việc thay đổi ${\rm dp}[x + 1]$ thành $v$ chỉ có thể làm cho giá trị nhỏ hơn (tốt hơn), do đó chúng ta luôn có thể đặt ${\rm dp}[x + 1] = v$ mà không cần kiểm tra xem đó có phải là cải tiến trước hay không.
+
+    Naively locating the position $x$ with a for loop gives complexity $O(n^2)$. However, dp is always an increasing array. So we can locate $x$ position by binary search: \verb|std:lower_bound| in C++ directly gives position $x + 1$. The final answer is the length of the dp array after considering all elements. Time complexity $O(n\log_2n)$.
+
+    -- Việc định vị vị trí $x$ một cách ngây thơ bằng vòng lặp for sẽ cho độ phức tạp $O(n^2)$. Tuy nhiên, dp luôn là một mảng tăng. Vì vậy, chúng ta có thể định vị vị trí $x$ bằng tìm kiếm nhị phân: \verb|std:lower_bound| trong C++ sẽ trả về trực tiếp vị trí $x + 1$. Kết quả cuối cùng là độ dài của mảng dp sau khi xem xét tất cả các phần tử. Độ phức tạp thời gian $O(n\log_2n)$.
+
+    C++:
+    \begin{enumerate}
+        \item \url{https://codeforces.com/blog/entry/70018}:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    vector<int> dp;
+    for (int i = 0; i < n; ++i) {
+        int x;
+        cin >> x;
+        auto it = lower_bound(dp.begin(), dp.end(), x);
+        if (it == dp.end()) dp.push_back(x);
+        else *it = x;
+    }
+    cout << dp.size();
+}
+        \end{Verbatim}
+    \end{enumerate}
 \end{proof}
+
+\begin{remark}
+    This problem asks us to find the longest strictly increasing subsequence. To find the longest non-decreasing subsequence (or weakly increasing subsequence) where we allow consecutive equal values, e.g., $1,2,2,2,3,3$, change \verb|lower_bound| to \verb|upper_bound|.
+\end{remark}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1140}{CSES Problem Set{\tt/}projects}]
 	There are $n\in\mathbb{N}^\star$ you can attend. For each project, you know its starting \& ending days \& the amount of money you would get as reward. You can only attend 1 project during a day. What is the maximum amount of money you can earn?
@@ -10461,6 +10495,52 @@ int main() {
 		\end{tabular}
 	\end{table}
 \end{problem}
+
+\begin{baitoan}[Dự án]
+    Có $n\in\mathbb{N}^\star$ bạn có thể tham gia. Với mỗi dự án, bạn biết ngày bắt đầu \& ngày kết thúc \& số tiền thưởng bạn sẽ nhận được. Bạn chỉ có thể tham gia 1 dự án trong một ngày. Số tiền tối đa bạn có thể kiếm được là bao nhiêu?
+    \item {\sf Đầu vào.} Dòng đầu tiên chứa một số nguyên $n\in\mathbb{N}^\star$: số lượng dự án. Tiếp theo, có $n$ dòng. Mỗi dòng như vậy chứa 3 số nguyên $a_i,b_i,p_i\in\mathbb{N}^\star$: ngày bắt đầu, ngày kết thúc, \& phần thưởng.
+    \item {\sf Đầu ra.} In ra 1 số nguyên: số tiền tối đa bạn có thể kiếm được.
+    \item {\sf Ràng buộc.} $n\in[2\cdot10^5],a_i,b_i,p_i\in[10^9]$, $a_i\le b_i$, $\forall i\in[n]$.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    Even though days can go up to $10^9$, we only care about days where we either start or just finished a project. So before doing anything else, we compress all days to their index among all interesting days, i.e., days corresponding to $a_i$ or $b_i + 1$ for some $i$. This way, days range from 0 to less than $2n\le4\cdot10^5$. Define ${\rm dp}[i]$ as the maximum amount of money we can earn before day $i$. On day $i$, maybe we just did nothing, so we earn what we earned on day $i - 1$, i.e., ${\rm dp}[i - 1]$. Otherwise, we just finished some project. We earn some money doing the project, \& use dp[start of project] to know how much money we could have earned before starting the project. Loop through all projects finishing just before day $i$, \& take the best one. The time complexity is $O(n\log_2n)$, log comes from day compression.
+
+    -- Mặc dù số ngày có thể lên tới $10^9$, chúng ta chỉ quan tâm đến những ngày chúng ta bắt đầu hoặc vừa hoàn thành một dự án. Vì vậy, trước khi làm bất cứ điều gì khác, chúng ta nén tất cả các ngày vào chỉ mục của chúng trong số tất cả các ngày thú vị, tức là các ngày tương ứng với $a_i$ hoặc $b_i + 1$ đối với một số $i$. Theo cách này, các ngày nằm trong khoảng từ 0 đến nhỏ hơn $2n\le4\cdot10^5$. Định nghĩa ${\rm dp}[i]$ là số tiền tối đa chúng ta có thể kiếm được trước ngày $i$. Vào ngày $i$, có thể chúng ta không làm gì cả, vì vậy chúng ta kiếm được những gì chúng ta kiếm được vào ngày $i - 1$, tức là ${\rm dp}[i - 1]$. Nếu không, chúng ta vừa hoàn thành một số dự án. Chúng ta kiếm được một số tiền khi thực hiện dự án, \& sử dụng dp[bắt đầu dự án] để biết chúng ta có thể kiếm được bao nhiêu tiền trước khi bắt đầu dự án. Lặp qua tất cả các dự án hoàn thành ngay trước ngày $i$, \& lấy dự án tốt nhất. Độ phức tạp về thời gian là $O(n\log_2n)$, logarit lấy từ phép nén ngày.
+
+    C++:
+    \begin{enumerate}
+        \item \url{https://codeforces.com/blog/entry/70018}:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <map>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    map<int, int> compress;
+    vector<int> a(n), b(n), p(n);
+    for (int i = 0; i < n; ++i) {
+        cin >> a[i] >> b[i] >> p[i];
+        ++b[i];
+        compress[a[i]], compress[b[i]];
+    }
+    int coords = 0;
+    for (auto& v : compress) v.second = coords++;
+    vector<vector<pair<int, int>>> project(coords);
+    for (int i = 0; i < n; ++i) project[compress[b[i]]].emplace_back(compress[a[i]], p[i]);
+    vector<long long> dp(coords, 0);
+    for (int i = 0; i < coords; ++i) {
+        if (i > 0) dp[i] = dp[i - 1];
+        for (auto p : project[i]) dp[i] = max(dp[i], dp[p.first] + p.second);
+    }
+    cout << dp[coords - 1];
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1653}{CSES Problem Set{\tt/}elevator rides}]
 	There are $n\in\mathbb{N}^\star$ people who want to get to the top of a building which has only 1 elevator. You know the weight of each person \& the maximum allowed weight in the elevator. What is the minimum number of elevator rides?

@@ -1,8 +1,7 @@
 #include <bits/stdc++.h>
-using namespace std;       
-
-#define ll long long      
-const int MOD = 1e9 + 7;   
+using namespace std;
+#define ll long long
+const int MOD = 1e9 + 7;
 
 // --- Bottom-up dùng mảng thường ---
 ll solve_array(ll N, ll X, vector<ll>& coins) {

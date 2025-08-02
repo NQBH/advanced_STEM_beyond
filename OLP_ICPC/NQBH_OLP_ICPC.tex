@@ -10034,11 +10034,31 @@ int main() {
 
     C++:
     \begin{enumerate}
-        \item
+        \item \url{https://codeforces.com/blog/entry/70018}.
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    string a, b;
+    cin >> a >> b;
+    int na = a.size(), nb = b.size();
+    vector<vector<int>> dp(na + 1, vector<int>(nb + 1, 1e9));
+    dp[0][0] = 0;
+    for (int i = 0; i <= na; ++i)
+        for (int j = 0; j <= nb; ++j) {
+            if (i) dp[i][j] = min(dp[i][j], dp[i - 1][j] + 1);
+            if (j) dp[i][j] = min(dp[i][j], dp[i][j - 1] + 1);
+            if (i && j) dp[i][j] = min(dp[i][j], dp[i - 1][j - 1] + (a[i - 1] != b[j - 1]));
+        }
+    cout << dp[na][nb];
+}
+        \end{Verbatim}
     \end{enumerate}
 \end{proof}
 
-\begin{remark}[SED vs. TED: string edit distance vs. tree edit distance]
+\begin{remark}[SED vs. TED: string edit distance vs. tree edit distance -- bài toán chỉnh sửa khoảng cách chuỗi vs. bài toán chỉnh sửa khoảng cách cây]
     Bài toán chỉnh sửa khoảng cách trên đây so sánh 2 chuỗi strings. Bài toán tree edit distance trong Lý thuyết Đồ thị chỉnh sửa khoảng cách trên 2 cây.
 \end{remark}
 
@@ -10080,6 +10100,61 @@ int main() {
 	\end{table}
 \end{problem}
 
+\begin{baitoan}[Cắt hình chữ nhật]
+    Cho một hình chữ nhật $a\times b$, hãy cắt nó thành các hình vuông. Với mỗi lần di chuyển, bạn có thể chọn một hình chữ nhật \& cắt nó thành 2 hình chữ nhật sao cho tất cả các cạnh đều là số nguyên. Hỏi số lần di chuyển tối thiểu có thể là bao nhiêu?
+    \item {\sf Input.} Dòng đầu vào duy nhất chứa 2 số nguyên $a,b\in\mathbb{N}^\star$:
+    \item {\sf Output.} In ra 1 số nguyên: số lần di chuyển tối thiểu.
+    \item {\sf Constraints.} $a,b\in[500]$.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    Define ${\rm dp}[w][h]$ as the minimum number of cuts needed to cut a $w\times h$ piece into squares. Consider a $w\times h$ piece. If it is already square, i.e., $w = h$, we need 0 cuts. Otherwise, we need to make the 1st cut either horizontally or vertically. Say we make it horizontally, then we can cut at any position $1,2,\ldots,h - 1$. We can look up the number of moves to reduce these to squares in the dp array. We loop over all possibilities $k$ \& take the best one. Similarly for vertical cuts. Time complexity $O(a^2b + ab^2) = O(ab(a + b))$.
+
+    -- Định nghĩa ${\rm dp}[w][h]$ là số lần cắt tối thiểu cần thiết để cắt một mảnh $w\times h$ thành các hình vuông. Xét một mảnh $w\times h$. Nếu nó đã vuông, tức là $w = h$, ta cần 0 lần cắt. Nếu không, ta cần thực hiện lần cắt đầu tiên theo chiều ngang hoặc chiều dọc. Giả sử ta thực hiện theo chiều ngang, thì ta có thể cắt tại bất kỳ vị trí nào $1,2,\ldots,h - 1$. Ta có thể tra cứu số lần di chuyển để rút gọn chúng thành các hình vuông trong mảng dp. Ta lặp qua tất cả các khả năng $k$ \& chọn ra khả năng tốt nhất. Tương tự cho các lần cắt theo chiều dọc. Độ phức tạp thời gian $O(a^2b + ab^2) = O(ab(a + b))$.
+
+    C++:
+    \begin{enumerate}
+        \item
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int w, h;
+    cin >> w >> h;
+    vector<vector<int>> dp(w + 1, vector<int>(h + 1));
+    for (int i = 0; i <= w; ++i)
+        for (int j = 0; j <= h; ++j)
+            if (i == j) dp[i][j] = 0;
+            else {
+                dp[i][j] = 1e9;
+                for (int k = 1; k < i; ++k) dp[i][j] = min(dp[i][j], dp[k][j] + dp[i - k][j] + 1);
+                for (int k = 1; k < j; ++k) dp[i][j] = min(dp[i][j], dp[i][k] + dp[i][j - k] + 1);
+            }
+    cout << dp[w][h];
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{baitoan}[\href{https://oj.vnoi.info/problem/vncut}{VNOI{\tt/}cắt hình chữ nhật}]
+    Người ta dùng máy cắt để cắt 1 hình chữ nhật kích thước $m\times n$, với $m,n\in[5000]$, thành 1 số ít nhất các hình vuông có kích thước nguyên dương \& có các cạnh song song với cạnh hình chữ nhật ban đầu. Máy cắt khi cắt luôn cắt theo phương song song với 1 trong 2 cạnh của hình chữ nhật \& chia hình chữ nhạt thành 2 phần.
+    \item {\sf Input.} Gồm 2 số là kích thước $m,n$ cách nhau bởi dấu cách.
+    \item {\sf Output.} Ghi số $k$ là số hình vuông nhỏ nhất được tạo ra.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|cut_rectangle.inp| & \verb|cut_rectangle.out| \\
+            \hline
+            5 6 & 5 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{baitoan}
+
 \begin{problem}[\href{https://cses.fi/problemset/task/3359}{CSES Problem Set{\tt/}minimal grid path}]
 	You are given an $n\times n$ grid whose each square contains a letter. You should move from the upper-left square to the lower-right square. You can only move right or down. What is the lexicographically minimal string you can construct?
 	\item {\sf Input.} The 1st input line has integers $n,m\in\mathbb{N}^\star$: the size of the grid. After this, there are $n$ lines that describe the grid. Each line has $n$ letters betweeen {\tt A--Z}.
@@ -10104,7 +10179,7 @@ int main() {
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1745}{CSES Problem Set{\tt/}money sums}]
 	You have $n$ coins with certain values. Find all money sums you can create using these coins.
-	\item {\sf Input.} The 1st input line has integers $n,m\in\mathbb{N}^\star$: the number of coins. The next line has $n$ integers $x_1,x_2,\ldots,x_n$: the values of the coins.
+	\item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the number of coins. The next line has $n$ integers $x_1,x_2,\ldots,x_n$: the values of the coins.
 	\item {\sf Output.} 1st print an integer $k\in\mathbb{N}^\star$: the number of distinct money sums. After this, print all possible sums in increasing order.
 	\item {\sf Constraints.} $n\in[100],x_i\in[10^3]$, $\forall i\in[n]$.
 	\item {\sf Sample.}
@@ -10120,6 +10195,50 @@ int main() {
 		\end{tabular}
 	\end{table}
 \end{problem}
+
+\begin{baitoan}[Tổng tiền]
+    Bạn có $n$ đồng xu với các giá trị nhất định. Hãy tìm tất cả các tổng tiền bạn có thể tạo ra bằng những đồng xu này.
+    \item {\sf Đầu vào.} Dòng đầu vào thứ nhất chứa 1 số nguyên $n\in\mathbb{N}^\star$: số lượng đồng xu. Dòng tiếp theo chứa $n$ số nguyên $x_1,x_2,\ldots,x_n$: giá trị của các đồng xu.
+    \item {\sf Đầu ra.} Đầu tiên, in ra một số nguyên $k\in\mathbb{N}^\star$: số lượng các tổng tiền khác nhau. Sau đó, in ra tất cả các tổng có thể theo thứ tự tăng dần.
+    \item {\sf Ràng buộc.} $n\in[100],x_i\in[10^3]$, $\forall i\in[n]$.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    This is a case of the classical problem called 0-1 knapsack. Define ${\rm dp}[i][x]$ as true if it is possible to make $x$ using the 1st coins, false otherwise. It is possible to make $x$ with the 1st $i$ coins, if either it was possible with the 1st $i - 1$ coins, or we choose the $i$th coin, \& it was possible to make $x - x_i$ using the 1st $i - 1$ coins. Note that we only need to consider sums up to $1000n$ since we can't make more than that using $n$ coins of value $\le1000$. Time complexity $O(n^2\max_{i\in[n]} x_i)$.
+
+    -- Đây là một trường hợp của bài toán cổ điển được gọi là ba lô 0-1. Định nghĩa ${\rm dp}[i][x]$ là đúng nếu có thể tạo ra $x$ bằng những đồng xu thứ nhất, sai nếu ngược lại. Có thể tạo ra $x$ bằng những đồng xu $i$ thứ nhất, nếu có thể với những đồng xu $i - 1$ thứ nhất, hoặc chúng ta chọn đồng xu $i$, \& có thể tạo ra $x - x_i$ bằng những đồng xu $i - 1$ thứ nhất. Lưu ý rằng chúng ta chỉ cần xem xét các tổng lên đến $1000n$ vì chúng ta không thể tạo ra nhiều hơn thế bằng cách sử dụng $n$ đồng xu có giá trị $\le1000$. Độ phức tạp thời gian $O(n^2\max_{i\in[n]} x_i)$.
+
+    C++:
+    \begin{enumerate}
+        \item \url{https://codeforces.com/blog/entry/70018}:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    int max_sum = 1000 * n;
+    vector<int> x(n);
+    for (int& v : x) cin >> v;
+    vector<vector<bool>> dp(n + 1, vector<bool>(max_sum + 1, false));
+    dp[0][0] = true;
+    for (int i = 1; i <= n; ++i)
+        for (int j = 0; j <= max_sum; ++j) {
+            dp[i][j] = dp[i - 1][j];
+            int left = j - x[i - 1];
+            if (left >= 0 && dp[i - 1][left]) dp[i][j] = true;
+    }
+    vector<int> possible;
+    for (int i = 1; i <= max_sum; ++i)
+        if (dp[n][i]) possible.push_back(i);
+    cout << possible.size() << '\n';
+    for (int v : possible) cout << v << ' ';
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1097}{CSES Problem Set{\tt/}removal game}]
 	There is a list of $n\in\mathbb{N}^\star$ numbers \& 2 players who move alternately. On each move, a player removes either the 1st or last number from the list, \& their score increases by that number. Both players try to maximize their scores. What is the maximum possible score for the 1st player when both players play optimally?
@@ -10140,6 +10259,68 @@ int main() {
 	\end{table}
 \end{problem}
 
+\begin{baitoan}[Trò chơi loại bỏ]
+    Có một danh sách gồm $n\in\mathbb{N}^\star$ số \& 2 người chơi di chuyển xen kẽ. Với mỗi nước đi, một người chơi sẽ xóa số đầu tiên hoặc số cuối cùng khỏi danh sách, \& điểm của họ sẽ tăng lên theo số đó. Cả hai người chơi đều cố gắng tối đa hóa điểm số của mình. Hỏi người chơi thứ nhất sẽ đạt được điểm số tối đa bao nhiêu khi cả hai đều chơi tối ưu?
+    \item {\sf Đầu vào.} Dòng đầu vào thứ nhất chứa các số nguyên $n,m\in\mathbb{N}^\star$: kích thước của danh sách. Dòng tiếp theo chứa $n$ số nguyên $x_1,x_2,\ldots,x_n$: nội dung của danh sách.
+    \item {\sf Đầu ra.} In ra điểm số tối đa có thể đạt được của người chơi thứ nhất.
+    \item {\sf Ràng buộc.} $n\in[5000],m\in[100],x_i\in\overline{-10^9,10^9}$, $\forall i\in[n]$.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    The trick here is to see that since the sum of 2 players's scores is the sum of the input list, player 1 tries to maximize ${\rm score}_1 - {\rm score}_2$, while player 2 tries to minimize it. Define ${\rm dp}[l][r]$ as the difference ${\rm score}_1 - {\rm score}_2$ if considering the game played only on interval $[l,r]$.
+
+    -- Mẹo ở đây là cần thấy rằng vì tổng điểm của 2 người chơi bằng tổng của danh sách đầu vào, người chơi 1 cố gắng tối đa hóa ${\rm score}_1 - {\rm score}_2$, trong khi người chơi 2 cố gắng tối thiểu hóa nó. Hãy định nghĩa ${\rm dp}[l][r]$ là hiệu số ${\rm score}_1 - {\rm score}_2$ nếu xét ván đấu chỉ được chơi trên khoảng $[l,r]$.
+
+    If the interval contains only 1 element, i.e., $l = r$, then the 1st player must take that element. So ${\rm dp}[i][i] = x[i]$. Otherwise, player 1 can choose to take the 1st element or the last element. Ì he takes the 1st element, he gets $x[l]$ points, \& we are left with the interval $[l + 1,r]$, but with player 2 starting. ${\rm score}_1 - {\rm score}_2$ on interval $[l + 1,r]$ is just ${\rm dp}[l + 1][r]$ if player 1 starts. Since player 2 starts, it is $-{\rm dp}[l + r][r]$. Thus, the difference of scores will be $x[l]  -{\rm dp}[l + 1][r]$ if player 1 chooses the 1st element. Similarly, it will be $x[r] - {\rm dp}[l][r - 1]$ if he chooses the last element. He always chooses the maximum of those, so ${\rm dp}[l][r] = \max(x[l] - {\rm dp}[l + 1][r], x[r] - {\rm dp}[l][r - 1])$.
+
+    -- Nếu khoảng chỉ chứa 1 phần tử, tức là $l = r$, thì người chơi thứ nhất phải lấy phần tử đó. Vì vậy, ${\rm dp}[i][i] = x[i]$. Nếu không, người chơi 1 có thể chọn lấy phần tử thứ nhất hoặc phần tử cuối cùng. Ì anh ta lấy phần tử thứ nhất, anh ta nhận được $x[l]$ điểm, \& chúng ta còn lại khoảng $[l + 1,r]$, nhưng với người chơi 2 bắt đầu. ${\rm score}_1 - {\rm score}_2$ trên khoảng $[l + 1,r]$ chỉ là ${\rm dp}[l + 1][r]$ nếu người chơi 1 bắt đầu. Vì người chơi 2 bắt đầu, nên là $-{\rm dp}[l + r][r]$. Do đó, hiệu số điểm sẽ là $x[l] -{\rm dp}[l + 1][r]$ nếu người chơi 1 chọn phần tử thứ nhất. Tương tự, kết quả sẽ là $x[r] - {\rm dp}[l][r - 1]$ nếu anh ta chọn phần tử cuối cùng. Anh ta luôn chọn phần tử lớn nhất trong số đó, vì vậy ${\rm dp}[l][r] = \max(x[l] - {\rm dp}[l + 1][r], x[r] - {\rm dp}[l][r - 1])$.
+
+    In this problem ${\rm dp}[l][r]$ depends on ${\rm dp}[l + 1][r]$, \& therefore we need to compute larger $l$ before smaller $l$. We do it by looping through $l$ from high to low. $r$ still needs to go from low to high, since we depend only on smaller $r$: ${\rm dp}[l][r]$ depends on ${\rm dp}[l][r - 1]$, i.e., looping through indices in increasing order is correct.
+
+    -- Trong bài toán này, ${\rm dp}[l][r]$ phụ thuộc vào ${\rm dp}[l + 1][r]$, \& do đó, chúng ta cần tính $l$ lớn hơn trước $l$ nhỏ hơn. Chúng ta thực hiện điều này bằng cách lặp qua $l$ từ cao xuống thấp. $r$ vẫn cần phải đi từ thấp lên cao, vì chúng ta chỉ phụ thuộc vào $r$ nhỏ hơn: ${\rm dp}[l][r]$ phụ thuộc vào ${\rm dp}[l][r - 1]$, tức là, lặp qua các chỉ số theo thứ tự tăng dần là đúng.
+
+    \begin{note}
+        In almost of other CSES dynamic programming problems, {\rm dp} only depends on smaller indices, e.g., ${\rm dp}[x]$ depending on ${\rm dp}[x - v]$ or ${\rm dp}[i][x]$ depending on ${\rm dp}[i - 1][x]$ so that we can use either push DP or pull DP easily based on the corresponding transition formula(s).
+
+        -- Trong hầu hết các bài toán lập trình động CSES khác, {\rm dp} chỉ phụ thuộc vào các chỉ số nhỏ hơn, ví dụ, ${\rm dp}[x]$ phụ thuộc vào ${\rm dp}[x - v]$ hoặc ${\rm dp}[i][x]$ phụ thuộc vào ${\rm dp}[i - 1][x]$ để chúng ta có thể sử dụng đẩy DP hoặc kéo DP dễ dàng dựa trên các công thức chuyển đổi tương ứng.
+    \end{note}
+    We can reconstruct the score of player 1 as the mean of, the sum of all input values, \& ${\rm score}_1 - {\rm score}_2$. Time complexity $O(n^2)$.
+
+    -- Chúng ta có thể tái tạo lại điểm của người chơi 1 dưới dạng trung bình của tổng tất cả các giá trị đầu vào, \& ${\rm score}_1 - {\rm score}_2$. Độ phức tạp thời gian $O(n^2)$.
+
+    C++:
+    \begin{enumerate}
+        \item \url{https://codeforces.com/blog/entry/70018}:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+#define ll long long
+
+int main() {
+    int n;
+    cin >> n;
+    vector<int> x(n);
+    ll sum = 0;
+    for (int& v : x) {
+        cin >> v;
+        sum += v;
+    }
+    vector<vector<ll>> dp(n, vector<ll>(n));
+    for (int l = n - 1; l >= 0; --l)
+        for (int r = l; r < n; ++r)
+            if (l == r) dp[l][r] = x[l];
+            else dp[l][r] = max(x[l] - dp[l + 1][r], x[r] - dp[l][r - 1]);
+    cout << (sum + dp[0][n - 1]) / 2;
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{note}
+    Gặp bài tác động tới phần tử đầu hoặc phần tử cuối hoặc cả 2 phần tử đầu \& cuối của 1 dãy số thì nên sử dụng kỹ thuật 2 con trỏ để tiện quản lý \& thu được insight của bài toán tốt hơn.
+\end{note}
+
 \begin{problem}[\href{https://cses.fi/problemset/task/1093}{CSES Problem Set{\tt/}2 sets II}]
 	Count the number of ways numbers $[n]$ can be divided into 2 sets of equal sum. E.g., if $n = 7$, there are $4$ solutions: $\{1,3,4,6\}$ \& $\{2,5,7\}$, $\{1,2,5,6\}$ \& $\{3,4,7\}$, $\{1,2,4,7\}$ \& $\{3,5,6\}$, $\{1,6,7\}$ \& $\{2,3,4,4\}$.
 	\item {\sf Input.} The only input line contains an integer $n\in\mathbb{N}^\star$:
@@ -10158,6 +10339,58 @@ int main() {
 	\end{table}
 \end{problem}
 
+\begin{baitoan}[2 tập hợp II]
+    Đếm số cách chia số $[n]$ thành 2 tập hợp có tổng bằng nhau. E.g., nếu $n = 7$, có $4$ nghiệm: $\{1,3,4,6\}$ \& $\{2,5,7\}$, $\{1,2,5,6\}$ \& $\{3,4,7\}$, $\{1,2,4,7\}$ \& $\{3,5,6\}$, $\{1,6,7\}$ \& $\{2,3,4,4\}$.
+    \item {\sf Input.} Dòng đầu vào duy nhất chứa một số nguyên $n\in\mathbb{N}^\star$:
+    \item {\sf Output.} In ra đáp án theo modulo $10^9 + 7$.
+    \item {\sf Constraints.} $n\in[500]$.
+\end{baitoan}
+Trước hết nhận xét: $\sum_{i=1}^n i = \dfrac{n(n + 1)}{2}\divby2\Leftarrow n(n + 1)\divby4\Leftarrow n\equiv0,3(\mbox{mod } 4)$.
+
+\begin{proof}[Solution]
+    This is a 0-1 knapsack in disguise. If we are to have 2 subsets of equal sum, they must sum to half the total sum each. I.e., if the total sum $\dfrac{n(n + 1)}{2}$ is odd, the answer is 0 (no possibilities), which happens when $n\equiv1,2(\mbox{mod } 4)$. Otherwise we run 0-1 knapsack to get the number of ways to reach $\dfrac{n(n + 1)}{4}$ using subsets of the numbers $\in[n - 1]$. Why $n - 1$? Because by only considering numbers up to $n - 1$, we always put $n$ in the 2nd set, \& therefore only count each pair of sets once (otherwise we count every pair of sets twice). Define ${\rm dp}[i][x]$ as the number of ways to make sum $x$ using subsets of the number $\in[i] = \{1,2,\ldots,i\}$. There is 1 way to make sum 0: $\emptyset$, hence ${\rm dp}[0][0] = 1$. For counting number of ways to make sum $x$ using values up to $i$, we consider the number $i$. Either we didn't include it, then there are ${\rm dp}[i - 1][x]$ possibilities, or we included it, \& there are ${\rm dp}[i - 1][x - i]$ possibilities, thus
+    \begin{equation*}
+        {\rm dp}[i][x] = {\rm dp}[i - 1][x] + {\rm dp}[i - 1][x - i].
+    \end{equation*}
+    Time complexity $O(n^3)$.
+
+    -- Đây là một chiếc ba lô 0-1 ngụy trang. Nếu chúng ta có 2 tập hợp con có tổng bằng nhau, tổng của mỗi tập hợp phải bằng một nửa tổng của chúng. Ví dụ, nếu tổng $\dfrac{n(n + 1)}{2}$ là số lẻ, thì đáp án là 0 (không có khả năng nào), điều này xảy ra khi $n\equiv1,2(\mbox{mod } 4)$. Nếu không, chúng ta chạy chiếc ba lô 0-1 để có số cách để đến $\dfrac{n(n + 1)}{4}$ bằng cách sử dụng các tập hợp con của các số $\in[n - 1]$. Tại sao lại là $n - 1$? Bởi vì chỉ xét các số đến $n - 1$, chúng ta luôn đặt $n$ vào tập hợp thứ 2, \& do đó chỉ đếm mỗi cặp tập hợp một lần (nếu không, chúng ta đếm mỗi cặp tập hợp hai lần). Định nghĩa ${\rm dp}[i][x]$ là số cách tạo tổng $x$ sử dụng các tập con của số $\in[i] = \{1,2,\ldots,i\}$. Có 1 cách tạo tổng bằng 0: $\emptyset$, do đó ${\rm dp}[0][0] = 1$. Để đếm số cách tạo tổng $x$ sử dụng các giá trị đến $i$, ta xét số $i$. Hoặc ta không đưa số đó vào, thì có ${\rm dp}[i - 1][x]$ khả năng, hoặc ta đã đưa số đó vào, \& có ${\rm dp}[i - 1][x - i]$ khả năng, do đó
+    \begin{equation*}
+        {\rm dp}[i][x] = {\rm dp}[i - 1][x] + {\rm dp}[i - 1][x - i].
+    \end{equation*}
+    Độ phức tạp thời gian $O(n^3)$.
+
+    C++:
+    \begin{enumerate}
+        \item \url{https://codeforces.com/blog/entry/70018}:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n, mod = 1e9 + 7;
+    cin >> n;
+    int target = n * (n + 1) / 2;
+    if (target % 2) {
+        cout << 0;
+        return 0;
+    }
+    target /= 2;
+    vector<vector<int>> dp(n, vector<int>(target + 1, 0));
+    dp[0][0] = 1;
+    for (int i = 1; i < n; ++i)
+        for (int j = 0; j <= target; ++j) {
+            dp[i][j] = dp[i - 1][j];
+            int left = j - i;
+            if (left >= 0) (dp[i][j] += dp[i - 1][left]) %= mod;
+        }
+    cout << dp[n - 1][target];
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
 \begin{problem}[\href{https://cses.fi/problemset/task/3314}{CSES Problem Set{\tt/}mountain range}]
 	There are $n\in\mathbb{N}^\star$ mountains in a row, each with a specific height. You begin your hang gliding route from some mountain. You can glide from mountain $a$ to mountain $b$ if mountain $a$ is taller than mountain $b$ \& all mountains between $a$ \& $b$. What is the maximum number of mountains you can visit on your route?
 	\item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the number of mountains. The next line has $n$ integers $h_1,h_2,\ldots,h_n$: the heights of the mountains.
@@ -10168,7 +10401,7 @@ int main() {
 		\centering
 		\begin{tabular}{|l|l|}
 			\hline
-			\verb|.inp| & \verb|.out| \\
+			\verb|mountain_range.inp| & \verb|mountain_range.out| \\
 			\hline
 			10 & 5 \\
 			20 15 17 35 25 40 12 19 13 12 & \\
@@ -10195,6 +10428,17 @@ int main() {
 		\end{tabular}
 	\end{table}
 \end{problem}
+
+\begin{baitoan}[Dãy con tăng dần]
+    Bạn được cho một mảng chứa $n\in\mathbb{N}^\star$ số nguyên. Hãy xác định dãy con tăng dài nhất trong mảng, tức là dãy con dài nhất mà mỗi phần tử đều lớn hơn phần tử đứng trước nó. Dãy con là một dãy có thể được suy ra từ mảng bằng cách xóa một số phần tử mà không làm thay đổi thứ tự của các phần tử còn lại.
+    \item {\sf Đầu vào.} Dòng đầu vào thứ nhất chứa một số nguyên $n\in\mathbb{N}^\star$: kích thước của mảng. Tiếp theo là $n$ số nguyên $x_1,x_2,\ldots,x_n$: nội dung của mảng.
+    \item {\sf Đầu ra.} In ra độ dài của dãy con tăng dài nhất.
+    \item {\sf Ràng buộc.} $n\in[2\cdot10^5], x_i\in[10^9]$, $\forall i\in[n]$.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    This is a classical problem called {\it Longest Increasing Subsequence} or LIS for short. Define ${\rm dp}[x]$ as the minimum ending value of an increasing subsequence of length $x + 1$, using the elements considered so far. We add elements 1 by 1 from left to right. Say we want to add a new value $v$. For this to be part of an increasing subsequence, the previous value in the subsequence must be lower than $v$. +++
+\end{proof}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1140}{CSES Problem Set{\tt/}projects}]
 	There are $n\in\mathbb{N}^\star$ you can attend. For each project, you know its starting \& ending days \& the amount of money you would get as reward. You can only attend 1 project during a day. What is the maximum amount of money you can earn?

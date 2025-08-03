@@ -1,0 +1,262 @@
+\documentclass{article}
+\usepackage[backend=biber,natbib=true,style=alphabetic,maxbibnames=50]{biblatex}
+\addbibresource{/home/nqbh/reference/bib.bib}
+\usepackage[utf8]{vietnam}
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
+\usepackage{amsmath,amssymb,amsthm,enumitem,fancyvrb,float,graphicx,mathtools,tikz}
+\usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
+\allowdisplaybreaks
+\newtheorem{assumption}{Assumption}
+\newtheorem{baitoan}{Bài toán}
+\newtheorem{cauhoi}{Câu hỏi}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{corollary}{Corollary}
+\newtheorem{dangtoan}{Dạng toán}
+\newtheorem{definition}{Definition}
+\newtheorem{dinhly}{Định lý}
+\newtheorem{dinhnghia}{Định nghĩa}
+\newtheorem{example}{Example}
+\newtheorem{ghichu}{Ghi chú}
+\newtheorem{hequa}{Hệ quả}
+\newtheorem{hypothesis}{Hypothesis}
+\newtheorem{lemma}{Lemma}
+\newtheorem{luuy}{Lưu ý}
+\newtheorem{nhanxet}{Nhận xét}
+\newtheorem{notation}{Notation}
+\newtheorem{note}{Note}
+\newtheorem{principle}{Principle}
+\newtheorem{problem}{Problem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{question}{Question}
+\newtheorem{remark}{Remark}
+\newtheorem{theorem}{Theorem}
+\newtheorem{vidu}{Ví dụ}
+\usepackage[left=1cm,right=1cm,top=5mm,bottom=5mm,footskip=4mm]{geometry}
+\def\labelitemii{$\circ$}
+\DeclareRobustCommand{\divby}{%
+    \mathrel{\vbox{\baselineskip.65ex\lineskiplimit0pt\hbox{.}\hbox{.}\hbox{.}}}%
+}
+\setlist[itemize]{leftmargin=*}
+\setlist[enumerate]{leftmargin=*}
+
+\title{Graph Neural Networks (GNNs)}
+\author{Nguyễn Quản Bá Hồng\footnote{A scientist- {\it\&} creative artist wannabe, a mathematics {\it\&} computer science lecturer of Department of Artificial Intelligence {\it\&} Data Science (AIDS), School of Technology (SOT), UMT Trường Đại học Quản lý {\it\&} Công nghệ TP.HCM, Hồ Chí Minh City, Việt Nam.\\E-mail: {\sf nguyenquanbahong@gmail.com} {\it\&} {\sf hong.nguyenquanba@umt.edu.vn}. Website: \url{https://nqbh.github.io/}. GitHub: \url{https://github.com/NQBH}.}}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+    This text is a part of the series {\it Some Topics in Advanced STEM \& Beyond}:
+
+    {\sc url}: \url{https://nqbh.github.io/advanced_STEM/}.
+
+    Latest version:
+    \begin{itemize}
+        \item {\it }.
+
+        PDF: {\sc url}: \url{.pdf}.
+
+        \TeX: {\sc url}: \url{.tex}.
+        \item {\it }.
+
+        PDF: {\sc url}: \url{.pdf}.
+
+        \TeX: {\sc url}: \url{.tex}.
+    \end{itemize}
+\end{abstract}
+\tableofcontents
+
+%------------------------------------------------------------------------------%
+
+\section{Introduction to Graph Neural Networks}
+
+%------------------------------------------------------------------------------%
+
+\subsection{{\sc Keita Broadwater, Namid Stillmann}. Graph Neural Networks in Action}
+
+\begin{itemize}
+    \item {\sf Fig: Mental model of GNN project.}  The steps involved for a GNN project are similar to many conventional ML pipelines, but we need to use graph-specific tools to create them. Start with raw data, which is then transformed into a graph data model \& that can be stored in a graph database or used in a graph processing system. From the graph processing system (\& some graph database), we can do exploratory data analysis \& visualization. Finally, for graph ML, we preprocess data into a format that can be submitted for training \& then train our graph ML model, in our examples, these will be GNNs. \fbox{GNNs $\subset$ Graph ML models}.
+
+    -- {\sf Hình: Mô hình tinh thần của dự án GNN.} Các bước cần thực hiện cho một dự án GNN tương tự như nhiều quy trình ML thông thường, nhưng chúng ta cần sử dụng các công cụ dành riêng cho đồ thị để tạo ra chúng. Bắt đầu với dữ liệu thô, sau đó được chuyển đổi thành mô hình dữ liệu đồ thị \& có thể được lưu trữ trong cơ sở dữ liệu đồ thị hoặc sử dụng trong hệ thống xử lý đồ thị. Từ hệ thống xử lý đồ thị (\& một số cơ sở dữ liệu đồ thị), chúng ta có thể thực hiện phân tích dữ liệu thăm dò \& trực quan hóa. Cuối cùng, đối với ML đồ thị, chúng ta xử lý trước dữ liệu thành một định dạng có thể được gửi để huấn luyện \& sau đó huấn luyện mô hình ML đồ thị của chúng ta, trong các ví dụ của chúng ta, đây sẽ là các GNN. \fbox{GNN $\subset$ Mô hình ML đồ thị}.
+    \item {\sf Foreword.} Our world is highly rich in structure, comprising objects, their relations, \& hierarchies. Sentences can be represented as sequences of words, maps can be broken down into streets \& intersections, www connects websites via hyperlinks, \& chemical compounds can be described by a set of atoms \& their interactions. Despite prevalence of graph structures in our world, both traditional \& even modern ML methods struggle to properly handle such rich structural information: ML conventionally expects fixed-sized vectors as inputs \& is thus only applicable to simpler structures e.g. sequences or grids. Consequently, graph ML has long relied on labor-intensive \& error-prone handcrafted feature engineering techniques. Graph neural networks (GNNs) finally revolutionize this paradigm by breaking up with regularity restriction of conventional DL techniques. They unlock ability to learn representations from raw graph data with exceptional performance \& allow us to view DL as a much broader technique that can seamlessly generalize to complex \& rich topological structures.
+
+    -- Thế giới của chúng ta vô cùng phong phú về cấu trúc, bao gồm các đối tượng, mối quan hệ của chúng, \& hệ thống phân cấp. Câu có thể được biểu diễn dưới dạng chuỗi từ, bản đồ có thể được chia nhỏ thành các con phố \& giao lộ, www kết nối các trang web thông qua siêu liên kết, \& hợp chất hóa học có thể được mô tả bằng một tập hợp các nguyên tử \& tương tác của chúng. Mặc dù cấu trúc đồ thị rất phổ biến trong thế giới của chúng ta, cả các phương pháp ML truyền thống \& thậm chí hiện đại đều gặp khó khăn trong việc xử lý đúng cách thông tin cấu trúc phong phú như vậy: ML thường mong đợi các vectơ có kích thước cố định làm đầu vào \& do đó chỉ áp dụng cho các cấu trúc đơn giản hơn, ví dụ như chuỗi hoặc lưới. Do đó, ML đồ thị từ lâu đã dựa vào các kỹ thuật thiết kế đặc trưng thủ công tốn nhiều công sức \& dễ xảy ra lỗi. Mạng nơ-ron đồ thị (GNN) cuối cùng đã cách mạng hóa mô hình này bằng cách phá vỡ sự hạn chế về quy tắc của các kỹ thuật DL thông thường. Chúng mở khóa khả năng học các biểu diễn từ dữ liệu đồ thị thô với hiệu suất vượt trội \& cho phép chúng ta xem DL như một kỹ thuật rộng hơn nhiều, có thể khái quát hóa liền mạch thành các cấu trúc tôpô phức tạp \& phong phú.
+
+    When {\sc Matthias Fey} -- creator of PyTorch Geometric \& founding engineer Kumo.AI -- begin to dive into field of graph ML, DL on graphs was still in its early stages. Over time, dozens to hundreds of different methods were developed, contributing incremental insights \& refreshing ideas. Tools like our own PyTorch Geometric library have expanded significantly, offering cutting-edge graph-based building blocks, models, examples, \& scalability solutions. Reflecting on this growth, it is clear how overwhelming it can be for newcomers to navigate essentials \& best practices that have emerged over time, as valuable information is scattered across theoretical research papers or buried in implementations in GitHub repositories.
+
+    -- Khi {\sc Matthias Fey} -- người sáng lập PyTorch Geometric \& kỹ sư sáng lập Kumo.AI -- bắt đầu dấn thân vào lĩnh vực học máy đồ thị, học máy trên đồ thị vẫn còn ở giai đoạn sơ khai. Theo thời gian, hàng chục đến hàng trăm phương pháp khác nhau đã được phát triển, đóng góp những hiểu biết sâu sắc \& những ý tưởng mới mẻ. Các công cụ như thư viện PyTorch Geometric của chúng tôi đã mở rộng đáng kể, cung cấp các khối xây dựng, mô hình, ví dụ, \& giải pháp khả năng mở rộng dựa trên đồ thị tiên tiến. Nhìn lại sự phát triển này, rõ ràng là những người mới bắt đầu có thể gặp khó khăn như thế nào khi tìm hiểu những điều cốt lõi \& các phương pháp hay nhất đã xuất hiện theo thời gian, khi thông tin giá trị nằm rải rác trong các bài báo nghiên cứu lý thuyết hoặc bị chôn vùi trong các triển khai trên kho lưu trữ GitHub.
+
+    Now power of GNNs has been widely understood, this timely book provides a well-structured \& easy-to-follow overview of field, providing answers to many pain points of graph ML practitioners. Hands-on approach, with practical code examples embedded directly within each chap, invaluably demystifies complexities, making concepts tangible \& actionable. Despite success of GNNs across all kinds of domains in research, adoption in real-world applications remains limited to companies that have enough resources to acquire necessary knowledge for applying GNNs in practice. Confident: this book will serve as an invaluable resource to empower practitioners to over that gap \& unlock full potentials of GNNs.
+
+    -- Giờ đây, sức mạnh của GNN đã được hiểu rộng rãi, cuốn sách kịp thời này cung cấp một cái nhìn tổng quan được cấu trúc tốt \& dễ hiểu về lĩnh vực này, giải đáp nhiều vấn đề khó khăn của các chuyên gia ML đồ thị. Phương pháp tiếp cận thực hành, với các ví dụ mã thực tế được nhúng trực tiếp trong mỗi chương, giúp làm sáng tỏ những điều phức tạp, biến các khái niệm thành hiện thực \& khả thi. Mặc dù GNN đã thành công trong nhiều lĩnh vực nghiên cứu, việc áp dụng vào các ứng dụng thực tế vẫn chỉ giới hạn ở các công ty có đủ nguồn lực để có được kiến thức cần thiết cho việc áp dụng GNN vào thực tế. Tự tin: cuốn sách này sẽ là một nguồn tài nguyên vô giá giúp các chuyên gia vượt qua khoảng cách đó \& khai phá toàn bộ tiềm năng của GNN.
+    \item {\sf Preface.} My journey into world of graphs began unexpectedly, during an interview at LinkedIn. As session wrapped up, shown a visualization of network -- a mesmerizing structure that told stories without a single word. Organizations I had been part of appeared clustered, like constellations against a dark canvas. What surprised me most was that this structure was not built using metadata LinkedIn held about my connection; rather, it emerged organically from relationships between nodes \& edges.
+
+    -- Hành trình khám phá thế giới đồ thị của tôi bắt đầu một cách bất ngờ, trong một buổi phỏng vấn tại LinkedIn. Khi buổi phỏng vấn kết thúc, một hình ảnh trực quan về mạng lưới được trình chiếu - một cấu trúc mê hoặc kể những câu chuyện mà không cần một lời nào. Các tổ chức mà tôi từng là thành viên hiện ra như những chòm sao trên nền vải tối. Điều khiến tôi ngạc nhiên nhất là cấu trúc này không được xây dựng bằng siêu dữ liệu mà LinkedIn nắm giữ về kết nối của tôi; thay vào đó, nó xuất hiện một cách tự nhiên từ các mối quan hệ giữa các nút \& cạnh.
+
+    Years later, driven by curiosity, I recreated that visualization. I marveled once again at how underlying connections along could map out an intricate picture of my professional life. This deepened my appreciation for power inherent in graphs -- a fascination that only grew when I joined Cloudera \& encountered graph neural networks (GNNs). Their potential for solving complex problems was captivating, but diving into them was like trying to navigate an uncharted forest without a map. There were no comprehensive resources tailored for nonacademics; progress was slow, often cobbled together from fragments \& trial \& error.
+
+    -- Nhiều năm sau, nhờ sự tò mò, tôi đã tái hiện lại hình ảnh đó. Tôi lại một lần nữa kinh ngạc trước cách các kết nối cơ bản có thể vẽ nên một bức tranh phức tạp về cuộc sống nghề nghiệp của mình. Điều này càng làm tôi trân trọng hơn sức mạnh tiềm ẩn của đồ thị -- một niềm đam mê chỉ lớn dần khi tôi gia nhập Cloudera \& gặp gỡ mạng nơ-ron đồ thị (GNN). Tiềm năng giải quyết các vấn đề phức tạp của chúng thật hấp dẫn, nhưng việc đào sâu vào chúng cũng giống như cố gắng khám phá một khu rừng chưa được khám phá mà không có bản đồ. Không có tài nguyên toàn diện nào được thiết kế riêng cho những người không chuyên; tiến độ rất chậm, thường được chắp vá từ những mảnh \& thử \& sai.
+
+    This book is guide I wish I had during those early days. It aims to provide a clear \& accessible path for practitioners, enthusiasts, \& anyone looking to understand \& apply GNNs without wading through endless academic papers or fragmented online searches. Hop: it serves as a 1-stop resource to learn fundamentals \& paves way for deeper exploration. Whether you are here out of professional necessity, sheer curiosity, or same kind of amazement that 1st drew me in, invite to embark on this journey, bring potential of GNNs to life.
+
+    -- Cuốn sách này chính là cẩm nang mà tôi ước mình đã có trong những ngày đầu ấy. Nó hướng đến việc cung cấp một lộ trình rõ ràng \& dễ tiếp cận cho các chuyên gia, người đam mê, \& bất kỳ ai muốn hiểu \& áp dụng GNN mà không cần phải lội qua vô số bài báo học thuật hay tìm kiếm trực tuyến rời rạc. Hop: nó là một nguồn tài nguyên tổng hợp để học các kiến thức cơ bản \& mở đường cho những khám phá sâu hơn. Cho dù bạn đến đây vì nhu cầu công việc, sự tò mò đơn thuần, hay cùng một sự ngạc nhiên như đã thu hút tôi lần đầu, hãy tham gia vào hành trình này, khai phá tiềm năng của GNN.
+    \item {\sf About this book.} GNNs in Action is a book designed for people to jump quickly into this new field \& start building applications. At same time, try to strike a balance by including just enough critical theory to make this book as standalone as possible. Also fill in implementation details that may not be obvious or are left unexplained in currently available online tutorials \& documents. In particular, information about new \& emerging topics is very likely to be fragmented. This fragmentation adds friction when implementing \& testing new technologies.
+
+    -- GNNs in Action là một cuốn sách được thiết kế để mọi người có thể nhanh chóng bước vào lĩnh vực mới này \& bắt đầu xây dựng ứng dụng. Đồng thời, hãy cố gắng cân bằng bằng cách đưa vào vừa đủ lý thuyết quan trọng để cuốn sách này trở nên độc lập nhất có thể. Đồng thời, hãy bổ sung những chi tiết triển khai có thể chưa rõ ràng hoặc chưa được giải thích trong các hướng dẫn trực tuyến hiện có \& tài liệu. Đặc biệt, thông tin về các chủ đề mới \& đang nổi lên rất có thể sẽ bị phân mảnh. Sự phân mảnh này gây khó khăn khi triển khai \& thử nghiệm các công nghệ mới.
+
+    With GNNs in Action, offer a book that can reduce that friction by filling in gaps \& answering key questions whose answers are likely scattered over internet or not covered at all. Done so in a way that \fbox{emphasizes approachability rather than high rigor}.
+
+    -- Với GNNs in Action, hãy cung cấp một cuốn sách có thể giảm thiểu sự khó khăn đó bằng cách lấp đầy những khoảng trống \& trả lời những câu hỏi quan trọng mà câu trả lời có thể nằm rải rác trên internet hoặc chưa được đề cập đến. Hãy làm điều này theo cách \fbox{nhấn mạnh tính dễ tiếp cận hơn là tính nghiêm ngặt cao}.
+    \begin{itemize}
+        \item {\sf Who should read this book.} This book is designed for ML engineers \& data scientists familiar with neural networks but new to graph learning. If have experience in OOP, find concepts particularly accessible \& applicable.
+
+        -- Cuốn sách này được thiết kế dành cho các kỹ sư ML \& nhà khoa học dữ liệu đã quen thuộc với mạng nơ-ron nhưng chưa quen với học đồ thị. Nếu có kinh nghiệm về OOP, hãy tìm các khái niệm đặc biệt dễ hiểu \& áp dụng.
+        \item {\sf How this book is organized: A road map.} In Part 1 of this book, provide a motivation for exploring GNNs, as well as cover fundamental concepts of graphs \& graph-based ML. In Chap. 1, introduce concepts of graphs \& graph ML, providing guidelines for their use \& applications. Chap. 2 covers graph representations up to \& including node embeddings. This will be 1st programmic exposure to GNNs, which are used to create such embeddings.
+
+        -- Trong Phần 1 của cuốn sách này, chúng tôi sẽ cung cấp động lực để khám phá GNN, cũng như đề cập đến các khái niệm cơ bản về đồ thị \& Học máy dựa trên đồ thị. Trong Chương 1, chúng tôi sẽ giới thiệu các khái niệm về đồ thị \& Học máy dựa trên đồ thị, đồng thời cung cấp hướng dẫn sử dụng \& ứng dụng của chúng. Chương 2 sẽ đề cập đến các biểu diễn đồ thị, bao gồm cả nhúng nút. Đây sẽ là lần đầu tiên chúng tôi tiếp xúc với GNN, được sử dụng để tạo ra các nhúng như vậy.
+
+        In part 2, core of book, introduce major types of GNNs, including graph convolutional networks (GCNs) \& GraphSAGE in Chap. 3, graph attention networks (GATs) in Chap. 4, \& graph autoencoders (GAEs) in Chap. 5. These methods are bread \& butter for most GNN applications \& also cover a range of other DL concepts e.g. convolution, attention, \& autoencoders.
+
+        -- Trong phần 2, cốt lõi của cuốn sách, giới thiệu các loại GNN chính, bao gồm mạng tích chập đồ thị (GCN) \& GraphSAGE trong Chương 3, mạng chú ý đồ thị (GAT) trong Chương 4, \& bộ mã hóa tự động đồ thị (GAE) trong Chương 5. Các phương pháp này là nền tảng cho hầu hết các ứng dụng GNN \& cũng bao gồm một loạt các khái niệm DL khác, e.g., tích chập, chú ý, \& bộ mã hóa tự động.
+
+        In part 3, look at more advanced topics. Describe GNNs for dynamic graphs (spatio-temporal GNNs) in Chap. 6 \& give methods to train GNNs at scale in Chap. 7. Finally, end with some consideration for project \& system planning for graph learning projects in Chap. 8.
+
+        -- Trong phần 3, hãy xem xét các chủ đề nâng cao hơn. Mô tả GNN cho đồ thị động (GNN không gian-thời gian) trong Chương 6 \& đưa ra các phương pháp huấn luyện GNN ở quy mô lớn trong Chương 7. Cuối cùng, kết thúc bằng một số cân nhắc về dự án \& lập kế hoạch hệ thống cho các dự án học đồ thị trong Chương 8.
+        \item {\sf About code.} Python is coding language of choice throughout this book. There are now several GNN libraries in Python ecosystem, including PyTorch Geometric (PyG), Deep Graph Library (DGL), GraphScope, \& Jraph. Focus on PyG, which is 1 of most popular \& easy-to-use frameworks, written on top of PyTorch. Want this book to be approachable by an audience with a wide set of hardware constraints, so with exception of some individual sects \& Chap. 7 on scalability, distributed systems \& GPU systems aren't required, although they can be used for some of coded examples.
+
+        -- Python là ngôn ngữ lập trình được lựa chọn trong suốt cuốn sách này. Hiện nay, hệ sinh thái Python đã có một số thư viện GNN, bao gồm PyTorch Geometric (PyG), Thư viện Đồ thị Sâu (DGL), GraphScope, Jraph. Tập trung vào PyG, một trong những framework phổ biến nhất, dễ sử dụng, được viết trên nền tảng PyTorch. Tôi muốn cuốn sách này dễ tiếp cận với những độc giả có nhiều hạn chế về phần cứng, vì vậy, ngoại trừ một số điểm riêng biệt trong Chương 7 về khả năng mở rộng, các hệ thống phân tán và GPU không bắt buộc, mặc dù chúng có thể được sử dụng cho một số ví dụ được mã hóa.
+
+        Book provides a survey of most relevant implementations of GNNs, including graph convolutional networks (GCNs), graph autoencoders (GAEs), graph attention networks (GATs), \& graph long short-term memory (LSTM). Aim: cover GNN tasks mentioned earlier. In addition, touch on different types of graphs, including knowledge graphs.
+
+        -- Sách cung cấp một bản tổng quan về các triển khai GNN phổ biến nhất, bao gồm mạng tích chập đồ thị (GCN), bộ mã hóa tự động đồ thị (GAE), mạng chú ý đồ thị (GAT), bộ nhớ dài hạn đồ thị (LSTM). Mục tiêu: bao quát các nhiệm vụ GNN đã đề cập trước đó. Ngoài ra, đề cập đến các loại đồ thị khác nhau, bao gồm đồ thị tri thức.
+
+        This book contains many examples of source code both in numbered listings \& in line with normal text. In both case, source code is formatted in a {\tt fixed-width font like this} to separate it from ordinary text. Sometimes code is also \textbf{\texttt in bold} to highlight code
+    \end{itemize}
+    PART 1: 1ST STEPS. Graphs are 1 of most versatile \& powerful ways to represent complex, interconnected data. This 1st part introduces fundamental concepts of graph theory, explaining what graphs are, why they matter as a data type, \& how their structure captures relationships that traditional data formats miss. Explore building blocks of graphs \& different graph types.
+
+    -- Đồ thị là một trong những phương pháp linh hoạt và mạnh mẽ nhất để biểu diễn dữ liệu phức tạp, có liên kết với nhau. Phần 1 này giới thiệu các khái niệm cơ bản của lý thuyết đồ thị, giải thích đồ thị là gì, tại sao chúng quan trọng như một kiểu dữ liệu, và cách cấu trúc của chúng nắm bắt các mối quan hệ mà các định dạng dữ liệu truyền thống bỏ sót. Khám phá các khối xây dựng của đồ thị và các kiểu đồ thị khác nhau.
+
+    Explore fundamental concepts about GNNs, beginning with what they are \& how they differ from traditional neural networks. With this foundation, study graph embeddings, uncovering how to represent graphs in a way that makes them useful for ML. These concepts set stage for mastering GNNs \& their transformative capabilities in later chaps. By end of this book, have a solid understanding of basics, preparing you to dive deeper into mechanics of GNNs.
+
+    -- Khám phá các khái niệm cơ bản về GNN, bắt đầu với bản chất của chúng \& sự khác biệt so với mạng nơ-ron truyền thống. Với nền tảng này, hãy nghiên cứu nhúng đồ thị, khám phá cách biểu diễn đồ thị sao cho hữu ích cho ML. Những khái niệm này đặt nền tảng cho việc nắm vững GNN \& khả năng biến đổi của chúng trong các chương sau. Khi đọc xong cuốn sách này, bạn sẽ có được kiến thức cơ bản vững chắc, sẵn sàng cho việc tìm hiểu sâu hơn về cơ chế hoạt động của GNN.
+    \item {\sf1. Discovering graph neural networks.} Covers:
+    \begin{itemize}
+        \item Defining graphs \& GNNs
+        \item Understanding why people are excited about GNNs
+        \item Recognizing when to use GNNs
+        \item Taking a big picture look at solving a problem with a GNN
+    \end{itemize}
+    For data practitioners, fields of ML \& DS initially excite us because of potential to draw nonintuitive \& useful insights from data. In particular, insights from ML \& DL promise to enhance our understanding of world. For working engineer, these tools promise to deliver business value in unprecedented ways.
+
+    -- Đối với các chuyên gia dữ liệu, lĩnh vực Học máy \& Phân tích dữ liệu (ML \& DS) ban đầu khiến chúng ta hào hứng vì tiềm năng rút ra những hiểu biết phi trực quan \& hữu ích từ dữ liệu. Đặc biệt, những hiểu biết từ Học máy \& Phân tích dữ liệu (ML \& DL) hứa hẹn sẽ nâng cao hiểu biết của chúng ta về thế giới. Đối với các kỹ sư đang làm việc, những công cụ này hứa hẹn mang lại giá trị kinh doanh theo những cách chưa từng có.
+
+    Experience deviates from this ideal. Real-world data is usually messy, dirty, \& biased. Furthermore, statistical methods \& learning systems come with their own set of limitations. An essential role of practitoners: comprehend these limitations \& bridge gap between real data \& a feasible solution. E.g., may want to predict fraudulent activity in a bank, but 1st need to make sure that our training data has been correctly labeled. Even more importantly, need to check that our models won't incorrectly assign fraudulent activity to normal behaviors, possibly due to some hidden confounders in data.
+
+    -- Kinh nghiệm thực tế thường khác xa lý tưởng này. Dữ liệu thực tế thường lộn xộn, bẩn thỉu, \& thiên vị. Hơn nữa, các phương pháp thống kê \& hệ thống học tập cũng có những hạn chế riêng. Một vai trò thiết yếu của người thực hành: hiểu rõ những hạn chế này \& thu hẹp khoảng cách giữa dữ liệu thực tế \& một giải pháp khả thi. Ví dụ: có thể muốn dự đoán hoạt động gian lận trong một ngân hàng, nhưng trước tiên cần đảm bảo rằng dữ liệu đào tạo của chúng ta đã được dán nhãn chính xác. Quan trọng hơn nữa, cần kiểm tra xem các mô hình của chúng ta có gán sai hoạt động gian lận cho các hành vi bình thường hay không, có thể do một số yếu tố gây nhiễu tiềm ẩn trong dữ liệu.
+
+    For graph data, until recently, bridging this gap has been particularly challenging. Graphs are a data structure that is rich with information \& especially adept at capturing intricacies of data where relationships play a crucial role. Graphs are omnipresent, with relationship data appearing in different forms e.g. atoms in molecules (nature), social networks (society), \& even models connection of web pages on internet (technology). Important to note: term {\it relational} here does not refer to {\it relational databases}, but rather to data where relationships are of significance.
+
+    -- Đối với dữ liệu đồ thị, cho đến gần đây, việc thu hẹp khoảng cách này đặc biệt khó khăn. Đồ thị là một cấu trúc dữ liệu giàu thông tin \& đặc biệt khéo léo trong việc nắm bắt những dữ liệu phức tạp, nơi các mối quan hệ đóng vai trò then chốt. Đồ thị hiện diện ở khắp mọi nơi, với dữ liệu mối quan hệ xuất hiện dưới nhiều dạng khác nhau, ví dụ: nguyên tử trong phân tử (tự nhiên), mạng xã hội (xã hội), \& thậm chí cả mô hình kết nối các trang web trên internet (công nghệ). Điều quan trọng cần lưu ý: thuật ngữ {\it relational} ở đây không đề cập đến {\it relational databases}, mà là dữ liệu trong đó các mối quan hệ có ý nghĩa quan trọng.
+
+    Previously, if you wanted to incorporate relational features from a graph into a DL model, it had to be done in an indirect way, with different models used to process, analyze, \& then use graph data. These separate models often couldn't be easily scaled \& had trouble taking into account all node \& edge properties of graph data. To make best use of this rich \& ubiquitous data type for ML, needed a specialized ML technique specifically designed for distinct qualities of graphs \& relational data. This is gap that GNNs fill.
+
+    -- Trước đây, nếu muốn tích hợp các đặc điểm quan hệ từ đồ thị vào mô hình DL, việc này phải được thực hiện gián tiếp, sử dụng các mô hình khác nhau để xử lý, phân tích, \& sau đó sử dụng dữ liệu đồ thị. Các mô hình riêng biệt này thường không dễ dàng mở rộng \& gặp khó khăn trong việc tính đến tất cả các thuộc tính nút \& cạnh của dữ liệu đồ thị. Để tận dụng tối đa kiểu dữ liệu phong phú \& phổ biến này cho ML, cần có một kỹ thuật ML chuyên biệt được thiết kế riêng cho các đặc tính riêng biệt của đồ thị \& dữ liệu quan hệ. Đây chính là khoảng trống mà GNN lấp đầy.
+
+    DP field often contains a lot of hype around new technologies \& methods. However, GNNs are widely recognized as a genuine leap forward for graph-based learning [2]. This does not mean: GNNs are a silver bullet. Careful comparisons should be done between predictive results derived from GNNs \& other ML \& DL methods.
+
+    -- Lĩnh vực DP thường chứa đựng nhiều thông tin cường điệu về các công nghệ \& phương pháp mới. Tuy nhiên, GNN được công nhận rộng rãi là một bước tiến thực sự cho học tập dựa trên đồ thị [2]. Điều này không có nghĩa là: GNN là giải pháp hoàn hảo. Cần so sánh cẩn thận giữa các kết quả dự đoán thu được từ GNN \& các phương pháp ML \& DL khác.
+
+    Key thing to remember: if your DS problem involves data that can be structured as a graph -- i.e., data is connected or relational -- then GNNs could offer a valuable approach, even if you weren't aware that sth was missing in your approach. GNNs can be designed to handle very large data, to scale, to adapt to graphs of different sizes \& shapes. This can make working with relationship-centric data easier \& more efficient, as well as yield richer results.
+
+    -- Điều quan trọng cần nhớ: nếu bài toán DS của bạn liên quan đến dữ liệu có thể được cấu trúc dưới dạng đồ thị - tức là dữ liệu được kết nối hoặc quan hệ - thì GNN có thể cung cấp một phương pháp tiếp cận hữu ích, ngay cả khi bạn không nhận ra rằng phương pháp của mình còn thiếu điều gì đó. GNN có thể được thiết kế để xử lý dữ liệu rất lớn, có khả năng mở rộng, thích ứng với các đồ thị có kích thước \& hình dạng khác nhau. Điều này có thể giúp việc xử lý dữ liệu tập trung vào mối quan hệ dễ dàng \& hiệu quả hơn, cũng như mang lại kết quả phong phú hơn.
+
+    Standout advantages of GNNs are why data scientists \& engineers are increasingly recognizing importance of mastering them. GNNs have the ability to unveil unique insights from relational dat -- from identifying new drug candidates to optimizing ETA prediction accuracy in your Google Maps app -- acting as a catalyst for discovery \& innovation, \& empowering professionals to push boundaries of conventional data analysis. Their diverse applicability spans various fields, offering professionals a versatile tool that is as relevant in e-commerce (e.g., recommendation engines) as it is in bioinformatics (e.g., drug toxicity prediction). Proficiency in GNNs equips data professionals with a multifaceted tool for enhanced, accurate, \& innovative data analysis of graphs.
+
+    -- Những lợi thế nổi bật của GNN là lý do tại sao các nhà khoa học dữ liệu \& kỹ sư ngày càng nhận thức được tầm quan trọng của việc thành thạo chúng. GNN có khả năng khám phá những hiểu biết độc đáo từ dữ liệu quan hệ -- từ việc xác định các ứng cử viên thuốc mới đến tối ưu hóa độ chính xác dự đoán ETA trong ứng dụng Google Maps -- đóng vai trò là chất xúc tác cho khám phá \& đổi mới, \& trao quyền cho các chuyên gia vượt qua các giới hạn của phân tích dữ liệu thông thường. Khả năng ứng dụng đa dạng của chúng trải rộng trên nhiều lĩnh vực, mang đến cho các chuyên gia một công cụ đa năng, vừa phù hợp trong thương mại điện tử (ví dụ: công cụ đề xuất) vừa phù hợp trong tin sinh học (ví dụ: dự đoán độc tính của thuốc). Thành thạo GNN trang bị cho các chuyên gia dữ liệu một công cụ đa năng để phân tích dữ liệu đồ thị chính xác, \& sáng tạo.
+
+    For all these reasons, GNNs are now popular choice for recommender engines, analyzing social networks, detecting fraud, understanding how biomolecules behave, \& many other practical examples.
+
+    -- Vì tất cả những lý do này, GNN hiện là lựa chọn phổ biến cho các công cụ đề xuất, phân tích mạng xã hội, phát hiện gian lận, hiểu cách các phân tử sinh học hoạt động, \& nhiều ví dụ thực tế khác.
+    \begin{itemize}
+        \item {\sf1.1. Goals of this book.} GNNs in Action is aimed at practitioners who want to begin to deploy GNNs to solve real problems. This could be a ML engineer not familiar with graph data structures, a data scientist who hasn't yet tried GNNs, or even a software engineer who may be unfamiliar with either. Throughout this book, cover topics from basics of graphs all way to more complex GNN models. Build up architecture of a GNN, step-by-step. This includes overall architecture of a GNN \& critical aspect of message passing. Then go on to add different features \& extensions to these basic aspects, e.g. introducing convolution \& sampling, attention mechanisms, a generative model, \& operating on dynamic graphs. When building our GNNs, work with Python \& use some standard libraries. GNNs libraries are either standalone or use TensorFlow or PyTorch as a backend. In this text, focus will be on PyTorch Geometric (PyG). Other popular libraries include Deep Graph Library (DGL, a standalone library) \& SPektral (which uses Keras \& TensorFlow as a backend). There is also Jraph for JAX users.
+
+        -- GNNs in Action hướng đến những người thực hành muốn bắt đầu triển khai GNN để giải quyết các vấn đề thực tế. Họ có thể là một kỹ sư ML chưa quen thuộc với cấu trúc dữ liệu đồ thị, một nhà khoa học dữ liệu chưa từng thử GNN, hoặc thậm chí là một kỹ sư phần mềm chưa quen thuộc với cả hai. Xuyên suốt cuốn sách này, chúng tôi sẽ đề cập đến các chủ đề từ kiến thức cơ bản về đồ thị cho đến các mô hình GNN phức tạp hơn. Xây dựng kiến trúc của GNN, từng bước một. Điều này bao gồm kiến trúc tổng thể của GNN \& khía cạnh quan trọng của việc truyền thông điệp. Sau đó, tiếp tục thêm các tính năng khác nhau \& phần mở rộng cho các khía cạnh cơ bản này, ví dụ: giới thiệu tích chập \& lấy mẫu, cơ chế chú ý, mô hình sinh, \& hoạt động trên đồ thị động. Khi xây dựng GNN, hãy làm việc với Python \& sử dụng một số thư viện chuẩn. Thư viện GNN có thể độc lập hoặc sử dụng TensorFlow hoặc PyTorch làm nền tảng. Trong văn bản này, trọng tâm sẽ là PyTorch Geometric (PyG). Các thư viện phổ biến khác bao gồm Thư viện Deep Graph (DGL, một thư viện độc lập) \& SPektral (sử dụng Keras \& TensorFlow làm nền tảng). Ngoài ra còn có Jraph dành cho người dùng JAX.
+
+        Our aim throughout this book is to enable you to:
+        \begin{enumerate}
+            \item access suitability of a GNN solution for your problem.
+            \item understand when traditional neural networks won't perform as well as a GNN for graph structured data \& when GNNs may not be the best tool for tabular data.
+            \item design \& implement a GNN architecture to solve problems specific to you.
+            \item make clear limitations of GNNs.
+        \end{enumerate}
+        This book is weighted toward implementation using programming. Also devote some time on essential theory \& concepts, so that techniques covered can be sufficiently understood. These are covered in an ``Under Hood'' sect at end of most chaps to separate technical reasons from actual implementation. There are many different models \& packages that build on key concepts introduced in this book. So, this book should not be seen as a comprehensive review of all GNns methods \& models, which could run to several thousands of pages, but rather starting point for curious \& eager-to-learn practitioner.
+
+        -- Mục tiêu của chúng tôi trong suốt cuốn sách này là giúp bạn:
+        \begin{enumerate}
+            \item đánh giá tính phù hợp của giải pháp GNN cho vấn đề của bạn.
+            \item hiểu khi nào mạng nơ-ron truyền thống không hoạt động tốt bằng GNN đối với dữ liệu có cấu trúc đồ thị \& khi nào GNN có thể không phải là công cụ tốt nhất cho dữ liệu dạng bảng.
+            \item thiết kế \& triển khai kiến trúc GNN để giải quyết các vấn đề cụ thể của bạn.
+            \item làm rõ những hạn chế của GNN.
+        \end{enumerate}
+        Cuốn sách này thiên về việc triển khai bằng lập trình. Đồng thời dành thời gian cho các lý thuyết \& khái niệm thiết yếu, để các kỹ thuật được đề cập có thể được hiểu đầy đủ. Những điều này được trình bày trong phần ``Under Hood'' ở cuối hầu hết các chương để phân biệt lý do kỹ thuật với việc triển khai thực tế. Có rất nhiều mô hình \& gói khác nhau được xây dựng dựa trên các khái niệm chính được giới thiệu trong cuốn sách này. Vì vậy, cuốn sách này không nên được coi là một bài tổng quan toàn diện về tất cả các phương pháp \& mô hình GNN, có thể dài tới hàng nghìn trang, mà nên là điểm khởi đầu cho những người thực hành \& ham học hỏi.
+
+        Book is divided into 3 parts. Part 1 covers basics of GNNs, especially ways in which they differ from other neural networks, e.g. {\it message passing \& embeddings}, which have specific meaning for GNNs. Part 2, heart of book, goes over models themselves, where we cover a handful of key model types. Then, in part 3, go into more detail with some of harder models \& concepts, including how to scale graphs \& deal with temporal data.
+
+        -- Sách được chia thành 3 phần. Phần 1 trình bày những kiến thức cơ bản về GNN, đặc biệt là những điểm khác biệt giữa chúng với các mạng nơ-ron khác, ví dụ như {truyền thông điệp \& nhúng}, vốn có ý nghĩa riêng đối với GNN. Phần 2, trọng tâm của sách, sẽ đề cập đến bản thân các mô hình, trong đó chúng ta sẽ tìm hiểu một số loại mô hình chính. Sau đó, trong phần 3, chúng ta sẽ đi sâu hơn vào một số mô hình \& khái niệm khó hơn, bao gồm cách chia tỷ lệ đồ thị \& xử lý dữ liệu thời gian.
+
+        GNNs in Action is designed for people to jump quickly into this new field \& start building applications. Aim for this book: reduce friction of implementing new technologies by filling in gaps \& answering key development questions whose answers may not be easy to find or may not be covered elsewhere at all. Each method is introduced through an example application so you can understand how GNNs are applied in practice.
+
+        -- GNNs in Action được thiết kế để mọi người nhanh chóng tiếp cận lĩnh vực mới này \& bắt đầu xây dựng ứng dụng. Mục tiêu của cuốn sách này: giảm thiểu sự cản trở khi triển khai các công nghệ mới bằng cách lấp đầy những khoảng trống \& trả lời những câu hỏi phát triển quan trọng mà câu trả lời có thể không dễ tìm hoặc chưa được đề cập ở bất kỳ nơi nào khác. Mỗi phương pháp được giới thiệu thông qua một ứng dụng ví dụ để bạn có thể hiểu cách GNN được áp dụng trong thực tế.
+        \begin{itemize}
+            \item {\sf1.1.1. Catching up on graph fundamentals.} Do need to understand basics of graphs before you can understand GNNs. Goal for this book is to teach GNNs to DL practitioners \& builders for traditional neural networks who may not know much about graphs. At same time, also recognize: readers of this book may vary enormously in their knowledge of graphs. How to address these differences \& make sure everyone has what they need to make the most of this book? In this chap, provide an introduction to fundamental graph concepts that are most essential to understanding GNNs.
+
+            -- Bạn cần nắm vững những kiến thức cơ bản về đồ thị trước khi có thể hiểu về GNN. Mục tiêu của cuốn sách này là hướng dẫn GNN cho những người thực hành DL \& những người xây dựng mạng nơ-ron truyền thống, những người có thể chưa biết nhiều về đồ thị. Đồng thời, cũng cần lưu ý: kiến thức về đồ thị của độc giả có thể rất khác nhau. Làm thế nào để giải quyết những khác biệt này \& đảm bảo mọi người đều có những kiến thức cần thiết để tận dụng tối đa cuốn sách này? Trong chương này, chúng tôi sẽ giới thiệu các khái niệm cơ bản về đồ thị, những khái niệm thiết yếu nhất để hiểu về GNN.
+
+            After refresher on key concepts in graphs \& graph learning, look into some case studies in several fields where GNNs are being successfully applied. Then, break down those specific cases to see what makes a good case for using a GNN, as well as how to know if you have a GNN problem on your hands. At end of chap, introduce mechanics of GNNs, barebone skeleton that the rest of book will add to.
+
+            -- Sau khi ôn lại các khái niệm chính về đồ thị \& học đồ thị, hãy xem xét một số nghiên cứu điển hình trong một số lĩnh vực mà GNN đang được ứng dụng thành công. Sau đó, hãy phân tích các trường hợp cụ thể đó để xem đâu là lý do tốt để sử dụng GNN, cũng như cách nhận biết liệu bạn có đang gặp vấn đề về GNN hay không. Cuối chương, hãy giới thiệu cơ chế hoạt động của GNN, bộ khung xương cốt mà phần còn lại của cuốn sách sẽ bổ sung.
+        \end{itemize}
+        \item {\sf1.2. Graph-based learning.} This section defines graphs, graph-based learning, \& some fundamentals of GNNs, including basic structure of a graph \& a taxonomy of different types of graphs. Then, review graph-based learning, putting GNNs in context with other learning methods. Finally, explain value of graphs, ending with an example of data derived from Titanic dataset.
+
+        -- Học tập dựa trên đồ thị. Phần này định nghĩa đồ thị, học tập dựa trên đồ thị, \& một số kiến thức cơ bản về mạng nơ-ron nhân tạo (GNN), bao gồm cấu trúc cơ bản của đồ thị \& phân loại các loại đồ thị khác nhau. Sau đó, xem xét lại học tập dựa trên đồ thị, đặt GNN vào bối cảnh của các phương pháp học tập khác. Cuối cùng, giải thích giá trị của đồ thị, kết thúc bằng một ví dụ về dữ liệu được lấy từ tập dữ liệu Titanic.
+        \begin{itemize}
+            \item {\sf1.2.1. What are graphs?} Graphs are data structures with elements, expressed as {\it nodes or vertices}, \& relationships between elements, expressed as {\it edges or links}. All nodes in graph will have additional {\it feature data}. This is node-specific data, relating to things e.g. names or ages of individuals in a social network. Links are key to power of relational data, as they allow us to learn more about system, give new tools for analyzing data, \& predict new properties from it. This is in contrast to tabular data e.g. a database table, dataframe, or spreadsheet, where data is fixed in rows \& columns.
+
+            -- Đồ thị là cấu trúc dữ liệu với các phần tử, được biểu diễn dưới dạng {\it nút hoặc đỉnh}, \& mối quan hệ giữa các phần tử, được biểu diễn dưới dạng {\it cạnh hoặc liên kết}. Tất cả các nút trong đồ thị sẽ có thêm {\it dữ liệu đặc trưng}. Đây là dữ liệu cụ thể của từng nút, liên quan đến các thông tin như tên hoặc tuổi của các cá nhân trong mạng xã hội. Liên kết là chìa khóa cho sức mạnh của dữ liệu quan hệ, vì chúng cho phép chúng ta tìm hiểu thêm về hệ thống, cung cấp các công cụ mới để phân tích dữ liệu và \& dự đoán các thuộc tính mới từ dữ liệu đó. Điều này trái ngược với dữ liệu dạng bảng, ví dụ: bảng cơ sở dữ liệu, khung dữ liệu hoặc bảng tính, trong đó dữ liệu được cố định theo hàng \& cột.
+
+            To describe \& learn from edges between nodes, we need a way to write them down. This can be explicitly, quickly, can see describing things in this way becomes unwieldy \& might be repeating redundant information. Luckily, there are many mathematical formalisms for describing relations in graphs. 1 of most common: describe {\it adjacency matrix}. Notice: adjacency matrix is symmetric across diagonal \& all values are 1s or 0s. Adjacency matrix of a graph is an important concept that makes it easy to observe all connections of a graph in a single table. Here assumed: there is no directionability in our graphs, i.e., if 0 is connected to 1, then 1 is also connected to 0. This is known as an {\it undirected graph}. Undirected graphs can be easily inferred from an adjacency matrix because, in this case, matrix is symmetric across diagonal, upper-right triangle is reflected onto bottom-left.
+
+            -- Để mô tả \& học từ các cạnh giữa các nút, chúng ta cần một cách để viết chúng ra. Điều này có thể rõ ràng, nhanh chóng, có thể thấy việc mô tả mọi thứ theo cách này trở nên cồng kềnh \& có thể lặp lại thông tin dư thừa. May mắn thay, có nhiều công thức toán học để mô tả các mối quan hệ trong đồ thị. 1 trong những công thức phổ biến nhất: mô tả {\it adjacency matrix}. Lưu ý: ma trận kề là đối xứng qua đường chéo \& tất cả các giá trị là 1 hoặc 0. Ma trận kề của đồ thị là một khái niệm quan trọng giúp dễ dàng quan sát tất cả các kết nối của đồ thị trong một bảng duy nhất. Ở đây giả sử: không có tính định hướng trong đồ thị của chúng ta, tức là nếu 0 được kết nối với 1, thì 1 cũng được kết nối với 0. Đây được gọi là {\it undirected graph}. Đồ thị vô hướng có thể dễ dàng suy ra từ ma trận kề vì, trong trường hợp này, ma trận đối xứng qua đường chéo, tam giác trên cùng bên phải được phản chiếu xuống dưới cùng bên trái.
+
+            Also assume: all relations between nodes are identical. p. 7+++
+
+            \item {\sf1.2.2. Different types of graphs.}
+        \end{itemize}
+    \end{itemize}
+    \item {\sf2. Graph embeddings.}
+
+    PART 3: GRAPH NEURAL NETWORKS GNNs
+    \item {\sf3. Graph convolutional networks \& GraphSAGE.}
+    \item {\sf4. Graph attention networks.}
+    \item {\sf5. Graph autoencoders.}
+
+    PART 3: ADVANCED TOPICS.
+    \item {\sf6. Dynamic graphs: Spatiotemporal GNNs.}
+    \item {\sf7. Learning \& inference at scale.}
+    \item {\sf8. Considerations for GNN projects.}
+    \item {\sf A. Discovering graphs.}
+    \item {\sf B. Installing \& configuring PyTorch Geometric.}
+
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\section{Miscellaneous}
+
+%------------------------------------------------------------------------------%
+
+\printbibliography[heading=bibintoc]
+
+\end{document}

@@ -816,9 +816,171 @@ embeddings = {str(node) : model.wv[str(node)] for node in gml_graph.nodes()}
 
            -- Đối với những người quan tâm đến việc hiểu sâu hơn về các mô hình chuyển đổi \& cách tiếp cận của N2V so sánh với các phương pháp khác, các chi tiết bổ sung được cung cấp trong Phần 2.4.2, khám phá sự đánh đổi giữa học chuyển đổi \& quy nạp sâu hơn [6, 7], giúp bạn hiểu khi nào thì mỗi cách tiếp cận là phù hợp nhất.
 
-           While N2V is effective for generating embeddings that capture structure of a fixed graph, real-world data often demands a more flexible \& generalizable approach. This need brings us to our 1st GNN architecture for creating node embeddings. Unlike N2V, which is a transductive method limited to specific nodes \& edges in training data, GNNs can learn in an {\it inductive}
+           While N2V is effective for generating embeddings that capture structure of a fixed graph, real-world data often demands a more flexible \& generalizable approach. This need brings us to our 1st GNN architecture for creating node embeddings. Unlike N2V, which is a transductive method limited to specific nodes \& edges in training data, GNNs can learn in an {\it inductive} manner, i.e., GNNs are capable of generalizing to new, unseen nodes or edges without requiring retraining on entire graph.
+
+           -- Mặc dù N2V hiệu quả trong việc tạo ra các phép nhúng nắm bắt cấu trúc của một đồ thị cố định, dữ liệu thực tế thường đòi hỏi một phương pháp linh hoạt hơn \& có thể khái quát hóa. Nhu cầu này đưa chúng ta đến kiến trúc GNN đầu tiên để tạo ra các phép nhúng nút. Không giống như N2V, vốn là phương pháp chuyển đổi giới hạn ở các nút \& cạnh cụ thể trong dữ liệu huấn luyện, GNN có thể học theo cách {\it quy nạp}, tức là GNN có khả năng khái quát hóa sang các nút hoặc cạnh mới, chưa được biết đến mà không cần phải huấn luyện lại toàn bộ đồ thị.
+
+           GNNs achieve this by not only understanding network's complex structure but also by incorporating node features \& relationships into learning process. This approach allows GNNs to adapt dynamically to changes in graph, making them well-suited for applications where data is continually evolving. Shift from N2V to GNNs represents a key transition from focusing on deep analysis within a static dataset to a broader applicability across diverse, evolving networks. This adaptability sets stage for a wider range of graph-based ML applications that require flexibility \& scalability. In next sect, explore how GNNs go beyond capabilities of N2V \& other transductive methods, allowing for ore versatile \& powerful models that can \fbox{handle dynamic nature of real-world data}.
+
+           -- GNN đạt được điều này không chỉ bằng cách hiểu cấu trúc phức tạp của mạng mà còn bằng cách kết hợp các đặc điểm nút \& mối quan hệ vào quá trình học. Cách tiếp cận này cho phép GNN thích ứng linh hoạt với những thay đổi trong đồ thị, khiến chúng phù hợp với các ứng dụng mà dữ liệu liên tục phát triển. Sự chuyển đổi từ N2V sang GNN thể hiện một bước chuyển đổi quan trọng từ việc tập trung vào phân tích sâu trong một tập dữ liệu tĩnh sang khả năng ứng dụng rộng rãi hơn trên các mạng lưới đa dạng và đang phát triển. Khả năng thích ứng này đặt nền tảng cho một loạt các ứng dụng học máy dựa trên đồ thị đòi hỏi tính linh hoạt \& khả năng mở rộng. Trong phần tiếp theo, hãy khám phá cách GNN vượt ra ngoài khả năng của N2V \& các phương pháp chuyển đổi khác, cho phép tạo ra các mô hình linh hoạt \& mạnh mẽ hơn có thể \fbox{xử lý bản chất động của dữ liệu thực tế}.
        \end{itemize}
-       \item {\sf2.2. Creating embeddings with a GNN.}
+       \item {\sf2.2. Creating embeddings with a GNN.} While N2V provides a powerful method for generating embeddings by capturing local \& global structure of a graph, it is fundamentally a transductive approach, i.e., it cannot easily generalize to unseen nodes or edges without retraining. Although there have been extensions to N2V that enable it to work in inductive settings, GNNs are inherently designed for inductive learning. I.e., they can learn general patterns from graph data that allow them to make predictions or to generate embeddings for new nodes or edges without need to retrain entire model. This gives GNNs a significant edge in scenarios where flexibility \& adaptability are crucial.
+
+       -- {\sf Tạo nhúng với GNN.} Mặc dù N2V cung cấp một phương pháp mạnh mẽ để tạo nhúng bằng cách nắm bắt cấu trúc cục bộ \& toàn cục của đồ thị, nhưng về cơ bản, nó là một phương pháp chuyển đổi, tức là nó không thể dễ dàng khái quát hóa sang các nút hoặc cạnh chưa biết mà không cần đào tạo lại. Mặc dù đã có các phần mở rộng cho N2V cho phép nó hoạt động trong các thiết lập quy nạp, GNN vốn được thiết kế cho việc học quy nạp. Tức là, chúng có thể học các mẫu chung từ dữ liệu đồ thị, cho phép chúng đưa ra dự đoán hoặc tạo nhúng cho các nút hoặc cạnh mới mà không cần đào tạo lại toàn bộ mô hình. Điều này mang lại cho GNN một lợi thế đáng kể trong các tình huống mà tính linh hoạt \& khả năng thích ứng là rất quan trọng.
+
+       GNNs not only incorporate structural information of graph, like N2V, but they also use node features to create richer representations. This dual capacity allows GNNs to learn both complex relationships within graph \& specific characteristics of individual nodes, enabling them to excel in tasks where both types of information are important.
+
+       -- GNN không chỉ kết hợp thông tin cấu trúc của đồ thị, như N2V, mà còn sử dụng các đặc điểm của nút để tạo ra các biểu diễn phong phú hơn. Khả năng kép này cho phép GNN học cả các mối quan hệ phức tạp trong đồ thị \& các đặc điểm cụ thể của từng nút, cho phép chúng vượt trội trong các tác vụ mà cả hai loại thông tin đều quan trọng.
+
+       That said, while GNNs have demonstrated impressive performance across many applications, they do not universally outperform methods e.g. N2V in all cases. E.g., N2V \& other random walk-based methods can sometimes perform better in scenarios where labeled data is scarce or noisy, thanks to their ability to work with just graph structure without needing additional node features.
+
+       -- Tuy nhiên, mặc dù GNN đã chứng minh hiệu suất ấn tượng trong nhiều ứng dụng, chúng không phải lúc nào cũng vượt trội hơn các phương pháp như N2V trong mọi trường hợp. Ví dụ, N2V \& các phương pháp dựa trên bước đi ngẫu nhiên khác đôi khi có thể hoạt động tốt hơn trong các tình huống dữ liệu được gắn nhãn khan hiếm hoặc nhiễu, nhờ khả năng hoạt động chỉ với cấu trúc đồ thị mà không cần thêm các đặc trưng nút.
+       \begin{itemize}
+           \item {\sf2.2.1. Constructing embeddings.} Unlike N2V, GNNs learn graph representations \& perform tasks e.g. node classification or link prediction simultaneously during training. Information from entire is processed through successive GNN layers, each refining node embeddings without requiring a separate step for their creation.
+
+           -- {\sf Xây dựng nhúng.} Không giống như N2V, GNN học các biểu diễn đồ thị \& thực hiện đồng thời các tác vụ như phân loại nút hoặc dự đoán liên kết trong quá trình huấn luyện. Thông tin từ toàn bộ được xử lý qua các lớp GNN kế tiếp, mỗi lớp tinh chỉnh các nhúng nút mà không cần một bước riêng biệt để tạo chúng.
+
+           To demonstrate how a GNN extracts features from graph data, perform a straightforward pass-through using an untrained model to generate preliminary embeddings. Even without optimization typically involved in training, this approach will show how GNNs use message passing to update embeddings, capturing both graph's structure \& its node features. When optimization is added, these embeddings become tailored to specific tasks e.g. node classification or link prediction.
+
+           -- Để minh họa cách GNN trích xuất các đặc điểm từ dữ liệu đồ thị, hãy thực hiện một phép truyền trực tiếp đơn giản bằng một mô hình chưa được huấn luyện để tạo ra các nhúng sơ bộ. Ngay cả khi không có quá trình tối ưu hóa thường được sử dụng trong huấn luyện, phương pháp này vẫn sẽ cho thấy cách GNN sử dụng việc truyền thông điệp để cập nhật các nhúng, nắm bắt cả cấu trúc của đồ thị \ và các đặc điểm nút của nó. Khi được tối ưu hóa, các nhúng này sẽ được điều chỉnh cho phù hợp với các tác vụ cụ thể, ví dụ như phân loại nút hoặc dự đoán liên kết.
+           \begin{itemize}
+               \item {\sf Defining our GNN architecture.} Initiate our process by defining a siple GCN architecture, as shown in {\sf Listing 2.4: {\tt SimpleGNN} class}. Our {\tt SimpleGNN} class inherits from {\tt torch.nn.Module} \& is composed of 2 {\tt GCN-Conv} layers, which are building blocks of our GNN. This architecture is shown in {\sf Fig. 2.7: Architecture diagram of {\tt SimpleGNN} model}, consisting of 1st layer, a message passing layer {\tt self.conv1}, an activation {\tt torch.relu}, a dropout layer {\tt torch.dropout}, \& a 2nd message passing layer.
+
+               -- {\sf Định nghĩa kiến trúc GNN của chúng ta.} Bắt đầu quy trình bằng cách định nghĩa một kiến trúc GCN đơn, như được hiển thị trong {\sf Liệt kê 2.4: {\tt SimpleGNN} class}. Lớp {\tt SimpleGNN} của chúng ta kế thừa từ {\tt torch.nn.Module} \& bao gồm 2 lớp {\tt GCN-Conv}, là các khối xây dựng nên GNN của chúng ta. Kiến trúc này được hiển thị trong {\sf Hình 2.7: Sơ đồ kiến trúc của mô hình {\tt SimpleGNN}}, bao gồm lớp thứ nhất, lớp truyền tin nhắn {\tt self.conv1}, lớp kích hoạt {\tt torch.relu}, lớp dropout {\tt torch.dropout}, \& lớp truyền tin nhắn thứ hai.
+
+               Talk about architecture aspects specific to GNNs. Activation \& dropout are common in many DL scenarios. GNN layers, however, are different from conventional DL layers in a fundamental way. Core principle that allows GNNs to learn from graph data is message passing. For each GNN layer, in addition to updating layer's weights, a ``message'' is gathered from every node or edge neighborhood \& used to update an embedding. Essentially, each node sends messages to its neighbors \& simultaneously receives messages from them. For every node, its new embedding is computed by combining its own features with aggregated messages from its neighbors, through a combination of nonlinear transformations.
+
+               -- Nói về các khía cạnh kiến trúc đặc thù của GNN. Activation \& dropout là phổ biến trong nhiều kịch bản DL. Tuy nhiên, các lớp GNN khác biệt cơ bản so với các lớp DL thông thường. Nguyên lý cốt lõi cho phép GNN học từ dữ liệu đồ thị là truyền thông điệp. Đối với mỗi lớp GNN, ngoài việc cập nhật trọng số của lớp, một ``thông điệp'' được thu thập từ mọi nút hoặc lân cận cạnh \& được sử dụng để cập nhật nhúng. Về cơ bản, mỗi nút gửi thông điệp đến các nút lân cận \& đồng thời nhận thông điệp từ chúng. Đối với mỗi nút, nhúng mới của nó được tính toán bằng cách kết hợp các đặc trưng của chính nó với các thông điệp tổng hợp từ các nút lân cận, thông qua sự kết hợp của các phép biến đổi phi tuyến tính.
+
+               In this example, we are going to be using a graph convolutional network (GCN) to act as our message-passing GNN layers. Describe GCNs in much more detail i Chap. 3. For now, just need to know that GCNs act as message-passing layers that are critical in constructing embeddings.
+
+               -- Trong ví dụ này, chúng ta sẽ sử dụng mạng tích chập đồ thị (GCN) để hoạt động như các lớp GNN truyền thông điệp. Mô tả chi tiết hơn về GCN trong Chương 3. Hiện tại, chúng ta chỉ cần biết rằng GCN hoạt động như các lớp truyền thông điệp, đóng vai trò quan trọng trong việc xây dựng các hàm nhúng.
+               \item {\sf Data preparation.} Next, prepare our data. Start with same graph from previous section, \verb|books_gml|, in its {\tt NetworkX} form. Have to convert this {\tt NetworkX} object into a tensor form that is suitable to use with PyTorch operations. Because PyTorch Geometric (PyG) has many functions that convert graph objects, we can do this quite simply with \verb|data = from_NetworkX(gml_graph)|. Method \verb|from_NetworkX| specifically translates edge lists \& node{\tt.}edge attributes into PyTorch tensors.
+
+               -- {\sf Chuẩn bị dữ liệu.} Tiếp theo, hãy chuẩn bị dữ liệu. Bắt đầu với cùng một đồ thị từ phần trước, \verb|books_gml|, ở dạng {\tt NetworkX}. Phải chuyển đổi đối tượng {\tt NetworkX} này sang dạng tensor phù hợp để sử dụng với các phép toán PyTorch. Vì PyTorch Geometric (PyG) có nhiều hàm chuyển đổi đối tượng đồ thị, chúng ta có thể thực hiện việc này khá đơn giản với \verb|data = from_NetworkX(gml_graph)|. Phương thức \verb|from_NetworkX| đặc biệt chuyển đổi các thuộc tính danh sách cạnh \& node{\tt.}edge thành tensor PyTorch.
+
+               For GNNs, generating node embeddings requires initializing node features. In our case, we do not have any predefined node features. When no node features are available or they are not informative, it is common practice to initialize node features randomly. A more effective approach: use {\it Xavier initialization}, which sets initial node features with values drawn from a distribution that keeps variety of activations consistent across layers. This technique ensures: model starts with a balanced representation, preventing problems e.g. vanishing or exploding gradients.
+
+               -- Đối với GNN, việc tạo nhúng nút đòi hỏi phải khởi tạo các đặc trưng nút. Trong trường hợp của chúng tôi, chúng tôi không có bất kỳ đặc trưng nút nào được xác định trước. Khi không có đặc trưng nút nào khả dụng hoặc chúng không cung cấp thông tin, việc khởi tạo các đặc trưng nút một cách ngẫu nhiên là một phương pháp phổ biến. Một cách tiếp cận hiệu quả hơn: sử dụng {\it Xavier initialization}, phương pháp này đặt các đặc trưng nút ban đầu với các giá trị được lấy từ một phân phối duy trì tính nhất quán của các phép kích hoạt trên các lớp. Kỹ thuật này đảm bảo: mô hình bắt đầu với một biểu diễn cân bằng, ngăn ngừa các vấn đề như gradient biến mất hoặc bùng nổ.
+
+               By initializing {\tt data.x} with Xavier initialization, provide GNN with a starting point that allows it to learn meaningful node embeddings from noninformative features. During training, network adjusts these initial values to minimize loss function. When loss function is aligned with a specific target, e.g. node prediction, embeddings learned from initial random features will become tailored to task at hand, resulting in more effective representations. Randomize node features using following:
+
+               -- Khởi tạo, cung cấp cho GNN một điểm khởi đầu cho phép nó học các phép nhúng nút có ý nghĩa từ các đặc trưng không mang tính thông tin. Trong quá trình huấn luyện, mạng sẽ điều chỉnh các giá trị ban đầu này để giảm thiểu hàm mất mát. Khi hàm mất mát được căn chỉnh với một mục tiêu cụ thể, ví dụ: dự đoán nút, các phép nhúng học được từ các đặc trưng ngẫu nhiên ban đầu sẽ được điều chỉnh cho phù hợp với tác vụ hiện tại, mang lại hiệu quả biểu diễn cao hơn. Ngẫu nhiên hóa các đặc trưng nút bằng cách sử dụng các bước sau:
+               \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+data.x = torch.randn((data.num_nodes, 64), dtype = torch.float)
+'nn.init.xavier_uniform_(data.x) '
+               \end{Verbatim}
+               We could have also used embeddings from N2V exercise to use as node features. Recall \verb|node_embeddings| object from Sect. 2.1.3:
+
+               -- Chúng ta cũng có thể sử dụng các nhúng từ bài tập N2V để làm đặc trưng nút. Hãy nhớ lại đối tượng \verb|node_embeddings| từ Mục 2.1.3:
+               \begin{verbatim}
+node_embeddings = [embeddings[str(node)] for node in gml_graph.nodes()]
+               \end{verbatim}
+               From this, can convert node embedding to a PyTorch tensor object \& assign it to node feature object, {\tt data.x}:
+
+               -- Từ đó, có thể chuyển đổi nhúng nút thành đối tượng tenxơ PyTorch \& gán nó cho đối tượng tính năng nút, {\tt data.x}:
+               \begin{verbatim}
+node_features = torch.tensor(node_embedding, dtype = torch.float)
+data.x = node_features
+               \end{verbatim}
+               \item {\sf Passing graph through GNN.} With structure of our GNN model defined \& our graph data formatted for PyG, proceed to embedding generation step. Initialize our model, {\tt SimpleGNN}, specifying number of features for each node \& size of hidden channels within network.
+
+               -- {\sf Truyền đồ thị qua GNN.} Với cấu trúc mô hình GNN đã được xác định \& dữ liệu đồ thị được định dạng cho PyG, hãy tiến hành bước tạo nhúng. Khởi tạo mô hình {\tt SimpleGNN}, chỉ định số lượng đặc trưng cho mỗi nút \& kích thước của các kênh ẩn trong mạng.
+               \begin{verbatim}
+model = SimpleGNN(num_features = data.x.shape[1], hidden_channels = 64)
+               \end{verbatim}
+               Here, specify 64 hidden channels because we want to compare resulting embeddings to the ones we produced using {\tt node2vec} method, which had 64 dimensions. Because 2nd GNN layer is last layer, output will be a 64-element vector.
+
+               -- Ở đây, ta chỉ định 64 kênh ẩn vì chúng ta muốn so sánh các nhúng kết quả với các nhúng chúng ta tạo ra bằng phương pháp {\tt node2vec}, có 64 chiều. Vì lớp GNN thứ 2 là lớp cuối cùng, đầu ra sẽ là một vectơ 64 phần tử.
+
+               Once initialized, we switch model to evaluation mode using {\tt model.eval()}. This mode is used during inference or validation phases when we want to make predictions or assess model performance without modifying model's parameters. Specifically, {\tt model.eval()} turns off certain behaviors specific to training, e.g. {\it dropout}, which randomly deactivates some neurons to prevent overfitting, \& {\it batch normalization}, which normalizes inputs across a mini-batch. By disabling these features, model provides consistent \& deterministic outputs, ensuring: evaluation accurately reflects its true performance on unseen data.
+
+               -- Sau khi khởi tạo, chúng tôi chuyển mô hình sang chế độ đánh giá bằng {\tt model.eval()}. Chế độ này được sử dụng trong các giai đoạn suy luận hoặc xác thực khi chúng tôi muốn đưa ra dự đoán hoặc đánh giá hiệu suất mô hình mà không cần sửa đổi các tham số của mô hình. Cụ thể, {\tt model.eval()} sẽ tắt một số hành vi cụ thể trong quá trình huấn luyện, ví dụ: {\tt dropout}, vô hiệu hóa ngẫu nhiên một số nơ-ron để ngăn ngừa quá khớp, \& {\tt batch normalization}, chuẩn hóa đầu vào trên một mini-batch. Bằng cách vô hiệu hóa các tính năng này, mô hình cung cấp đầu ra nhất quán \& xác định, đảm bảo: đánh giá phản ánh chính xác hiệu suất thực tế của nó trên dữ liệu chưa được biết đến.
+
+               Important to disable gradient computations because they are not necessary for forward pass \& embedding generation. So, we employ \verb|torch.no_grad()|, which ensures: computational graph that records operations for backpropagation is not constructed, preventing us from accidentally changing performance.
+
+               -- Điều quan trọng là phải tắt tính toán gradient vì chúng không cần thiết cho việc tạo nhúng \& truyền tiếp. Vì vậy, chúng tôi sử dụng \verb|torch.no_grad()|, đảm bảo: đồ thị tính toán ghi lại các thao tác cho lan truyền ngược không được xây dựng, ngăn chúng tôi vô tình thay đổi hiệu suất.
+
+               Next, pass our node-feature matrix {\tt data.x} \& edge index \verb|data.edge_index| through model. Result is \verb|gnn_embeddings|, a tensor where each row corresponds to embedding of a node in our graph -- a numerical representation learned by our GNN, ready for downstream tasks e.g. visualization or classification:
+
+               -- Tiếp theo, truyền ma trận đặc trưng nút {\tt data.x} \& chỉ số cạnh \verb|data.edge_index| qua mô hình. Kết quả là \verb|gnn_embeddings|, một tenxơ trong đó mỗi hàng tương ứng với việc nhúng một nút vào đồ thị của chúng ta -- một biểu diễn số được học bởi GNN, sẵn sàng cho các tác vụ tiếp theo, ví dụ như trực quan hóa hoặc phân loại:
+               \begin{Verbatim}
+model.eval()
+with torch.no_grad():
+    gnn_embeddings = model(data.x, data.edge_index)
+               \end{Verbatim}
+               After producing these embeddings, use UMAP to visualize them. Since we have been working with PyTorch tensor data types running on a GPU, need to convert our embeddings to a NumPy array data type to use analysis methods outside of PyTorch, which are done on a CPU:
+
+               -- Sau khi tạo các nhúng này, hãy sử dụng UMAP để trực quan hóa chúng. Vì chúng ta đang làm việc với các kiểu dữ liệu tensor PyTorch chạy trên GPU, cần chuyển đổi các nhúng sang kiểu dữ liệu mảng NumPy để sử dụng các phương pháp phân tích bên ngoài PyTorch, vốn được thực hiện trên CPU:
+               \begin{verbatim}
+gnn_embeddings_np = gnn_embeddings.detach().cpu().numpy()
+               \end{verbatim}
+               With this convention, we can produce UMAP calculations \& visualization following process we used in N2V case. Resulting scatterplot ({\sf Fig. 2.8: Visualization of embeddings generated from passing a graph through a GNN.}) is a 1st glimpse at clusters within our graph. Add different shadings based on each node's label (left-, right-, or neural-leaning) to see that similar leaning books are fairly well grouped, given that these embeddings were constructed from topology alone.
+
+               -- Với quy ước này, chúng ta có thể tạo ra các phép tính UMAP \& trực quan hóa theo quy trình đã sử dụng trong trường hợp N2V. Biểu đồ phân tán kết quả ({\sf Hình 2.8: Trực quan hóa các nhúng được tạo ra khi truyền đồ thị qua mạng GNN.}) là cái nhìn đầu tiên về các cụm trong đồ thị của chúng ta. Hãy thêm các hiệu ứng tô bóng khác nhau dựa trên nhãn của mỗi nút (nghiêng trái, phải hoặc nghiêng nơ-ron) để thấy rằng các sách nghiêng tương tự được nhóm khá tốt, vì các nhúng này chỉ được xây dựng từ tôpô.
+
+               Next, discuss both how GNN embeddings are used \& how they differ from those produced with N2V.
+
+               -- Tiếp theo, thảo luận về cách sử dụng nhúng GNN \& cách chúng khác với nhúng được tạo bằng N2V như thế nào.
+           \end{itemize}
+           \item {\sf2.2.2. GNN vs. N2V embeddings.} Through this book, predominantly use GNNs to generate embeddings because this embedding process is intrinsic to a GNN's architecture. While embeddings play a pivotal role in methodologies \& applications we explore in rest of book, their presence is often subtle \& not always highlighted. This approach allows us to focus on broader concepts \& applications of GNN-based ML without getting slowed down by technicalities. Nonetheless, important to acknowledge: underlying power \& adaptability of embeddings are central to advanced techniques \& insights we get into throughout text.
+
+           -- {\sf GNN so với nhúng N2V.} Trong cuốn sách này, chúng tôi chủ yếu sử dụng GNN để tạo nhúng vì quá trình nhúng này là một phần không thể thiếu trong kiến trúc của GNN. Mặc dù nhúng đóng vai trò then chốt trong các phương pháp luận \& ứng dụng mà chúng tôi sẽ đề cập trong phần còn lại của cuốn sách, nhưng sự hiện diện của chúng thường rất tinh tế \& không phải lúc nào cũng được nhấn mạnh. Cách tiếp cận này cho phép chúng tôi tập trung vào các khái niệm rộng hơn \& ứng dụng của ML dựa trên GNN mà không bị chậm lại bởi các vấn đề kỹ thuật. Tuy nhiên, điều quan trọng cần lưu ý là: sức mạnh tiềm ẩn \& khả năng thích ứng của nhúng là trọng tâm của các kỹ thuật tiên tiến \& những hiểu biết sâu sắc mà chúng tôi sẽ tìm hiểu trong suốt cuốn sách.
+
+           GNN-produced node embeddings are particularly powerful because they enable us to tackle a broad range of graph-related tasks by using their inductive nature. Inductive learning allows these embeddings to generalize to new, unseen nodes or even entirely new graphs without needing to retrain model. In contrast, N2V embeddings are limited to specific graphs they were trained on \& can't easily adapt to new data. Reiterate key ways in which GNN embeddings differ from other embedding methods, e.g. N2V [1, 3].
+
+           -- Nhúng nút do GNN tạo ra đặc biệt mạnh mẽ vì chúng cho phép chúng ta giải quyết một loạt các tác vụ liên quan đến đồ thị bằng cách sử dụng tính chất quy nạp của chúng. Học quy nạp cho phép các nhúng này tổng quát hóa sang các nút mới, chưa từng thấy hoặc thậm chí là các đồ thị hoàn toàn mới mà không cần phải đào tạo lại mô hình. Ngược lại, nhúng N2V bị giới hạn trong các đồ thị cụ thể mà chúng được đào tạo \& không thể dễ dàng thích ứng với dữ liệu mới. Nhắc lại những điểm chính mà nhúng GNN khác với các phương pháp nhúng khác, ví dụ: N2V [1, 3].
+           \begin{itemize}
+               \item {\sf Adaptability of new graphs.} 1 of critical features of GNN embeddings is their adaptability. Because GNNs learn a function that maps node features to embeddings, this function can be applied to nodes in new graphs without needing to be retrained, provided nodes have similar feature spaces. This inductive capability is particularly valuable in dynamic environments where graph may evolve over time or in applications where model needs to be applied to different but structurally similar graphs. N2V, on other hand, needs to be reapplied for each new graph or set of nodes.
+
+               -- {\sf Khả năng thích ứng của đồ thị mới.} Một trong những đặc điểm quan trọng của nhúng GNN là khả năng thích ứng. Vì GNN học một hàm ánh xạ các đặc trưng của nút với các nhúng, hàm này có thể được áp dụng cho các nút trong đồ thị mới mà không cần phải đào tạo lại, miễn là các nút có không gian đặc trưng tương tự. Khả năng quy nạp này đặc biệt hữu ích trong các môi trường động, nơi đồ thị có thể phát triển theo thời gian hoặc trong các ứng dụng cần áp dụng mô hình cho các đồ thị khác nhau nhưng có cấu trúc tương tự. Mặt khác, N2V cần được áp dụng lại cho mỗi đồ thị hoặc tập hợp nút mới.
+               \item {\sf Enhanced feature integration.} GNNs inherently consider node features during embedding process, allowing for a complex \& nuanced representation of each node. This integration of node features, alongside structural information, offers a more comprehensive view compared to N2V \& other methods that focus on a graph's topology. This capability makes GNN embeddings particularly suited for tasks where node features contain significant additional information.
+
+               -- {\sf Tích hợp tính năng nâng cao.} GNN vốn đã xem xét các tính năng nút trong quá trình nhúng, cho phép biểu diễn phức tạp \& sắc thái của từng nút. Việc tích hợp các tính năng nút này, cùng với thông tin cấu trúc, mang lại cái nhìn toàn diện hơn so với các phương pháp N2V \& khác tập trung vào cấu trúc của đồ thị. Khả năng này làm cho nhúng GNN đặc biệt phù hợp cho các tác vụ mà các tính năng nút chứa thông tin bổ sung đáng kể.
+               \item {\sf Task-specific optimization.} GNNs embeddings are trained alongside specific tasks, e.g. node classification, link prediction, or even graph classification. Through end-to-end training, GNN model learns to optimize embeddings for task at hand, leading to potentially higher performance \& efficiency compared to using pre-generated embeddings e.g. those from N2V.
+
+               -- {\sf Tối ưu hóa theo tác vụ.} Các nhúng GNN được huấn luyện cùng với các tác vụ cụ thể, ví dụ: phân loại nút, dự đoán liên kết, hoặc thậm chí phân loại đồ thị. Thông qua quá trình huấn luyện đầu cuối, mô hình GNN học cách tối ưu hóa các nhúng cho tác vụ đang thực hiện, dẫn đến hiệu suất \& hiệu quả cao hơn so với việc sử dụng các nhúng được tạo sẵn, ví dụ như từ N2V.
+
+               That said, while GNN embeddings offer clear advantages in terms of adaptability \& applicability to new data, N2V embeddings have their strengths, particularly in capturing nuanced patterns within a specific graph's structure. In practice, choice between GNN \& N2V embeddings may depend on specific requirements of task, nature of graph data, \& constraints of computational environment.
+
+               -- Tuy nhiên, trong khi nhúng GNN mang lại những lợi thế rõ ràng về khả năng thích ứng \& khả năng ứng dụng cho dữ liệu mới, nhúng N2V cũng có những điểm mạnh riêng, đặc biệt là trong việc nắm bắt các mẫu hình phức tạp trong cấu trúc đồ thị cụ thể. Trên thực tế, việc lựa chọn giữa nhúng GNN \& N2V có thể phụ thuộc vào các yêu cầu cụ thể của tác vụ, bản chất của dữ liệu đồ thị, \& các ràng buộc của môi trường tính toán.
+
+               For tasks where graph structure is static \& well-defined, N2V might provide a simpler \& computational efficient solution. Conversely, for dynamic graphs, large-scale applications, or scenarios requiring incorporation of node features, GNNs will often be the more robust \& versatile choice. Additionally, when task itself is not well-defined \& work is exploratory, N2V is likely faster \& easier to use.
+
+               -- Đối với các tác vụ có cấu trúc đồ thị tĩnh \& được xác định rõ ràng, N2V có thể cung cấp một giải pháp đơn giản hơn \& hiệu quả về mặt tính toán. Ngược lại, đối với các đồ thị động, ứng dụng quy mô lớn hoặc các tình huống yêu cầu tích hợp các đặc điểm nút, GNN thường là lựa chọn mạnh mẽ \& linh hoạt hơn. Ngoài ra, khi bản thân tác vụ không được xác định rõ \& công việc mang tính khám phá, N2V có thể nhanh hơn \& dễ sử dụng hơn.
+
+               Have now successfully built our 1st GNN embedding. This is key 1st step for all GNN models, \& everything from this point will build on it. In next sect, give an example of some of these next steps \& show how to use embeddings to solve a ML problem.
+
+               -- Chúng ta đã xây dựng thành công mô hình nhúng GNN đầu tiên. Đây là bước đầu tiên quan trọng cho tất cả các mô hình GNN, \& mọi thứ từ đây sẽ được xây dựng dựa trên nó. Trong phần tiếp theo, hãy đưa ra ví dụ về một số bước tiếp theo \& trình bày cách sử dụng nhúng để giải quyết bài toán học máy.
+           \end{itemize}
+       \end{itemize}
+       \item {\sf2.3. Using Node Embeddings.} Semi-supervised learning, which involves a combination of labeled \& unlabeled data, provides a valuable opportunity to compare different embedding techniques. In this chap, explore how GNN \& N2V embeddings can be used to predict labels when majority of data lacks labels.
+
+       -- {\sf Sử dụng Nhúng Nút.} Học bán giám sát, bao gồm sự kết hợp giữa dữ liệu có nhãn \& không có nhãn, mang đến một cơ hội quý giá để so sánh các kỹ thuật nhúng khác nhau. Trong chương này, hãy khám phá cách sử dụng nhúng GNN \& N2V để dự đoán nhãn khi phần lớn dữ liệu thiếu nhãn.
+
+       Our task involves Political Books dataset \verb|books_graph|, where nodes represent political books \& edges indicate co-purchase relationships. To make process clearer, review steps taken so far \& outline our next steps, as illustrated in {\sf Fig. 2.9: Overview of steps taken in Chap. 2: 1. Preprocess Political Books dataset for embedding. 2. Use N2V \& GCN to create embeddings from preprocessed data. 3. Prepare N2V embeddings \& GCN embeddings for semi-supervised classification. 4. Embeddings are used as features in a random forest classifier (tabular features) \& a GCN classifier (node features).}
+
+       -- Nhiệm vụ của chúng tôi liên quan đến tập dữ liệu Sách Chính trị \verb|books_graph|, trong đó các nút biểu diễn các cuốn sách chính trị \& các cạnh biểu diễn mối quan hệ đồng mua. Để làm rõ quy trình, hãy xem lại các bước đã thực hiện cho đến nay \& phác thảo các bước tiếp theo, như minh họa trong {\sf Hình 2.9: Tổng quan các bước đã thực hiện trong Chương 2: 1. Tiền xử lý tập dữ liệu Sách Chính trị để nhúng. 2. Sử dụng N2V \& GCN để tạo nhúng từ dữ liệu đã được xử lý trước. 3. Chuẩn bị nhúng N2V \& nhúng GCN cho phân loại bán giám sát. 4. Nhúng được sử dụng làm đặc trưng trong bộ phân loại rừng ngẫu nhiên (đặc trưng dạng bảng) \& bộ phân loại GCN (đặc trưng nút).}
+
+       Began with \verb|books_graph| dataset in graph format \& performed light preprocessing to prepare data for embedding. For N2V, this involved converting dataset from a {\tt.gml} file to a {\tt NetworkX} format. For GNN-based embeddings, converted {\tt NetworkX} graph into a PyTorch tensor \& initialized node features using Xavier initialization to ensure balanced variability across layers.
+
+       -- Bắt đầu với tập dữ liệu \verb|books_graph| ở định dạng đồ thị \& thực hiện tiền xử lý nhẹ để chuẩn bị dữ liệu cho nhúng. Đối với N2V, việc này bao gồm chuyển đổi tập dữ liệu từ tệp {\tt.gml} sang định dạng {\tt NetworkX}. Đối với nhúng dựa trên GNN, chuyển đổi đồ thị {\tt NetworkX} thành tensor PyTorch \& khởi tạo các đặc trưng nút bằng khởi tạo Xavier để đảm bảo tính biến thiên cân bằng giữa các lớp.
+
+       After preparing data, we generated embeddings using both N2V \& GCNs. Now, in this sect, apply these embeddings to a semi-supervised classification problem. This involves further processing to define classification task, where only 20\% of book labels are retained, simulating a realistic scenario with sparse labeled data.
+
+       -- Sau khi chuẩn bị dữ liệu, chúng tôi đã tạo ra các nhúng sử dụng cả N2V \& GCN. Trong phần này, chúng tôi áp dụng các nhúng này vào một bài toán phân loại bán giám sát. Điều này bao gồm việc xử lý thêm để xác định tác vụ phân loại, trong đó chỉ giữ lại 20\% nhãn sách, mô phỏng một kịch bản thực tế với dữ liệu được gắn nhãn thưa thớt.
+
+       Use 2 sets of embeddings (N2V \& GCN) with 2 different classifiers: a random forest classifier (to use embeddings as tabular features) \& a GCN classifier (to use graph structure \& node features). Goal: predict political orientation of books, with remaining 80\% of labels inferred based on given embeddings.
+
+       -- Sử dụng 2 bộ nhúng (N2V \& GCN) với 2 bộ phân loại khác nhau: một bộ phân loại rừng ngẫu nhiên (để sử dụng nhúng làm đặc trưng dạng bảng) \& một bộ phân loại GCN (để sử dụng cấu trúc đồ thị \& đặc trưng nút). Mục tiêu: dự đoán khuynh hướng chính trị của sách, với 80\% nhãn còn lại được suy ra dựa trên các nhúng đã cho.
+       \begin{itemize}
+           \item {\sf2.3.1. Data preprocessing.} To start, we do a little more preprocessing to our \verb|books_gml| dataset {\sf Listing 2.5: Preprocessing for semi-supervised problem}. Must format labels in a suitable way for learning process. Because all nodes are labeled, we also have to set up semi-supervised problem by randomly selecting nodes from which we hide labels.
+
+           -- {\sf Tiền xử lý dữ liệu.} Để bắt đầu, chúng ta thực hiện thêm một chút tiền xử lý cho tập dữ liệu \verb|books_gml| {\sf Liệt kê 2.5: Tiền xử lý cho bài toán bán giám sát}. Phải định dạng nhãn theo cách phù hợp cho quá trình học. Vì tất cả các nút đều được gắn nhãn, chúng ta cũng phải thiết lập bài toán bán giám sát bằng cách chọn ngẫu nhiên các nút mà chúng ta ẩn nhãn.
+
+           Nodes associated with attribute {\tt'c'} are classified as {\tt'right'}, while those with {\tt'l'} are classified as {\tt'left'}. Nodes that do not fit these criteria, including those with neutral or unspecified attributes, are categorized as {\tt'neutral'}. These
+       \end{itemize}
+       \item {\sf2.4. Under Hood.}
     \end{itemize}
 
     PART 3: GRAPH NEURAL NETWORKS GNNs
@@ -834,6 +996,11 @@ embeddings = {str(node) : model.wv[str(node)] for node in gml_graph.nodes()}
     \item {\sf B. Installing \& configuring PyTorch Geometric.}
 
 \end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Geeks4Geeks{\tt/}What are Graph Neural Networks?}
+\url{https://www.geeksforgeeks.org/deep-learning/what-are-graph-neural-networks/}.
 
 %------------------------------------------------------------------------------%
 

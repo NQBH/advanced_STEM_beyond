@@ -53,6 +53,30 @@ model.eval()
 with torch.no_grad():
 	gnn_embeddings = model(data.x, data.edge_index)
 gnn_embeddings_np = gnn_embeddings.detach().cpu().numpy()
+
+# preprocessing for semi-supervised problem
+labels = []
+for node, data in gml_graph.nodes(data = True): # extract labels & handle neural values
+	if data['value'] == 'c':
+		labels.append('right')
+	elif data['value'] == 'l':
+		labels.append('left')
+	else:
+		labels.append('neutral')
+	labels = np.array(labels)
+	random.seed(52) # random seed for reproducibility
+	indices = list(range(len(labels))) # indices of all nodes
+	labeled_percentages = 0.2 # 20% of data to keep as labeled, 80% unlabeled
+	labeled_indices = random.sample(indices, int(labeled_percentages * len(labels))) # select a subset of indices to remain labeled
+	labeled_mask = np.zeros(len(labels), dtype = bool) # initialize masks for labeled & unlabeled data
+	unlabeled_mask = np.ones(len(labels), dtype = bool)
+	labeled_mask[labeled_indices] = True # update masks
+	unlabeled_mask[labeled_indices] = False
+	labeled_labels = labels[labeled_mask] # use masks to split dataset
+	unlabeled_labels = labels[unlabeled_mask]
+	label_mapping = {'left': 0, 'right': 1, 'neural': 2} # transformed labels to numeric form
+	numeric_labels = np.array([label_mapping[label] for label in labels])
+
 '''
 nqbh@nqbh:~/advanced_STEM_beyond/graph_neural_network/Python$ python3 generate_N2V_embedding.py 
 Traceback (most recent call last):

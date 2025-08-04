@@ -26,6 +26,33 @@ embeddings_2D = {str(node) : model.wv[str(node)] for node in gml_graph.nodes()} 
 points = np.array([embeddings_2D[node] for node in gml_graph.nodes()]) # form an array of 2D points for each node's embedding
 plt.scatter(points[:, 0], points[:, 1], color = node_colors, alpha = 0.7) # plot 2D embeddings with specified node colors
 
+# SimpleGNN class
+class SimpleGNN_embeddings(torch.nn.Module):
+	def __init__(self, num_features, hidden_channels): # initialize GNN class with input & hidden layer sizes
+		super(SimpleGNN, self).__init__()
+		self.conv1 = GCNConv(num_features, hidden_channels) # 1st GCN layer from input features to hidden channels
+		self.conv2 = GCNConv(hidden_channels, hidden_channels) # 2nd GCN layer within hidden space
+
+	def forward(self, x, edge_index): # forward pass function defines data flow
+		x = self.conv1(x, edge_index) # 1st GCN layer processing
+		x = torch.relu(x) # activation function for nonlinearity
+		x = torch.dropout(x, p = 0.5, train = self.training) #  dropout for regularization during training
+		x = self.conv2(x, edge_index) # 2nd GCN layer processing
+		return x # return final node embeddings
+
+# data preparation
+data.x = torch.randn((data.num_nodes, 64), dtype = torch.float)
+'nn.init.xavier_uniform_(data.x) '
+
+node_embeddings = [embeddings[str(node)] for node in gml_graph.nodes()]
+node_features = torch.tensor(node_embedding, dtype = torch.float)
+data.x = node_features
+
+model = SimpleGNN(num_features = data.x.shape[1], hidden_channels = 64)
+model.eval()
+with torch.no_grad():
+	gnn_embeddings = model(data.x, data.edge_index)
+gnn_embeddings_np = gnn_embeddings.detach().cpu().numpy()
 '''
 nqbh@nqbh:~/advanced_STEM_beyond/graph_neural_network/Python$ python3 generate_N2V_embedding.py 
 Traceback (most recent call last):

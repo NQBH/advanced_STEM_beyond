@@ -10,11 +10,14 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
-%  \addtolength{\headheight}{0pt}% obsolete
-\lhead{\scshape\chaptername~\thechapter}
-\rhead{\nouppercase{\leftmark}} %\nouppercase !
+\addtolength{\headheight}{0pt}% obsolete
+\lhead{\scshape\small\chaptername~\thechapter}
+\rhead{\small\nouppercase{\leftmark}}
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 \cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyheadoffset[RE,LO]{-0.0\textwidth}
 
 \usepackage{textcase}
 
@@ -64,6 +67,7 @@
 \allowdisplaybreaks
 \newtheorem{assumption}{Assumption}
 \newtheorem{baitoan}{Bài toán}
+\newtheorem{bode}{Bổ đề}
 \newtheorem{cauhoi}{Câu hỏi}
 \newtheorem{conjecture}{Conjecture}
 \newtheorem{corollary}{Corollary}
@@ -108,6 +112,7 @@
 \newcommand{\stirlingII}[2]{\genstirlingII{}{#1}{#2}}
 \newcommand{\dstirlingII}[2]{\genstirlingII{0}{#1}{#2}}
 \newcommand{\tstirlingII}[2]{\genstirlingII{1}{#1}{#2}}
+\def\multiset#1#2{\ensuremath{\left(\kern-.3em\left(\genfrac{}{}{0pt}{}{#1}{#2}\right)\kern-.3em\right)}}
 
 \title{Lecture Note: Graph Neural Networks\\Bài Giảng: Mạng Nơron Đồ Thị}
 \author{Nguyễn Quản Bá Hồng\footnote{A scientist- {\it\&} creative artist wannabe, a mathematics {\it\&} computer science lecturer of Department of Artificial Intelligence {\it\&} Data Science (AIDS), School of Technology (SOT), UMT Trường Đại học Quản lý {\it\&} Công nghệ TP.HCM, Hồ Chí Minh City, Việt Nam.\\E-mail: {\sf nguyenquanbahong@gmail.com} {\it\&} {\sf hong.nguyenquanba@umt.edu.vn}. Website: \url{https://nqbh.github.io/}. GitHub: \url{https://github.com/NQBH}.}}
@@ -162,10 +167,48 @@ Tài liệu này là bài giảng tôi dạy cho sinh viên Khoa Công Nghệ (u
 %------------------------------------------------------------------------------%
 
 \chapter{Introduction to Graph Neural Networks -- Nhập Môn Mạng Nơron Đồ Thị}
+\minitoc
+
+%------------------------------------------------------------------------------%
+
+\section{Some Basic Concepts -- Vài Khái Niệm Cơ Bản}
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
+    \item \href{https://www.geeksforgeeks.org/deep-learning/what-are-graph-neural-networks/}{Geeks4Geeks{\tt/}what are graph neural networks?}.
+
     \item \href{https://en.wikipedia.org/wiki/Graph_neural_network}{Wikipedia{\tt}graph neural network}.
 \end{enumerate}
+We explore what GNNs are, how they work, their types, \& their wide range of applications.
+
+Graph Neural Networks (GNNs) are a neural network specifically designed to work with data represented as graphs. Unlike traditional neural networks, which operate on grid-like data structures like images (2D grids) or text (sequential), GNNs can model complex, non-Euclidean relationships in data, e.g. social networks, molecular structures, \& knowledge graphs.
+
+-- Mạng nơ-ron đồ thị (GNN) là một mạng nơ-ron được thiết kế đặc biệt để hoạt động với dữ liệu được biểu diễn dưới dạng đồ thị. Không giống như các mạng nơ-ron truyền thống, hoạt động trên các cấu trúc dữ liệu dạng lưới như hình ảnh (lưới 2D) hoặc văn bản (tuần tự), GNN có thể mô hình hóa các mối quan hệ phức tạp, phi Euclid trong dữ liệu, ví dụ như mạng xã hội, cấu trúc phân tử, \& đồ thị tri thức.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Understanding Graph Structures -- Hiểu Về Cấu Trúc Đồ Thị}
+A graph is a data structure that represents relationships between pairs of objects. Each object is known as a {\it node} (or {\it vertex}), \& each connection between nodes is an {\it edge.} Graphs can vary based on the type of edges:
+\begin{enumerate}
+    \item \href{https://www.geeksforgeeks.org/dsa/what-is-directed-graph-directed-graph-meaning/}{Directed graphs}: In these graphs, edges have a direction, indicated by an arrow, showing a 1-way relationship from 1 node to another.
+    \item \href{https://www.geeksforgeeks.org/dsa/what-is-unidrected-graph-undirected-graph-meaning/}{Undirected graphs}: In these graphs, edges are bidirectical, representing 2-way relationships without any direction.
+\end{enumerate}
+-- Đồ thị là một cấu trúc dữ liệu biểu diễn mối quan hệ giữa các cặp đối tượng. Mỗi đối tượng được gọi là một {\it node} (hoặc {\it vertex}), và mỗi kết nối giữa các nút là một {\it edge}. Đồ thị có thể thay đổi tùy theo loại cạnh:
+\begin{enumerate}
+    \item \href{https://www.geeksforgeeks.org/dsa/what-is-directed-graph-directed-graph-meaning/}{Đồ thị có hướng}: Trong các đồ thị này, các cạnh có hướng, được biểu thị bằng mũi tên, thể hiện mối quan hệ một chiều từ nút này đến nút khác.
+    \item \href{https://www.geeksforgeeks.org/dsa/what-is-unidrected-graph-undirected-graph-meaning/}{Đồ thị vô hướng}: Trong các đồ thị này, các cạnh là song hướng, biểu diễn mối quan hệ hai chiều không có hướng.
+\end{enumerate}
+Graphs can be classified based on their structural properties: {\tt Type of graph | Description | Example{\tt/}Use case}
+\begin{enumerate}
+    \item {\it Homogeneous graph} | contains only 1 type of node \& edge, simplifying representation \& analysis. | Social network with people as nodes \& friendships as edges.
+    \item {\it Heterogeneous graph} | consists of multiple types of nodes \& edges, suitable for complex relationships | Knowledge graph with nodes for entities (people, places) \& varied edges.
+    \item {\it Static graph} | remains fixed once started, with no changes to nodes or edges | Scenarios where relationships are constant over time.
+    \item {\it Dynamic graph} | allows the addition or deletion of nodes \& edges, ideal for situations with frequently changing relationships. | Real-time communication tracking or evolving social networks.
+\end{enumerate}
+
+
+
+%------------------------------------------------------------------------------%
+
 {\it Graph neural networks (GNN)} are specialized artificial neural networks (ANNs) that are designed for tasks whose inputs are graphs.
 
 -- Mạng nơ-ron đồ thị (GNN) là mạng nơ-ron nhân tạo chuyên biệt (ANN) được thiết kế cho các tác vụ có đầu vào là đồ thị.
@@ -265,6 +308,52 @@ where ${\bf H}$ is the matrix of node representations ${\bf h}_u$, ${\bf X}$ is 
     {\bf H} = \sigma\left(\widetilde{\bf D}^{-\frac{1}{2}}\widetilde{\bf A}\widetilde{\bf D}^{-\frac{1}{2}}{\bf X}\Theta\right),
 \end{equation*}
 trong đó ${\bf H}$ là ma trận biểu diễn nút ${\bf h}_u$, ${\bf X}$ là ma trận đặc trưng nút ${\bf x}_u$, $\sigma(\cdot)$ là một hàm kích hoạt (ví dụ: ReLU), $\widetilde{\bf A}$ là ma trận kề đồ thị với việc bổ sung các vòng lặp tự thân, $\widetilde{\bf D}$ là ma trận bậc đồ thị với việc bổ sung các vòng lặp tự thân, \& $\Theta$ là ma trận các tham số có thể đào tạo được.
+
+In particular, let ${\bf A}$ be the graph adjacency matrix: then, one can define $\widetilde{\bf A}\coloneqq{\bf A} + {\bf I}$ \& $\widetilde{\bf D}_{ii} = \sum_{j\in V} \widetilde{A}_{ij}$, where $I$ denotes identity matrix. This normalization ensures: eigenvalues of $\widetilde{\bf D}^{-\frac{1}{2}}\widetilde{\bf A}\widetilde{\bf D}^{-\frac{1}{2}}$ are bounded in range $[0,1]$, avoiding numerical instabilities \& exploding{\tt/}vanishing gradients.
+
+-- Cụ thể, giả sử ${\bf A}$ là ma trận kề đồ thị: khi đó, ta có thể định nghĩa $\widetilde{\bf A}\coloneqq{\bf A} + {\bf I}$ \& $\widetilde{\bf D}_{ii} = \sum_{j\in V} \widetilde{A}_{ij}$, trong đó $I$ biểu thị ma trận đơn vị. Chuẩn hóa này đảm bảo: các trị riêng của $\widetilde{\bf D}^{-\frac{1}{2}}\widetilde{\bf A}\widetilde{\bf D}^{-\frac{1}{2}}$ bị chặn trong khoảng $[0,1]$, tránh được hiện tượng bất ổn định số \& bùng nổ{\tt/}gradient biến mất.
+
+A limitation of GCNs: they do not allow multidimensional edge features ${\bf e}_{uv}$. It is however possible to associate scalar weight $w_{uv}$ to each edge by imposing $A_{uv} = w_{uv}$, i.e., by setting each nonzero entry in adjacency matrix equal to weight of corresponding edge.
+
+-- 1 hạn chế của GCN: chúng không cho phép các đặc trưng cạnh đa chiều ${\bf e}_{uv}$. Tuy nhiên, có thể liên kết trọng số vô hướng $w_{uv}$ với mỗi cạnh bằng cách áp đặt $A_{uv} = w_{uv}$, tức là bằng cách đặt mỗi phần tử khác không trong ma trận kề bằng với trọng số của cạnh tương ứng.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Graph attention network -- Mạng lưới chú ý đồ thị}
+Graph attention network (GAT) was introduced by {\sc Petar Veličković} et al. in 2018. Graph attention network is a combination of a GNN \& an attention layer. Implementation of attention layer in graphical neural networks helps provide attention or focus to important information from data instead of focusing on whole data.
+
+-- Mạng lưới chú ý đồ thị (GAT) được giới thiệu bởi {\sc Petar Veličković} \& cộng sự vào năm 2018. Mạng lưới chú ý đồ thị là sự kết hợp giữa mạng nơ-ron nhân tạo (GNN) và một lớp chú ý. Việc triển khai lớp chú ý trong mạng nơ-ron đồ họa giúp tập trung sự chú ý hoặc tập trung vào thông tin quan trọng từ dữ liệu thay vì tập trung vào toàn bộ dữ liệu.
+
+A multi-head GAT layer can be expressed as follows:
+\begin{equation*}
+    {\bf h}_u = {\overset{K}{\underset{k=1}{\Big\Vert }}} \sigma\left(\sum_{v\in N_u} \alpha_{uv}{\bf W}^k{\bf x}_v\right),
+\end{equation*}
+where $K$ is the number of attention heads, $\big\Vert$ denotes vector concatenation, $\sigma(\cdot)$ is an activation function (e.g., ReLU), $\alpha_{ij}$ are attention coefficients, \& $W^k$ is a matrix of trainable parameters for the $k$th attention head.
+
+-- 1 lớp GAT nhiều đầu có thể được biểu diễn như sau:
+\begin{equation*}
+    {\bf h}_u = {\overset{K}{\underset{k=1}{\Big\Vert }}} \sigma\left(\sum_{v\in N_u} \alpha_{uv}{\bf W}^k{\bf x}_v\right),
+\end{equation*}
+trong đó $K$ là số đầu chú ý, $\big\Vert$ biểu thị phép nối vectơ, $\sigma(\cdot)$ là hàm kích hoạt (ví dụ: ReLU), $\alpha_{ij}$ là các hệ số chú ý, \& $W^k$ là ma trận các tham số có thể huấn luyện được cho đầu chú ý thứ $k$.
+
++++
+
+%------------------------------------------------------------------------------%
+
+\subsection{Gated graph sequence neural network -- Mạng nơ-ron chuỗi đồ thị có cổng}
+
+
+%------------------------------------------------------------------------------%
+
+\section{Local Pooling Layers -- Lớp Gộp Cục Bộ}
+
+%------------------------------------------------------------------------------%
+
+\section{Heterophilic Graph Learning -- Học Đồ Thị Dị Hướng}
+
+%------------------------------------------------------------------------------%
+
+\section{Applications of GNNs -- Ứng Dụng của GNNs}
 
 %------------------------------------------------------------------------------%
 

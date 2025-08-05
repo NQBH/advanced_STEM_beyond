@@ -1,5 +1,5 @@
 import networkx as nx
-from Node2Vec import Node2Vec
+from node2vec import Node2Vec
 
 # generate N2V embeddings
 book_graph = nx.read_gml('polbooks.gml') # loads graph data from a GML file into a NetworkX graph object

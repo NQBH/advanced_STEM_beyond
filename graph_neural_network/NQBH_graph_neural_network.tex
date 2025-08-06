@@ -1733,6 +1733,8 @@ print(f"Length of vocabulary = {VOCAB_SIZE}")
         -- Tại sao các bước ngẫu nhiên lại quan trọng? Ngay cả khi các nút được chọn ngẫu nhiên, việc chúng thường xuất hiện cùng nhau theo một trình tự có nghĩa là: chúng gần nhau. Theo giả thuyết {\it network homophily}, các nốt gần nhau thì tương tự nhau. Điều này đặc biệt đúng trong các mạng xã hội, nơi mọi người kết nối với bạn bè \& gia đình.
 
         This idea is at core of DeepWalk algorithm: when nodes are close to each other, want to obtain high similarity scores. On contrary, want low scores when they are farther apart. Implement a random walk function using a {\tt networkx} graph:
+
+        -- Ý tưởng này là cốt lõi của thuật toán DeepWalk: khi các nút gần nhau, chúng ta muốn đạt được điểm tương đồng cao. Ngược lại, chúng ta muốn đạt điểm tương đồng thấp khi chúng ở xa nhau. Triển khai hàm bước ngẫu nhiên bằng đồ thị {\tt networkx}:
         \begin{enumerate}
             \item Import required libraries \& initialize random number generator for reproducibility:
             \begin{verbatim}
@@ -1746,9 +1748,65 @@ random.seed(0) # initialize random number generator for reproducibility
             \begin{verbatim}
 G = nx.erdos_renyi_graph(10, 0.3, seed = 1, directed = False)
             \end{verbatim}
-            \item Plot this random graph to see what it looks like:
+            \item Plot this random graph to see what it looks like.
+            \item Implement random walks with a simple function. This function takes 2 parameters: starting node {\tt start} \& length of walk {\tt length}. At every step, randomly select a neighboring node (using {\tt np.random.choice}) until walk is complete:
+            \begin{verbatim}
+# implement random walks
+def random_walk(start, length):
+    walk = [str(start)] # starting node
+    for i in range(length):
+        neighbors = [node for node in G.neighbors(start)]
+        next_node = np.random.choice(neighbors, 1)[0]
+        walk.append(str(next_node))
+        start = next_node
+    return walk
+            \end{verbatim}
+            \item Print result of this function with starting node as 0 \& a length of 10:
+            \begin{verbatim}
+print(random_walk(0, 10))
+            \end{verbatim}
         \end{enumerate}
-        \item {\sf Implementing DeepWalk.}
+        Can see: certain nodes, e.g. 0 \& 9, are often found together. Considering that it is a homophilic graph, i.e., they are similar. It is precisely type of relationship we are trying to capture with DeepWalk. Now have implemented Word2Vec \& random walks separately, combine them to create DeepWalk.
+
+        -- Có thể thấy: một số nút nhất định, ví dụ: 0 \& 9, thường được tìm thấy cùng nhau. Xét đến việc đây là một đồ thị đồng dạng, tức là chúng tương tự nhau. Đây chính xác là loại mối quan hệ mà chúng ta đang cố gắng nắm bắt bằng DeepWalk. Bây giờ, chúng ta đã triển khai Word2Vec \& random walks riêng biệt, hãy kết hợp chúng để tạo ra DeepWalk.
+        \item {\sf Implementing DeepWalk.} Now have a good understanding of every component in this architecture, use it to solve an ML problem. Dataset we use is Zachary's Karate Club. It simply represents relationships within a karate club studied by {\sc Wayne W. Zachary} in 1970s. It is a kind of social network where every node is a member, \& members who interact outside club are connected.
+
+        -- {\sf Triển khai DeepWalk.} Bây giờ, hãy hiểu rõ từng thành phần trong kiến trúc này, hãy sử dụng nó để giải quyết một bài toán ML. Tập dữ liệu chúng tôi sử dụng là Câu lạc bộ Karate của Zachary. Nó đơn giản biểu diễn các mối quan hệ trong một câu lạc bộ karate được {\sc Wayne W. Zachary} nghiên cứu vào những năm 1970. Đây là một dạng mạng xã hội, trong đó mỗi nút là một thành viên, \& các thành viên tương tác bên ngoài câu lạc bộ được kết nối.
+
+        In this example, club is divided into 2 groups: could like to assign right group to every member (node classification) just by looking at their connections:
+        \begin{enumerate}
+            \item Import dataset using \verb|nx.karate_club_graph()|:
+            \begin{verbatim}
+G = nx.karate_club_graph()
+            \end{verbatim}
+            \item Need to convert string class labels into numerical values {\tt Mr. Hi = 0, Officer = 1}:
+            \item Plot this graph using our new labels.
+            \item Next step: generate our dataset, random walks. Want to be as exhaustive as possible, which is why we will create 80 random walks of a length of 10 for every node in graph.
+            \item Print a walk to verify that it is correct: 1st walk that was generated.
+            \item Final step consists of implementing Word2Vec. Here use skip-gram model previously seen with H-Softmax. Can play with other parameters to improve quality of embeddings.
+            \item Model is then simply trained on random walks generated:
+            \begin{verbatim}
+model.train(walks, total_examples = model.corpus_count, epochs = 30, report_delay = 1)
+            \end{verbatim}
+            \item Now our model is trained, see its different applications. 1st one allows us to find most similar nodes to a given one (in terms of cosine similarity):
+            \begin{verbatim}
+print('Nodes that are the most similar to node 0:')
+for similarity in model.wv.most_similar(positive = ['0']):
+    print(f'	{similarity}')
+            \end{verbatim}
+            This produces following output for {\tt Nodes} most similar to node 0. Another important application is calculating similarity score between 2 nodes. It can be performed as follows:
+            \begin{verbatim}
+# similarity between 2 nodes
+print(f"Similarity between node 0 & 4: {model.wv.similarity('0', '4')}")
+            \end{verbatim}
+        \end{enumerate}
+        Can plot resulting embeddings using {\it t-distributed stochastic neighbor embedding} (t-SNE) to visualize these high-dimensional vectors in 2D:
+        \begin{enumerate}
+            \item Import TSNE class from {\tt sklearn}:
+            \begin{verbatim}
+from sklearn.manifold import TSNE
+            \end{verbatim}
+        \end{enumerate}
     \end{itemize}
     PART 2: FUNDAMENTALS.
     \item {\sf4. Improving Embeddings with Biased Random Walks in Node2Vec.}

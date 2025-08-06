@@ -62,3 +62,37 @@ for similarity in model.wv.most_similar(positive = ['0']):
 
 # similarity between 2 nodes
 print(f"Similarity between node 0 & 4: {model.wv.similarity('0', '4')}")
+
+# plot resulting embeddings using t-distributed stochastic neighbor embedding (t-SNE) to visualize these high-dimensional vectors in 2D
+from sklearn.manifold import TSNE
+
+nodes_wv = np.array([model.wv.get_vector(str(i)) for i in range(len(model.wv))]) # create array to store word embeddings
+labels = np.array(labels) # create array to store labels
+
+# train t-SNE model with 2 dimensions on embeddings
+tsne = TSNE(n_components = 2, learning_rate = 'auto', init = 'pca', random_state = 0).fit_transform(nodes_wv)
+
+# plot 2D vectors produced by trained t-SNE model with corresponding labels
+plt.figure(figsize = (6, 6), dpi = 300)
+plt.scatter(tsne[:, 0], tsne[:, 1], s = 100, c = labels, cmap = "coolwarm")
+plt. show()
+
+# implement a classifier & train it on our node embeddings
+## import a Random Forest model from sklearn: a popular choice when it comes to classification, accuracy score: metric used to evaluate this model
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+# split embeddings into 2 groups: trainining & test data by simply creating masks
+train_mask = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22,
+24, 26, 28]
+test_mask = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23,
+25, 27, 29, 30, 31, 32, 33]
+
+# train Random Forest classifer on training data with appropriate labels
+clf = RandomForestClassifier(random_state = 0)
+clf.fit(nodes_wv[train_mask], labels[train_mask])
+
+# evaluate trained model on test data based on its accuracy score
+y_pred = clf.predict(nodes_wv[test_mask])
+res = accuracy_score(y_pred, labels[test_mask])
+print(res)

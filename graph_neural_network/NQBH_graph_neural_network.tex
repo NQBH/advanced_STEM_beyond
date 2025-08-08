@@ -1862,7 +1862,6 @@ from sklearn.metrics import accuracy_score
         \begin{enumerate}
             \item Nhập 1 mô hình Rừng Ngẫu nhiên từ {\tt sklearn}, đây là 1 lựa chọn phổ biến khi phân loại. Điểm chính xác là thước đo chúng ta sẽ sử dụng để đánh giá mô hình này:
             \begin{verbatim}
-
                 from sklearn.ensemble import RandomForestClassifier
                 from sklearn.metrics import accuracy_score
             \end{verbatim}
@@ -2019,15 +2018,106 @@ from sklearn.metrics import accuracy_score
         \end{itemize}
         \item {\sf Implementing Node2Vec.} Now have function to generate biased random walks, implementation of Node2Vec is very similar to implementing DeepWalk. It is so similar that we can reuse same code \& create sequences with $p = q = 1$ to implement DeepWalk as a special case of Node2Vec. Reuse Zachary's Karate Club for this task. As in prev chap, goal: correctly classify each member of club as part of 1 of 2 groups (``Mr. Hi'' \& ``Officer''). Use node embeddings provided by Node2Vec as input to a ML classifier (Random Forest in this case). See how to implement it step by step:
         \begin{enumerate}
-            \item 1st, want to install {\tt gensim} library to use Word2Vec. This time, use version 3.8.0 for compatibility reasons: \verb|!pip install -qI gensim==3.8.0|
+            \item 1st, want to install {\tt gensim} library to use Word2Vec. This time, use version 3.8.0 for compatibility reasons:
+            \begin{verbatim}
+!pip install -qI gensim==3.8.0
+            \end{verbatim}
             \item Import required libraries.
             \item Load dataset (Zachary's Karate Club).
             \item Transform nodes' labels into numerical values: 0 \& 1.
-            \item Generate a list of random walks as seen previously using \verb|random_walk()| function 80 times for each node in graph. Parameters $p,q$ as specified here (2 \& 1, resp)
+            \item Generate a list of random walks as seen previously using \verb|random_walk()| function 80 times for each node in graph. Parameters $p,q$ as specified here (2 \& 1, resp).
+            \item Create an instance of Word2Vec (a skip-gram model) with a hierarchical {\tt softmax} function.
+            \item Skip-gram model is trained on sequences generated for 30 epochs.
+            \item Create masks to train \& test classifier.
+            \item Random Forest classifier is trained on training data.
+            \item Evaluate it in terms of accuracy for test data.
         \end{enumerate}
-        \item {\sf Building a move RecSys.}
+        -- {\sf Triển khai Node2Vec.} Giờ đây, chúng ta đã có chức năng tạo các bước ngẫu nhiên có thiên vị, việc triển khai Node2Vec rất giống với việc triển khai DeepWalk. Nó giống nhau đến mức chúng ta có thể sử dụng lại cùng một mã \& tạo các chuỗi với $p = q = 1$ để triển khai DeepWalk như một trường hợp đặc biệt của Node2Vec. Hãy sử dụng lại Câu lạc bộ Karate của Zachary cho nhiệm vụ này. Như trong chương trước, mục tiêu: phân loại chính xác từng thành viên của câu lạc bộ thành một trong 2 nhóm (``Mr. Hi'' \& ``Sĩ quan''). Sử dụng các nhúng nút do Node2Vec cung cấp làm đầu vào cho bộ phân loại ML (trong trường hợp này là Random Forest). Xem cách triển khai từng bước:
+        \begin{enumerate}
+            \item Trước tiên, muốn cài đặt thư viện {\tt gensim} để sử dụng Word2Vec. Lần này, hãy sử dụng phiên bản 3.8.0 vì lý do tương thích:
+            \begin{verbatim}
+!pip install -qI gensim==3.8.0
+            \end{verbatim}
+            \item Nhập các thư viện cần thiết.
+            \item Tải tập dữ liệu (Câu lạc bộ Karate Zachary).
+            \item Chuyển đổi nhãn của các nút thành giá trị số: 0 \& 1.
+            \item Tạo danh sách các bước đi ngẫu nhiên như đã thấy trước đó bằng cách sử dụng hàm \verb|random_walk()| 80 lần cho mỗi nút trong đồ thị. Các tham số $p,q$ như được chỉ định ở đây (tương ứng là 2 \& 1).
+            \item Tạo một thể hiện của Word2Vec (mô hình skip-gram) với hàm {\tt softmax} phân cấp.
+            \item Mô hình skip-gram được huấn luyện trên các chuỗi được tạo trong 30 kỷ nguyên.
+            \item Tạo mặt nạ để huấn luyện \& kiểm tra bộ phân loại.
+            \item Bộ phân loại Rừng ngẫu nhiên được huấn luyện trên dữ liệu huấn luyện.
+            \item Đánh giá nó về độ chính xác cho dữ liệu kiểm tra.
+        \end{enumerate}
+        To implement DeepWalk, can repeat exact same process with $p = q = 1$. However, to make a fair comparison, cannot use a single accuracy score. Indeed, there are a lot of stochastic processes involved -- could be unlucky \& get a better result from worst model.
+
+        -- Để triển khai DeepWalk, có thể lặp lại chính xác quy trình đó với $p = q = 1$. Tuy nhiên, để so sánh một cách công bằng, không thể sử dụng một điểm chính xác duy nhất. Thực tế, có rất nhiều quy trình ngẫu nhiên liên quan -- có thể không may mắn \& có được kết quả tốt hơn từ mô hình tệ nhất.
+
+        To limit randomness of our results, can repeat this process 100 times \& take mean value. This result is a lot more stable \& can even include standard deviation (using {\tt np.std()}) to measure variability in accuracy scores.
+
+        -- Để hạn chế tính ngẫu nhiên của kết quả, chúng ta có thể lặp lại quy trình này 100 lần \& lấy giá trị trung bình. Kết quả này ổn định hơn nhiều \& thậm chí có thể bao gồm độ lệch chuẩn (sử dụng {\tt np.std()}) để đo lường độ biến thiên của điểm chính xác.
+
+        But just before we do that, play a game. In prev chap, talked about Zachary's Karate Club as a homophilic network. This property is emphasized by DFS, which is encouraged by increasing parameter $p$. If this statement \& connection between DFS \& homophily are true, should get better results with higher values of $p$.
+
+        -- Nhưng trước khi làm điều đó, hãy chơi một trò chơi. Trong chương trước, chúng ta đã thảo luận về Câu lạc bộ Karate của Zachary như một mạng lưới đồng dạng. Tính chất này được nhấn mạnh bởi DFS, và được hỗ trợ bằng cách tăng tham số $p$. Nếu phát biểu này \& kết nối giữa DFS \& đồng dạng là đúng, sẽ cho kết quả tốt hơn với các giá trị $p$ cao hơn.
+
+        Repeated same experiment for values of $p,q\in[1,7]$. In a real ML project, would use validation data to perform this parameter search. In this example, use test data because this study is already our final application. {\sf Fig. 4.5: Average accuracy score \& standard deviation for different values of $p,q$.} There are several noticeable results:
+        \begin{itemize}
+            \item DeepWalk $p = q = 1$4 performs worse than any other combination of $p,q$ that is covered here. This is true for this dataset \& show how useful biased random walks can be. However, it is not always case: non-biased random walks can also perform better on other datasets.
+            \item High values of $p$ lead to better performance, which validates our hypothesis. Knowing that this is a social network strongly suggests that biasing our random walks toward homophily is a good strategy. This is something to keep in mind when dealing with this kind of graph.
+
+            Feel free to play with parameters \& try to find other interesting results. Could explore results with very high values of $p > 7$, or on contrary, values of $p,q$ between 0, 1.
+        \end{itemize}
+        Zachary's Karate Club is a basic dataset, but see in next sect how can use this technology to build much more interesting applications.
+
+        -- Lặp lại cùng một thí nghiệm với các giá trị $p,q\in[1,7]$. Trong một dự án ML thực tế, sẽ sử dụng dữ liệu xác thực để thực hiện tìm kiếm tham số này. Trong ví dụ này, hãy sử dụng dữ liệu thử nghiệm vì nghiên cứu này đã là ứng dụng cuối cùng của chúng tôi. {\sf Hình 4.5: Điểm chính xác trung bình \& độ lệch chuẩn cho các giá trị khác nhau của $p,q$.} Có một số kết quả đáng chú ý:
+        \begin{itemize}
+            \item DeepWalk $p = q = 1$4 hoạt động kém hơn bất kỳ tổ hợp $p,q$ nào khác được đề cập ở đây. Điều này đúng với tập dữ liệu này \& cho thấy các bước đi ngẫu nhiên có thiên vị hữu ích như thế nào. Tuy nhiên, không phải lúc nào cũng vậy: các bước đi ngẫu nhiên không thiên vị cũng có thể hoạt động tốt hơn trên các tập dữ liệu khác.
+            \item Các giá trị $p$ cao dẫn đến hiệu suất tốt hơn, điều này xác nhận giả thuyết của chúng tôi. Việc biết rằng đây là một mạng xã hội cho thấy rõ ràng rằng việc định hướng các bước đi ngẫu nhiên của chúng tôi theo hướng đồng dạng là một chiến lược tốt. Đây là điều cần lưu ý khi xử lý loại đồ thị này.
+
+            Hãy thoải mái thử nghiệm với các tham số \& cố gắng tìm ra những kết quả thú vị khác. Bạn có thể khám phá các kết quả với giá trị rất cao $p > 7$, hoặc ngược lại, các giá trị $p,q$ nằm trong khoảng từ 0 đến 1.
+        \end{itemize}
+        Câu lạc bộ Karate của Zachary là một tập dữ liệu cơ bản, nhưng hãy xem trong phần tiếp theo cách sử dụng công nghệ này để xây dựng các ứng dụng thú vị hơn nhiều.
+        \item {\sf Building a move RecSys.} 1 of most popular applications of GNNs is RecSys. If think about foundation of Word2Vec (\&, thus, DeepWalk \& Node2Vec), goal: produce vectors with ability to measure their similarity. Encode movies instead of words, \& can suddenly ask for movies that are most similar to a given input file. It sounds a lot like a RecSys.
+
+        -- {\sf Xây dựng RecSys di chuyển.} Một trong những ứng dụng phổ biến nhất của GNN là RecSys. Nếu nghĩ về nền tảng của Word2Vec (\&, tức là DeepWalk \& Node2Vec), mục tiêu: tạo ra các vectơ có khả năng đo lường độ tương đồng của chúng. Mã hóa phim thay vì từ ngữ, \& có thể đột nhiên yêu cầu các phim giống nhất với một tệp đầu vào nhất định. Nghe có vẻ rất giống RecSys.
+
+        But how to encode movies? Want to create (biased) random walks of movies, but this requires a graph dataset where similar movies are connected to each other. This is not easy to find.
+
+        -- Nhưng làm thế nào để mã hóa phim? Bạn muốn tạo các chuỗi phim ngẫu nhiên (có thiên vị), nhưng điều này đòi hỏi một tập dữ liệu đồ thị trong đó các phim tương tự được kết nối với nhau. Điều này không dễ tìm.
+
+        Another approach is to look at user ratings. There are different techniques to build a graph based on ratings: bipartite graphs, edges based on pointwise mutual information, \& so on. In this sect, implement a simple \& intuitive approach: movies that are likely by same users are connected. Then use this graph to learn movie embeddings using Node2Vec:
+
+        pp. 60--64+++
+        \item {\sf Summary.} In this chap, learned about Node2Vec, a 2nd architecture based on popular Word2Vec. Implemented functions to generate biased random walks \& explained connection between their parameters \& 2 network properties: homophily \& structural equivalence. Showed their usefulness by comparing Node2Vec's results to DeepWalk's for Zachary's Karate Club. Finally, build our 1st RecSys using a custom graph dataset \& another implementation of Node2Vec. It gave us correct recommendations that we will improve even more in later chaps.
+
+        -- Trong chương này, chúng ta đã tìm hiểu về Node2Vec, một kiến trúc thứ 2 dựa trên Word2Vec phổ biến. Chúng tôi đã triển khai các hàm để tạo các bước ngẫu nhiên có thiên vị \& giải thích mối liên hệ giữa các tham số của chúng \& 2 thuộc tính mạng: đồng dạng \& tương đương cấu trúc. Chúng tôi đã chứng minh tính hữu ích của chúng bằng cách so sánh kết quả của Node2Vec với kết quả của DeepWalk cho Câu lạc bộ Karate của Zachary. Cuối cùng, chúng tôi đã xây dựng RecSys đầu tiên của mình bằng cách sử dụng một bộ dữ liệu đồ thị tùy chỉnh \& một triển khai khác của Node2Vec. Nó đã đưa ra cho chúng tôi những khuyến nghị chính xác mà chúng tôi sẽ cải thiện hơn nữa trong các chương sau.
+
+        In Chap. 5: Including Node Features with Vanilla Neural Networks, talk about 1 overlooked issue concerning DeepWalk \& Node2Vec: lack of proper node features. Try to address this problem using traditional neural networks, which cannot understand network topology. This dilemma is important to understand before we finally introduce answer: graph neural networks.
+
+        -- Trong Chương 5: Bao gồm các đặc điểm nút với mạng nơ-ron Vanilla, chúng ta sẽ thảo luận về một vấn đề thường bị bỏ qua liên quan đến DeepWalk \& Node2Vec: thiếu các đặc điểm nút phù hợp. Hãy thử giải quyết vấn đề này bằng cách sử dụng các mạng nơ-ron truyền thống, vốn không thể hiểu được cấu trúc mạng. Vấn đề nan giải này rất quan trọng cần được hiểu rõ trước khi chúng ta giới thiệu câu trả lời cuối cùng: mạng nơ-ron đồ thị.
     \end{itemize}
-    \item {\sf5. Including Node Features with Vailla Neural Networks.}
+    \item {\sf5. Including Node Features with Vailla Neural Networks.} So far, only type of information we have considered is graph topology. However, graph datasets tend to be richer than a mere set of connections: nodes \& edges can also have features to represent scores, colors, words, \& so on. Including this additional information in our input data is essential to produce best embeddings possible. In fact, this is something natural in ML: node \& edge featues have same structure as a tabular (non-graph) dataset. I.e., traditional techniques can be applied to this data, e.g. neural networks.
+
+    -- Cho đến nay, loại thông tin duy nhất chúng ta xem xét là tôpô đồ thị. Tuy nhiên, tập dữ liệu đồ thị thường phong phú hơn một tập hợp các kết nối đơn thuần: các nút \& cạnh cũng có thể có các đặc trưng để biểu diễn điểm số, màu sắc, từ ngữ, v.v. Việc đưa thông tin bổ sung này vào dữ liệu đầu vào là điều cần thiết để tạo ra các phép nhúng tốt nhất có thể. Trên thực tế, đây là điều tự nhiên trong ML: các đặc trưng nút \& cạnh có cùng cấu trúc với tập dữ liệu dạng bảng (không phải đồ thị). Tức là, các kỹ thuật truyền thống có thể được áp dụng cho dữ liệu này, e.g., như mạng nơ-ron.
+
+    In this chap, introduce 2 new graph datasets: {\tt Cora \& Facebook Page-Page}. See how Vanilla Neural Networks perform perform on node features only by considering them as tabular datasets. Then experiment to include topological information in our neural networks. This will give us 1st GNN architecture: a simple model that considers both node features \& edges. Finally, compare performance of 2 architectures \& obtain 1 of most important results of this book.
+
+    -- Trong chương này, chúng ta sẽ giới thiệu 2 bộ dữ liệu đồ thị mới: {\tt Cora \& Facebook Page-Page}. Xem cách Mạng Nơ-ron Vanilla hoạt động trên các đặc điểm nút chỉ bằng cách xem xét chúng dưới dạng tập dữ liệu dạng bảng. Sau đó, hãy thử nghiệm việc đưa thông tin tôpô vào mạng nơ-ron của chúng ta. Điều này sẽ cho chúng ta kiến trúc GNN đầu tiên: một mô hình đơn giản xem xét cả đặc điểm nút \& cạnh. Cuối cùng, hãy so sánh hiệu suất của 2 kiến trúc \& thu được 1 trong những kết quả quan trọng nhất của cuốn sách này.
+
+    By end of this chap, master implementation of vanilla neural networks \& vanilla GNNs in PyTorch. Able to embed topological features into node representations, which is basis of every GNN architecture. This will allow you to greatly improve performance of your models by transforming tabular datasets into graphs problems.
+
+    -- Đến cuối chương này, bạn sẽ thành thạo việc triển khai mạng nơ-ron nhân tạo thuần túy \& mạng nơ-ron nhân tạo thuần túy (GNN) trong PyTorch. Bạn có thể nhúng các đặc điểm tôpô vào biểu diễn nút, vốn là nền tảng của mọi kiến trúc GNN. Điều này sẽ cho phép bạn cải thiện đáng kể hiệu suất mô hình bằng cách chuyển đổi các tập dữ liệu dạng bảng thành các bài toán đồ thị.
+    \begin{itemize}
+        \item {\sf Introducing graph datasets.} Graph dataset used in this chap are richer than Zachary's Karate Club: they have more nodes, more edges, \& include node features. In this sec, introduce them to give us a good understanding of these graphs \& how to process them with PyTorch Geometric. Here are 2 datasets we will use: {\tt Cora} dataset, {\tt Facebook Page-page} dataset. Start with smaller one: popular {\tt Cora} dataset.
+
+        -- {\sf Giới thiệu về bộ dữ liệu đồ thị.} Bộ dữ liệu đồ thị được sử dụng trong chương này phong phú hơn Zachary's Karate Club: chúng có nhiều nút hơn, nhiều cạnh hơn, \& bao gồm các đặc trưng nút. Trong phần này, chúng tôi sẽ giới thiệu chúng để giúp chúng ta hiểu rõ hơn về các đồ thị này \& cách xử lý chúng bằng PyTorch Geometric. Dưới đây là 2 bộ dữ liệu chúng ta sẽ sử dụng: bộ dữ liệu {\tt Cora}, bộ dữ liệu {\tt Facebook Page-page}. Bắt đầu với bộ dữ liệu nhỏ hơn: bộ dữ liệu {\tt Cora} phổ biến.
+        \begin{itemize}
+            \item {\sf Cora dataset.} p. 68+++
+        \end{itemize}
+
+        \item {\sf Classifying nodes with vanilla neural networks.}
+        \item {\sf Classifying nodes with vanilla graph neural networks.}
+    \end{itemize}
     \item {\sf6. Introducing Graph Convolutional Networks.}
     \item {\sf7. Graph Attention Networks.}
 
@@ -2045,6 +2135,138 @@ from sklearn.metrics import accuracy_score
     \item {\sf16. Detecting Anomalies Using Heterogeneous GNNs.}
     \item {\sf17. Building a Recommender System Using LightGCN.}
     \item {\sf18. Unlocking the Potential of Graph Neural Networks for Real-World Applications.}
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsection{{\sc Lingfei Wu, Peng Cui, Jian Pei, Liang Zhao}. Graph Neural Networks: Foundations, Frontiers, \& Applications. 2022}
+
+\begin{itemize}
+    \item {\sf Foreword.} ``1st comprehensive book covering full spectrum of a young, fast-growing research field, GNNs, written by authoritative authors!'' -- Jiawei Han (Michael Aiken Chair Professor at University of Illinois at Urbana-Champaign, ACM Fellow and IEEE Fellow)
+
+    -- ``Cuốn sách toàn diện đầu tiên bao quát toàn bộ lĩnh vực nghiên cứu trẻ, phát triển nhanh chóng, GNN, được viết bởi các tác giả có thẩm quyền!'' -- Jiawei Han (Giáo sư Michael Aiken tại Đại học Illinois ở Urbana-Champaign, Nghiên cứu viên ACM và Nghiên cứu viên IEEE)
+
+    ``This book presents a comprehensive \& timely survey on graph representation learning. Edited \& contributed by best group of experts in this area, this book is a must-read for students, researchers \& practitioners who want to learn anything about GNNs.'' -- Heung-Yeung ``Harry'' Shum (Former Executive Vice President for Technology \& Research at Microsoft Research, ACM Fellow, IEEE Fellow, FREng)
+
+    -- ``Cuốn sách này trình bày một khảo sát toàn diện \& kịp thời về học biểu diễn đồ thị. Được biên tập \& đóng góp bởi nhóm chuyên gia hàng đầu trong lĩnh vực này, cuốn sách này là tài liệu không thể bỏ qua cho sinh viên, nhà nghiên cứu \& những người thực hành muốn tìm hiểu bất cứ điều gì về GNN.'' -- Heung-Yeung ``Harry'' Shum (Cựu Phó Chủ tịch Điều hành Công nghệ \& Nghiên cứu tại Microsoft Research, Học giả ACM, Học giả IEEE, FREng)
+
+    ``As new frontier of DL, GNNs offer great potential to combine probabilistic learning \& symbolic reasoning, \& bridge knowledge-driven \& data-driven paradigms, nurturing development of 3rd-generation AI. This book provides a comprehensive \& insightful introduction to GNN, ranging from foundations to frontiers, from algorithms to applications. It is a valuable resource for any scientist, engineer \& student who wants to get into  this exciting field.'' -- Bo Zhang (Member of Chinese Academy of Science, Professor at Tsinghua University)
+
+    -- ``Là một lĩnh vực mới của DL, mạng lưới thần kinh nhân tạo (GNN) mang lại tiềm năng to lớn trong việc kết hợp học xác suất \& suy luận biểu tượng, \& kết nối các mô hình dựa trên kiến thức \& dựa trên dữ liệu, nuôi dưỡng sự phát triển của AI thế hệ thứ 3. Cuốn sách này cung cấp một giới thiệu toàn diện \& sâu sắc về GNN, từ nền tảng đến lĩnh vực, từ thuật toán đến ứng dụng. Đây là một nguồn tài nguyên quý giá cho bất kỳ nhà khoa học, kỹ sư \& sinh viên nào muốn bước vào lĩnh vực thú vị này.'' -- Bo Zhang (Viện Hàn lâm Khoa học Trung Quốc, Giáo sư tại Đại học Thanh Hoa)
+
+    ``GNNs are 1 of hottest areas of ML \& this book is a wonderful in-depth resource covering a broad range of topics \& applications of graph representation learning.'' -- Jure Leskovec (Associate Professor at Stanford University, and investigator at Chan Zuckerberg Biohub).
+
+    -- ``GNN là 1 trong những lĩnh vực hấp dẫn nhất của ML \& cuốn sách này là nguồn tài nguyên chuyên sâu tuyệt vời bao gồm nhiều chủ đề \& ứng dụng của việc học biểu diễn đồ thị.'' -- Jure Leskovec (Phó giáo sư tại Đại học Stanford và nhà nghiên cứu tại Chan Zuckerberg Biohub).
+
+    ``GNNs are an emerging ML model that is already taking scientific \& industrial world by storm. Time is perfect to get in on action -- \& this book is a great resource for newcomers \& reasoned practitioners alike! Its chaps are very carefully written by many of thought leaders at forefront of area.'' -- Petar Veličković (Senior Research Scientist, DeepMind)
+
+    -- ``GNN là một mô hình ML mới nổi đang gây sốt trong giới khoa học \& công nghiệp. Đã đến lúc bắt tay vào hành động -- \& cuốn sách này là một nguồn tài nguyên tuyệt vời cho cả người mới bắt đầu \& những người thực hành có lý trí! Các bài viết trong đó được viết rất cẩn thận bởi nhiều nhà tư tưởng hàng đầu trong lĩnh vực này.'' -- Petar Veličković (Nhà khoa học nghiên cứu cao cấp, DeepMind)
+    \item {\sf Preface.} Field of GNNs has seen rapid \& incredible strides over recent years. GNNs, also known as DL on graphs, graph representation learning, or geometric DL, have become 1 of fastest-growing research topics in ML, especially DL. This wave of research at intersection of graph theory \& DL has also influenced other fields of science, including recommendation systems, computer vision, NLP, inductive logic programming, program synthesis, software mining, automated planning, cybersecurity, \& intelligent transportation.
+
+    -- Lĩnh vực GNN đã chứng kiến những bước tiến nhanh chóng \& đáng kinh ngạc trong những năm gần đây. GNN, còn được gọi là DL trên đồ thị, học biểu diễn đồ thị, hoặc DL hình học, đã trở thành một trong những chủ đề nghiên cứu phát triển nhanh nhất trong ML, đặc biệt là DL. Làn sóng nghiên cứu giao thoa giữa lý thuyết đồ thị \& DL này cũng đã ảnh hưởng đến các lĩnh vực khoa học khác, bao gồm hệ thống đề xuất, thị giác máy tính, NLP, lập trình logic quy nạp, tổng hợp chương trình, khai thác phần mềm, lập kế hoạch tự động, an ninh mạng, \& giao thông thông minh.
+
+    Although GNNs have achieved remarkable attention, it still faces many challenges when applying them into other domains, from theoretical understanding of methods to scalability \& interprebility in a real system, \& from soundness of methodology to empirical performance in an application. However, as field rapidly grows, it has been extremely challenging to gain a global perspective of developments of GNNs. Therefore, feel urgency to bridge above gap \& have a comprehensive book on this fast-growing yet challenging topic, which an benefit a broad audience including advanced undergraduate \& graduate students, postdoctoral researchers, lecturers, \& industrial practitioners.
+
+    -- Mặc dù GNN đã thu hút được sự chú ý đáng kể, nhưng nó vẫn gặp nhiều thách thức khi áp dụng vào các lĩnh vực khác, từ hiểu biết lý thuyết về phương pháp đến khả năng mở rộng \& khả năng diễn giải trong hệ thống thực, \& từ tính vững chắc của phương pháp luận đến hiệu suất thực nghiệm trong ứng dụng. Tuy nhiên, khi lĩnh vực này phát triển nhanh chóng, việc có được cái nhìn toàn cầu về sự phát triển của GNN là vô cùng khó khăn. Do đó, chúng ta cần khẩn trương thu hẹp khoảng cách \& có một cuốn sách toàn diện về chủ đề đang phát triển nhanh chóng nhưng đầy thách thức này, có thể mang lại lợi ích cho nhiều đối tượng, bao gồm sinh viên đại học cao cấp \& sau đại học, nghiên cứu sinh sau tiến sĩ, giảng viên, \& những người hành nghề trong ngành.
+
+    This book is intended to cover a broad range of topics in GNNs, from foundations to frontiers, \& from methodologies to applications. Book is dedicated to introducing fundamental concepts \& algorithms of GNNs, new research frontiers of GNNs, \& broad \& emerging applications with GNNs.
+
+    -- Cuốn sách này được thiết kế để bao quát một loạt các chủ đề về GNN, từ nền tảng đến các lĩnh vực tiên tiến, \& từ phương pháp luận đến ứng dụng. Sách dành riêng để giới thiệu các khái niệm cơ bản \& thuật toán của GNN, các lĩnh vực nghiên cứu mới của GNN, \& các ứng dụng rộng \& mới nổi của GNN.
+    \begin{itemize}
+        \item {\sf Book Website \& Resources.} Website \url{https://graph-neural-networks.github.io} provides online preprints \& lecture slides of all chaps, also provides pointers to useful material \& resources publicly available \& relevant to GNNs.
+        \item {\sf To Instructors.} Book can be used for 1-semester graduate course for graduate students. Though mainly written for students with a background in CS, students with a basic understanding of probability, statistics, graph theory, linear algebra, \& ML techniques e.g. DL will find it easily accessible. Some chaps can be skipped or assigned as homework assignments for reviewing purposes if students have knowledge of a chap. Instructors can choose to combine Chaps. 1--3 together as background introduction course at beginning.
+
+        -- Sách có thể được sử dụng cho các khóa học sau đại học kéo dài một học kỳ dành cho sinh viên cao học. Mặc dù chủ yếu được viết cho sinh viên có nền tảng về Khoa học Máy tính, nhưng sinh viên có kiến thức cơ bản về xác suất, thống kê, lý thuyết đồ thị, đại số tuyến tính, \& các kỹ thuật Học máy (ML) như DL sẽ dễ dàng tiếp cận. Một số chương có thể được bỏ qua hoặc giao làm bài tập về nhà để ôn tập nếu sinh viên đã biết về một chương nào đó. Giảng viên có thể chọn kết hợp các Chương 1-3 lại với nhau như một khóa học nhập môn nền tảng lúc bắt đầu.
+
+        When course focuses more on foundation \& theories of GNNs, instructor can choose to focus more on Chaps. 4--8 while using Chaps. 19--27 to showcase applications, motivations, \& limitations. When course focuses more on research frontiers, Chaps. 9--18 can be pivot to organize course. E.g., an instructor can make it an advanced graduate course where students are asked to search \& present most recent research papers in each different research frontier. They can also be asked to established their course projects based on applications described in Chaps. 19--27 as well as materials provided on website.
+
+        -- Khi khóa học tập trung nhiều hơn vào nền tảng \& lý thuyết của GNN, giảng viên có thể chọn tập trung nhiều hơn vào Chương 4-8 trong khi sử dụng Chương 19-27 để trình bày các ứng dụng, động lực, \& hạn chế. Khi khóa học tập trung nhiều hơn vào các lĩnh vực nghiên cứu, Chương 9-18 có thể là bước đệm để tổ chức khóa học. Ví dụ: giảng viên có thể biến nó thành một khóa học sau đại học nâng cao, trong đó sinh viên được yêu cầu tìm kiếm \& trình bày các bài báo nghiên cứu gần đây nhất trong mỗi lĩnh vực nghiên cứu khác nhau. Họ cũng có thể được yêu cầu thiết lập các dự án khóa học dựa trên các ứng dụng được mô tả trong Chương 19-27 cũng như các tài liệu được cung cấp trên trang web.
+        \item {\sf To Readers.} This book was designed to cover a wide range of topics in field of GNN field, including background, theoretical foundations, methodologies, researcher frontier, \& applications. Therefore, it can be treated as a comprehensive handbook for a wide variety of readers e.g. students, researchers, \& professionals. Should have some knowledge of concepts \& terminology associated with statistics, ML, \& graph theory. Some backgrounds of basics have been provided \& referenced in 1st 8 chaps. Should better also have knowledge of DL \& Some programming experience for easily accessing most of chaps of this book. In particular, should be able to read pseudocode \& understand graph structures.
+
+        -- Cuốn sách này được thiết kế để bao quát một loạt các chủ đề trong lĩnh vực Mạng Lưới Mạng (GNN), bao gồm bối cảnh, nền tảng lý thuyết, phương pháp luận, ranh giới nghiên cứu, \& ứng dụng. Do đó, nó có thể được coi là một cẩm nang toàn diện cho nhiều đối tượng độc giả, chẳng hạn như sinh viên, nhà nghiên cứu, \& chuyên gia. Cần có một số kiến thức về các khái niệm \& thuật ngữ liên quan đến thống kê, Học máy, \& lý thuyết đồ thị. Một số kiến thức cơ bản đã được cung cấp \& tham chiếu trong 8 chương đầu tiên. Tốt hơn hết là nên có kiến thức về Học máy \& một số kinh nghiệm lập trình để dễ dàng tiếp cận hầu hết các chương của cuốn sách này. Đặc biệt, cần có khả năng đọc mã giả \& hiểu các cấu trúc đồ thị.
+
+        Book is well modularized \& each chap can be learned in a standalone manner based on individual interests \& needs. For those readers who want to have a solid understanding of various techniques \& theories of GNNs, can start from Chaps. 4--9. For those who further want to perform in-depth research \& advanced related fields, read those chaps of interest among Chaps. 9--18, which provide comprehensive knowledge in most recent research issues, open problems, \& research frontiers. For those who want to apply GNNs to benefit specific domains, or aim at finding interesting applications to validate specific GNNs techniques, refer to Chaps. 19--27.
+
+        --Sách được phân chia thành các module rõ ràng \& mỗi chương có thể được học độc lập dựa trên sở thích \& nhu cầu cá nhân. Đối với những độc giả muốn có hiểu biết vững chắc về các kỹ thuật \& lý thuyết khác nhau về GNN, có thể bắt đầu từ Chương 4-9. Đối với những độc giả muốn nghiên cứu sâu hơn \& các lĩnh vực liên quan nâng cao, hãy đọc các chương quan tâm trong Chương 9-18, cung cấp kiến thức toàn diện về các vấn đề nghiên cứu gần đây nhất, các vấn đề còn bỏ ngỏ, \& các lĩnh vực nghiên cứu tiên tiến. Đối với những độc giả muốn áp dụng GNN để mang lại lợi ích cho các lĩnh vực cụ thể, hoặc muốn tìm kiếm các ứng dụng thú vị để xác thực các kỹ thuật GNN cụ thể, hãy tham khảo Chương 19-27.
+    \end{itemize}
+    \item {\sf Terminologies.} This chap describes a list of definitions of terminologies related to GNNs used throughout this book.
+    \begin{itemize}
+        \item {\sf1. Basic concepts of Graphs.}
+        \begin{enumerate}
+            \item {\bf Graph.} A graph is composed of a node set \& an edge set, where nodes represent entities \& edges represent relationship between entities. Nodes \& edges form topology structure of graph. Besides graph structure, nodes, edges, \&{\tt/}or whole graph can be associated with rich information represented as node{\tt/}edge{\tt/}graph features (also known as attributes or contents).
+
+            -- 1 đồ thị bao gồm một tập nút \& một tập cạnh, trong đó các nút biểu diễn các thực thể \& các cạnh biểu diễn mối quan hệ giữa các thực thể. Các nút \& các cạnh tạo nên cấu trúc tôpô của đồ thị. Bên cạnh cấu trúc đồ thị, các nút, cạnh, \&{\tt/}hoặc toàn bộ đồ thị có thể được liên kết với thông tin phong phú được biểu diễn dưới dạng các đặc trưng nút{\tt/}cạnh{\tt/}đồ thị (còn được gọi là thuộc tính hoặc nội dung).
+            \item {\bf Subgraph.} A subgraph is a graph whose set of nodes \& set of edges are all subsets of original graph.
+
+            -- Đồ thị con là đồ thị có tập hợp các nút \& tập hợp các cạnh đều là tập con của đồ thị gốc.
+            \item {\bf Centrality.} A centrality is a measurement of importance of nodes in graph. Basic assumption of centrality: a node is thought to be important if many other important nodes also connect to it. Common centrality measurements include degree centrality, eigenvector centrality, betweenness centrality, \& closeness centrality.
+
+            -- Độ trung tâm là phép đo tầm quan trọng của các nút trong đồ thị. Giả định cơ bản về độ trung tâm: một nút được coi là quan trọng nếu nhiều nút quan trọng khác cũng kết nối với nó. Các phép đo độ trung tâm phổ biến bao gồm độ trung tâm bậc, độ trung tâm vectơ riêng, độ trung tâm giữa, độ trung tâm \& độ gần.
+            \item {\bf Neighborhood.} Neighborhood of a node generally refers to other nodes that are close to it. E.g., $k$-order neighborhood of a node, also called $k$-step neighborhood, denotes a set of other nodes in which shortest path distance between these nodes \& central node is no larger than $k$.
+
+            -- Lân cận của một nút thường đề cập đến các nút khác gần nó. Ví dụ, lân cận bậc $k$ của một nút, còn được gọi là lân cận bậc $k$, biểu thị một tập hợp các nút khác có khoảng cách đường dẫn ngắn nhất giữa các nút này \& nút trung tâm không lớn hơn $k$.
+            \item {\bf Community structure.} A community refers to a group of nodes that are densely connected internally \& less densely connected externally.
+
+            -- {\bf Cấu trúc cộng đồng.} Cộng đồng đề cập đến một nhóm các nút được kết nối dày đặc bên trong \& kết nối ít dày đặc hơn bên ngoài.
+            \item {\bf Graph sampling.} Graph sampling is a technique to pick a subset of nodes \&{\tt/}or edges from original graph. Graph sampling can be applied to train ML models on large-scale graphs while preventing severe scalability issues.
+
+            -- Lấy mẫu đồ thị là một kỹ thuật để chọn một tập hợp con các nút \&{\tt/}hoặc cạnh từ đồ thị gốc. Lấy mẫu đồ thị có thể được áp dụng để huấn luyện các mô hình ML trên đồ thị quy mô lớn, đồng thời ngăn ngừa các vấn đề nghiêm trọng về khả năng mở rộng.
+            \item {\bf Heterogeneous Graphs.} Graphs are called heterogeneous if nodes \&{\tt/}or edges of graph are from different types. A typical example of heteronomous graphs is knowledge graphs where edges are composed of different types.
+
+            -- {\bf Đồ thị không đồng nhất.} Đồ thị được gọi là không đồng nhất nếu các nút \&{\tt/}hoặc các cạnh của đồ thị thuộc các loại khác nhau. Một ví dụ điển hình của đồ thị không đồng nhất là đồ thị tri thức, trong đó các cạnh được tạo thành từ các loại khác nhau.
+            \item {\bf Hypergraphs.} Hypergraphs are generalizations of graphs in which an edge can join any number of nodes.
+
+            -- {\bf Siêu đồ thị.} Siêu đồ thị là dạng tổng quát của đồ thị trong đó một cạnh có thể nối với bất kỳ số lượng nút nào.
+            \item {\bf Random Graph.} Random graph generally aims to model probability distributions over graphs that observed graphs are generated from. Most basic \& well-suited random graph model, known as Erdos--Renyi model, assumes: node set is fixed \& each edge is identically \& independently generated.
+
+            -- {\bf Đồ thị ngẫu nhiên.} Đồ thị ngẫu nhiên thường nhằm mục đích mô hình hóa phân phối xác suất trên các đồ thị mà đồ thị quan sát được tạo ra. Mô hình đồ thị ngẫu nhiên cơ bản nhất, được gọi là mô hình Erdos-Renyi, giả định: tập hợp nút là cố định \& mỗi cạnh được tạo ra độc lập \& giống hệt nhau.
+            \item {\bf Dynamic Graph.} Dynamic graph refers to when at least 1 component of graph data changes over time, e.g., adding or deleting nodes, adding or deleting edges, changing edges weights or changing node attributes, etc. If graphs are not dynamic, refer to them as static graphs.
+
+            -- {\bf Đồ thị động.} Đồ thị động đề cập đến trường hợp ít nhất 1 thành phần của dữ liệu đồ thị thay đổi theo thời gian, ví dụ: thêm hoặc xóa các nút, thêm hoặc xóa các cạnh, thay đổi trọng số cạnh hoặc thay đổi các thuộc tính của nút, v.v. Nếu đồ thị không động, gọi chúng là đồ thị tĩnh.
+        \end{enumerate}
+        \item {\sf2. ML on Graphs.}
+        \begin{enumerate}
+            \item {\bf Spectral Graph Theory.} Spectral graph theory analyzes matrices associated with graph e.g. its adjacency matrix or Laplacian matrix using tools of linear algebra e.g. studying eigenvalues \& eigenvectors of matrix.
+
+            -- {\bf Lý thuyết đồ thị phổ.} Lý thuyết đồ thị phổ phân tích các ma trận liên quan đến đồ thị, ví dụ như ma trận kề hoặc ma trận Laplacian bằng các công cụ của đại số tuyến tính, ví dụ như nghiên cứu các giá trị riêng \& vectơ riêng của ma trận.
+            \item {\bf Graph Signal Processing.} Graph Signal Processing (GSP) aims to develop tools for
+        \end{enumerate}
+        \item {\sf3. GNNs.}
+    \end{itemize}
+    PART I. INTRODUCTION.
+    \item {\sf1. Representation Learning.}
+    \item {\sf2. Graph Representation Learning.}
+    \item {\sf3. Graph Neural Networks.}
+
+    PART II. FOUNDATIONS OF GRAPH NEURAL NETWORKS.
+    \item {\sf4. Graph Neural Networks for Node Classification.}
+    \item {\sf5. Expressive Power of GNNs.}
+    \item {\sf6. GNNs: Scalability.}
+    \item {\sf7. Interpretability in GNNs.}
+    \item {\sf8. GNNs: Adversarial Robustness.}
+
+    PART III. FRONTIERS OF GRAPH NEURAL NETWORKS.
+    \item {\sf9. Graph Neural Networks: Graph Classification.}
+    \item {\sf10. Graph Neural Networks: Link Prediction.}
+    \item {\sf11. GNNs: Graph Generation.}
+    \item {\sf12. GNNs: Graph Transformation.}
+    \item {\sf13. GNNs: Graph Matching.}
+    \item {\sf14. GNNs: Graph Structure Learning.}
+    \item {\sf15. Dynamic GNNs.}
+    \item {\sf16. Heterogeneous GNNs.}
+    \item {\sf17. GNNs: AutoML.}
+    \item {\sf18. GNNs: Self-supervised Learning.}
+
+    PART IV. BROAD \& EMERGING APPLICATIONS WITH GRAPH NEURAL NETWORKS.
+    \item {\sf19. GNNs in Modern Recommender Systems.}
+    \item {\sf20. GNNs in Computer Vision.}
+    \item {\sf21. GNNs in Natural Language Processing.}
+    \item {\sf22. GNNs in Program Analysis.}
+    \item {\sf23. GNNs in Software Mining.}
+    \item {\sf24. GNN-based Biomedical Knowledge Graph Mining in Drug Development.}
+    \item {\sf25. GNNs in Predicting Protein Function \& Interactions.}
+    \item {\sf26. GNNs in Anomaly Detection.}
+    \item {\sf27. GNNs in Urban Intelligence.}
 \end{itemize}
 
 %------------------------------------------------------------------------------%

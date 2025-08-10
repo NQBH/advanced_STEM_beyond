@@ -14,13 +14,19 @@ int main() {
 	}
 	int l = 0, r = 1; // left- & right pointers
 	int sum = a[0] + a[1];
-	while (sum != x) {
+	while (sum != x && l <= r) {
 		if (sum < x && r == n - 1) {
-			cout << "Impossible";
+			cout << -1;
 			return 0;
 		}
-		if (sum < x && r < n - 1) sum += a[++r];
-		if (sum > x && l < n - 1) sum -= a[l++];
+		if (sum < x && r < n - 1) {
+			cout << "loop 2";
+			sum += a[++r];
+		}
+		if (sum > x && l < n - 1) {
+			cout << "loop 3";
+			sum -= a[l++] + a[r--]; // mem error
+		}
 	}
 	cout << l << ' ' << r;
 }

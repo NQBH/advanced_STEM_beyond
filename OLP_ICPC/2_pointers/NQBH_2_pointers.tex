@@ -78,17 +78,92 @@
     \item {\sc Darren Yao, Qi Wang, Ryan Chou}. \href{https://usaco.guide/silver/two-pointers?lang=cpp}{USACO Guide{\tt/}2 pointers}. Iterating 2 monotonic pointers across an array to search for a pair of indices satisfying some condition in linear time. -- Lặp lại 2 con trỏ đơn điệu trên 1 mảng để tìm kiếm 1 cặp chỉ số thỏa mãn 1 số điều kiện trong thời gian tuyến tính.
 
     \item \href{https://www.geeksforgeeks.org/dsa/find-subarray-with-given-sum/}{Geeks for Geeks{\tt/}subarray with given sum}.
+
+    \item {\sc Phan Đình Khôi}. \href{https://wiki.vnoi.info/algo/basic/two-pointers}{VNOI{\tt/}kỹ thuật 2 con trỏ}.
 \end{enumerate}
 {\bf General ideas of 2 pointers method.} In the 2 pointer method, 2 pointers are used to iterate through the array values. Both pointers can move to 1 direction only, which ensures that the algorithm works efficiently.
 
--- Trong phương pháp 2 con trỏ, 2 con trỏ được sử dụng để lặp qua các giá trị mảng. Cả hai con trỏ chỉ có thể di chuyển theo 1 hướng, điều này đảm bảo thuật toán hoạt động hiệu quả.
+-- {\bf Ý tưởng tổng quan của phương pháp 2 con trỏ.} Trong phương pháp 2 con trỏ, 2 con trỏ được sử dụng để lặp qua các giá trị mảng. Cả hai con trỏ chỉ có thể di chuyển theo 1 hướng, điều này đảm bảo thuật toán hoạt động hiệu quả.
 
 Cho 1 mảng $a = \{a[i]\}_{i=0}^{n-1}$. Gọi $l,r$ lần lượt là con trỏ trái \& con trỏ phải (left- \& right pointers, respectively).
 
-\begin{problem}[Subarray sum]
+{\bf Analysis of Algorithm Complexity .} The running time of the 2 pointers algorithm depends on the number of steps the right pointer moves. While there is no useful upper bound on how many steps the pointer can move on a {\it single} turn, we know that the pointer moves a {\it total} of $O(n)$ steps during the algorithm, because it only moves to the right. Since both the left \& right pointers move $O(n)$ steps during the algorithm, the algorithm works in $O(n)$ time.
+
+-- {\bf Phân tích Độ phức tạp Thuật toán.} Thời gian chạy của thuật toán 2 con trỏ phụ thuộc vào số bước mà con trỏ phải di chuyển. Mặc dù không có giới hạn trên hữu ích nào về số bước con trỏ có thể di chuyển trong 1 lượt, chúng ta biết rằng con trỏ di chuyển tổng cộng $O(n)$ bước trong suốt thuật toán, vì nó chỉ di chuyển sang phải. Vì cả con trỏ trái và phải đều di chuyển $O(n)$ bước trong suốt thuật toán, thuật toán hoạt động trong thời gian $O(n)$.
+
+\begin{baitoan}[Monotone sequence concatenation -- Ghép dãy đơn điệu]
+    Cho 2 dãy số nguyên đã được sắp xếp không giản $a = \{a_i\}_{i=1}^m,b = \{b_i\}_{i=1}^n$ lần lượt có $n,m\in\mathbb{N}$ phần tử. Ghép chúng thành dãy $c = \{c_i\}_{i=1}^{m+n}$ được bố trí theo thứ tự không giảm.
+    \item {\sf Constraint.} $m,n\in[10^5],a_i,b_j\in\overline{0,10^9}$, $\forall i\in[m],j\in[n]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|monotone_sequence_concatenation.inp| & \verb|monotone_sequence_concatenation.out| \\
+            \hline
+            5 6 & 1 2 3 6 6 7 8 10 12 14 15 \\
+            1 3 6 8 10 & \\
+            2 6 7 12 14 15 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{baitoan}
+
+\begin{proof}[Solution]
+    Vì 3 dãy $a,b,c$ không giảm, i.e., $a_1\le a_2\le\cdots a_m,b_1\le b_2\le\cdots\le b_n,c_1\le c_2\le\cdots\le c_{m+n}$, nên $c_1 = \min\{a_1,b_1\}$. Tại mỗi thời điểm, phần tử tiếp theo của dãy $c$ sẽ là phần tử nhỏ nhất trong các phần tử chưa được đưa vào dãy $c$, nên bằng cách so sánh phần tử nhỏ nhất chưa được chọn ở dãy $a$ \& phần tử nhỏ nhất chưa được chọn ở dãy $b$, phần tử nhỏ hơn sẽ được chọn vào dãy $c$. Ban đầu, lúc dãy $c$ chưa có phần tử nào, i.e., $c = \emptyset$ thì $a_1,b_1$ lần lượt là phần tử nhỏ nhất chưa được chọn của 2 dãy $a,b$. Tại mỗi thời điểm, nếu đưa phần tử $a_i$ vào dãy $c$ thì phần tử nhỏ nhất chưa được chọn của dãy $a$ sẽ là $a_{i+1}$, còn nếu đưa phần tử $b_j$ vào dãy $c$ thì phần tử nhỏ nhất chưa được chọn của dãy $b$ sẽ là $b_{j+1}$.
+
+    C++:
+    \begin{enumerate}
+        \item NQBH's C++: monotone sequence concatenation:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+
+int main() {
+    int m, n;
+    cin >> m >> n;
+    int a[m], b[n], c[m + n];
+    for (int i = 0; i < m; ++i) cin >> a[i];
+    for (int i = 0; i < n; ++i) cin >> b[i];
+    int idx_a = 0, idx_b = 0; // 2 pointers
+    for (int i = 0; i < m + n; ++i) {
+        if (a[idx_a] <= b[idx_b]) {
+            c[i] = a[idx_a];
+            ++idx_a;
+        }
+        else {
+            c[i] = b[idx_b];
+            ++idx_b;
+        }
+    }
+    for (int i = 0; i < m + n; ++i) cout << c[i] << ' ';
+}
+        \end{Verbatim}
+        or shorter:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+
+int main() {
+    int m, n;
+    cin >> m >> n;
+    int a[m], b[n], c[m + n];
+    for (int i = 0; i < m; ++i) cin >> a[i];
+    for (int i = 0; i < n; ++i) cin >> b[i];
+    int idx_a = 0, idx_b = 0; // 2 pointers
+    for (int i = 0; i < m + n; ++i)
+        if (a[idx_a] <= b[idx_b]) c[i] = a[idx_a++];
+        else c[i] = b[idx_b++];
+    for (int i = 0; i < m + n; ++i) cout << c[i] << ' ';
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{problem}[Subarray sum on $\mathbb{N}$ -- Tổng mảng con trên $\mathbb{N}$]
     Given an array $\{a_i\}_{i=1}^n\subset\mathbb{N}^\star$ (1-based indexing) of $n$ positive integers \& a target sum $x\in\mathbb{N}^\star$. Find a subarray whose sum is $x$ or report that there is no such subarray.
 
-    -- Cho một mảng $\{a_i\}_{i=1}^n\subset\mathbb{N}^\star$ (đánh chỉ số dựa trên 1) gồm $n$ số nguyên dương \& một tổng đích $x$. Tìm một mảng con có tổng là $x$ hoặc báo cáo rằng không có mảng con nào như vậy.
+    -- Cho 1 mảng $\{a_i\}_{i=1}^n\subset\mathbb{N}^\star$ (đánh chỉ số dựa trên 1) gồm $n$ số nguyên dương \& 1 tổng đích $x$. Tìm 1 mảng con có tổng là $x$ hoặc báo cáo rằng không có mảng con nào như vậy.
 \end{problem}
 We can reformulate the problem mathematically as follows:
 \begin{equation*}
@@ -98,7 +173,7 @@ We can reformulate the problem mathematically as follows:
 \begin{proof}[Solution]
     This problem can be solved in $O(n)$ time (i.e., linear time) by using the 2 pointers method. The idea is to maintain pointers that point to the 1st \& last value of a subarray. On each turn, the left pointer moves 1 step to the right, \& the right pointer moves to the right as long as the resulting subarray sum is at most $x$. If the sum becomes exactly $x$, a solution has been found.
 
-    -- Bài toán này có thể được giải quyết trong thời gian $O(n)$ (tức là thời gian tuyến tính) bằng cách sử dụng phương pháp 2 con trỏ. Ý tưởng là duy trì các con trỏ trỏ đến giá trị đầu tiên \& cuối cùng của một mảng con. Mỗi lần dịch chuyển, con trỏ trái di chuyển 1 bước sang phải, \& con trỏ phải di chuyển sang phải miễn là tổng mảng con thu được không quá $x$. Nếu tổng bằng đúng $x$, thì đã tìm được nghiệm.
+    -- Bài toán này có thể được giải quyết trong thời gian $O(n)$ (tức là thời gian tuyến tính) bằng cách sử dụng phương pháp 2 con trỏ. Ý tưởng là duy trì các con trỏ trỏ đến giá trị đầu tiên \& cuối cùng của 1 mảng con. Mỗi lần dịch chuyển, con trỏ trái di chuyển 1 bước sang phải, \& con trỏ phải di chuyển sang phải miễn là tổng mảng con thu được không quá $x$. Nếu tổng bằng đúng $x$, thì đã tìm được nghiệm.
 
     C++:
     \begin{enumerate}
@@ -135,8 +210,339 @@ int main() {
 \end{proof}
 A little bit different version of the above problem:
 
-\begin{problem}
+\begin{problem}[Subarray sum -- Tổng mảng con]
     Given a $1$-based indexing array {\tt arr[]} of nonnegative integers \& an integer $x$. Return the left \& right indexes ($1$-based indexing) of a subarray whose sum of its elements is equal to $x$. In case of multiple satisfying subarrays, return the subarray indexes which come 1st on moving from left to right. If no such subarray exists, return $-1$.
+
+    -- Cho 1 mảng lập chỉ mục dựa trên $1$ {\tt arr[]} gồm các số nguyên không âm \& 1 số nguyên $x$. Trả về các chỉ mục trái \& phải (lập chỉ mục dựa trên $1$) của 1 mảng con có tổng các phần tử bằng $x$. Trong trường hợp có nhiều mảng con thỏa mãn, trả về các chỉ mục mảng con đứng đầu tiên khi di chuyển từ trái sang phải. Nếu không tồn tại mảng con nào như vậy, trả về $-1$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|subarray_sum.inp| & \verb|subarray_sum.out| \\
+            \hline
+            8 23 & 2 5\\
+            15 2 4 8 9 5 10 23 & \\
+            \hline
+            6 7 & 3 5\\
+            1 10 4 0 3 5 & \\
+            \hline
+            2 0 & $-1$\\
+            1 4 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{proof}[1st solution]
+    {\bf Naive approach: using nested loop $O(n^2)$ time \& $O(1)$ space}: Use a nested loop where the outer loop picks a starting element, \& the inner loop calculates the cumulative sum of elements starting from this element. For each starting element, the inner loop iterates through subsequent elements \& adding each element to the cumulative sum until the given sum is found or the end of the array is reached. If at any point the cumulative sum equals the given sum, then return starting \& ending indices (1-based). If no such sub-array is found after all iterations, then return $-1$.
+
+    -- {\bf Cách tiếp cận ngây thơ: sử dụng vòng lặp lồng nhau $O(n^2)$ thời gian \& $O(1)$ không gian}: Sử dụng vòng lặp lồng nhau, trong đó vòng lặp ngoài chọn 1 phần tử bắt đầu, \& vòng lặp trong tính tổng tích lũy của các phần tử bắt đầu từ phần tử này. Với mỗi phần tử bắt đầu, vòng lặp trong sẽ lặp qua các phần tử tiếp theo \& cộng từng phần tử vào tổng tích lũy cho đến khi tìm được tổng cho trước hoặc đến cuối mảng. Nếu tại bất kỳ điểm nào, tổng tích lũy bằng tổng cho trước, thì trả về chỉ số bắt đầu \& kết thúc (dựa trên 1). Nếu không tìm thấy mảng con nào như vậy sau tất cả các lần lặp, thì trả về $-1$.
+
+    C++:
+    \begin{enumerate}
+        \item G4G's C++: \url{https://www.geeksforgeeks.org/dsa/find-subarray-with-given-sum/}:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// function to find a continuous subarray whose sum = a given number
+vector<int> subarray_sum_naive(vector<int> arr, int target) {
+    vector<int> res;
+    int n = arr.size();
+    for (int s = 0; s < n; ++s) { // pick a staarting point for a subarray
+        int curr = 0; // current sum from starting & ending indices
+        // consider all ending points for the picked starting point
+        for (int e = s; e < n; ++e) {
+            curr += arr[e];
+            if (curr == target) {
+                res.push_back(s + 1);
+                res.push_back(e + 1);
+                return res;
+            }
+        }
+    }
+    return {-1}; // if no subarray is found
+}
+
+int main() {
+    int n, x;
+    cin >> n >> x;
+    vector<int> a(n);
+    for (int& v : a) cin >> v;
+    vector<int> res = subarray_sum_naive(a, x);
+    for (int ele : res) cout << ele << " ";
+}
+        \end{Verbatim}
+    \end{enumerate}
+    C\#: G4G's C\#: subarray sum: \url{https://www.geeksforgeeks.org/dsa/find-subarray-with-given-sum/}:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+using System;
+using System.Collections.Generic;
+
+class GfG {
+    // function to find a continuous subarray which adds up to a given number
+    static List<int> subarray_sum(int[] arr, int target) {
+        List<int> res = new List<int>();
+        int n = arr.Length;
+        for (int s = 0; s < n; ++s) { // pick a starting point for a subarray
+            int curr = 0;
+            // consider all ending points for the picked starting point
+            for (int e = s; e < n; ++e) {
+                curr += arr[e];
+                if (curr == target) {
+                    res.Add(s + 1);
+                    res.Add(e + 1);
+                    return res;
+                }
+            }
+        }
+        res.Add(-1); // if no satisfying subarray is found
+        return res;
+    }
+
+    static void Main() {
+        int[] arr = {15, 2, 4, 8, 9, 5, 10, 23};
+        int target = 23;
+        List<int> res = subarray_sum(arr, target);
+        foreach (var ele in res)
+        Console.Write(ele + " ");
+    }
+}
+    \end{Verbatim}
+    Java: G4G's Java: subarray sum: \url{https://www.geeksforgeeks.org/dsa/find-subarray-with-given-sum/}:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+import java.util.ArrayList;
+import java.util.List;
+
+class GfG {
+    // function to find a continuous subarray whose sum = a given number
+    static ArrayList<Integer> subarray_sum(int[] arr, int target) {
+        ArrayList<Integer> res = new ArrayList<>();
+        int n = arr.length;
+        for (int s = 0; s < n; ++s) { // pick a starting point for a subarray
+            int curr = 0;
+            // consider all ending points for the picked starting point
+            for (int e = s; e < n; ++e) {
+                curr += arr[e];
+                if (curr == target) {
+                    res.add(s + 1);
+                    res.add(e + 1);
+                    return res;
+                }
+            }
+        }
+        res.add(-1); // if no satisfying subarray is found
+        return res;
+    }
+
+    public static void main(String[] args) {
+        int[] arr = {15, 2, 4, 8, 9, 5, 10, 23};
+        int target = 23;
+        ArrayList<Integer> res = subarray_sum(arr, target);
+        for (int ele : res)
+        System.out.print(ele + " ");
+    }
+}
+    \end{Verbatim}
+    Java Script: G4G's Java Script: subarray sum: \url{https://www.geeksforgeeks.org/dsa/find-subarray-with-given-sum/}:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// function to find a continuous subarray whose sum = a given number
+function subarraySum(arr, target) {
+    let res = [];
+    let n = arr.length;
+
+    // Pick a starting point for a subarray
+    for (let s = 0; s < n; s++) {
+        let curr = 0;
+
+        // Consider all ending points
+        // for the picked starting point
+        for (let e = s; e < n; e++) {
+            curr += arr[e];
+            if (curr === target) {
+                res.push(s + 1);
+                res.push(e + 1);
+                return res;
+            }
+        }
+    }
+    // If no subarray is found
+    return [-1];
+}
+
+// Driver Code
+let arr = [15, 2, 4, 8, 9, 5, 10, 23];
+let target = 23;
+let res = subarraySum(arr, target);
+
+console.log(res.join(' '));
+    \end{Verbatim}
+    Python:
+    \begin{enumerate}
+        \item G4G's Python: subarray sum: \url{https://www.geeksforgeeks.org/dsa/find-subarray-with-given-sum/}:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+# function to find a continuous subarray which adds up to a given number
+def subarray_sum(arr, target):
+    res = []
+    n = len(arr)
+    for s in range(n): # pick a starting point for a subarray
+        curr = 0 # initialize current calculated sum
+        for e in range(s, n): # consider all ending points for the picked starting point
+            curr += arr[e]
+            if curr == target:
+                res.append(s + 1)
+                res.append(e + 1)
+                return res
+    return [-1] # if no subarray is found
+
+if __name__ == "__main__":
+    n, x = map(int, input().split())
+    arr = list(map(int, input().split()))
+    res = subarray_sum(arr, x)
+    for ele in res:
+        print(ele, end = " ")
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{proof}[2nd solution]
+    {\bf Sliding Window: $O(n)$ time \& $O(1)$ space.} As we know that all the elements in the given subarray are positive, if a subarray has sum greater than the given sum then there is no possibility that adding elements to the current subarray will be equal to the given sum. Hence the idea is to use a similar approach to a sliding window.
+    \begin{itemize}
+        \item Start with an empty window.
+        \item Add elements to the window while the current sum is less than the targeted sum.
+        \item If the sum is greater than the targeted sum, remove elements from the start of the current window.
+        \item If the current sum is equal to the targeted sum, return the result.
+    \end{itemize}
+    -- {\bf Cửa sổ trượt: $O(n)$ thời gian \& $O(1)$ không gian.} Như chúng ta đã biết, tất cả các phần tử trong mảng con đã cho đều dương, nếu một mảng con có tổng lớn hơn tổng đã cho thì không có khả năng việc thêm các phần tử vào mảng con hiện tại sẽ bằng tổng đã cho. Do đó, ý tưởng là sử dụng một cách tiếp cận tương tự như cửa sổ trượt.
+    \begin{itemize}
+        \item Bắt đầu với một cửa sổ trống.
+        \item Thêm các phần tử vào cửa sổ khi tổng hiện tại nhỏ hơn tổng mục tiêu.
+        \item Nếu tổng lớn hơn tổng mục tiêu, hãy xóa các phần tử khỏi đầu cửa sổ hiện tại.
+        \item Nếu tổng hiện tại bằng tổng mục tiêu, hãy trả về kết quả.
+    \end{itemize}
+    C++:
+    \begin{enumerate}
+        \item G4G's C++: subarray sum by sliding window:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+vector<int> subarray_sum_sliding_window(vector<int>& arr, int target) {
+    int s = 0, e = 0; // initialize window
+    vector<int> res;
+    int curr = 0; // current calculated sum
+    for (size_t i = 0; i < arr.size(); ++i) {
+        curr += arr[i];
+        // if current sum becomes >=, set end & try adjusting start
+        if (curr >= target) {
+            e = i;
+            // while current is greater, remove starting elements of current window
+            while (curr > target && s < e)
+            curr -= arr[s++];
+            if (curr == target) { // if found a satisfying subarray
+                res.push_back(s + 1);
+                res.push_back(e + 1);
+                return res;
+            }
+        }
+    }
+    return {-1}; // if no satisfying subarray is found
+}
+
+int main() {
+    int n, x;
+    cin >> n >> x;
+    vector<int> a(n);
+    for (int& v : a) cin >> v;
+    vector<int> res = subarray_sum_sliding_window(a, x);
+    for (int ele : res) cout << ele << " ";
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{problem}[Subarray sum on $\mathbb{Z}$]
+    Given an unsorted array of integers $\{a_i\}_{i=1}^n\subset\mathbb{Z}$, find a subarray that adds to a given number $x\in\mathbb{Z}$. (a) If there is more than 1 satisfying subarray, print any of them. (b) Print all satisfying subarrays.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|subarray_sum_negative.inp| & \verb|subarray_sum_negative.out| \\
+            \hline
+            6 33 & 2 4 \\
+            1 4 20 3 10 5 & \\
+            \hline
+            5 $-10$ & 1 3 \\
+            2 12 $-2$ $-20$ 10 & \\
+            \hline
+            6 20 & $-1$ \\
+            $-10$ 0 2 $-2$ $-20$ 10 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{itemize}
+    \item \href{https://www.geeksforgeeks.org/dsa/find-subarray-with-given-sum-in-array-of-integers/}{Geeks for Geeks{\tt/}subarray with given sum -- handles negative numbers}.
+\end{itemize}
+
+\begin{proof}[1st solution]
+    {\sf Naive approach: using nested loop: $O(n^2)$ time \& $O(1)$ space.} Same as above?
+\end{proof}
+
+\begin{proof}[2nd solution]
+    {\sf Prefix Sum \& Hash Map: $O(n)$ time \& $O(n)$ space.}
+\end{proof}
+
+\begin{proof}[3rd solution]
+    {\bf Hashing $+$ prefix sum: $O(n)$ time \& $O(n)$ space.} The above sliding-window solution does not work for arrays with negative numbers. To handle all cases, we use hashing \& prefix sum. The idea is to store the sum of elements of every prefix of the array in a hashmap, i.e., every index stores the sum of elements up to that index hashmap. So to check if there is a subarray with sum equal to the targeted sum, check for every index $i\in[n]$, \& sum up to that index as \verb|curr_sum|. If there is a prefix with a sum equal to \verb|curr_sum - target|, then the subarray with the given sum is found.
+
+    -- {\bf Băm $+$ tiền tố tổng: $O(n)$ thời gian \& $O(n)$ không gian.} Giải pháp cửa sổ trượt ở trên không hoạt động với các mảng có số âm. Để xử lý mọi trường hợp, chúng tôi sử dụng băm \& tiền tố tổng. Ý tưởng là lưu trữ tổng các phần tử của mọi tiền tố của mảng trong một hashmap, tức là, mỗi chỉ mục lưu trữ tổng các phần tử lên đến hashmap chỉ mục đó. Vì vậy, để kiểm tra xem có mảng con nào có tổng bằng tổng mục tiêu hay không, hãy kiểm tra mọi chỉ mục $i\in[n]$, \& tổng đến chỉ mục đó là \verb|curr_sum|. Nếu có một tiền tố có tổng bằng \verb|curr_sum - target|, thì mảng con có tổng đã cho sẽ được tìm thấy.
+\end{proof}
+
+\begin{remark}[Tương quan của bài toán subarray sum với các thuật toán tìm đường đi ngắn nhất trên đồ thị (algorithms for shortest path problems on graphs)]
+    Thuật toán Dijkstra cũng chỉ hoạt động được cho các đồ thị có trọng số không âm, không hoạt động được với các đồ thị có lẫn trọng số âm \& trọng số không âm. Chỉ có thuật toán Bellman--Ford mới hoạt động cho đồ thị với trọng số thực tùy ý.
+\end{remark}
+Another problem that can be solved using the 2 pointers method is the following 2SUM problem:
+
+\begin{problem}[2sum]
+    Given an array of $n\in\mathbb{N}^\star$ numbers \& a target sum $x\in\mathbb{N}$, find $2$ array values such that their sum is $x$, or report that no such values exist.
+
+    -- Cho 1 mảng gồm $n\in\mathbb{N}^\star$ số \& tổng mục tiêu $x\in\mathbb{N}$, tìm $2$ giá trị mảng sao cho tổng của chúng là $x$ hoặc báo cáo rằng không tồn tại giá trị nào như vậy.
+\end{problem}
+
+\begin{center}
+    \fbox{Given $x\in\mathbb{N}$ \& an array $\{a_i\}_{i=1}^n\subset\mathbb{N}$, find $i,j\in[n]$, $i\ne j$ s.t. $a_i + a_j = x$.}
+\end{center}
+
+\begin{proof}[Solution]
+    To solve the problem, we 1st sort the array values in increasing order. After that, we iterate through the array using 2 pointers. The left pointer starts at the 1st value \& moves 1 step to the right on each turn. The right pointer begins at the last value \& always moves to the left until the sum of the left \& right value is at most $x$. If the sum is exactly $x$, a solution has been found.
+
+    -- Để giải bài toán, trước tiên chúng ta sắp xếp các giá trị mảng theo thứ tự tăng dần. Sau đó, chúng ta duyệt qua mảng bằng 2 con trỏ. Con trỏ bên trái bắt đầu từ giá trị đầu tiên \& dịch chuyển 1 bước sang phải mỗi lần. Con trỏ bên phải bắt đầu từ giá trị cuối cùng \& luôn dịch chuyển sang trái cho đến khi tổng của giá trị bên trái \& bên phải lớn nhất là $x$. Nếu tổng bằng đúng $x$, thì bài toán đã tìm được nghiệm.
+
+    The running time of the algorithm is $O(n\log_2n)$, because it 1st sorts the array in $O(n\log_2n)$ time, \& then both pointers move $O(n)$ steps.
+
+    It is also possible to solve the problem in another way in $O(n\log_2n)$ time using binary search. In such a solution, we iterate through the array \& for each array value, we try to find another value that yields the sum $x$. This can be done by performing $n$ binary searches, each of which takes $O(\log_2n)$ time.
+\end{proof}
+
+A more difficult problem is the 3SUM problem that asks to find 3 array values whose sum is $x$. Using the idea of the above algorithm, this problem can be solved in $O(n^2)$ time.
+
+-- 1 bài toán khó hơn là bài toán 3SUM, yêu cầu tìm 3 giá trị mảng có tổng bằng $x$. Sử dụng ý tưởng của thuật toán trên, bài toán này có thể được giải trong thời gian $O(n^2)$.
+
+\begin{problem}[3sum]
+    Given an array of $n\in\mathbb{N}^\star$ numbers \& a target sum $x\in\mathbb{N}$, find $3$ array values such that their sum is $x$, or report that no such values exist.
+
+    -- Cho 1 mảng gồm $n\in\mathbb{N}^\star$ số \& tổng mục tiêu $x\in\mathbb{N}$, tìm $3$ giá trị mảng sao cho tổng của chúng là $x$ hoặc báo cáo rằng không tồn tại giá trị nào như vậy.
+\end{problem}
+
+\begin{problem}[$k$-sum, $\star$]
+    Given an array of $n\in\mathbb{N}^\star$ numbers \& a target sum $x\in\mathbb{N}$, find $k\in\mathbb{N}^\star$ array values such that their sum is $x$, or report that no such values exist.
+
+    -- Cho 1 mảng gồm $n\in\mathbb{N}^\star$ số \& tổng mục tiêu $x\in\mathbb{N}$, tìm $k\in\mathbb{N}^\star$ giá trị mảng sao cho tổng của chúng là $x$ hoặc báo cáo rằng không tồn tại giá trị nào như vậy.
 \end{problem}
 
 %------------------------------------------------------------------------------%

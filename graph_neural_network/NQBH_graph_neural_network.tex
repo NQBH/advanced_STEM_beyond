@@ -2767,9 +2767,138 @@ from sklearn.metrics import accuracy_score
         H_{\rm MaxCut} = \sum_{i < j} A_{ij}(2x_ix_j - x_i - x_j)
     \end{equation*}
     thuộc lớp rộng hơn của các bài toán QUBO được mô tả bởi (1); cung cấp ma trận $Q$ rõ ràng cho một bài toán MaxCut mẫu trong {\sf Hình 2}. Với một hằng số không liên quan, bài toán MaxCut có thể được mô tả tương đương bằng Ising Hamiltonian compact $H_{\rm MaxCut} = \sum_{i < j} J_{ij}z_iz_j$ với $J_{ij} = \frac{A_{ij}}{2}$, ưu tiên sắp xếp spin phản sắt từ cho $J_{ij} > 0$, như dự kiến một cách trực quan dựa trên định nghĩa của bài toán. Theo công trạng của chúng ta, hãy ký hiệu vết cắt lớn nhất tìm được là ${\rm cut}^\star = -H_{\rm MaxCut}({\bf x}^\star)$ với ${\bf x}^\star$ tham chiếu đến chuỗi bit tương ứng.
+
+    Complexity of MaxCut depends on regularity \& connectivity of underlying graph. Following an existing trend in community [76] , 1st consider MaxCut problem on random (unweighted) $d$-regular graphs, where every vertex is connected to exactly $d$ other vertices. Perform benchmarks as follows. For graphs with up to a few hundred nodes, compare our GNN-based solver to (approximate) polynomial-time Goemans--Williamson (GW) algorithm [81], which provides current record for an approximate answer within some fixed multiplicative factor of optimum (referred to as approximation ratio $\alpha$), using semidefinite programming \& randomized rounding. Specifically, GW algorithm achieves a guaranteed approximation ratio of $\alpha\sim0.878$ for generic graphs. This lower bound can be raised for specific graphs e.g. unweighted 3-regular graphs where $\alpha\sim0.9326$ [82]. Our implementation of GW algorithm is based on open-source CVXOPT solver, with CVXPY as modeling interface. For very large graphs with up to a million nodes, numerical benchmarks are not available, but can compare our best solution ${\rm cut}^\star$ to an analytical result derived in [83], where shown: with high probability (in limit $n\to\infty$) size of maximum cut for random $d$-regular graphs with $n$ nodes is given by ${\rm cut}^\star = (\frac{d}{4} + P_*\sqrt{\frac{d}{4}} + O(\sqrt{d}))n + O(n)$. Here $P_*\approx0.7632$ refers to an universal constant related to ground-state energy of Sherrington--Kirkpatrick model [84, 85] that can be expressed analytically via Parisi's formula [83]. Thus take ${\rm cut}_{\rm ub} = \left(\frac{d}{4} + P_*\sqrt{\frac{d}{4}}\right)n$ as an upper-bound estimate for maximum cut size in large-$n$ limit. Complement this upper bound with a lower bound as achieved by a simple, randomized 0.5-approximation algorithm that (on average) cuts half of edges, yielding a cut size of ${\rm cut}_{\rm rnd}\approx\frac{d}{4}n$ for a $d$-regular graph with $|E| = \frac{d}{2}n$. Our results for achieved cut size as a function of number of vertice $n$ are shown in {\sf Fig. 4: Numerical results for MaxCut. Left panel; Average cut size for $d$-regular graphs with $d = 3$ \& $d = 5$ as a function of number of vertices $n$, bootstrap-averaged over 20 random graph instances, for both GNN-based method \& Goemans--Williamson (GW) algorithm. On each graph instance, GNN solver is allowed up to 5 shots, \& GW algorithm takes 100 shots. Solid lines for $n\ge10^3$ represent theoretical upper bounds. Inset: Estimated relative approximation ratio defined as $\frac{{\rm cut}^\star}{{\rm cut}_{\rm ub}}$ shows: our approach consistently achieves high-quality solutions. Right panel: Algorithm runtime in secs for both GNN solver \& GW algorithm. Errors bars refer to twice bootstrapped standard deviations, sampled across 20 random graph instances for every data point.} All results are bootstrapped estimates of mean, with error bars denoting twice bootstrapped standard deviations, sampled across 20 random $d$-regular graphs for every data point. For graphs with up to a few hundred nodes, find: a simple 2-layer GCN architecture can perform on par with GW algorithm, while showing a runtime advantage compared to GW starting at around $n\approx100$ nodes. For large graphs with $n\approx10^4$ to $10^6$ nodes, find: our approach consistently achieves high-quality solutions with ${\rm cut}^\star\gtrsim0.9{\rm cut}_{\rm ub}$ for both $d = 3,d = 5$, resp. (i.e., much better than any naive randomized algorithm). As expected for $d$-regular graphs, find ${\rm cut}^\star$ to scale linearly with number of nodes $n$, i.e., ${\rm cut}^\star\approx\gamma_dn$ with $\gamma_3\approx1.28$ \& $\gamma_5\approx1.93$ for $d = 3,d = 5$, resp. Moreover, utilizing modern GPU hardware, observe a favorable runtime scaling at intermediate \& large system sizes that allows us to solve instances with $n = 10^6$ nodes in approximately 10 minutes (which includes both GNN model training \& post-processing steps). Specifically, as shown in {\sf Fig. 4}, observe an approximately linear scaling of total runtime with $\sim n$, for large $d$-regular graphs with $10^5\le n\le10^6$; contrasted with observed GW algorithm scaling as $\sim n^{3.5}$ for problem sizes in range $n\lesssim250$, thereby showing (expected) time complexity $\tilde{O}(n^{3.5})$ of interior-point method (as commonly used for solving semidefinite program underlying GW algorithm) that dominates GW algorithm runtime [86, 87].
+
+    -- Độ phức tạp của MaxCut phụ thuộc vào tính chính quy \& kết nối của đồ thị cơ sở. Theo xu hướng hiện có trong cộng đồng [76], trước tiên hãy xem xét bài toán MaxCut trên đồ thị $d$-chính quy ngẫu nhiên (không có trọng số), trong đó mỗi đỉnh được kết nối với đúng $d$ đỉnh khác. Thực hiện các phép so sánh như sau. Đối với đồ thị có tối đa vài trăm nút, hãy so sánh bộ giải dựa trên GNN của chúng tôi với thuật toán Goemans--Williamson (GW) thời gian đa thức (xấp xỉ) [81], thuật toán này cung cấp bản ghi hiện tại cho một câu trả lời gần đúng trong một số hệ số nhân cố định của tối ưu (được gọi là tỷ lệ xấp xỉ $\alpha$), sử dụng lập trình bán xác định \& làm tròn ngẫu nhiên. Cụ thể, thuật toán GW đạt được tỷ lệ xấp xỉ được đảm bảo là $\alpha\sim0.878$ cho đồ thị chung. Giới hạn dưới này có thể được nâng lên đối với các đồ thị cụ thể, ví dụ: đồ thị 3-chính quy không có trọng số trong đó $\alpha\sim0.9326$ [82]. Việc triển khai thuật toán GW của chúng tôi dựa trên bộ giải CVXOPT nguồn mở, với CVXPY là giao diện mô hình. Đối với các đồ thị rất lớn có tới một triệu nút, các điểm chuẩn số không có sẵn, nhưng có thể so sánh giải pháp tốt nhất của chúng tôi ${\rm cut}^\star$ với kết quả phân tích thu được trong [83], trong đó được hiển thị: với xác suất cao (trong giới hạn $n\to\infty$) kích thước của vết cắt cực đại cho đồ thị $d$-chính quy ngẫu nhiên với $n$ nút được đưa ra bởi ${\rm cut}^\star = (\frac{d}{4} + P_*\sqrt{\frac{d}{4}} + O(\sqrt{d}))n + O(n)$. Ở đây $P_*\approx0.7632$ đề cập đến một hằng số phổ quát liên quan đến năng lượng trạng thái cơ bản của mô hình Sherrington--Kirkpatrick [84, 85] có thể được biểu thị một cách phân tích thông qua công thức của Parisi [83]. Do đó, hãy lấy ${\rm cut}_{\rm ub} = \left(\frac{d}{4} + P_*\sqrt{\frac{d}{4}}\right)n$ làm ước lượng giới hạn trên cho kích thước cắt tối đa trong giới hạn $n$ lớn. Bổ sung giới hạn trên này bằng giới hạn dưới đạt được bằng thuật toán xấp xỉ 0,5 ngẫu nhiên đơn giản (trung bình) cắt một nửa số cạnh, tạo ra kích thước cắt là ${\rm cut}_{\rm rnd}\approx\frac{d}{4}n$ cho đồ thị $d$-chính quy với $|E| = \frac{d}{2}n$. Kết quả của chúng tôi về kích thước cắt đạt được như một hàm của số đỉnh $n$ được hiển thị trong {\sf Hình 4: Kết quả số cho MaxCut. Bảng bên trái; Kích thước cắt trung bình cho đồ thị chính quy $d$ với $d = 3$ \& $d = 5$ theo hàm số của số đỉnh $n$, trung bình bootstrap trên 20 trường hợp đồ thị ngẫu nhiên, cho cả phương pháp dựa trên GNN \& thuật toán Goemans--Williamson (GW). Trên mỗi trường hợp đồ thị, bộ giải GNN được phép thực hiện tối đa 5 lần, \& thuật toán GW thực hiện 100 lần. Đường liền cho $n\ge10^3$ biểu diễn các giới hạn trên lý thuyết. Hình chèn: Tỷ lệ xấp xỉ tương đối ước tính được xác định là $\frac{{\rm cut}^\star}{{\rm cut}_{\rm ub}}$ cho thấy: phương pháp của chúng tôi luôn đạt được các giải pháp chất lượng cao. Bảng bên phải: Thời gian chạy thuật toán tính bằng giây cho cả bộ giải GNN \& thuật toán GW. Thanh lỗi đề cập đến độ lệch chuẩn khởi động hai lần, lấy mẫu trên 20 trường hợp đồ thị ngẫu nhiên cho mọi điểm dữ liệu.} Tất cả các kết quả đều là ước tính khởi động của giá trị trung bình, với thanh lỗi biểu thị độ lệch chuẩn khởi động hai lần, lấy mẫu trên 20 đồ thị $d$-chính quy ngẫu nhiên cho mọi điểm dữ liệu. Đối với đồ thị có tối đa vài trăm nút, tìm: kiến trúc GCN 2 lớp đơn giản có thể hoạt động ngang bằng với thuật toán GW, đồng thời thể hiện lợi thế về thời gian chạy so với GW bắt đầu từ khoảng $n\approx100$ nút. Đối với đồ thị lớn có $n\approx10^4$ đến $10^6$ nút, tìm: cách tiếp cận của chúng tôi luôn đạt được các giải pháp chất lượng cao với ${\rm cut}^\star\gtrsim0.9{\rm cut}_{\rm ub}$ cho cả $d = 3,d = 5$, tương ứng (tức là tốt hơn nhiều so với bất kỳ thuật toán ngẫu nhiên ngây thơ nào). Như mong đợi đối với đồ thị $d$-chính quy, hãy tìm ${\rm cut}^\star$ để chia tỷ lệ tuyến tính với số nút $n$, tức là ${\rm cut}^\star\approx\gamma_dn$ với $\gamma_3\approx1.28$ \& $\gamma_5\approx1.93$ đối với $d = 3,d = 5$, tương ứng. Hơn nữa, khi sử dụng phần cứng GPU hiện đại, hãy quan sát khả năng mở rộng thời gian chạy thuận lợi ở kích thước hệ thống trung gian \& lớn cho phép chúng ta giải quyết các trường hợp có $n = 10^6$ nút trong khoảng 10 phút (bao gồm cả các bước huấn luyện mô hình GNN \& hậu xử lý). Cụ thể, như thể hiện trong {\sf Hình 4}, hãy quan sát khả năng mở rộng thời gian chạy gần như tuyến tính với $\sim n$, đối với đồ thị $d$-chính quy lớn với $10^5\le n\le10^6$; trái ngược với việc quan sát tỷ lệ thuật toán GW là $\sim n^{3.5}$ đối với kích thước vấn đề trong phạm vi $n\lesssim250$, do đó cho thấy độ phức tạp thời gian (dự kiến) $\tilde{O}(n^{3.5})$ của phương pháp điểm bên trong (thường được sử dụng để giải chương trình bán xác định cơ bản của thuật toán GW) chi phối thời gian chạy thuật toán GW [86, 87].
+
+    . . .
+
+    {\bf Maximum Independent Set.} MIS problem is a prominent combinatorial optimization problem with practical applications in network design [93] \& finance [94], \& is closely related to maximum clique, minimum vertex cover, \& set packing problems. In quantum community, MIS problem has recently attracted significant interest [95] as a potential target use case for novel experimental platforms based on neutral atom arrays [96]. MIS problem reads as follows. Given an undirected graph $G = (V,E)$, an independent set is a subset of vertices that are not connected with each other. MIS problem is then task to find largest independent set, with its (maximum) cardinality typically denoted as independence number $\alpha$. To formulate MIS problem . . .
+
+    \item {\sf6. Applications in industry.} While our previous analysis has focused on canonical graph optimization problems e.g. maximum cut \& maximum independent set, in this section discuss real-world applications in industry for which our solver could provide solutions, in particular at potentially unprecedented problem scales. Focus on applications of QUBO formalism, even though our methodology is not limited to this modeling framework. 1st review existing literature, providing relevant references across a wide stack of problem domains. Thereafter, explicitly show how to distill combinatorial QUBO problems for a few select real-world use cases, from risk diversification in finance to sensor placement problems in water distribution networks. Once in QUBO format, problem can be plugged into our general-purpose physics-inspired GNN solver, as outlined above.
+
+    -- Trong khi phân tích trước đây của chúng tôi tập trung vào các bài toán tối ưu hóa đồ thị chuẩn, ví dụ như cắt cực đại \& tập độc lập cực đại, phần này thảo luận về các ứng dụng thực tế trong công nghiệp mà bộ giải của chúng tôi có thể cung cấp giải pháp, đặc biệt là ở các quy mô bài toán chưa từng có tiền lệ. Tập trung vào các ứng dụng của hình thức QUBO, mặc dù phương pháp luận của chúng tôi không bị giới hạn trong khuôn khổ mô hình này. Trước tiên, hãy xem xét các tài liệu hiện có, cung cấp các tài liệu tham khảo liên quan trên nhiều lĩnh vực bài toán. Sau đó, hãy trình bày rõ ràng cách chắt lọc các bài toán QUBO tổ hợp cho một số trường hợp sử dụng thực tế được chọn lọc, từ phân tán rủi ro trong tài chính đến các bài toán đặt cảm biến trong mạng lưới phân phối nước. Khi đã ở định dạng QUBO, bài toán có thể được đưa vào bộ giải GNN lấy cảm hứng từ vật lý đa năng của chúng tôi, như đã nêu ở trên.
+
+    As extensively reviewed in [1,2,66], QUBO (or, equivalently, Ising) formalism provides a comprehensive modeling framework encompassing a vast array of optimization problems, including knapsack problems, task (resource) allocation problems, \& capital budgeting problems, among others. Specifically, applicability of QUBO representation has been reported for problem settings involving circuit board layouts [100], capital budgeting in financial analysis [101], computer aided design (CAD) [102], electronic traffic management [103, 104], cellular radio channel allocation [105], molecular conformation [106], \& prediction of epileptic seizures [107], among others. Practical applications of MaxCut problem can be found in machine scheduling [71], image recognition [72], \& electronic circuit layout design [73]. Similarly, in what follows discuss in detail 3 select use cases \& how they can be cast in QUBO form \& thus made amenable to our solver.
+
+    -- Như đã được xem xét rộng rãi trong [1,2,66], hình thức QUBO (hoặc tương đương là Ising) cung cấp một khuôn khổ mô hình hóa toàn diện bao gồm một loạt lớn các vấn đề tối ưu hóa, bao gồm các vấn đề ba lô, các vấn đề phân bổ nhiệm vụ (nguồn lực), \& các vấn đề ngân sách vốn, trong số những vấn đề khác. Cụ thể, khả năng áp dụng biểu diễn QUBO đã được báo cáo cho các thiết lập vấn đề liên quan đến bố trí bảng mạch [100], ngân sách vốn trong phân tích tài chính [101], thiết kế hỗ trợ máy tính (CAD) [102], quản lý lưu lượng điện tử [103, 104], phân bổ kênh vô tuyến di động [105], cấu hình phân tử [106], \& dự đoán các cơn động kinh [107], trong số những vấn đề khác. Các ứng dụng thực tế của vấn đề MaxCut có thể được tìm thấy trong lập lịch máy [71], nhận dạng hình ảnh [72], \& thiết kế bố trí mạch điện tử [73]. Tương tự như vậy, trong phần sau sẽ thảo luận chi tiết về 3 trường hợp sử dụng được chọn \& cách chúng có thể được đúc ở dạng QUBO \& do đó phù hợp với trình giải của chúng tôi.
+
+    . . .
     \item {\sf7. Conclusion \& outlook.}
 \end{itemize}
 
+%------------------------------------------------------------------------------%
+
+\subsection{Geeks4Geeks{\tt/}GNNs with PyTorch}
+\url{https://www.geeksforgeeks.org/deep-learning/graph-neural-networks-with-pytorch/}.
+
+GNNs represent a powerful class of ML models tailored for interpreting data described by graphs. This is particularly useful because many real-world structures are networks composed on interconnected elements, e.g. social networks, molecular structures, \& communication systems. See how can use PyTorch for building GNNs.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Implementation of simple GNN model using PyTorch}
+Implementing Graph Neural Networks (GNNs) with CORA dataset in PyTorch, specifically using PyTorch Geometric (PyG), involves several steps. A guide through process, including code snippets for each step.
+
+-- Việc triển khai Mạng Nơ-ron Đồ thị (GNN) với tập dữ liệu CORA trong PyTorch, cụ thể là sử dụng PyTorch Geometric (PyG), bao gồm nhiều bước. Hướng dẫn chi tiết quy trình, bao gồm các đoạn mã cho từng bước.
+\begin{enumerate}
+    \item {\bf Loading CORA Dataset.} CORA dataset is a citation graph where nodes represent documents, \& edges represent citation links. Each document is classified into 1 of 7 categories, making it a popular dataset for node classification tasks in GNNs. 1st, ensure have PyTorch Geometric installed. if not, install it using {\tt pip}:
+
+    -- {\bf Đang tải Bộ dữ liệu CORA.} Bộ dữ liệu CORA là một biểu đồ trích dẫn, trong đó các nút đại diện cho tài liệu, \& cạnh đại diện cho liên kết trích dẫn. Mỗi tài liệu được phân loại thành 1 trong 7 loại, khiến nó trở thành một bộ dữ liệu phổ biến cho các tác vụ phân loại nút trong GNN. Trước tiên, hãy đảm bảo đã cài đặt PyTorch Geometric. Nếu chưa, hãy cài đặt bằng {\tt pip}:
+    \begin{verbatim}
+pip install torch-scatter torch-sparse torch-cluster torch-spline-conv torch-geometric
+    \end{verbatim}
+    Then load CORA dataset:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+import torch
+from torch_geometric.data import Planetoid
+import torch.nn.functional as F
+from torch_geometric.nn import GCNConv
+
+# load Cora dataset
+dataset = Planetoid(root = 'data/Planetoid', name = 'Cora')
+    \end{Verbatim}
+    \item {\bf Defining a GNN Model Using PyTorch.} Define a simple GNN model using 1 of most straightforward types of GNN layers, Graph Convolutional Network (GCN) layer, provided by PyTorch Geometric.
+
+    -- {\bf Định nghĩa mô hình GNN bằng PyTorch.} Định nghĩa mô hình GNN đơn giản bằng 1 trong những loại lớp GNN đơn giản nhất, lớp Mạng tích chập đồ thị (GCN), do PyTorch Geometric cung cấp.
+
+    A custom Graph Neural Network (GNN) model is built using PyTorch's {\tt torch.nn.Module} class. Model consists of 2 Graph Convolutional Network (GCN) layers, each followed by a Rectified Linear Unit (ReLU) activation function \& dropout regularization. Model's `forward' method takes feature data \& edge information as input, applies defined layers sequentially, \& outputs a log-softmax activation for classification. Additionally, an Adam optimizer is initialized to train model with a specified learning rate \& weight decay.
+
+    -- Một mô hình Mạng Nơ-ron Đồ thị (GNN) tùy chỉnh được xây dựng bằng lớp {\tt torch.nn.Module} của PyTorch. Mô hình bao gồm 2 lớp Mạng Tích chập Đồ thị (GCN), mỗi lớp được theo sau bởi một hàm kích hoạt Đơn vị Tuyến tính Chỉnh lưu (ReLU) \& chính quy hóa dropout. Phương thức `forward' của mô hình lấy dữ liệu đặc trưng \& thông tin cạnh làm đầu vào, áp dụng các lớp đã xác định theo trình tự, \& xuất ra một phép kích hoạt log-softmax để phân loại. Ngoài ra, một trình tối ưu hóa Adam được khởi tạo để huấn luyện mô hình với tốc độ học \& suy giảm trọng số được chỉ định.
+    \item {\bf Training GNN model on CORA dataset.} Train model. This involves initializing model, defining optimizer, \& running training loop.
+
+    -- {\bf Huấn luyện mô hình GNN trên tập dữ liệu CORA.} Huấn luyện mô hình. Quá trình này bao gồm khởi tạo mô hình, xác định trình tối ưu hóa và chạy vòng lặp huấn luyện.
+    \item {\bf Evaluating Model's Performance.} This code defines a basic GNN model, trains it on CORA dataset, \& evaluates its accuracy. Model architecture \& training parameters are kept simple for demonstration purposes. In practice, may want to experiment with deeper models, different types of GNN layers, \& other optimization techniques to improve performance.
+
+    -- {\bf Đánh giá Hiệu suất Mô hình.} Mã này định nghĩa một mô hình GNN cơ bản, huấn luyện nó trên tập dữ liệu CORA, \& đánh giá độ chính xác của nó. Kiến trúc mô hình \& các tham số huấn luyện được giữ đơn giản cho mục đích trình diễn. Trong thực tế, có thể bạn sẽ muốn thử nghiệm với các mô hình sâu hơn, các loại lớp GNN khác nhau, \& các kỹ thuật tối ưu hóa khác để cải thiện hiệu suất.
+\end{enumerate}
+Output shows loss value decreasing over 200 epochs of training a GNN on CORA dataset, indicating: model is learning to classify nodes more accurately over time. Final test accuracy of 0.811 demonstrates: trained GNN model can correctly predict class of over 81\% of nodes in test set, showcasing its effectiveness in node classification tasks within graph-structured data.
+
+-- Kết quả đầu ra cho thấy giá trị mất mát giảm dần qua 200 kỷ nguyên huấn luyện GNN trên tập dữ liệu CORA, cho thấy: mô hình đang học cách phân loại các nút chính xác hơn theo thời gian. Độ chính xác kiểm tra cuối cùng là 0,811 cho thấy: mô hình GNN đã huấn luyện có thể dự đoán chính xác lớp của hơn 81\% số nút trong tập kiểm tra, thể hiện hiệu quả của nó trong các tác vụ phân loại nút trong dữ liệu có cấu trúc đồ thị.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Geeks4Geeks{\tt/}What is PyTorch?}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{itemize}
+    \item \href{https://www.geeksforgeeks.org/deep-learning/getting-started-with-pytorch/}{Geeks for Geeks{\tt/}what is PyTorch?}
+\end{itemize}
+PyTorch is a DL library built on Python. It provides GPU acceleration, dynamic computation graphs \& an intuitive interface for DL researchers \& developers. PyTorch follows a ``define-by-run'' approach, i.e., its computational graphs are constructed on fly allowing for better debugging \& model customization.
+
+-- PyTorch là một thư viện DL được xây dựng trên Python. Nó cung cấp khả năng tăng tốc GPU, đồ thị tính toán động \& giao diện trực quan cho các nhà nghiên cứu DL \& nhà phát triển. PyTorch áp dụng phương pháp ``xác định bằng chạy'', tức là các đồ thị tính toán của nó được xây dựng trực tiếp, cho phép gỡ lỗi tốt hơn \& tùy chỉnh mô hình.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Key features of PyTorch}
+
+\begin{itemize}
+    \item Use dynamic graphs allowing flexibility in model execution \& debugging.
+    \item Provide an automatic differentiation engine that simplifies gradient computation for DL.
+    \item Support CUDA allowing computations to be performed efficiently on GPUs.
+\end{itemize}
+PyTorch can be installed on Windows, macOS and Linux using pip for CPU (without GPU):
+\begin{verbatim}
+!pip install torch torchvision torchaudio
+\end{verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{PyTorch tensors}
+Tensors are fundamental data structures in PyTorch, similar to NumPy arrays but with GPU acceleration capabilities. PyTorch tensors support automatic differentiation, making them suitable for DL tasks.
+\begin{enumerate}
+    \item Operations on tensors: element-wise addition, matrix multiplication
+    \item Reshape \& transpose tensors
+    \item Autograd \& computational graphs: {\tt autograd} module automates gradient calculation for backpropagation. This is crucial in training deep neural networks.
+
+    PyTorch dynamically creates a computational graph that tracks operations \& gradients for backpropagation.
+\end{enumerate}
+-- Tensor là cấu trúc dữ liệu cơ bản trong PyTorch, tương tự như mảng NumPy nhưng có khả năng tăng tốc GPU. Tensor PyTorch hỗ trợ tính vi phân tự động, phù hợp cho các tác vụ DL.
+\begin{enumerate}
+    \item Các phép toán trên tensor: phép cộng từng phần tử, phép nhân ma trận
+    \item Định hình lại \& chuyển vị tensor
+    \item Đồ thị tính toán Autograd \&: Mô-đun {\tt autograd} tự động tính toán gradient cho phép lan truyền ngược. Điều này rất quan trọng trong việc huấn luyện mạng nơ-ron sâu.
+
+    PyTorch tạo động một đồ thị tính toán theo dõi các phép toán \& gradient cho phép lan truyền ngược.
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Building neural networks in PyTorch}
+In PyTorch, neural networks are built using {\tt torch.nn} module where:
+\begin{itemize}
+    \item \verb|nn.Linear(in_features, out_features)| defines a fully connected (dense) layer.
+    \item Activation functions like {\tt torch.relu, torch.sigmoid, torch.softmax} are applied between layers.
+    \item {\tt forward()} method defines how data moves through network.
+\end{itemize}
+To built a neural network in PyTorch, create a class that inherits from {\tt torch.nn.Module} \& defines its layers \& forward pass.
+
+-- Trong PyTorch, mạng nơ-ron được xây dựng bằng mô-đun {\tt torch.nn}, trong đó:
+\begin{itemize}
+    \item \verb|nn.Linear(in_features, out_features)| định nghĩa một lớp được kết nối đầy đủ (dense).
+    \item Các hàm kích hoạt như {\tt torch.relu, torch.sigmoid, torch.softmax} được áp dụng giữa các lớp.
+    \item Phương thức \item {\tt forward()} định nghĩa cách dữ liệu di chuyển qua mạng.
+\end{itemize}
+Để xây dựng mạng nơ-ron trong PyTorch, hãy tạo một lớp kế thừa từ {\tt torch.nn.Module} \& định nghĩa các lớp của nó \& forward pass.
 
 %------------------------------------------------------------------------------%
 

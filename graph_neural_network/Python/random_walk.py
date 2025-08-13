@@ -83,10 +83,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 
 # split embeddings into 2 groups: trainining & test data by simply creating masks
-train_mask = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22,
-24, 26, 28]
-test_mask = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23,
-25, 27, 29, 30, 31, 32, 33]
+train_mask = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28]
+test_mask = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 30, 31, 32, 33]
 
 # train Random Forest classifer on training data with appropriate labels
 clf = RandomForestClassifier(random_state = 0)

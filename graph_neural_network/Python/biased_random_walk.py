@@ -32,6 +32,9 @@ def random_walk(start, length, p, q):
 	return [str(x) for x in walk]
 
 random_walk(0, 8, p = 1, q = 1)
+random_walk(0, 8, p = 1, q = 10)
+random_walk(0, 8, p = 10, q = 1)
+
 '''
 (node2vec) nqbh@nqbh:~/advanced_STEM_beyond/graph_neural_network/Python$ python biased_random_walk.py 
 Traceback (most recent call last):

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Task Scheduler</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components/task-form.css">
+    <link rel="stylesheet" href="styles/components/task-list.css">
+    <link rel="stylesheet" href="styles/components/schedule-display.css">
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Personal Task Scheduler</h1>
+    </header>
+
+    <main>
+        <section class="task-input-section">
+            <h2>Nhập công việc mới</h2>
+            <form id="task-form">
+                <div class="form-group">
+                    <label for="task-name">Tên công việc:</label>
+                    <input type="text" id="task-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-duration">Thời lượng (phút):</label>
+                    <input type="number" id="task-duration" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-priority">Mức độ ưu tiên (1-5):</label>
+                    <input type="number" id="task-priority" min="1" max="5" required>
+                </div>
+                <div class="form-group">
+                    <label for="task-dependencies">Phụ thuộc (IDs cách nhau bằng dấu phẩy):</label>
+                    <input type="text" id="task-dependencies">
+                    <small>Ví dụ: T1, T3 (Công việc này sẽ làm sau T1 và T3)</small>
+                </div>
+                <div class="form-group">
+                    <label for="task-earliest-start">Bắt đầu sớm nhất (yyyy-mm-ddThh:mm, tùy chọn):</label>
+                    <input type="datetime-local" id="task-earliest-start">
+                </div>
+                <div class="form-group">
+                    <label for="task-latest-finish">Kết thúc muộn nhất (yyyy-mm-ddThh:mm, tùy chọn):</label>
+                    <input type="datetime-local" id="task-latest-finish">
+                </div>
+                <button type="submit" id="add-task-btn">Thêm công việc</button>
+            </form>
+            <div id="form-messages" class="messages"></div>
+        </section>
+
+        <section class="task-list-section">
+            <h2>Danh sách công việc</h2>
+            <p>Tổng số công việc: <span id="total-tasks-count">0</span></p>
+            <table id="tasks-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên</th>
+                        <th>Thời lượng</th>
+                        <th>Ưu tiên</th>
+                        <th>Phụ thuộc</th>
+                        <th>Bắt đầu sớm nhất</th>
+                        <th>Kết thúc muộn nhất</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+            <div class="task-list-actions"> <button id="schedule-tasks-btn">Sắp xếp lịch trình</button>
+                <button id="clear-all-tasks-btn" class="delete-btn">Xóa tất cả</button>
+                <button id="export-tasks-btn">Xuất công việc</button>
+                <input type="file" id="import-tasks-input" accept=".json" style="display: none;">
+                <button id="import-tasks-btn">Nhập công việc</button>
+            </div>
+        </section>
+
+        <section class="schedule-output-section">
+            <h2>Lịch trình đã sắp xếp</h2>
+            <p>Tổng thời gian hoàn thành (Makespan): <span id="makespan-display">N/A</span></p>
+            <div id="gantt-chart-container" style="width: 100%; height: 500px;"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Personal Task Scheduler</p>
+    </footer>
+
+    <script src="scripts/models/Task.js"></script>
+    <script src="scripts/utils/validation.js"></script>
+    <script src="scripts/utils/dateUtils.js"></script>
+    <script src="scripts/utils/dataLoader.js"></script> <script src="scripts/algorithms/heuristics.js"></script>
+    <script src="scripts/algorithms/HeuristicScheduler.js"></script>
+    <script src="scripts/ui/taskFormHandler.js"></script>
+    <script src="scripts/visualizations/ganttChart.js"></script>
+    <script src="scripts/ui/scheduleRenderer.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+</html>

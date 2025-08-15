@@ -145,6 +145,7 @@ Latest version:
     \begin{itemize}
         \item C: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/OLP_ICPC/C}.
         \item C++: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/OLP_ICPC/C++}.
+        \item Java: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/OLP_ICPC/Java}.
         \item Python: \url{https://github.com/NQBH/advanced_STEM_beyond/tree/main/OLP_ICPC/Python}.
     \end{itemize}
 \end{itemize}
@@ -1391,11 +1392,251 @@ Output: {\tt5 4 3 2 1}.
 \chapter{Sort Algorithms \& Applications -- Thuật Toán Sắp Xếp \& Ứng Dụng}
 \minitoc
 
+%------------------------------------------------------------------------------%
+
+\section{Introduction to Sorting -- Giới Thiệu Sắp Xếp}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \cite{Knuth1998}. {\sc Donald Erwin Knuth}. {\it The Art of Computer Programming. Volume 3: Sorting \& Searching}. Chap. 5: Sorting.
+
+    \item {\sc Darren Yao, Benjamin Qi, Allen Li, Andrew Wang}. \href{https://usaco.guide/bronze/intro-sorting?lang=cpp}{USACO Guide{\tt/}introduction to sorting}.
+
+    {\sf Abstract.} Arranging collections in increasing order.
+\end{enumerate}
+Sorting refers to arranging items in some particular order.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Static arrays -- Mảng tĩnh}
+To sort static arrays, use {\tt sort(arr, arr + n)}  where $n\in\mathbb{N}$ is the number of elements to be sorted. The range can also be specified by replacing {\tt arr, arr + n} with the intended range, e.g., {\tt sort(arr + 1, arr + 4)} sorts indices $[1,4)$.
+
+-- Để sắp xếp các mảng tĩnh, hãy sử dụng {\tt sort(arr, arr + n)} trong đó $n\in\mathbb{N}$ là số phần tử cần sắp xếp. Phạm vi cũng có thể được chỉ định bằng cách thay thế {\tt arr, arr + n} bằng phạm vi mong muốn, ví dụ: {\tt sort(arr + 1, arr + 4)} sắp xếp các chỉ số $[1,4)$.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    // static arrays
+    int arr[] = {5, 1, 3, 2, 4}, n = 5;
+    sort(arr, arr + n);
+    for (int i = 0; i < n; ++i) cout << arr[i] << " "; // output: 1 2 3 4 5
+    cout << '\n';
+
+    int arr2[] = {5, 1, 3, 2, 4};
+    sort(arr2 + 1, arr2 + 4);
+    for (int i = 0; i < n; ++i) cout << arr2[i] << " "; // output: 5 1 2 3 4
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Dynamic arrays -- Mảng động}
+In order to sort a dynamic array, use {\tt sort(v.begin(), v.end())} or {\tt sort(begin(v), end(v))}. The default sort function sorts the array in ascending order. Similarly, we can specify the range. E.g., {\tt sort(v.begin() + 1, v.begin() + 4)} sorts indices $[1,4)$.
+
+-- Để sắp xếp một mảng động, hãy sử dụng {\tt sort(v.begin(), v.end())} hoặc {\tt sort(begin(v), end(v))}. Hàm sort mặc định sẽ sắp xếp mảng theo thứ tự tăng dần. Tương tự, chúng ta có thể chỉ định phạm vi. Ví dụ: {\tt sort(v.begin() + 1, v.begin() + 4)} sắp xếp các chỉ số $[1,4)$.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    // dynamic arrays
+    vector<int> v{5, 1, 3, 2, 4};
+    sort(v.begin(), v.end());
+    for (int i : v) cout << i << " "; // output: 1 2 3 4 5
+    cout << '\n';
+
+    v = {5, 1, 3, 2, 4};
+    sort(v.begin() + 1, v.begin() + 4);
+    for (int i : v) cout << i << " "; // output: 5 1 2 3 4
+    cout << '\n';
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Dynamic arrays of pairs \& tuples -- Mảng động gồm các cặp hoặc các bộ}
+By default, C++ pairs are sorted by 1st element and then 2nd element in case of a tie. Tuples are sorted similarly.
+
+-- Theo mặc định, các cặp C++ được sắp xếp theo phần tử thứ nhất và sau đó là phần tử thứ hai trong trường hợp hòa. Các bộ cũng được sắp xếp tương tự.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    // dynamic arrays of pairs & tuples
+    vector<pair<int, int>> u{{1, 5}, {2, 3}, {1, 2}};
+    sort(u.begin(), u.end());
+    for (pair<int, int> p : u) cout << p.first << " " << p.second << '\n';
+}
+\end{Verbatim}
+Output:
+\begin{verbatim}
+1 2
+1 5
+2 3
+\end{verbatim}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1621}{CSES Problem Set{\tt/}distinct numbers}]
+    You are given a list of $n\in\mathbb{N}^\star$ integers. Calculate the number of {\rm distinct} values in the list.
+    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the number of values. The 2nd line has $n$ integers $x_1,x_2,\ldots,x_n\in\mathbb{Z}$.
+    \item {\sf Output.} Print $1$ integer: the
+    \item {\sf Constraints.} $n\in[2\cdot10^5],m\in[100],x_i\in[10^9]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|distinct_number.inp| & \verb|distinct_number.out| \\
+            \hline
+            5 & 2 \\
+            2 3 2 2 3 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{baitoan}[Số số phân biệt]
+    Bạn được cung cấp một danh sách gồm $n\in\mathbb{N}^\star$ số nguyên. Tính số giá trị {\rm phân biệt} trong danh sách.
+    \item {\sf Đầu vào.} Dòng đầu vào thứ nhất chứa một số nguyên $n\in\mathbb{N}^\star$: số lượng các giá trị. Dòng thứ hai chứa $n$ số nguyên $x_1,x_2,\ldots,x_n\in\mathbb{Z}$.
+    \item {\sf Đầu ra.} In ra $1$ số nguyên:
+    \item {\sf Ràng buộc.} $n\in[2\cdot10^5],m\in[100],x_i\in[10^9]$.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item NQBH's C++: distinct numbers: {\it Ý tưởng}: Sắp xếp dãy theo thứ tự tăng dần, duyệt mảng để đếm số cặp phần tử liền kề khác nhau.
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <algorithm>
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n, ans = 1;
+    cin >> n;
+    int a[n];
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    sort(a, a + n);
+    for (int i = 1; i < n; ++i) if (a[i] != a[i - 1]) ++ans;
+    cout << ans;
+}
+        \end{Verbatim}
+        or vector version:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <algorithm>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n, ans = 1;
+    cin >> n;
+    vector<int> a(n);
+    for (int& i : a) cin >> i;
+    sort(a.begin(), a.end());
+    for (int i = 1; i < n; ++i) if (a[i] != a[i - 1]) ++ans;
+    cout << ans;
+}
+        \end{Verbatim}
+        \item Loser: \url{https://codeforces.com/blog/entry/74684} :
+           \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <set>
+using namespace std;
+
+int main() {
+    int n, x;
+    cin >> n;
+    set<int> s;
+    for (int i = 0; i < n; ++i) {
+        cin >> x;
+        s.insert(x);
+    }
+    cout << s.size();
+}
+           \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1084}{CSES Problem Set{\tt/}apartments}]
+    There are $n\in\mathbb{N}^\star$ applicants \& $m\in\mathbb{N}^\star$ free apartments. Distribute the apartments so that as many applicants as possible will get an apartment. Each applicant has a desired apartment size, \& they will accept any apartment whose size is close enough to the desired size.
+    \item {\sf Input.} The 1st input line has $3$ integers $n,m,k\in\mathbb{N}^\star$: the number of applicants, the number of apartments, \& the maximum allowed difference. The next line contains $n$ integers $a_1,a_2,\ldots,a_n$: the desired apartment size of each applicant. If the desired size of an applicant is $x$, they will accept any apartment whose size is between $x - k$ \& $x + k$. The last line contains $m$ integers $b_1,b_2,\ldots,b_m$: the size of each apartment.
+    \item {\sf Output.} Print $1$ integer: the number of applicants who will get an apartment.
+    \item {\sf Constraints.} $m,n\in[2\cdot10^5],k\in\overline{0,10^9},a_i,b_j\in[10^9]$, $\forall i\in[n]$, $\forall j\in[m]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|apartment.inp| & \verb|apartment.out| \\
+            \hline
+            4 3 5 & 2 \\
+            60 45 80 60 & \\
+            30 60 75 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{baitoan}[Căn hộ]
+    Có $n\in\mathbb{N}^\star$ ứng viên \& $m\in\mathbb{N}^\star$ căn hộ trống. Phân phối các căn hộ sao cho càng nhiều ứng viên càng tốt sẽ nhận được một căn hộ. Mỗi ứng viên có một kích thước căn hộ mong muốn, \& họ sẽ chấp nhận bất kỳ căn hộ nào có kích thước gần với kích thước mong muốn.
+    \item {\sf Input.} Dòng đầu vào thứ nhất chứa $3$ số nguyên $n,m,k\in\mathbb{N}^\star$: số lượng ứng viên, số lượng căn hộ, \& chênh lệch tối đa được phép. Dòng tiếp theo chứa $n$ số nguyên $a_1,a_2,\ldots,a_n$: kích thước căn hộ mong muốn của mỗi ứng viên. Nếu kích thước mong muốn của một ứng viên là $x$, họ sẽ chấp nhận bất kỳ căn hộ nào có kích thước từ $x - k$ \& $x + k$. Dòng cuối cùng chứa $m$ số nguyên $b_1,b_2,\ldots,b_m$: diện tích của mỗi căn hộ.
+    \item {\sf Đầu ra.} In ra $1$ số nguyên: số lượng người nộp đơn sẽ nhận được căn hộ.
+    \item {\sf Ràng buộc.} $m,n\in[2\cdot10^5],k\in\overline{0,10^9},a_i,b_j\in[10^9]$, $\forall i\in[n]$, $\forall j\in[m]$.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    C++:
+    \begin{enumerate}
+        \item NQBH's C++: apartment:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <algorithm>
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n, m, k, ans = 0;
+    cin >> n >> m >> k;
+    int a[n], b[m];
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    for (int i = 0; i < m; ++i) cin >> b[i];
+    sort(a, a + n);
+    sort(b, b + m);
+    int i = 0, j = 0;
+    while (i < n && j < m) {
+        if (a[i] - k <= b[j] && b[j] <= a[i] + k) { // ith applicant receives jth apartment
+            ++ans;
+            ++i;
+            ++j;
+        }
+        else if (b[j] < a[i] - k) ++j;
+        else ++i;
+    }
+    cout << ans;
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+%------------------------------------------------------------------------------%
 
 \section{Basic Terminologies -- Thuật Ngữ Cơ Bản}
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
     \item \cite{Knuth1998}. {\sc Donald Erwin Knuth}. {\it The Art of Computer Programming. Volume 3: Sorting \& Searching}. Chap. 5: Sorting.
+
+    \item {\sc Darren Yao, Benjamin Qi, Allen Li, Andrew Wang}. \href{https://usaco.guide/bronze/intro-sorting?lang=cpp}{USACO Guide{\tt/}introduction to sorting}.
+
+    {\sf Abstract.} Arranging collections in increasing order.
 \end{enumerate}
 
 \begin{definition}[Records, file, key, \cite{Knuth1998}, p. 4]
@@ -5168,45 +5409,6 @@ signed main() {
 
 \chapter{Sorting \& Searching -- Sắp Xếp \& Tìm Kiếm}
 \minitoc
-
-\begin{problem}[\href{https://cses.fi/problemset/task/1621}{CSES Problem Set{\tt/}distinct numbers}]
-    You are given a list of $n\in\mathbb{N}^\star$ integers. Calculate the number of {\rm distinct} values in the list.
-    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the number of values. The 2nd line has $n$ integers $x_1,x_2,\ldots,x_n\in\mathbb{Z}$.
-    \item {\sf Output.} Print $1$ integer: the
-    \item {\sf Constraints.} $n\in[2\cdot10^5],m\in[100],x_i\in[10^9]$.
-    \item {\sf Sample.}
-    \begin{table}[H]
-        \centering
-        \begin{tabular}{|l|l|}
-            \hline
-            \verb|distinct_number.inp| & \verb|distinct_number.out| \\
-            \hline
-            5 & 2 \\
-            2 3 2 2 3 & \\
-            \hline
-        \end{tabular}
-    \end{table}
-\end{problem}
-
-\begin{problem}[\href{https://cses.fi/problemset/task/1084}{CSES Problem Set{\tt/}apartments}]
-    There are $n\in\mathbb{N}^\star$ applicants \& $m\in\mathbb{N}^\star$ free apartments. Distribute the apartments so that as many applicants as possible will get an apartment. Each applicant has a desired apartment size, \& they will accept any apartment whose size is close enough to the desired size.
-    \item {\sf Input.} The 1st input line has $3$ integers $n,m,k\in\mathbb{N}^\star$: the number of applicants, the number of apartments, \& the maximum allowed difference. The next line contains $n$ integers $a_1,a_2,\ldots,a_n$: the desired apartment size of each applicant. If the desired size of an applicant is $x$, they will accept any apartment whose size is between $x - k$ \& $x + k$. The last line contains $m$ integers $b_1,b_2,\ldots,b_m$: the size of each apartment.
-    \item {\sf Output.} Print $1$ integer: the number of applicants who will get an apartment.
-    \item {\sf Constraints.} $m,n\in[2\cdot10^5],k\in\overline{0,10^9},a_i,b_j\in[10^9]$, $\forall i\in[n]$, $\forall j\in[m]$.
-    \item {\sf Sample.}
-    \begin{table}[H]
-        \centering
-        \begin{tabular}{|l|l|}
-            \hline
-            \verb|apartment.inp| & \verb|apartment.out| \\
-            \hline
-            4 3 5 & 2 \\
-            60 45 80 60 & \\
-            30 60 75 & \\
-            \hline
-        \end{tabular}
-    \end{table}
-\end{problem}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1090}{CSES Problem Set{\tt/}Ferris wheel}]
     There are $n\in\mathbb{N}^\star$ children who want to go to a Ferris wheel. Find a gondola for each child. Each gondola may have $1$ or $2$ children on it, \& in addition, the total weight in a gondola may not exceed $x$. You know the weight of every child. What is the minimum number of gondolas needed for the children?

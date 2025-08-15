@@ -1,0 +1,354 @@
+\documentclass{article}
+\usepackage[backend=biber,natbib=true,style=alphabetic,maxbibnames=50]{biblatex}
+\addbibresource{/home/nqbh/reference/bib.bib}
+\usepackage[utf8]{vietnam}
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
+\usepackage{amsmath,amssymb,amsthm,enumitem,fancyvrb,float,graphicx,mathtools,tikz}
+\usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
+\allowdisplaybreaks
+\newtheorem{assumption}{Assumption}
+\newtheorem{baitoan}{Bài toán}
+\newtheorem{cauhoi}{Câu hỏi}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{corollary}{Corollary}
+\newtheorem{dangtoan}{Dạng toán}
+\newtheorem{definition}{Definition}
+\newtheorem{dinhly}{Định lý}
+\newtheorem{dinhnghia}{Định nghĩa}
+\newtheorem{example}{Example}
+\newtheorem{ghichu}{Ghi chú}
+\newtheorem{hequa}{Hệ quả}
+\newtheorem{hypothesis}{Hypothesis}
+\newtheorem{lemma}{Lemma}
+\newtheorem{luuy}{Lưu ý}
+\newtheorem{nhanxet}{Nhận xét}
+\newtheorem{notation}{Notation}
+\newtheorem{note}{Note}
+\newtheorem{principle}{Principle}
+\newtheorem{problem}{Problem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{question}{Question}
+\newtheorem{remark}{Remark}
+\newtheorem{theorem}{Theorem}
+\newtheorem{vidu}{Ví dụ}
+\usepackage[left=1cm,right=1cm,top=5mm,bottom=5mm,footskip=4mm]{geometry}
+\def\labelitemii{$\circ$}
+\DeclareRobustCommand{\divby}{%
+    \mathrel{\vbox{\baselineskip.65ex\lineskiplimit0pt\hbox{.}\hbox{.}\hbox{.}}}%
+}
+\setlist[itemize]{leftmargin=*}
+\setlist[enumerate]{leftmargin=*}
+
+\title{Sliding Window Technique -- Kỹ Thuật Cửa Sổ Trượt}
+\author{Nguyễn Quản Bá Hồng\footnote{A scientist- {\it\&} creative artist wannabe, a mathematics {\it\&} computer science lecturer of Department of Artificial Intelligence {\it\&} Data Science (AIDS), School of Technology (SOT), UMT Trường Đại học Quản lý {\it\&} Công nghệ TP.HCM, Hồ Chí Minh City, Việt Nam.\\E-mail: {\sf nguyenquanbahong@gmail.com} {\it\&} {\sf hong.nguyenquanba@umt.edu.vn}. Website: \url{https://nqbh.github.io/}. GitHub: \url{https://github.com/NQBH}.}}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+    This text is a part of the series {\it Some Topics in Advanced STEM \& Beyond}:
+
+    {\sc url}: \url{https://nqbh.github.io/advanced_STEM/}.
+
+    Latest version:
+    \begin{itemize}
+        \item {\it Sliding Window Technique -- Kỹ Thuật Cửa Sổ Trượt}.
+
+        PDF: {\sc url}: \url{.pdf}.
+
+        \TeX: {\sc url}: \url{.tex}.
+        \item {\it }.
+
+        PDF: {\sc url}: \url{.pdf}.
+
+        \TeX: {\sc url}: \url{.tex}.
+    \end{itemize}
+\end{abstract}
+\tableofcontents
+
+%------------------------------------------------------------------------------%
+
+\section{Introduction to Sliding Window Technique -- Giới Thiệu Kỹ Thuật Cửa Sổ Trượt}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item {\sc Benjamin Qi}. \href{https://usaco.guide/gold/sliding-window?lang=cpp}{USACO Guide{\tt/}sliding window}. Maintaining data over consecutive subarrays.
+
+    \item \href{https://www.geeksforgeeks.org/dsa/window-sliding-technique/}{Geeks for Geeks{\tt/}sliding window technique}.
+
+    \item \href{https://www.geeksforgeeks.org/dsa/top-problems-on-sliding-window-technique-for-interviews/}{Geeks for Geeks{\tt/}top problems on sliding window technique for interviews}.
+
+    \item \href{https://www.geeksforgeeks.org/explore?page=2&category=sliding-window&sortBy=submissions}{Geeks for Geeks{\tt/}practice questions on sliding window}.
+\end{enumerate}
+The {\it sliding window} is a powerful algorithmic technique used to optimize problems involving arrays or strings. It helps reduce the time complexity of problems that require checking or computing results over contiguous subarrays or substrings.
+
+-- {\it Cửa sổ trượt} là một kỹ thuật thuật toán mạnh mẽ được sử dụng để tối ưu hóa các bài toán liên quan đến mảng hoặc chuỗi. Nó giúp giảm độ phức tạp về thời gian của các bài toán đòi hỏi phải kiểm tra hoặc tính toán kết quả trên các mảng con hoặc chuỗi con liền kề.
+
+Instead of repeatedly iterating over the same elements, the sliding window maintains a range (or ``window'') that moves step-by-step through the data, updating results incrementally.
+
+-- Thay vì lặp lại nhiều lần các phần tử giống nhau, cửa sổ trượt duy trì một phạm vi (hay ``cửa sổ'') di chuyển từng bước qua dữ liệu, cập nhật kết quả theo từng bước.
+
+\begin{question}
+    When to use sliding window? -- Khi nào nên sử dụng cửa sổ trượt?
+\end{question}
+
+\begin{proof}[Answer]
+    You can apply the sliding window technique when:
+    \begin{itemize}
+        \item The problem involves a contiguous sequence (subarray or substring).
+        \item You need to find: maximum{\tt/}minimum sum in a fixed-size window, longest{\tt/}shortest subarray with certain conditions, or count of distinct elements in a range.
+        \item Brute force would involve nested loops, leading to higher complexity.
+    \end{itemize}
+    -- Bạn có thể áp dụng kỹ thuật cửa sổ trượt khi:
+    \begin{itemize}
+        \item Bài toán liên quan đến một chuỗi liên tiếp (mảng con hoặc chuỗi con).
+        \item Bạn cần tìm: tổng tối đa{\tt/}tối thiểu trong một cửa sổ có kích thước cố định, mảng con dài nhất{\tt/}ngắn nhất với các điều kiện nhất định, hoặc số lượng phần tử riêng biệt trong một phạm vi.
+        \item Thử nghiệm vét cạn sẽ liên quan đến các vòng lặp lồng nhau, dẫn đến độ phức tạp cao hơn.
+    \end{itemize}
+\end{proof}
+
+\begin{problem}[Maximum sum of subarrays with $k$ elements]
+    Given an array $\{a_i\}_{i=0}^{n-1}$, calculate the maximum sum of a subarray having size exactly $k$.
+\end{problem}
+
+\begin{baitoan}[Tổng lớn nhất của một mảng con có $k$ phần tử]
+    Cho một mảng $\{a_i\}_{i=0}^{n-1}$, tính tổng lớn nhất của một mảng con có kích thước chính xác là $k$.
+    \item {\sf Input.} Dòng 1 chứa số bộ test $t$. Mỗi trong $t$ cặp dòng tiếp theo: Dòng 1 chứa 2 số $n,k\in\mathbb{N}^\star$: số lượng phần tử của mảng \& của mảng con. Dòng 2 chứa $n$ phần tử của mảng $a$.
+    \item {\sf Output.} Tổng lớn nhất có thể của 1 mảng con kích thước bằng $k$ của mảng $a$.
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|max_sum_subarray_k_element.inp| & \verb|max_sum_subarray_k_element.out| \\
+            \hline
+            5 3 & 6 \\
+            5 2 $-1$ 0 3 & \\
+            \hline
+            9 4 & 4 \\
+            1 4 2 10 23 3 1 0 20 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \item {\sf Explanation.} For test case 1, a satisfying subarray is $[5,2,-1]$. For test case 2, a satisfying subarray is $[4,2,10,23]$.
+\end{baitoan}
+
+\begin{proof}[1st solution: Naive approach: $O(nk)$ time \& $O(1)$ space]
+    A mathematical formalization of this problem can be given by
+    \begin{equation*}
+        \max_{i\in\overline{0,n - k}}\sum_{j=i}^{i + k - 1} a_j = \max_{i\in\overline{0,n - k}} a_i + a_{i + 1} + \cdots + a_{i + k - 1}.
+    \end{equation*}
+    \begin{enumerate}
+        \item NQBH's C++: maximum sum of subarrays with $k$ elements: naive approach:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <climits>
+using namespace std;
+
+int main() {
+    int t, n, k, sum, ans = INT_MIN;
+    cin >> t;
+    while (t--) {
+        cin >> n >> k;
+        int a[n];
+        for (int i = 0; i < n; ++i) cin >> a[i];
+        for (int i = 0; i < n - k + 1; ++i) {
+            sum = 0;
+            for (int j = i; j < i + k; ++j) sum += a[j];
+            ans = max(ans, sum);
+        }
+        cout << ans << '\n';
+    }
+}
+        \end{Verbatim}
+        \item Geeks for Geeks's  maximum sum of subarrays with $k$ elements: naive approach:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+#include <climits>
+using namespace std;
+
+int max_sum(vector<int>& arr, int k) {
+    int n = arr.size();
+    int max_sum = INT_MIN;
+    for (int i = 0; i <= n - k; ++i) { // consider all blocks starting with i
+        int current_sum = 0;
+        // calculate sum of current subarray of size k
+        for (int j = 0; j < k; ++j) current_sum += arr[i + j];
+        max_sum = max(current_sum, max_sum); // update result if required
+    }
+    return max_sum;
+}
+
+int main() {
+    int t, n, k;
+    cin >> t;
+    while (t--) {
+        cin >> n >> k;
+        vector<int> a(n);
+        for (int& i : a) cin >> i;
+        cout << max_sum(a, k) << '\n';
+    }
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{proof}[2nd solution: Sliding window technique: $O(n)$ time \& $O(1)$ space]
+    We compute the sum of the 1st $k$ elements out of $n$ terms using a linear loop \& store the sum in variable \verb|window_sum|. Then we will traverse linearly over the array till it reaches the end \& simultaneously keep track of the maximum sum. To get the current sum of a block of $k$ elements just subtract the 1st element from the previous block \& add the last element of the current block.
+
+    -- Chúng ta tính tổng của $k$ phần tử đầu tiên trong số $n$ số hạng bằng cách sử dụng vòng lặp tuyến tính \& lưu tổng vào biến \verb|window_sum|. Sau đó, chúng ta sẽ duyệt tuyến tính trên mảng cho đến khi đến cuối \& đồng thời theo dõi tổng lớn nhất. Để tính tổng hiện tại của một khối $k$ phần tử, chỉ cần trừ phần tử đầu tiên khỏi khối trước \& cộng phần tử cuối cùng của khối hiện tại.
+
+    C++:
+    \begin{enumerate}
+        \item NQBH's C++:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+using namespace std;
+
+int main() {
+    int t, n, k, sum;
+    cin >> t;
+    while (t--) {
+        sum = 0;
+        cin >> n >> k;
+        int a[n];
+        for (int i = 0; i < n; ++i) cin >> a[i];
+        for (int i = 0; i < k; ++i) sum += a[i]; // sum of 1st k elements
+        int ans = sum; // init answer as sum of 1st k elements
+        for (int i = k; i < n; ++i) {
+            sum += a[i] - a[i - k];
+            ans = max(ans, sum);
+        }
+        cout << ans << '\n';
+    }
+}
+        \end{Verbatim}
+        \item Geeks for Geeks's  maximum sum of subarrays with $k$ elements: sliding window:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int max_sum(vector<int>& arr, int k) {
+    int n = arr.size();
+    if (n <= k) return -1; // invalid size
+    // compute sum of 1st window of size k
+    int max_sum = 0;
+    for (int i = 0; i < k; ++i) max_sum += arr[i];
+    // compute sums of remaining windows by removing 1st element of previous window
+    // & adding last element of current window
+    int window_sum = max_sum;
+    for (int i = k; i < n; ++i) {
+        window_sum += arr[i] - arr[i - k];
+        max_sum = max(max_sum, window_sum);
+    }
+    return max_sum;
+}
+
+int main() {
+    int t, n, k;
+    cin >> t;
+    while (t--) {
+        cin >> n >> k;
+        vector<int> a(n);
+        for (int& i : a) cin >> i;
+        cout << max_sum(a, k) << '\n';
+    }
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{question}[How]
+    How to use sliding window technique? -- Làm thế nào để sử dụng kỹ thuật cửa sổ trượt?
+\end{question}
+
+\begin{proof}[Answer]
+    There are basically 2 types of sliding window:
+    \begin{itemize}
+        \item {\it Fixed size sliding window.} The general steps to solve these equations by following below steps:
+        \begin{enumerate}
+            \item Find the size of the window required, say $k$.
+            \item Compute the result for the 1st window, i.e., the window consisting of the 1st $k$ elements of the data structure.
+            \item Then use a loop to slide the window by 1 \& keep computing the result window by window.
+        \end{enumerate}
+        \item {\it Variable size sliding window.} The general steps to solve these questions by the following steps:
+        \begin{enumerate}
+            \item In this type of sliding window problem, we increase our right pointer 1 by 1 till our condition is true.
+            \item At any step if our condition does not match, we shrink the size of our window by increasing left pointer.
+            \item Again, when our condition satisfies, we start increasing the right pointer \& follow step 1.
+            \item We follow these steps until we reach to the end of the array.
+        \end{enumerate}
+    \end{itemize}
+    -- Về cơ bản có 2 loại cửa sổ trượt:
+    \begin{itemize}
+        \item {\it Cửa sổ trượt kích thước cố định.} Các bước chung để giải các phương trình này bằng cách làm theo các bước dưới đây:
+        \begin{enumerate}
+            \item Tìm kích thước của cửa sổ cần thiết, giả sử là $k$.
+            \item Tính kết quả cho cửa sổ thứ nhất, tức là cửa sổ bao gồm $k$ phần tử đầu tiên của cấu trúc dữ liệu.
+            \item Sau đó, sử dụng vòng lặp để trượt cửa sổ đi 1 \& tiếp tục tính kết quả theo từng cửa sổ.
+        \end{enumerate}
+        \item {\it Cửa sổ trượt kích thước thay đổi.} Các bước chung để giải các bài toán này bằng các bước sau:
+        \begin{enumerate}
+            \item Trong loại bài toán cửa sổ trượt này, chúng ta tăng con trỏ phải lên 1 cho đến khi điều kiện đúng.
+            \item Tại bất kỳ bước nào, nếu điều kiện không khớp, chúng ta sẽ thu nhỏ kích thước cửa sổ bằng cách tăng con trỏ trái.
+            \item Một lần nữa, khi điều kiện của chúng ta thỏa mãn, chúng ta bắt đầu tăng con trỏ phải \& làm theo bước 1.
+            \item Chúng ta làm theo các bước này cho đến khi đến cuối mảng.
+        \end{enumerate}
+    \end{itemize}
+\end{proof}
+
+\begin{question}
+    How to identify ``sliding window problems'', i.e., problems that can be solved by applying sliding window technique?
+\end{question}
+
+\begin{proof}[Answer]
+    Here are some signs or criteria that a problem can be \& should be solved by sliding window technique:
+    \begin{enumerate}
+        \item These problems generally require finding maximum{\tt/}minimum subarrays, substrings which satisfy some specific condition.
+        \item The size of the subarray or substring $k$ will be given in some of these problems.
+        \item These problems can easily (i.e., naively but slowly) be solved in $O(n^2)$ time complexity using nested loops, however, we can solve these problems in $O(n)$ time complexity by using sliding window technique.
+        \item Required time complexity is $O(n)$ or $O(n\log_2n)$.
+        \item Constraints: $n\in[10^6]$.
+    \end{enumerate}
+    -- Dưới đây là một số dấu hiệu hoặc tiêu chí cho thấy một bài toán có thể được giải quyết bằng kỹ thuật cửa sổ trượt:
+    \begin{enumerate}
+        \item Những bài toán này thường yêu cầu tìm các mảng con tối đa{\tt/}tối thiểu, các chuỗi con thỏa mãn một số điều kiện cụ thể.
+        \item Kích thước của mảng con hoặc chuỗi con $k$ sẽ được cung cấp trong một số bài toán này.
+        \item Những bài toán này có thể dễ dàng (tức là, một cách ngây thơ nhưng chậm chạp) được giải quyết với độ phức tạp thời gian $O(n^2)$ bằng cách sử dụng các vòng lặp lồng nhau, tuy nhiên, chúng ta có thể giải quyết những bài toán này với độ phức tạp thời gian $O(n)$ bằng cách sử dụng kỹ thuật cửa sổ trượt.
+        \item Độ phức tạp thời gian yêu cầu là $O(n)$ hoặc $O(n\log_2n)$.
+        \item Ràng buộc: $n\in[10^6]$.
+    \end{enumerate}
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\section{Sáng Tác Bài Toán Sử Dụng Kỹ Thuật Cửa Sổ Trượt}
+
+\begin{question}
+    Can sliding window technique be extended to more complex data structures e.g. 2D matrix, 2D vector, or even graphs?
+
+    -- Kỹ thuật cửa sổ trượt có thể được mở rộng sang các cấu trúc dữ liệu phức tạp hơn như ma trận 2D, vectơ 2D hoặc thậm chí là đồ thị không?
+\end{question}
+
+%------------------------------------------------------------------------------%
+
+\begin{baitoan}
+    Cho 1 ma trận $A = \{a_{ij}\}_{i,j=1}^{m,n}\in\mathbb{R}^{m\times n}$. Tìm ma trận con của $A$ có: (a) Tổng lớn nhất. (b) Tổng nhỏ nhất.
+\end{baitoan}
+Có thể mở rộng ra cho mảng nhiều chiều, i.e., tensor nhiều chiều.
+
+\begin{baitoan}
+    Cho 1 đồ thị đơn hữu hạn $G = (V,E)$ có trọng số ở các đỉnh. Tìm đồ thị con $G' = (V',E')$ của $G$ sao cho: (a) $G'$ liên thông \& có tổng các trọng số ở đỉnh nhỏ nhất, lớn nhất.
+\end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\section{Miscellaneous}
+
+%------------------------------------------------------------------------------%
+
+\printbibliography[heading=bibintoc]
+
+\end{document}

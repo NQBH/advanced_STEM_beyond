@@ -300,6 +300,32 @@ int main() {
     \end{enumerate}
 \end{proof}
 
+\begin{remark}
+    Bài toán này giống như 1 đứa trẻ nhảy lò cò giữa 2 dãy ô $a = a_1,a_2,\ldots,a_n$ \& $b = b_1,b_2,\ldots,b_m$ được xếp như hình vẽ: nếu $m > n$
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            $a_1$ & $a_2$ & $\cdots$ & $a_n$ & $\cdots$ & $a_m$ \\
+            \hline
+            $b_1$ & $b_2$ & $\cdots$ & $b_n$ &  &  \\
+            \hline
+        \end{tabular}
+    \end{table}
+    nếu $n > m$:
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|c|c|c|c|c|c|}
+            \hline
+            $a_1$ & $a_2$ & $\cdots$ & $a_n$ &  & \\
+            \hline
+            $b_1$ & $b_2$ & $\cdots$ & $b_n$ & $\cdots$ & $b_m$ \\
+            \hline
+        \end{tabular}
+    \end{table}
+    Nhiệm vụ của đứa trẻ khá đơn giản: chỉ cần nhảy vào ô nhỏ nhất giữa ô trước mặt \& ô đầu tiên của cột bên kia là được \& nếu 2 ô này có giá trị bằng nhau thì nhảy ô nào trước cũng được. Khi đó vết nhảy của đứa trẻ chính là dãy $c$ được ghép từ 2 dãy $a,b$ theo thứ tự không giảm.
+\end{remark}
+
 %------------------------------------------------------------------------------%
 
 \subsection{Subarray sum -- Tổng các phần tử của mảng con}
@@ -666,11 +692,49 @@ int main() {
 \end{baitoan}
 
 \begin{proof}[1st solution: 2-pointers method]
-     Gọi ${\rm sum}(l,r)$ là tổng các phần tử có chỉ số nằm trong đoạn $[l,r]$, i.e., hàm ${\rm sum}:[n]^2\to\mathbb{N}^\star$, $(l,r)\mapsto{\rm sum}(l,r)\coloneqq\sum_{i=l}^r a_i = a_l + a_{l+1} + \cdots + a_r$. 1 đoạn con $[l,r]$ được gọi là đoạn con ``tốt'' nếu ${\rm sum}(l,r)\le s$. Khi đó bài toán yêu cầu tìm độ dài của đoạn con tốt dài nhất.
+     Gọi ${\rm sum}(l,r)$ là tổng các phần tử có chỉ số nằm trong đoạn $[l,r]$, i.e., hàm ${\rm sum}:[n]^2\to\mathbb{N}^\star$, $(l,r)\mapsto{\rm sum}(l,r)\coloneqq\sum_{i=l}^r a_i = a_l + a_{l+1} + \cdots + a_r$. 1 đoạn con $[l,r]$ được gọi là đoạn con ``tốt'' nếu ${\rm sum}(l,r)\le s$. Khi đó bài toán yêu cầu tìm độ dài của đoạn con ``tốt'' dài nhất.
 
-     \item {\sf C++ implementation.}
+     Ta có 2 nhận xét quan trọng:
      \begin{enumerate}
-         \item \url{https://wiki.vnoi.info/algo/basic/two-pointers}:
+         \item Vì dãy $a$ gồm các số nguyên dương nên ${\rm sum}(1,r) > {\rm sum}(2,r) > \cdots > {\rm sum}(r - 1,r) > {\rm sum}(r,r)$ (tính đơn điệu giảm theo biến thứ nhất). Nếu đoạn con $[l,r]$ là đoạn con ``tốt'' thì đoạn $[x,r]$ cũng là đoạn con ``tốt'', $\forall x\ge l$. Nếu đoạn con $[l,r]$ không là đoạn con ``tốt'' thì với mọi $x\le l$, đoạn $[x,r]$ không là đoạn con ``tốt''.
+         \item Với $r$ là 1 vị trí bất kỳ, nếu như $l$ là vị trí nhỏ nhất sao cho đoạn $[l,r]$ là 1 đoạn ``tốt'' thì đoạn con $[x,r]$ là 1 đoạn con ``tốt'', $\forall x\ge l$; đoạn con $[x,r]$ không là 1 đoạn ``tốt'', $\forall x < l$; \& đoạn con $[l,r]$ là 1 đoạn con ``tốt'' dài nhất trong các đoạn con ``tốt'' có vị trí kết thúc tại $r$.
+     \end{enumerate}
+     Từ đó, với mỗi $r\in[n]$, nếu ta xác định được vị trí $l$ được định nghĩa thông qua hàm $f:[n]\to[n]$ được đặt bởi công thức
+     \begin{equation}
+         \label{longest subarray with given maximum sum: min left index}
+         l\coloneqq f(r)\coloneqq\min\{x\in[r];[x,r]\mbox{ là 1 đoạn con ``tốt''}\} = \min\{x\in[r];{\rm sum}(x,r)\le s\}.
+     \end{equation}
+     thì ta có thể biết được độ dài của đoạn con ``tốt'' dài nhất của dãy $a$. Cụ thể hơn, đoạn con dài nhất có vị trí kết thúc ở $r\in[n]$ có dạng $[f(r),f(r) + 1,\ldots,r - 1, r]$ \& có độ dài bằng $r - f(r) + 1$. Cuối cùng, độ dài của đoạn con ``tốt'' dài nhất của dãy $a$ là giá trị lớn nhất của độ dài các đoạn con ``tốt'' dài nhất với vị trí kết thúc từ 1 đến $n$:
+     \begin{equation}
+         \label{longest subarray with given maximum sum: min left index: ans}
+         \max_{r\in[n]} r - f(r) + 1 = \max_{r\in[n]} r - \min\{x\in[r];[x,r]\mbox{ là 1 đoạn con ``tốt''}\} + 1 = \max_{r\in[n]} r - \min\{x\in[r];{\rm sum}(x,r)\le s\} + 1.
+     \end{equation}
+
+     \begin{lemma}
+         Hàm $f:[n]\to[n]$ xác định bởi công thức \eqref{longest subarray with given maximum sum: min left index} là 1 hàm không giảm.
+     \end{lemma}
+
+     \begin{proof}
+         Chứng minh này có thể trình bày ngắn gọn hơn nhưng ở đây tác giả quyết định viết chi tiết để thể hiện cấu trúc định nghĩa của hàm $f$ \& ý nghĩa tại sao phải định nghĩa hàm $f$ như vậy. Vì hàm ${\rm sum}(\cdot,\cdot)$ là 1 hàm đơn điệu giảm theo biến thứ nhất nên ${\rm sum}(x,r) > {\rm sum}(f(r),r)$, $\forall x\in[n],x < f(r)$ mà theo định nghĩa của hàm $f$ thì $f(r)$ là chỉ số $l$ nhỏ nhất để ${\rm sum}(l,r)\le s$ nên suy ra
+         \begin{equation*}
+             {\rm sum}(f(r),r)\le s < {\rm sum}(x,r),\ \forall x\in[n],x < f(r).
+         \end{equation*}
+         Kết hợp điều này với việc $f$ là hàm đơn điệu tăng theo biến thứ 2, thu được:
+         \begin{equation*}
+             {\rm sum}(f(r),r)\le s < {\rm sum}(x,r) < {\rm sum}(x,r + 1),\ \forall x\in[n],x < f(r).
+         \end{equation*}
+         Theo định nghĩa của hàm $f$, $f(r + 1)$ là chỉ số $x$ nhỏ nhất thỏa ${\rm sum}(x,r + 1)\le s$, mà đánh giá cuối cho ta ${\rm sum}(x,r + 1)$, $\forall x\in[n],x < f(r)$, suy ra $f(r + 1)\ge f(r)$, $\forall r\in[n]$, i.e., $f$ là 1 hàm khôn giảm.
+     \end{proof}
+     Áp dụng bổ này này cho dãy $a$ \& vì các phần tử trong dãy $a$ đều có giá trị $\le s$ nên luôn tồn tại vị trí $l\in[n],l\le r$ sao cho đoạn $[l,r]$ là 1 đoạn tốt $\forall r\in[n]$, i.e., hàm $f$ định nghĩa bởi công thức \eqref{longest subarray with given maximum sum: min left index} có giá trị xác định $\forall r\in[n]$ nên hàm $f$ được đặt tốt (wellposedness).
+     \item {\sf Giải pháp.} Với các phân tích trên, ta giải quyết bài toán với phương pháp 2 con trỏ như sau:
+     \begin{itemize}
+         \item Initialization -- bước khởi tạo: 2 con trỏ $l,r$ sẽ đặt ở vị trí 1.
+         \item Di chuyển con trỏ $r$ lần lượt từ 1 đến $n$. Sau mỗi lần di chuyển con trỏ $r$ nếu ${\rm sum}(l,r)\le s$ thì giữ nguyên vị trí con trỏ $l$, còn nếu ${\rm sum}(l,r) > s$ thì tăng vị trí con trỏ $l$ cho đến khi ${\rm sum}(l,r)\le s$ để đạt được giá trị $l = f(r)$. Khi đó với vị trí $l = f(r)$ \& $r$ hiện tại, ta biết đoạn ``tốt'' dài nhất với vị trí kết thúc tại $r$ là đoạn $[l,r]$.
+         \item Độ dài đoạn con ``tốt'' dài nhất theo \eqref{longest subarray with given maximum sum: min left index: ans} chính là giá trị độ dài lớn nhất của các đoạn ``tốt'' dài nhất với vị trí kết thúc tại $r$, với $r\in[n]$.
+     \end{itemize}
+     \item {\sf C++ implementation.} Để có thể tính được tổng các phần tử từ $l$ đến $r$ trong khi $l,r$ đang chạy, ta sử dụng biến {\tt sum} để lưu lại tổng của đoạn $[l,r]$ hiện tại -- kỹ thuật chính của phương pháp cửa sổ trượt (main technique of sliding window method). Sau khi di chuyển $r$ sang phải, biến {\tt sum} sẽ cộng thêm giá trị $a_r = {\tt a[r]}$. Trước khi di chuyển $l$ sang phải, biến {\tt sum} sẽ trừ đi giá trị $a_l = {\tt a[l]}$.
+     \begin{enumerate}
+         \item VNOI's C++: Longest subarray with given maximum sum \url{https://wiki.vnoi.info/algo/basic/two-pointers}:
          \begin{Verbatim}[numbers=left,xleftmargin=5mm]
 #include <iostream>
 using namespace std;
@@ -689,7 +753,7 @@ int main() {
 }
          \end{Verbatim}
      \end{enumerate}
-
+    \item {\sf Độ phức tạp.} Vị trí con trỏ $r$ luôn tăng, vị trí con trỏ $l$ luôn tăng \& $l\le r$. Mỗi vị trí $l,r$ tăng không quá $n$ lần, nên độ phức tạp của giải pháp là $O(n)$.
 \end{proof}
 
 \begin{question}
@@ -896,6 +960,70 @@ A mathematical formulation of the $k$-sum problem:
 %------------------------------------------------------------------------------%
 
 \section{Problems: 2 Pointers Method -- Bài Tập: Phương Pháp Phương Pháp 2 Con Trỏ}
+
+\begin{baitoan}
+     Cho 1 dãy số nguyên $\{x_n\}_{n=0}^\infty$ được định nghĩa bởi
+     \begin{equation*}
+         \left\{\begin{split}
+             x_0 &= 1,\\
+             x_{n+1} &= (ax_n + x_n\mbox{ div } b)\mod c.
+         \end{split}\right.
+     \end{equation*}
+     Tìm $n\in\mathbb{N}$ nhỏ nhất sao cho tồn tại $m < n$ \& $x_m = x_n$. Dữ liệu đảm bảo $n\le2\cdot10^7$.
+     \item {\sf Giới hạn.} $a\in[10^4],b,c\in[10^{14}]$.
+     \item {\sf Sample.} $a = 8,b = 2,c = 31$, $\{x_n\}_{n=0}^\infty = 1,8,6,20,15,3,25,26,4,3,25,26,4,3,25,26,4,\ldots$ giá trị cần tìm là $9$ vì số $3$ là giá trị lặp lại đầu tiên trong dãy \& $x_9 = 3$.
+\end{baitoan}
+
+\begin{proof}[1st solution: 2 pointers method]
+    Kết quả của bài toán có ý nghĩa toán học là nếu xảy ra lần lặp lại giá trị đầu tiên của dãy $\{x_n\}_{n=0}^\infty$, e.g., $x_m = x_n$ thì xuất ra chỉ số $n$ của số hạng sau. Xét hàm $f:\mathbb{Z}\to\mathbb{Z}$, $f(x) = (ax + x\mbox{ div } b)\mod c$. Dãy số đã cho có dạng $x_0 = 1,x_n = f(x_{n-1})$, $\forall n\in\mathbb{N}^\star$. Với phép chia lấy dư cho $c$ thì $x_n\in\overline{0,c-1}$, $\forall n\in\mathbb{N}$ \& vì dãy số có vô hạn phần tử nên luôn tồn tại ít nhất 1 cặp chỉ số $m,n\in\mathbb{N}$, $m < n$ thỏa $x_m = x_n$ theo nguyên lý Dirichlet. Hơn nữa, nếu dãy tồn tại $x_m = x_n$ thì dãy sẽ xuất hiện chu kỳ do giá trị lặp được reset lại ở vị trí $n$ y như vị trí $m$. Cụ thể hơn, gọi $n\in\mathbb{N}$ là chỉ số nhỏ nhất thỏa mãn tồn tại $m\in\mathbb{N}$, $m < x$ để $x_m = x_n$. Khi đó dãy sẽ có chu kỳ độ dài $n - m - 2$ lặp lại các phần tử từ $x_m$ đến $x_{n-1}$:
+    \begin{equation*}
+        x_0,x_1,\ldots,x_{m-1},x_m,x_{m+1},\ldots,x_{n-1},x_m,x_{m+1},\ldots,x_{n-1},x_m,x_{m+1},\ldots,x_{n-1},\ldots
+    \end{equation*}
+    Ta có thể giải quyết bài toán nếu biết phần tử bắt đầu chu kỳ $x_\mu$ \& độ dài chu kỳ $\lambda$. Ta có thể tính được giá trị $n$ thỏa mãn bằng bởi công thức $n = \mu + \lambda$.
+    \item {\sf Giải pháp.} Để xác định 2 giá trị $\mu,\lambda$, ta sử dụng thuật toán \href{https://en.wikipedia.org/wiki/Cycle_detection#Floyd's_tortoise_and_hare}{Floyd's tortoise \& hare}, thuật toán rùa \& thỏ của Floyd -- 1 trong các thuật toán của cycle detection{\tt/}cycle finding -- tìm{\tt/}phát hiện chu kỳ trong Khoa học Máy tính. Để biết thêm các thuật toán khác cho cycle detection{\tt/}cycle finding, see, e.g., \href{https://en.wikipedia.org/wiki/Cycle_detection}{Wikipedia{\tt/}cycle detection}.
+
+     Khởi tạo 2 con trỏ, {\tt tortoise} (rùa) \& {\tt hare} (thỏ). Tại mỗi thời điểm, ta tịnh tiến 2 con trỏ này như sau:
+     \begin{itemize}
+         \item {\tt tortoise} (rùa): tịnh tiến 1 ``bước''. Nếu hiện tại con trỏ {\tt tortoise} đang là $x$, rùa sẽ được tịnh tiến đến $f(x)$, i.e., vết đường đi của rùa sẽ là $x_0\to x_1\to x_2\to x_3\to\cdots$ vì $x_n = f(x_{n-1})$, $\forall n\in\mathbb{N}^\star$. Vì dãy số đã cho có chu kỳ nên ta có công thức tính giá trị của con trỏ {\tt tortoise} sau $t$ lần tịnh tiến:
+         \begin{equation*}
+             {\tt tortoise} = \left\{\begin{split}
+                 &x_t&&\mbox{if } t < \mu,\\
+                 &x_{\mu + (t - \mu)\mod\lambda}&&\mbox{if } t\ge\mu.
+             \end{split}\right.
+         \end{equation*}
+         \item {\tt hare} (thỏ): tịnh tiến 2 ``bước''. Nếu hiện tại con trỏ {\tt hare} đang là $x$, thỏ sẽ được tịnh tiến đến $f(f(x))$, i.e., vết đường đi của thỏ sẽ là $x_0\to x_2\to x_4\to x_6\to\cdots$. Vì dãy số đã cho có chu kỳ nên ta có công thức tính giá trị của con trỏ {\tt hare} sau $t$ lần tịnh tiến:
+         \begin{equation*}
+             {\tt hare} = \left\{\begin{split}
+                 &x_{2t}&&\mbox{if } t < \frac{\mu}{2},\\
+                 &x_{\mu + (2t - \mu)\mod\lambda}&&\mbox{if } t\ge\frac{\mu}{2}.
+             \end{split}\right.
+         \end{equation*}
+     \end{itemize}
+     Ngoài lúc ban đầu tại vị trí 0, 2 con trỏ {\tt tortoise, hare} sẽ luôn gặp nhau tại thời điểm nào đó. Thật vậy:
+     \begin{itemize}
+         \item Nếu $t < \frac{\mu}{2}$: Sau $t$ lần tịnh tiến, ${\tt tortoise} = x_t,{\tt hare} = x_{2t}$. Tuy nhiên, $\mu + \lambda$ mới bắt đầu lại chu kỳ nên các phần tử từ $x_0$ đến $x_{\mu + \lambda - 1}$ phải đôi một khác nhau, nên $x_t\ne x_{2t}$, {\tt tortoise, hare} chưa gặp nhau lúc này.
+         \item $t\in\left[\frac{\mu}{2},\mu\right)$: Sau $t$ lần tịnh tiến, ${\tt tortoise} = x_t,{\tt hare} = x_{\mu + (2t - \mu)\mod\lambda}$. Tuy nhiên, $\mu + \lambda$ mới bắt đầu lại chu kỳ nên các phần tử từ $x_0$ đến $x_{\mu + \lambda - 1}$ phải đôi một khác nhau, nên $x_t\ne x_{\mu + (2t - \mu)\mod\lambda}$, {\tt tortoise, hare} chưa gặp nhau lúc này.
+         \item $t\ge\mu$: Sau $t$ lần tịnh tiến, ${\tt tortoise} = x_{\mu + (t - \mu)\mod\lambda},{\tt hare} = x_{\mu + (2t - \mu)\mod\lambda}$. Giả sử {\tt tortoise, hare} gặp nhau thì 2 chỉ số phải giống nhau: $\mu + (t - \mu)\mod\lambda = \mu + (2t - \mu)\mod\lambda\Leftrightarrow(2t - \mu) - (t - \mu)\mod\lambda = t\mod\lambda = 0$. Nên {\tt tortoise, hare} sẽ gặp nhau sau $t$ lần tịnh tiến, với $t\ge\mu$ \& $t\divby\lambda$. Trừ lúc khởi tạo, 2 con trỏ {\tt tortoise, hare} sẽ gặp nhau khi giá trị của 2 con trỏ bằng $x_{\mu + (\lambda - \mu\mod\lambda)\mod\lambda}$.
+     \end{itemize}
+     Cách cài đặt để rùa \& thỏ gặp nhau:
+     \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+int tortoise = 1, hare = 1;
+while (true) {
+    tortoise = f(tortoise);
+    hare = f(f(hare));
+    if (tortoise == hare) break;
+}
+     \end{Verbatim}
+     {\bf Tìm $\mu$.} Khởi tạo 1 con trỏ mới ${\tt p} = x_0 = 1$, con trỏ này được tịnh tiến giống như con trỏ {\tt tortoise}.
+
+     \begin{lemma}
+         Tịnh tiến cùng lúc 2 con trỏ {\tt p, tortoise} \& dừng lại cho đến khi chúng gặp nhau. Số lần tịnh tiến bằng $\mu$.
+     \end{lemma}
+
+     \begin{proof}
+
+     \end{proof}
+\end{proof}
 
 \begin{problem}[Subarray Sums I]
 

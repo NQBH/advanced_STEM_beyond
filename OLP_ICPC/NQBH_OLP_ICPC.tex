@@ -21046,6 +21046,107 @@ Trong tất cả các trường hợp khác, phương pháp này không thể á
 \section{Scheduling Jobs on 2 Machines -- Phân Công{\tt/}Lập Lịch Trình Công Việc trên 2 Máy}
 \textbf{\textsf{Resources -- Tài nguyên.}} \href{https://cp-algorithms.com/schedules/schedule_two_machines.html}{Algorithms for Competitive Programming{\tt/}scheduling for 2 machines}.
 
+This task is about finding an optimal schedule for $n\in\mathbb{N}^\star$ jobs on 2 machines. Every item must 1st be processed on 1st machine, \& afterwards on the 2nd one. The $i$th job takes $a_i$ time on the 1st machine, \& $b_i$ time on the 2nd machine. Each machine can only process 1 job at a time.
+
+-- Nhiệm vụ này liên quan đến việc tìm lịch trình tối ưu cho $n\in\mathbb{N}^\star$ công việc trên 2 máy. Mỗi mục phải được xử lý trước trên máy thứ nhất, \& sau đó trên máy thứ hai. Công việc $i$ mất $a_i$ thời gian trên máy thứ nhất, \& $b_i$ thời gian trên máy thứ hai. Mỗi máy chỉ có thể xử lý 1 công việc tại một thời điểm.
+
+We want to find the optimal order of the jobs, so that the final processing time is the minimum possible. This solution discussed here is called Johnson's rule, named after {\sc S. M. Johnson}. The task becomes NP-complete if we have more than 2 machines.
+
+-- Chúng ta muốn tìm thứ tự tối ưu của các công việc, sao cho thời gian xử lý cuối cùng là nhỏ nhất có thể. Giải pháp được thảo luận ở đây được gọi là quy tắc Johnson, đặt theo tên của {\sc S. M. Johnson}. Nhiệm vụ trở thành NP-hoàn chỉnh nếu chúng ta có nhiều hơn 2 máy.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Construction of Johnson's rule}
+Note 1st that we can assume that the order of jobs for the 1st \& the 2nd machine have to coincide. In fact, since the jobs for the 2nd machine become available after processing them at the 1st, \& if there are several jobs available for the 2nd machine, then the processing time will be equal to the sum of their $b_i$, regardless of their order. Therefore it is only advantageous to send the jobs to the 2nd machine in the same order as we sent them to the 1st machine.
+
+-- Lưu ý thứ nhất, chúng ta có thể giả định rằng thứ tự các công việc cho máy thứ nhất \& máy thứ hai phải trùng khớp. Trên thực tế, vì các công việc cho máy thứ hai chỉ khả dụng sau khi máy thứ nhất xử lý chúng, \& nếu có nhiều công việc khả dụng cho máy thứ hai, thì thời gian xử lý sẽ bằng tổng $b_i$ của chúng, bất kể thứ tự của chúng. Do đó, việc gửi các công việc đến máy thứ hai theo cùng thứ tự như đã gửi đến máy thứ nhất chỉ có lợi.
+
+Consider the order of the jobs, which coincides with their input order $1,2,\ldots,n$. We denote by $x_i$ the {\it idle time} of the 2nd machine immediately before processing $i$. Our goal is to minimize the total idle time:
+\begin{equation*}
+    \mbox{minimize } F(x)\coloneqq\sum_{i=1}^n x_i.
+\end{equation*}
+For the 1st job we have $x_1 = a_1$. For the 2nd job, since it gets sent to the 2nd machine at the time $a_1 + a_2$ (\& obviously, the $i$th job gets sent to the 2nd machine at time $\sum_{j=1}^n a_j$, $\forall i\in[n]$), \& the 2nd machine gets free at $x_1 + b_1$, we have $x_2 = \max\{(a_1 + a_2) - (x_1 + b_1),0\} = [(a_1 + a_2) - (x_1 + b_1)]_+$. In general, which can be proved by induction, we get the equation
+\begin{equation*}
+    x_k = \max\left\{\sum_{i=1}^k a_i - \sum_{i=1}^{k-1} b_i - \sum_{i=1}^{k-1} x_i,0\right\} = \left(\sum_{i=1}^k a_i - \sum_{i=1}^{k-1} b_i - \sum_{i=1}^{k-1} x_i\right)_+.
+\end{equation*}
+We can now calculate the {\it total idle time} $F(x)$. It is claimed that it has the form
+\begin{equation*}
+    F(x) = \max_{k\in[n]} K_k\mbox{ where } K_k\coloneqq\sum_{i=1}^k a_i - \sum_{i=1}^{k-1} b_i,\ \forall k\in[n].
+\end{equation*}
+This can be easily verified using induction.
+
+-- Hãy xem xét thứ tự của các công việc, trùng với thứ tự đầu vào $1,2,\ldots,n$ của chúng. Ta ký hiệu $x_i$ là {\it thời gian nhàn rỗi} của máy thứ 2 ngay trước khi xử lý $i$. Mục tiêu của chúng ta là giảm thiểu tổng thời gian nhàn rỗi:
+\begin{equation*}
+    \mbox{minimize } F(x)\coloneqq\sum_{i=1}^n x_i.
+\end{equation*}
+Đối với công việc thứ nhất, ta có $x_1 = a_1$. Đối với công việc thứ 2, vì nó được gửi đến máy thứ 2 tại thời điểm $a_1 + a_2$ (\& rõ ràng, công việc thứ $i$ được gửi đến máy thứ 2 tại thời điểm $\sum_{j=1}^n a_j$, $\forall i\in[n]$), \& máy thứ 2 được giải phóng tại $x_1 + b_1$, ta có $x_2 = \max\{(a_1 + a_2) - (x_1 + b_1),0\} = [(a_1 + a_2) - (x_1 + b_1)]_+$. Tổng quát, có thể chứng minh bằng quy nạp, ta thu được phương trình
+\begin{equation*}
+    x_k = \max\left\{\sum_{i=1}^k a_i - \sum_{i=1}^{k-1} b_i - \sum_{i=1}^{k-1} x_i,0\right\} = \left(\sum_{i=1}^k a_i - \sum_{i=1}^{k-1} b_i - \sum_{i=1}^{k-1} x_i\right)_+.
+\end{equation*}
+Bây giờ ta có thể tính {\it tổng thời gian nhàn rỗi} $F(x)$. Người ta cho rằng nó có dạng
+\begin{equation*}
+    F(x) = \max_{k\in[n]} K_k\mbox{ trong đó } K_k\coloneqq\sum_{i=1}^k a_i - \sum_{i=1}^{k-1} b_i,\ \forall k\in[n].
+\end{equation*}
+Điều này có thể dễ dàng được kiểm chứng bằng phương pháp quy nạp.
+
+\begin{remark}
+    Trong bài gốc \url{https://cp-algorithms.com/schedules/schedule_two_machines.html}, $K_i$ được định nghĩa bởi công thức
+    \begin{equation*}
+        K_i\coloneqq\sum_{i=1}^k a_i - \sum_{i=1}^{k-1} b_i,\ \forall k\in[n].
+    \end{equation*}
+    nhưng $i$ là biến chạy (dummy variable) nên đại lượng $K$ phải phụ thuộc vào mỗi $k$, hoàn toàn độc lập với $i$ nên công thức gốc bị sai.
+\end{remark}
+We now use the permutation method: we will exchange 2 neighboring jobs $j,j + 1$ \& see how this will change the total idle time.
+
+[WAIT: FIX MATHEMATICAL ERRORS]
+
+%------------------------------------------------------------------------------%
+
+\section{Optimal Schedule of Jobs Given Their Deadlines \& Durations -- Lịch Trình Công Việc Tối Ưu Dựa Trên Thời Hạn \& Thời Lượng}
+\textbf{\textsf{Resources -- Tài nguyên.}} \href{https://cp-algorithms.com/schedules/schedule-with-completion-duration.html}{Algorithms for Competitive Programming{\tt/}optimal schedule of jobs given their deadlines \& durations}.
+
+Suppose that have a set of jobs, \& we are aware of every job's deadline \& its duration. The execution of a job cannot be interrupted prior to its ending. It is required to create such schedule to accomplish the biggest number of jobs.
+
+-- Giả sử chúng ta có một tập hợp các công việc, \& chúng ta biết thời hạn của từng công việc \& thời lượng của nó. Việc thực hiện một công việc không thể bị gián đoạn trước khi kết thúc. Cần phải tạo một lịch trình như vậy để hoàn thành số lượng công việc lớn nhất.
+
+The algorithm of the solving is greedy. Let's sort all the jobs by their deadlines \& look at them in descending order. Also, let's create a queue $q$, in which we will gradually put the jobs \& extract one with the least run-time (e.g., we can use {\tt set} or \verb|priority_queue|). Initially, $q$ is empty. Suppose, we are looking at the $i$th job. 1st of all, let's put it into $q$. Let's consider the period of time between the deadline of $i$th job \& the deadline of $(i - 1)$th job, which is a segment $T$ of some length. We will extract jobs from $q$ in their left duration ascending order \& execute them until the whole segment $T$ is filled. Important: if at any moment of time the extracted job can only be partly executed until segment $T$ is filled, then we execute this job partly just as far as possible, i.e., during the $T$-time, \& we put the remaining part of a job back into $q$. On the algorithm's completion we will choose the optimal solution (or, at least, 1 of several solutions). The running time of algorithm is $O(n\log_2n)$.
+
+-- Thuật toán giải quyết là tham lam. Hãy sắp xếp tất cả các công việc theo hạn chót của chúng \& xem chúng theo thứ tự giảm dần. Ngoài ra, hãy tạo một hàng đợi $q$, trong đó chúng ta sẽ dần dần đưa các công việc \& trích xuất một công việc có thời gian chạy ngắn nhất (ví dụ: chúng ta có thể sử dụng {\tt set} hoặc \verb|priority_queue|). Ban đầu, $q$ rỗng. Giả sử, chúng ta đang xem xét công việc thứ $i$. Trước hết, hãy đưa nó vào $q$. Hãy xem xét khoảng thời gian giữa hạn chót của công việc thứ $i$ \& hạn chót của công việc thứ $(i - 1)$, là một phân đoạn $T$ có độ dài nào đó. Chúng ta sẽ trích xuất các công việc từ $q$ theo thứ tự tăng dần thời lượng bên trái của chúng \& thực thi chúng cho đến khi toàn bộ phân đoạn $T$ được lấp đầy. Quan trọng: nếu tại bất kỳ thời điểm nào, tác vụ được trích xuất chỉ có thể được thực thi một phần cho đến khi phân đoạn $T$ được lấp đầy, thì chúng ta thực thi tác vụ này một phần càng xa càng tốt, tức là trong thời gian $T$, \& chúng ta đặt phần còn lại của tác vụ trở lại $q$. Khi thuật toán hoàn tất, chúng ta sẽ chọn giải pháp tối ưu (hoặc ít nhất là 1 trong nhiều giải pháp). Thời gian chạy của thuật toán là $O(n\log_2n)$.
+
+{\sf C++ Implementation.} The following function takes a vector of jobs (consisting of a deadline, a duration, \& the job's index) \& computes a vector containing all indices of the used jobs in the optimal schedule. Note that you still need to sort these jobs by their deadlines, if you want to write down the plan explicitly.
+
+-- Hàm sau đây lấy một vectơ các công việc (bao gồm thời hạn, thời lượng, \& chỉ số của công việc) \& tính toán một vectơ chứa tất cả các chỉ số của các công việc đã sử dụng trong lịch trình tối ưu. Lưu ý rằng bạn vẫn cần sắp xếp các công việc này theo thời hạn nếu muốn viết kế hoạch một cách rõ ràng.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+struct Job {
+    int deadline, duration, idx;
+    bool operator<(Job o) const {
+        return deadline < o.deadline
+    }
+};
+
+vector<int> compute_schedule(vector<Job> jobs) {
+    sort(jobs.begin(), jobs.end());
+    set<pair<int, int>> s;
+    vector<int> schedule;
+    for (int i = jobs.size() - 1; i >= 0; --i) {
+        int t = jobs[i].deadline - (i ? jobs[i - 1].deadline : 0);
+        s.insert(make_pair(jobs[i].duration, jobs[i].idx));
+        while (t && !s.empty()) {
+            auto it = s.begin();
+            if (it->first <= t) {
+                t -= it->first;
+                schedule.push_back(it->second);
+            } else {
+                s.insert(make_pair(it->first - t, it->second));
+                t = 0;
+            }
+            s.erase(it);
+        }
+    }
+    return schedule;
+}
+\end{Verbatim}
+
 %------------------------------------------------------------------------------%
 
 \chapter{Miscellaneous}

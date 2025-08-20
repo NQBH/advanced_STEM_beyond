@@ -36,3 +36,15 @@ sanding_machine_order = [TABLE_ID, CHAIR_ID, CABINET_ID]
 assembly_station_order = [CABINET_ID, TABLE_ID, CHAIR_ID]
 y = [cutting_machine_order, sanding_machine_order, assembly_station_order, ]
 schedule = Schedule.from_job_sequences(instance, y)
+
+# use CP-SAT optimizer from OR-Tools in JobShopLib
+from job_shop_lib.constraint_programming import ORToolsSolver
+
+cp_sat_optimizer = ORToolsSolver()
+optimal_schedule = cp_sat_optimizer(instance)
+
+# use PDRs in JobShopLib
+from job_shop_lib.dispatching import DispatchRuleSolver
+
+solver_mwkr = DispatchRuleSolver("most_work_remaining")
+schedule_mwkr = solver_mwkr(instance)

@@ -2540,14 +2540,14 @@ from sklearn.metrics import accuracy_score
 
             Can further dissect (4.5) \& understand AGGREGATE \& COMBINE function defined in GCN. For a node $i$, node updating equation can be reformulated as below: (4.6)--(4.7)
             \begin{align*}
-                H_i^k &= \sigma\left(\sum_{j\in\{N(i)\cup i\}} \frac{\tilde{A}_{ij}}{\sqrt{\tilde{D}_{ii}\tilde{D}_{jj}}}H_j^{k-1}W^k\right),\\
+                H_i^k &= \sigma\left(\sum_{j\in{\cal N}_i\cup\{i\}} \frac{\tilde{A}_{ij}}{\sqrt{\tilde{D}_{ii}\tilde{D}_{jj}}}H_j^{k-1}W^k\right),\\
                 H_i^k &= \sigma\left(\sum_{j\in N(i)} \frac{A_{ij}}{\sqrt{\tilde{D}_{ii}\tilde{D}_{jj}}}H_j^{k-1}W^k + \frac{1}{\tilde{D}_i}H_i^{k-1}W^k\right).
             \end{align*}
             In (4.7), can see: AGGREGATE function is defined as weighted average of neighbor node representations. Weight of neighbor $j$ is determined by weight of edge between $i,j$ (i.e., $A_{ij}$ normalized by degrees of 2 nodes). COMBINE function is defined as summation of aggregated messages \& node representation itself, in which node representation is normalized by its own degree.
 
             -- Có thể phân tích sâu hơn (4.5) \& hiểu hàm AGGREGATE \& COMBINE được định nghĩa trong GCN. Đối với 1 nút $i$, phương trình cập nhật nút có thể được xây dựng lại như sau: (4.6)--(4.7)
             \begin{align*}
-                H_i^k &= \sigma\left(\sum_{j\in\{N(i)\cup i\}} \frac{\tilde{A}_{ij}}{\sqrt{\tilde{D}_{ii}\tilde{D}_{jj}}}H_j^{k-1}W^k\right),\\
+                H_i^k &= \sigma\left(\sum_{j\in{\cal N}_i\cup\{i\}} \frac{\tilde{A}_{ij}}{\sqrt{\tilde{D}_{ii}\tilde{D}_{jj}}}H_j^{k-1}W^k\right),\\
                 H_i^k &= \sigma\left(\sum_{j\in N(i)} \frac{A_{ij}}{\sqrt{\tilde{D}_{ii}\tilde{D}_{jj}}}H_j^{k-1}W^k + \frac{1}{\tilde{D}_i}H_i^{k-1}W^k\right).
             \end{align*}
             Trong (4.7), có thể thấy: Hàm AGGREGATE được định nghĩa là trung bình có trọng số của các biểu diễn nút lân cận. Trọng số của nút lân cận $j$ được xác định bởi trọng số của cạnh giữa $i,j$ (i.e., $A_{ij}$ được chuẩn hóa theo bậc của 2 nút). Hàm COMBINE được định nghĩa là tổng của các thông điệp được tổng hợp \& chính biểu diễn nút, trong đó biểu diễn nút được chuẩn hóa theo bậc của chính nó.
@@ -3789,7 +3789,7 @@ Understanding \& using {\tt torch.nn.Parameter} is essential for anyone working 
         \item Chúng ta có 1 môi trường xưởng gia công với 1 tập hợp các công việc ${\cal J}$ \& máy móc ${\cal M}$. Kích thước của 1 bài toán được ký hiệu là $|{\cal J}|\times|{\cal M}|$.
         \item Mỗi công việc $J_i\in{\cal J}$ bao gồm 1 chuỗi các thao tác $O_{i1}\to O_{i2}\to\cdots\to O_{in_i}$. Các thao tác này phải được xử lý theo 1 thứ tự nhất định. Tập hợp tất cả các thao tác trong 1 bài toán được ký hiệu là ${\cal O}$.
         \item Mỗi thao tác được gán cho 1 máy $M_j\in{\cal M}$, với thời gian xử lý $p_{ij}\in\mathbb{N}$. Máy này chỉ có thể xử lý 1 thao tác tại 1 thời điểm.
-        \item Một lịch trình được định nghĩa bằng cách gán cho mỗi thao tác $O_{ij}$ 1 thời điểm bắt đầu $S_{ij}\in\mathbb{N}$ thỏa mãn các ràng buộc đã đề cập.
+        \item 1 lịch trình được định nghĩa bằng cách gán cho mỗi thao tác $O_{ij}$ 1 thời điểm bắt đầu $S_{ij}\in\mathbb{N}$ thỏa mãn các ràng buộc đã đề cập.
         \item Mục tiêu chính: tìm 1 lịch trình tối thiểu hóa thời gian hoàn thành tối đa của tất cả các công việc, còn được gọi là makespan. Mục tiêu này được định nghĩa chính thức là thời gian hoàn thành tối đa giữa tất cả các tác vụ $C_{\max} = \max_{i,j}\{C_{ij} = S_{ij} + p_{ij}\}$.
     \end{itemize}
     In Sect. 2.2, show how problem can be visualized with a graph, which can be useful for understanding notation. In this work, focus on problems of this type: processing times are constant, \& there are no setup times, due dates, or release dates, among other factors.
@@ -3832,7 +3832,7 @@ instance = JobShopInstance(jobs)
         \end{equation*}
         In this matrix, 1st row corresponds to cutting machine $M_1$, 2nd to sanding machine $M_2$, \& 3rd to assembly station $M_3$. Numbers within matrix represent jobs that each machine will process in order. Jobs are indexed as $J_1$ for table, $J_2$ for chair, \& $J_3$ for cabinet. E.g., 1st number in 1st row indicates: cutting machine $M_1$ will begin with cabinet $J_3$, then continue with table $J_1$, \& finally with chair $J_2$. This same pattern applies to other machines, according to index shown in each row. Note: indices chosen to represent each machine or job are arbitrary, \& any permutation of these would represent same problem.
 
-        -- {\sf Biểu diễn Giải pháp.} Một lịch trình hoặc giải pháp cho bài toán $Y$ được biểu diễn dưới dạng ma trận có kích thước $|{\cal M}|\times|{\cal J}|$, trong đó mỗi hàng $i$ biểu diễn chuỗi các thao tác mà máy $M_i\in{\cal M}$ sẽ xử lý. Ví dụ: giải pháp tối ưu cho Ex1 là 1 lịch trình có thể được biểu diễn bằng ma trận
+        -- {\sf Biểu diễn Giải pháp.} 1 lịch trình hoặc giải pháp cho bài toán $Y$ được biểu diễn dưới dạng ma trận có kích thước $|{\cal M}|\times|{\cal J}|$, trong đó mỗi hàng $i$ biểu diễn chuỗi các thao tác mà máy $M_i\in{\cal M}$ sẽ xử lý. Ví dụ: giải pháp tối ưu cho Ex1 là 1 lịch trình có thể được biểu diễn bằng ma trận
         \begin{equation*}
             Y = \begin{pmatrix}
                 3 & 1 & 2\\1 & 2 & 3\\3 & 1 & 2
@@ -3842,7 +3842,7 @@ instance = JobShopInstance(jobs)
         \begin{itemize}
             \item {\sf2.1.1. Types of Schedules.} To obtain a complete schedule with specific timings from a sequence matrix like $Y$, typically generate corresponding semi-active schedule. A semi-active schedule is constructed by starting each operation as early as possible, ensuring that no precedence constraints within a job are violated, required machine is available, \& crucially, operation order specified by matrix $Y$ for that machine is maintained. E.g., if matrix stipulates that operation $O_{22}$ must be executed before $O_{33}$ on their shared machine, $O_{33}$ will begin only once both its preceding operation within same job e.g. $O_{32}$ \& its machine predecessor $O_{22}$ have finished processing. Following this ``start as early as possible'' rule for a given sequence naturally eliminates unnecessary idle time for that specific sequence \& guarantees finding schedule with smallest possible makespan among all schedules respecting matrix's sequence constraints. Considering semi-active schedules is generally sufficient, as set of all semi-active schedule is known to contain at least 1 optimal solution for regular objectives like makespan.
 
-            -- {\sf Các loại Lịch trình.} Để có được 1 lịch trình hoàn chỉnh với các thời gian cụ thể từ 1 ma trận trình tự như $Y$, thông thường hãy tạo ra 1 lịch trình bán chủ động tương ứng. Một lịch trình bán chủ động được xây dựng bằng cách bắt đầu mỗi thao tác càng sớm càng tốt, đảm bảo rằng không có ràng buộc nào về thứ tự ưu tiên trong 1 công việc bị vi phạm, máy cần thiết phải khả dụng, \& quan trọng là thứ tự thao tác do ma trận $Y$ chỉ định cho máy đó được duy trì. Ví dụ: nếu ma trận quy định rằng thao tác $O_{22}$ phải được thực thi trước $O_{33}$ trên máy dùng chung của chúng, $O_{33}$ sẽ chỉ bắt đầu khi cả thao tác trước đó trong cùng 1 công việc, ví dụ: $O_{32}$ \& máy tiền nhiệm của nó $O_{22}$ đã hoàn tất xử lý. Tuân theo quy tắc ``bắt đầu càng sớm càng tốt'' này cho 1 trình tự nhất định sẽ loại bỏ thời gian nhàn rỗi không cần thiết cho trình tự cụ thể đó \& đảm bảo tìm được lịch trình có khoảng thời gian chờ nhỏ nhất có thể trong số tất cả các lịch trình tuân theo các ràng buộc trình tự của ma trận. Việc xem xét các lịch trình bán chủ động thường là đủ, vì tập hợp tất cả các lịch trình bán chủ động đều chứa ít nhất 1 giải pháp tối ưu cho các mục tiêu thông thường như makespan.
+            -- {\sf Các loại Lịch trình.} Để có được 1 lịch trình hoàn chỉnh với các thời gian cụ thể từ 1 ma trận trình tự như $Y$, thông thường hãy tạo ra 1 lịch trình bán chủ động tương ứng. 1 lịch trình bán chủ động được xây dựng bằng cách bắt đầu mỗi thao tác càng sớm càng tốt, đảm bảo rằng không có ràng buộc nào về thứ tự ưu tiên trong 1 công việc bị vi phạm, máy cần thiết phải khả dụng, \& quan trọng là thứ tự thao tác do ma trận $Y$ chỉ định cho máy đó được duy trì. Ví dụ: nếu ma trận quy định rằng thao tác $O_{22}$ phải được thực thi trước $O_{33}$ trên máy dùng chung của chúng, $O_{33}$ sẽ chỉ bắt đầu khi cả thao tác trước đó trong cùng 1 công việc, ví dụ: $O_{32}$ \& máy tiền nhiệm của nó $O_{22}$ đã hoàn tất xử lý. Tuân theo quy tắc ``bắt đầu càng sớm càng tốt'' này cho 1 trình tự nhất định sẽ loại bỏ thời gian nhàn rỗi không cần thiết cho trình tự cụ thể đó \& đảm bảo tìm được lịch trình có khoảng thời gian chờ nhỏ nhất có thể trong số tất cả các lịch trình tuân theo các ràng buộc trình tự của ma trận. Việc xem xét các lịch trình bán chủ động thường là đủ, vì tập hợp tất cả các lịch trình bán chủ động đều chứa ít nhất 1 giải pháp tối ưu cho các mục tiêu thông thường như makespan.
 
             While semi-active schedules are efficient for a given sequence, it may be possible to improve some of them further by changing the sequence itself (e.g. allowing an operation to ``jump ahead'' of another on the same machine if it doesn't delay anything else overall). Schedules where no such sequence-altering improvements (termed global left-shifts) are possible are called active schedules. This set is a subset of semi-active schedules \& is theoretically important because it also forms a dominant set. I.e., we only need to search within active schedules to ensure we find an optimal solution.
 
@@ -3873,10 +3873,327 @@ schedule = Schedule.from_job_sequences(instance, y)
         \end{itemize}
         \item {\sf2.2. Disjunctive Graph.} To better visualize this problem, a disjunctive graph representation $G = (V,C\cup D)$ is commonly used (Błazewicz et al., 2000); this name is simply due to it being composed of 2 types of edges ($C,D$). $V$ denotes set of nodes, each representing an operation $O_j$. An initial node $S$ \& a final node $T$ are also added. They serve as starting \& ending points for all operations \& can be considered operations with zero duration. Directed edges of 2 types connect nodes. Conjunctive edges $C$ represent precedence relationships: if an operation $O_{ij}$ must be completed before next operation $O_{i(j + 1)}$, there is a directed arc from $O_{ij}$ to $O_{i(j + 1)}$. On other hand, disjunctive edges $D$ are added between operations that require same machine $M_j$. These edges are not initially oriented, as they represent a resource conflict: machine can only process 1 operation at a time, so deciding which operation will be processed 1st will be necessary.
 
-        -- {\sf Đồ thị phân ly.} Để hình dung rõ hơn về vấn đề này, biểu diễn đồ thị phân ly $G = (V,C\cup D)$ thường được sử dụng (Błazewicz \& cộng sự, 2000); tên này đơn giản là do nó bao gồm 2 loại cạnh ($C,D$). $V$ biểu thị tập hợp các nút, mỗi nút biểu diễn 1 thao tác $O_j$. Một nút đầu $S$ \& 1 nút cuối $T$ cũng được thêm vào. Chúng đóng vai trò là điểm bắt đầu \& điểm kết thúc cho tất cả các thao tác \& có thể được coi là các thao tác có thời lượng bằng không. Các cạnh có hướng của 2 loại kết nối các nút. Các cạnh liên hợp $C$ biểu diễn các mối quan hệ thứ tự ưu tiên: nếu 1 thao tác $O_{ij}$ phải được hoàn thành trước thao tác tiếp theo $O_{i(j + 1)}$, thì có 1 cung có hướng từ $O_{ij}$ đến $O_{i(j + 1)}$. Mặt khác, các cạnh rời rạc $D$ được thêm vào giữa các thao tác yêu cầu cùng 1 máy $M_j$. Các cạnh này ban đầu không được định hướng, vì chúng biểu thị xung đột tài nguyên: máy chỉ có thể xử lý 1 thao tác tại 1 thời điểm, do đó cần phải quyết định thao tác nào sẽ được xử lý trước.
-        \item {\sf2.3. Solving Problem.}
+        -- {\sf Đồ thị phân ly.} Để hình dung rõ hơn về vấn đề này, biểu diễn đồ thị phân ly $G = (V,C\cup D)$ thường được sử dụng (Błazewicz \& cộng sự, 2000); tên này đơn giản là do nó bao gồm 2 loại cạnh ($C,D$). $V$ biểu thị tập hợp các nút, mỗi nút biểu diễn 1 thao tác $O_j$. 1 nút đầu $S$ \& 1 nút cuối $T$ cũng được thêm vào. Chúng đóng vai trò là điểm bắt đầu \& điểm kết thúc cho tất cả các thao tác \& có thể được coi là các thao tác có thời lượng bằng không. Các cạnh có hướng của 2 loại kết nối các nút. Các cạnh liên hợp $C$ biểu diễn các mối quan hệ thứ tự ưu tiên: nếu 1 thao tác $O_{ij}$ phải được hoàn thành trước thao tác tiếp theo $O_{i(j + 1)}$, thì có 1 cung có hướng từ $O_{ij}$ đến $O_{i(j + 1)}$. Mặt khác, các cạnh rời rạc $D$ được thêm vào giữa các thao tác yêu cầu cùng 1 máy $M_j$. Các cạnh này ban đầu không được định hướng, vì chúng biểu thị xung đột tài nguyên: máy chỉ có thể xử lý 1 thao tác tại 1 thời điểm, do đó cần phải quyết định thao tác nào sẽ được xử lý trước.
+
+        Disjunctive graphs can also represent solutions through appropriate orientation of disjunctive arcs {\sf Fig. 2.3: Disjunctive graph of Ex1 representing optimal solution presented in Fig. 1.2}. Specifically, direction indicates order in which each machine will process each task. E.g., 1st node of 3rd row $O_{31}$ is connected to 1st node of 1st row $O_{11}$. This node, in turn, points to node representing 1st task of 2nd row $O_{21}$. Therefore, cutting machine (represented by ID 0) will 1st process operation $O_{31}$, then $O_{11}$, \& finally $O_{21}$.
+
+        -- Đồ thị rời rạc cũng có thể biểu diễn các giải pháp thông qua hướng thích hợp của các cung rời rạc {\sf Hình 2.3: Đồ thị rời rạc của Ex1 biểu diễn giải pháp tối ưu được trình bày trong Hình 1.2}. Cụ thể, hướng chỉ ra thứ tự mà mỗi máy sẽ xử lý từng tác vụ. Ví dụ: nút thứ nhất của hàng thứ 3 $O_{31}$ được kết nối với nút thứ nhất của hàng thứ nhất $O_{11}$. Đến lượt mình, nút này trỏ đến nút biểu diễn tác vụ thứ nhất của hàng thứ 2 $O_{21}$. Do đó, máy cắt (được biểu diễn bằng ID 0) sẽ xử lý tác vụ $O_{31}$ đầu tiên, sau đó là $O_{11}$, \& cuối cùng là $O_{21}$.
+        \item {\sf2.3. Solving Problem.} Various methods exist to solve JSSP. They can be classified as ``exact'' \cite{Korte_Vygen2018}, heuristic, or metaheuristic (Boussaïd et al., 2013). Exact algorithms, e.g. Mixed Integer Linear Programming (MILP) or branch-\&-bound, seek to find optimal solution but are limited to smaller problem instances due to their computational demands. Heuristic methods provide faster, albeit suboptimal, \& solutions are often used in real-life applications where fast decision-making is crucial. This is category of priority dispatching rules. Finally, metaheuristic approaches, e.g. genetic algorithms, simulated annealing, \& tabu search, balance solution quality \& computational efficiency, making them suitable for larger \& more complex problem instances. Their name comes from operating at a more general level (``meta'') than traditional heuristics, meaning they can be applied to different combinatorial optimization problems.
+
+        -- Có nhiều phương pháp để giải JSSP. Chúng có thể được phân loại thành ``chính xác'' \cite{Korte_Vygen2018}, heuristic hoặc metaheuristic (Boussaïd và cộng sự, 2013). Các thuật toán chính xác, ví dụ như Lập trình tuyến tính số nguyên hỗn hợp (MILP) hoặc branch-\&-bound, tìm cách tìm ra giải pháp tối ưu nhưng bị giới hạn trong các trường hợp bài toán nhỏ hơn do yêu cầu tính toán của chúng. Các phương pháp heuristic cung cấp các giải pháp nhanh hơn, mặc dù không tối ưu, \& thường được sử dụng trong các ứng dụng thực tế, nơi việc ra quyết định nhanh chóng là rất quan trọng. Đây là loại quy tắc phân bổ ưu tiên. Cuối cùng, các phương pháp metaheuristic, ví dụ như thuật toán di truyền, ủ mô phỏng, \& tìm kiếm tabu, chất lượng giải pháp cân bằng \& hiệu quả tính toán, khiến chúng phù hợp với các trường hợp bài toán lớn hơn \& phức tạp hơn. Tên của chúng xuất phát từ việc hoạt động ở cấp độ tổng quát hơn (``meta'') so với các heuristic truyền thống, nghĩa là chúng có thể được áp dụng cho các bài toán tối ưu hóa tổ hợp khác nhau.
+
+        In this sect, describe Constraint Programming (CP), \& exact method utilized in this work to generate a dataset of optimal instances which we trained an ML model. 2nd, go into detail about PDRs, a method used to compare performance of this model.
+
+        -- Trong phần này, mô tả Lập trình ràng buộc (CP), \& phương pháp chính xác được sử dụng trong công trình này để tạo ra tập dữ liệu các trường hợp tối ưu mà chúng tôi đã đào tạo một mô hình ML. Thứ 2, đi sâu vào PDR, một phương pháp được sử dụng để so sánh hiệu suất của mô hình này.
+        \begin{itemize}
+            \item {\sf2.3.1. Constraint Programming.} CP (Zhou, 1996; Rossi et al., 2006) is a paradigm for solving combinatorial search problems belonging to family of exact algorithms described above. This method allows us to find optimal solutions to small problems quickly. To solve problem, user must define a series of variables \& constraints for a general optimizer to solve it. In our case, JSSP is encoded in following way:
+            \begin{enumerate}
+                \item {\bf Variables.}
+                \begin{itemize}
+                    \item $S_{ij}$: start time of operation $O_{ij}$.
+                    \item $C_{ij}$: completion time of operation $O_{ij}$: $C_{ij} = S_{ij} + p_{ij}$.
+                \end{itemize}
+                \item {\bf Objective.} Minimize makespan $\max_{ij} C_{ij}$.
+                \item {\bf Constraints.}
+                \begin{itemize}
+                    \item Job sequencing constraints: completion time $C_{ij}$ must be $\le$ start time of next operation in job $S_{i(j + 1)}$: $C_{ij}\le S_{i(j + 1)}$.
+                    \item Machine non-overlapping constraints: for each machine $M_k\in{\cal M}$, none of operations $O_{ij},O_{pq}$ assigned to $M_k$ can overlap in time: $S_{ij}\ge C_{pq}$ or $S_{pq}\ge C_{ij}$.
+                \end{itemize}
+            \end{enumerate}
+            -- {\sf Lập trình Ràng buộc.} CP (Zhou, 1996; Rossi và cộng sự, 2006) là một mô hình để giải quyết các bài toán tìm kiếm tổ hợp thuộc họ các thuật toán chính xác được mô tả ở trên. Phương pháp này cho phép chúng ta nhanh chóng tìm ra các giải pháp tối ưu cho các bài toán nhỏ. Để giải quyết bài toán, người dùng phải định nghĩa một chuỗi các biến \& ràng buộc để một trình tối ưu hóa tổng quát giải quyết. Trong trường hợp của chúng tôi, JSSP được mã hóa theo cách sau:
+            \begin{enumerate}
+                \item {\bf Biến.}
+                \begin{itemize}
+                    \item $S_{ij}$: thời điểm bắt đầu của phép toán $O_{ij}$.
+                    \item $C_{ij}$: thời điểm hoàn thành của phép toán $O_{ij}$: $C_{ij} = S_{ij} + p_{ij}$.
+                \end{itemize}
+                \item {\bf Mục tiêu.} Giảm thiểu khoảng thời gian $\max_{ij} C_{ij}$.
+                \item {\bf Ràng buộc.}
+                \begin{itemize}
+                    \item Ràng buộc về trình tự công việc: thời gian hoàn thành $C_{ij}$ phải bằng $\le$ thời gian bắt đầu của thao tác tiếp theo trong công việc $S_{i(j + 1)}$: $C_{ij}\le S_{i(j + 1)}$.
+                    \item Ràng buộc không chồng chéo máy: đối với mỗi máy $M_k\in{\cal M}$, không có thao tác nào trong số $O_{ij}, O_{pq}$ được gán cho $M_k$ có thể chồng chéo về mặt thời gian: $S_{ij}\ge C_{pq}$ hoặc $S_{pq}\ge C_{ij}$.
+                \end{itemize}
+            \end{enumerate}
+            Once defined, use Google's CP-SAT optimizer from OR-Tools library (Perron and Didier, 2024). It searches for possible solutions that satisfy (SAT) constraints defined. It applies a broad range of techniques, each with strengths \& weaknesses. Although each technique runs concurrently, once any of these processes finds a better solution, result is communicated between  them so they can take advantage of this information (Krupke, 2024). In contrast, other exactalgorithms, such as those mentioned above, specialize in a single strategy that does not always turn out to be most efficient.
+
+            -- Sau khi xác định, hãy sử dụng trình tối ưu hóa CP-SAT của Google từ thư viện OR-Tools (Perron và Didier, 2024). Trình tối ưu hóa này tìm kiếm các giải pháp khả thi thỏa mãn các ràng buộc (SAT) đã xác định. Trình tối ưu hóa này áp dụng một loạt các kỹ thuật, mỗi kỹ thuật đều có điểm mạnh và điểm yếu. Mặc dù mỗi kỹ thuật chạy đồng thời, nhưng khi bất kỳ quy trình nào trong số này tìm thấy giải pháp tốt hơn, kết quả sẽ được trao đổi giữa chúng để chúng có thể tận dụng thông tin này (Krupke, 2024). Ngược lại, các thuật toán chính xác khác, chẳng hạn như các thuật toán đã đề cập ở trên, tập trung vào một chiến lược duy nhất mà không phải lúc nào cũng hiệu quả nhất.
+
+            {\bf Using CP-SAT optimizer from OR-Tools in JobShopLib.} {\tt JobShopLib} provides {\tt ORToolsSolver} class, which encodes problem in previously presented from transparently to user:
+            \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+# use CP-SAT optimizer from OR-Tools in JobShopLib
+from job_shop_lib.constraint_programming import ORToolsSolver
+
+cp_sat_optimizer = ORToolsSolver()
+optimal_schedule = cp_sat_optimizer(instance)
+            \end{Verbatim}
+            \item {\sf2.3.2. Priority Dispatching Rules.} PDRs are 1 of most used methods in practice due to their simplicity \& ability to be applied to dynamic environments. In a dynamic environment, new jobs may appear, or certain machines may temporarily break down, e.g. This uncertainty is something that other techniques, e.g. CP, struggle with. When using CP, redefining constraints \& variables \& solving problem again is necessary every time a change occurs in factory. This limitation, added to time needed to find an acceptable solution in large-scale problems, significantly hinders their application in real environments.
+
+            -- {\sf Quy tắc điều phối ưu tiên.} PDR là một trong những phương pháp được sử dụng nhiều nhất trong thực tế nhờ tính đơn giản \& khả năng áp dụng trong môi trường động. Trong môi trường động, các công việc mới có thể xuất hiện, hoặc một số máy móc có thể tạm thời bị hỏng, ví dụ: . Sự không chắc chắn này là điều mà các kỹ thuật khác, ví dụ như CP, gặp khó khăn. Khi sử dụng CP, việc xác định lại các ràng buộc \& biến \& giải quyết lại vấn đề là cần thiết mỗi khi có thay đổi xảy ra trong nhà máy. Hạn chế này, cùng với thời gian cần thiết để tìm ra giải pháp chấp nhận được trong các bài toán quy mô lớn, cản trở đáng kể việc ứng dụng chúng trong môi trường thực tế.
+
+            Dispatching rules do not present these limitations because they create schedule sequentially. Specifically, each time a machine becomes idle [Classical definition of PDRs assumes that only operations that can start immediately are eligible to be dispatched. Use of alternative definitions is analyzed in Sect. 5.2 \& Subsect. 6.4.1.], a heuristic that tends to be simple \& easy to interpret computes priority of each operation that can be assigned to that machine (Holthaus \& Rajendran, 1997). {\sf Table 2.1: Some of standard PDRs in JSSP} shows classic PDRs for the previously defined JSSP scenario. Rule | Description
+            \begin{itemize}
+                \item Shortest Processing Time (SPT): Selects operation with shortest processing time $p_{ij}$
+                \item Most Work Remaining (MWKR): Prioritizes job with greatest total remaining processing time
+                \item Most Operations Remaining (MOR): Selects job with most pending operations
+                \item First Come First Served (FCFS): Selects job with lowest ID.
+                \item Random: Selects a random operation from those available.
+            \end{itemize}
+            -- Quy tắc điều phối không gặp phải những hạn chế này vì chúng tạo lịch trình tuần tự. Cụ thể, mỗi khi máy nhàn rỗi [Định nghĩa cổ điển về PDR giả định rằng chỉ những tác vụ có thể bắt đầu ngay lập tức mới đủ điều kiện được điều phối. Việc sử dụng các định nghĩa thay thế được phân tích trong Mục 5.2 \& Tiểu mục 6.4.1.], một phương pháp tìm kiếm có xu hướng đơn giản \& dễ diễn giải sẽ tính toán mức độ ưu tiên của từng tác vụ có thể được gán cho máy đó (Holthaus \& Rajendran, 1997). {\sf Bảng 2.1: 1 số PDR tiêu chuẩn trong JSSP} hiển thị các PDR cổ điển cho kịch bản JSSP đã được định nghĩa trước đó. Quy tắc | Mô tả
+            \begin{itemize}
+                \item Thời gian xử lý ngắn nhất (SPT): Chọn thao tác có thời gian xử lý ngắn nhất $p_{ij}$
+                \item Công việc còn lại nhiều nhất (MWKR): Ưu tiên công việc có tổng thời gian xử lý còn lại lớn nhất
+                \item Hoạt động còn lại nhiều nhất (MOR): Chọn công việc có nhiều thao tác đang chờ xử lý nhất
+                \item Ai đến trước được phục vụ trước (FCFS): Chọn công việc có ID thấp nhất.
+                \item Ngẫu nhiên: Chọn một thao tác ngẫu nhiên từ các thao tác khả dụng.
+            \end{itemize}
+            An important observation: by defining time an operation is selected as ``when a machine becomes idle'', implicitly discard possibility of keeping machine waiting for a potentially more productive operation that is not yet available. Therefore, this definition also acts as a heuristic that limits space of available actions to operations that can begin immediately.
+
+            -- 1 lưu ý quan trọng: bằng cách xác định thời điểm một thao tác được chọn là ``khi máy trở nên nhàn rỗi'', ngầm loại trừ khả năng máy phải chờ một thao tác có khả năng hiệu quả hơn nhưng chưa sẵn sàng. Do đó, định nghĩa này cũng hoạt động như một phương pháp tìm kiếm giới hạn không gian hành động khả dụng thành các thao tác có thể bắt đầu ngay lập tức.
+
+            {\bf Using PDRs in JobShopLib.} {\tt JobShopLib} provides {\tt DispatchingRuleSolver} class, which is capable of applying any assignment rule that a callable (e.g., a function) can represent. Furthermore, library itself includes previously mentioned rules, meaning you do not need to program them. These can be invoked using a text string. E.g., solving previous instance using most work remaining rule can be achieved as follows:
+            \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+# use PDRs in JobShopLib
+from job_shop_lib.dispatching import DispatchRuleSolver
+
+solver_mwkr = DispatchRuleSolver("most_work_remaining")
+schedule_mwkr = solver_mwkr(instance)
+            \end{Verbatim}
+        \end{itemize}
     \end{itemize}
-    \item {\sf3. GNNs.}
+    \item {\sf3. GNNs.} Combinatorial optimization presents unique challenges for traditional ML. 1 is input data often presents irregular structures with a dynamic number of elements \& relationships between them. In JSSP, each instance can have a different number of jobs \& machines, \& precedence relationships between operations can vary significantly. Due to these characteristics, JSSP is naturally expressed as a graph. For this reason, graph neural networks are an efficient tool for processing the problem (Bengio et al., 2021).
+
+    -- Tối ưu hóa tổ hợp đặt ra những thách thức độc đáo cho ML truyền thống. 1. Dữ liệu đầu vào thường có cấu trúc bất quy tắc với số lượng phần tử động \& mối quan hệ giữa chúng. Trong JSSP, mỗi trường hợp có thể có số lượng công việc \& máy móc khác nhau, \& mối quan hệ thứ tự ưu tiên giữa các thao tác có thể thay đổi đáng kể. Do những đặc điểm này, JSSP thường được biểu diễn dưới dạng đồ thị. Vì lý do này, mạng nơ-ron đồ thị là một công cụ hiệu quả để xử lý vấn đề (Bengio và cộng sự, 2021).
+
+    1 of most important properties of these models is their permutation invariance. I.e., order in which graph nodes are presented does not affect model's final result. In context of JSSP, this is crucial since order in which machines or jobs are enumerated should not affect solution found. E.g., given 2 instances of same problem where only numbering order of machines changes, a traditional neural network might produce different results. At same time, a GNN guarantees same output. Possessing this property is essential because it means that, in practice, network will need less data during its training than a non-permutation-invariant counterpart.
+
+    -- 1 trong những đặc tính quan trọng nhất của các mô hình này là tính bất biến hoán vị. Nghĩa là, thứ tự các nút đồ thị được hiển thị không ảnh hưởng đến kết quả cuối cùng của mô hình. Trong bối cảnh JSSP, điều này rất quan trọng vì thứ tự liệt kê máy móc hoặc công việc không ảnh hưởng đến giải pháp được tìm thấy. Ví dụ, với 2 trường hợp của cùng một bài toán mà chỉ có thứ tự đánh số máy móc thay đổi, mạng nơ-ron truyền thống có thể tạo ra các kết quả khác nhau. Đồng thời, mạng nơ-ron nhân tạo (GNN) đảm bảo đầu ra giống nhau. Việc sở hữu đặc tính này là rất cần thiết vì trên thực tế, mạng sẽ cần ít dữ liệu hơn trong quá trình huấn luyện so với mạng không bất biến hoán vị.
+
+    Another fundamental advantage is their ability to process graphs of variable size. This property is essential for JSSP, as it allows us to train a model with small instances \& apply it to instances with a larger number of machines \& jobs. This generalization capability has been demonstrated empirically in several previous works (Zhang et al., 2020; Park et al., 2021a).
+
+    -- 1 lợi thế cơ bản khác là khả năng xử lý đồ thị có kích thước thay đổi. Tính chất này rất cần thiết cho JSSP, vì nó cho phép chúng ta huấn luyện một mô hình với các thể hiện nhỏ \& áp dụng nó vào các thể hiện có số lượng máy móc \& công việc lớn hơn. Khả năng khái quát hóa này đã được chứng minh bằng thực nghiệm trong một số công trình trước đây (Zhang và cộng sự, 2020; Park và cộng sự, 2021a).
+
+    Furthermore, these models also facilitate incorporation of domain-specific knowledge. E.g., in JSSP, can encode relevant information in nodes, e.g. their processing time, number of remaining operations in their job, or even maximum deadline by which we want to complete operation. This flexibility allows us to represent various problem variants through these algorithms. Although not considered in this work, encoding information in edges is also possible.
+
+    -- Hơn nữa, các mô hình này cũng tạo điều kiện thuận lợi cho việc tích hợp kiến thức chuyên ngành. Ví dụ, trong JSSP, có thể mã hóa thông tin liên quan trong các nút, chẳng hạn như thời gian xử lý, số thao tác còn lại trong tác vụ của chúng, hoặc thậm chí thời hạn tối đa mà chúng ta muốn hoàn thành thao tác. Tính linh hoạt này cho phép chúng ta biểu diễn nhiều biến thể bài toán khác nhau thông qua các thuật toán này. Mặc dù không được xem xét trong nghiên cứu này, việc mã hóa thông tin trong các cạnh cũng khả thi.
+    \begin{itemize}
+        \item {\sf3.1. Recap on Neural Networks.} Before diving into GNNs, convenient to briefly revisit fundamentals of traditional Neural Networks (NNs), also known as ANNs. Inspired by biological neurons, these models are fundamental building block of modern DP architectures \cite{LeCun_Bengio_Hinton2015}.
+
+        -- {\sf Tóm tắt về Mạng Nơ-ron.} Trước khi đi sâu vào Mạng Nơ-ron Nhân tạo (GNN), chúng ta nên xem lại sơ lược những kiến thức cơ bản về Mạng Nơ-ron Nhân tạo (NN) truyền thống, còn được gọi là ANN. Lấy cảm hứng từ các nơ-ron sinh học, những mô hình này là nền tảng cơ bản của kiến trúc DP hiện đại \cite{LeCun_Bengio_Hinton2015}.
+
+        Core component of an NNs is artificial neuron. It receives a set of input signals, computes a weighted sum of these inputs, adds a bias term, \& then applies a nonlinear activation function to produce an output. Mathematically, output $z$ of a single neuron processing an input vector ${\bf x}\in\mathbb{R}^n$ can be expressed as
+        \begin{equation*}
+            z = \sigma\left(\sum_{i=1}^n w_ix_i + b\right) = \sigma({\bf w}^\top{\bf x} + b).
+        \end{equation*}
+        Here ${\bf w}\in\mathbb{R}^n$ represents vector of weights, $b\in\mathbb{R}$: bias term, \& $\sigma(\cdot)$ denotes activation function. Common choices for $\sigma$ include sigmoid function, hyperbolic tangent tanh, or Rectified Linear Unit (ReLU) (Nair and Hinton, 2010). Introduction of nonlinearity via activation function is crucial, as it allows network to model complex, nonlinear relationships within data.
+
+        -- Thành phần cốt lõi của mạng nơ-ron nhân tạo là nơ-ron nhân tạo. Nó nhận một tập hợp các tín hiệu đầu vào, tính tổng có trọng số của các tín hiệu đầu vào này, thêm một số hạng độ lệch, sau đó áp dụng một hàm kích hoạt phi tuyến tính để tạo ra đầu ra. Về mặt toán học, đầu ra $z$ của một nơ-ron đơn lẻ xử lý một vectơ đầu vào ${\bf x}\in\mathbb{R}^n$ có thể được biểu thị như sau:
+        \begin{equation*}
+            z = \sigma\left(\sum_{i=1}^n w_ix_i + b\right) = \sigma({\bf w}^\top{\bf x} + b).
+        \end{equation*}
+        Trong đó ${\bf w}\in\mathbb{R}^n$ biểu diễn vectơ trọng số, $b\in\mathbb{R}$: số hạng độ lệch, \& $\sigma(\cdot)$ biểu thị hàm kích hoạt. Các lựa chọn phổ biến cho $\sigma$ bao gồm hàm sigmoid, tan hyperbolic tanh, hoặc Đơn vị tuyến tính chỉnh lưu (ReLU) (Nair và Hinton, 2010). Việc đưa tính phi tuyến tính vào hàm kích hoạt là rất quan trọng, vì nó cho phép mạng mô hình hóa các mối quan hệ phi tuyến tính phức tạp trong dữ liệu.
+
+        Neurons are typically organized into layers to form a network. Most prevalent architecture is Multilayer Perception (MLP), which comprises an input layer, 1 or more hidden layers, \& an output layer. In a standard MLP, neurons in 1 layer are fully connected to neurons in subsequent layer. Input layer receives raw feature vector, hidden layers process this information through successive transformations, learning increasingly abstract representations, \& output layer generates final prediction, e.g. a classification score or a regression value. This computation can be formulated as:
+        \begin{equation*}
+            {\bf h}^{(l +_1)} = \sigma^{(l)}(W^{(l)}{\bf h}^{(l)} + {\bf b}^{(l)}),
+        \end{equation*}
+        where $W^{(l)}$ is weight matrix connecting layer $l$ to layer $l + 1$, ${\bf b}^{(l)}$: bias vector for layer $l$, ${\bf h}^{(0)} = {\bf x}$ represents initial input features, \& $\sigma^{(l)}$: activation function applied elementwise to neurons in layer $l$.
+
+        -- Các neuron thường được tổ chức thành nhiều lớp để tạo thành một mạng lưới. Kiến trúc phổ biến nhất là Nhận thức Đa lớp (MLP), bao gồm một lớp đầu vào, 1 hoặc nhiều lớp ẩn, \& một lớp đầu ra. Trong một MLP tiêu chuẩn, các neuron ở lớp đầu vào được kết nối hoàn toàn với các neuron ở lớp tiếp theo. Lớp đầu vào nhận vectơ đặc trưng thô, các lớp ẩn xử lý thông tin này thông qua các phép biến đổi liên tiếp, học các biểu diễn ngày càng trừu tượng, \& lớp đầu ra tạo ra dự đoán cuối cùng, ví dụ: điểm phân loại hoặc giá trị hồi quy. Phép tính này có thể được xây dựng như sau:
+        \begin{equation*}
+            {\bf h}^{(l +_1)} = \sigma^{(l)}(W^{(l)}{\bf h}^{(l)} + {\bf b}^{(l)}),
+        \end{equation*}
+        trong đó $W^{(l)}$ là ma trận trọng số kết nối lớp $l$ với lớp $l + 1$, ${\bf b}^{(l)}$: vectơ độ lệch cho lớp $l$, ${\bf h}^{(0)} = {\bf x}$ biểu diễn các đặc trưng đầu vào ban đầu, \& $\sigma^{(l)}$: hàm kích hoạt được áp dụng từng phần tử cho các nơ-ron trong lớp $l$.
+
+        Training an NN involves optimizing its parameters (weights $W$ \& biases ${\bf b}$) to minimize a loss function $L$, which measures discrepancy between network's predictions \& ground truth. This optimization is achieved using backpropagation algorithm (Rumelhart et al., 1986), which provides an efficient way to compute gradient of loss function w.r.t. network parameters by applying chain rule recursively. These gradients are then used by an optimization algorithm, e.g. Stochastic Gradient Descent (SGD) or its variants like Adam (Kingma and Ba, 2015), to iteratively update parameters in direction that minimizes loss.
+
+        -- Việc huấn luyện một mạng nơ-ron nhân tạo bao gồm việc tối ưu hóa các tham số của nó (trọng số $W$ \& độ lệch ${\bf b}$) để giảm thiểu hàm mất mát $L$, hàm này đo lường sự khác biệt giữa dự đoán của mạng \& giá trị thực tế. Việc tối ưu hóa này được thực hiện bằng thuật toán lan truyền ngược (Rumelhart và cộng sự, 1986), cung cấp một cách hiệu quả để tính toán độ dốc của hàm mất mát theo các tham số mạng bằng cách áp dụng quy tắc chuỗi một cách đệ quy. Các độ dốc này sau đó được sử dụng bởi một thuật toán tối ưu hóa, ví dụ như Stochastic Gradient Descent (SGD) hoặc các biến thể của nó như Adam (Kingma và Ba, 2015), để cập nhật các tham số theo hướng giảm thiểu mất mát.
+
+        NN function as powerful universal function approximators, capable of learning complex mappings between inputs \& outputs (Hornik et al., 1989; Cybenko, 1989). However, conventional architectures like MLPs operate on fixed-size input vectors. This property makes them inherently ill-suited for processing data with irregular structures, variable sizes, or explicit relational dependencies, e.g. graphs representing JSSP instances. For this reason, GNNs were designed to operate on \& leverage information present in graph-structured data.
+
+        -- Mạng nơ-ron nhân tạo (NN) hoạt động như các bộ xấp xỉ hàm phổ quát mạnh mẽ, có khả năng học các phép ánh xạ phức tạp giữa đầu vào và đầu ra (Hornik và cộng sự, 1989; Cybenko, 1989). Tuy nhiên, các kiến trúc thông thường như MLP hoạt động trên các vectơ đầu vào có kích thước cố định. Đặc tính này khiến chúng vốn không phù hợp để xử lý dữ liệu có cấu trúc bất thường, kích thước thay đổi hoặc phụ thuộc quan hệ rõ ràng, ví dụ: đồ thị biểu diễn các thể hiện JSSP. Vì lý do này, GNN được thiết kế để hoạt động trên \& tận dụng thông tin có trong dữ liệu có cấu trúc đồ thị.
+        \item {\sf3.2. Message Passing Algorithm.} Message passing algorithm is a fundamental idea behind graph neural networks (Gilmer et al., 2017). At a high level, concept of ``message passing'' refers to transmission of information between connected nodes.
+
+        -- {\sf Thuật toán Truyền tin.} Thuật toán truyền tin là một ý tưởng cơ bản đằng sau mạng nơ-ron đồ thị (Gilmer và cộng sự, 2017). Ở cấp độ cao hơn, khái niệm ``truyền tin'' đề cập đến việc truyền thông tin giữa các nút được kết nối.
+
+        Formally, a graph, in context of GNNs, can be defined as $G = (V,E,X)$, where $V$ represents set of nodes \& $E$ set of edges. Rows of matrix $X$ represent feature vectors ${\bf x}_i$ for each node $i\in V$. Algorithm operates in 2 phases:
+        \begin{enumerate}
+            \item {\bf Aggregation.} Each node collects information from its neighbors.
+            \item {\bf Update.} Each node updates its representation using aggregated information.
+        \end{enumerate}
+        In particular, for each node $i$, updated feature vectors for layer $l + 1$ can be expressed as [NQBH: missing $\psi^{(l)}$ in original Bachelor thesis]
+        \begin{equation*}
+            {\bf h}_i^{(l + 1)} = \phi^{(l)}\left({\bf h}_i^{(l)},\bigoplus_{j\in{\cal N}_i} \psi^{(l)}({\bf h}_i^{(l)},{\bf h}_j^{(l)})\right),
+        \end{equation*}
+        where ${\cal N}_i$ denotes set of neighboring nodes of $i$, $\psi^{(l)}$ is a ``message function'' that returns a message ${\bf m}_j$ for each neighbor $j$, $\bigoplus$ is a permutation invariant aggregation operator, $\phi^{(l)}$ is an update function, \& ${\bf h}_i^{(0)} = {\bf x}_i$. Most common options for aggregation operator $\bigoplus$ are:
+        \begin{enumerate}
+            \item Sum: $\bigoplus_{j\in{\cal N}_i} {\bf m}_j = \sum_{j\in N(i)} {\bf m}_i$.
+            \item Maximum: $\bigoplus_{j\in{\cal N}_i} {\bf m}_j = \max_{j\in N(i)} {\bf m}_i$.
+            \item Mean: $\bigoplus_{j\in{\cal N}_i} {\bf m}_j = \frac{1}{|{\cal N}_i|}\sum_{j\in N(i)} {\bf m}_i$.
+        \end{enumerate}
+        On other hand, update function $\phi^{(l)}$ is typically implemented as a neural network that combines current node representation with aggregated messages ${\bf m}$ from its neighbors. A common implementation is:
+        \begin{equation*}
+            \phi({\bf x}_i,{\bf m}) = {\rm MLP}([{\bf x}_i,{\bf m}]),
+        \end{equation*}
+        where $[,]$ denotes vector concatenation.
+
+        -- Về mặt hình thức, một đồ thị, trong bối cảnh của GNN, có thể được định nghĩa là $G = (V,E,X)$, trong đó $V$ biểu diễn tập hợp các nút \& $E$ tập hợp các cạnh. Các hàng của ma trận $X$ biểu diễn các vectơ đặc trưng ${\bf x}_i$ cho mỗi nút $i\in V$. Thuật toán hoạt động theo 2 giai đoạn:
+
+        \begin{enumerate}
+
+            \item {\bf Tổng hợp.} Mỗi nút thu thập thông tin từ các nút lân cận.
+
+
+            \item {\bf Cập nhật.} Mỗi nút cập nhật biểu diễn của mình bằng thông tin tổng hợp.
+
+        \end{enumerate}
+        Cụ thể, đối với mỗi nút $i$, các vectơ đặc trưng được cập nhật cho lớp $l + 1$ có thể được biểu thị dưới dạng [NQBH: thiếu $\psi^{(l)}$ trong luận văn Cử nhân gốc]
+        \begin{equation*}
+            {\bf h}_i^{(l + 1)} = \phi^{(l)}\left({\bf h}_i^{(l)},\bigoplus_{j\in{\cal N}_i} \psi^{(l)}({\bf h}_i^{(l)},{\bf h}_j^{(l)})\right),
+        \end{equation*}
+        trong đó ${\cal N}_i$ biểu thị tập hợp các nút lân cận của $i$, $\psi^{(l)}$ là một ``hàm thông điệp'' trả về một thông điệp ${\bf m}_j$ cho mỗi nút lân cận $j$, $\bigoplus$ là một Toán tử tổng hợp bất biến hoán vị, $\phi^{(l)}$ là một hàm cập nhật, \& ${\bf h}_i^{(0)} = {\bf x}_i$. Các tùy chọn phổ biến nhất cho toán tử tổng hợp $\bigoplus$ là:
+        \begin{enumerate}
+            \item Tổng: $\bigoplus_{j\in{\cal N}_i} {\bf m}_j = \sum_{j\in N(i)} {\bf m}_i$.
+            \item Tối đa: $\bigoplus_{j\in{\cal N}_i} {\bf m}_j = \max_{j\in N(i)} {\bf m}_i$.
+            \item Trung bình: $\bigoplus_{j\in{\cal N}_i} {\bf m}_j = \frac{1}{|{\cal N}_i|}\sum_{j\in N(i)} {\bf m}_i$.
+        \end{enumerate}
+        Mặt khác, hàm cập nhật $\phi^{(l)}$ thường được triển khai dưới dạng mạng nơ-ron kết hợp biểu diễn nút hiện tại với các thông điệp tổng hợp ${\bf m}$ từ các nút lân cận. Một triển khai phổ biến là:
+        \begin{equation*}
+            \phi({\bf x}_i,{\bf m}) = {\rm MLP}([{\bf x}_i,{\bf m}]),
+        \end{equation*}
+        trong đó $[,]$ biểu thị phép nối vectơ.
+
+        By stacking multiple layers of this algorithm, each node can receive information from increasingly distant nodes in graph. Specifically, with $L$ layers, each node can receive information from nodes up to $L$ steps away. In context of JSSP, this property allows dispatching decisions to consider interactions between distant operations in graph.
+
+        -- Bằng cách xếp chồng nhiều lớp của thuật toán này, mỗi nút có thể nhận thông tin từ các nút ở khoảng cách ngày càng xa trong đồ thị. Cụ thể, với $L$ lớp, mỗi nút có thể nhận thông tin từ các nút cách xa tới $L$ bước. Trong ngữ cảnh JSSP, thuộc tính này cho phép các quyết định phân phối xem xét tương tác giữa các thao tác ở xa trong đồ thị.
+
+        This framework can support various architectures, each with its advantages \& disadvantages. In following sects, examine some of most relevant ones for JSSP.
+
+        -- Khung này có thể hỗ trợ nhiều kiến trúc khác nhau, mỗi kiến trúc đều có ưu điểm và nhược điểm riêng. Trong các phần sau, hãy xem xét một số kiến trúc phù hợp nhất với JSSP.
+        \begin{itemize}
+            \item {\sf3.2.1. Graph Convolutional Networks.} Graph Convolutional Networks (GCNs) (Kipf and Welling, 2017) represent 1 of 1st \& most influential architectures based on message-passing algorithm. Design is inspired by traditional convolutional neural networks (CNNs), extending convolution operation, widely used in image processing, to domain of graphs.
+
+            -- {\sf Mạng Tích chập Đồ thị.} Mạng Tích chập Đồ thị (GCN) (Kipf và Welling, 2017) đại diện cho một trong những kiến trúc đầu tiên và có ảnh hưởng nhất dựa trên thuật toán truyền thông điệp. Thiết kế được lấy cảm hứng từ mạng nơ-ron tích chập (CNN) truyền thống, mở rộng phép toán tích chập, được sử dụng rộng rãi trong xử lý ảnh, sang lĩnh vực đồ thị.
+
+            In a GCN, update of a node's representation can be expressed more specifically as
+            \begin{equation*}
+                {\bf h}_j^{(l + 1)} = \sigma\left(\sum_{j\in{\cal N}_i\cup\{i\}} \frac{1}{\sqrt{d_id_j}}W^{(l)}{\bf h}_j^{(l)} \right),
+            \end{equation*}
+            where $d_i,d_j$ are degrees of nodes $i,j$ resp., $W^{(l)}$ is a learnable weight matrix, \& $\sigma$: a nonlinear activation function (e.g., ReLU).
+
+            -- Trong GCN, việc cập nhật biểu diễn của một nút có thể được biểu diễn cụ thể hơn như sau
+            \begin{equation*}
+                {\bf h}_j^{(l + 1)} = \sigma\left(\sum_{j\in{\cal N}_i\cup\{i\}} \frac{1}{\sqrt{d_id_j}}W^{(l)}{\bf h}_j^{(l)} \right),
+            \end{equation*}
+            trong đó $d_i,d_j$ là bậc của các nút $i,j$ tương ứng, $W^{(l)}$ là ma trận trọng số có thể học được, \& $\sigma$: một hàm kích hoạt phi tuyến tính (ví dụ: ReLU).
+
+            In a traditional CNN, a convolution applies a filter that averages neighboring pixels with fixed weights. Similarly, a GCN averages features of neighboring nodes, but normalizes according to each node's degree $\frac{1}{\sqrt{d_id_j}}$. By taking into account degree of neighboring node $u$, importance of highly connected nodes is reduced. Otherwise, vectors of nodes with very high degrees could significantly contribute to homogenizing vectors of remaining nodes, especially after applying several layers of message passing. This phenomenon, known as ``over-smoothing'' is a well-known problem in GNNs (Rusch et al., 2023). In case of JSSP, e.g., it would mean that nodes representing each operation would have very similar vectors, which would make it impossible for model to distinguish which operation to dispatch. However, in practice, optimal normalization coefficient may vary depending on problem.
+
+            -- Trong CNN truyền thống, phép tích chập áp dụng bộ lọc lấy trung bình các điểm ảnh lân cận với trọng số cố định. Tương tự, GCN lấy trung bình các đặc điểm của các nút lân cận, nhưng chuẩn hóa theo bậc $\frac{1}{\sqrt{d_id_j}}$ của mỗi nút. Bằng cách tính đến bậc của nút lân cận $u$, tầm quan trọng của các nút có kết nối cao sẽ giảm đi. Mặt khác, các vectơ của các nút có bậc rất cao có thể góp phần đáng kể vào việc đồng nhất các vectơ của các nút còn lại, đặc biệt là sau khi áp dụng nhiều lớp truyền thông điệp. Hiện tượng này, được gọi là ``làm mịn quá mức'', là một vấn đề nổi tiếng trong GNN (Rusch và cộng sự, 2023). Ví dụ, trong trường hợp JSSP, điều đó có nghĩa là các nút biểu diễn cho mỗi thao tác sẽ có các vectơ rất giống nhau, khiến mô hình không thể phân biệt được thao tác nào cần phân phối. Tuy nhiên, trên thực tế, hệ số chuẩn hóa tối ưu có thể thay đổi tùy thuộc vào vấn đề.
+
+            This formulation can be interpreted as a simplified version of message passing algorithm where aggregation function is a weighted average by node degree \& update function is a linear transformation followed by a nonlinearity. However, GCNs have certain limitations: all neighboring nodes contribute in a fixed manner to update. This limitation motivated development of more sophisticated architectures e.g. graph attention networks.
+
+            -- Công thức này có thể được hiểu là một phiên bản đơn giản hóa của thuật toán truyền tin nhắn, trong đó hàm tổng hợp là một giá trị trung bình có trọng số theo bậc nút \& hàm cập nhật là một phép biến đổi tuyến tính theo sau là một phép phi tuyến tính. Tuy nhiên, GCN có một số hạn chế nhất định: tất cả các nút lân cận đều đóng góp vào quá trình cập nhật theo một cách cố định. Hạn chế này đã thúc đẩy sự phát triển của các kiến trúc phức tạp hơn, ví dụ như mạng lưới chú ý đồ thị.
+            \item {\sf3.2.2. Graph Attention Networks.} Graph Attention Networks (GATs) (Veličković et al., 2018) extend capability of GCNs through incorporation of attention mechanisms. Similar to how GCNs extend concept of convolution in images to graphs, GATs generalize concept of self-attention used by transformers (Vaswani et al., 2017). In fact, transformer architecture can be considered a GAT specialized in fully connected graphs, where each token (subword in a sentence) is considered a node.
+
+            -- {\sf Mạng Chú ý Đồ thị.} Mạng Chú ý Đồ thị (GAT) (Veličković và cộng sự, 2018) mở rộng khả năng của GCN thông qua việc kết hợp các cơ chế chú ý. Tương tự như cách GCN mở rộng khái niệm tích chập trong hình ảnh sang đồ thị, GAT khái quát hóa khái niệm tự chú ý được sử dụng bởi các bộ biến đổi (Vaswani và cộng sự, 2017). Trên thực tế, kiến trúc bộ biến đổi có thể được coi là một GAT chuyên biệt trong các đồ thị kết nối đầy đủ, trong đó mỗi token (từ phụ trong câu) được coi là một nút.
+
+            Central idea: use an attention mechanism -- a learned weighted average across a set of nodes (tokens in case of transformers). In particular, for each pair of connected nodes $i,j$, a learned attention coefficient $\alpha_{ij}$ determines importance of node $j$'s information for updating node $i$'s representation. This way, it solves limitation of GCNs, which use fixed coefficients determined solely by node's degree. Formally, update of a node in a GAT layer is expressed as
+            \begin{equation*}
+                {\bf h}_i^{(l + 1)} = \sigma\left(\sum_{j\in{\cal N}_i\cup\{i\}} \alpha_{ij}^{(l)}W^{(l)}{\bf h}_j^{(l)}\right).
+            \end{equation*}
+            Attention coefficients are calculated using an attention mechanism $a:\mathbb{R}^d\times\mathbb{R}^d\to\mathbb{R}$ that calculates $e_{ij}^{(l)}$, unnormalized importance of node $i$ for node $j$ based on their features:
+            \begin{equation*}
+                e_{ij}^{(l)} = a({\bf h}_i^{(l)},{\bf h}_j^{(l)}).
+            \end{equation*}
+            -- Ý tưởng chính: sử dụng cơ chế chú ý -- một giá trị trung bình có trọng số đã học trên một tập hợp các nút (token trong trường hợp máy biến áp). Cụ thể, đối với mỗi cặp nút được kết nối $i,j$, một hệ số chú ý đã học $\alpha_{ij}$ xác định tầm quan trọng của thông tin của nút $j$ trong việc cập nhật biểu diễn của nút $i$. Bằng cách này, nó giải quyết được hạn chế của GCN, vốn sử dụng các hệ số cố định được xác định hoàn toàn bởi bậc của nút. Về mặt hình thức, việc cập nhật một nút trong lớp GAT được biểu diễn như sau
+            \begin{equation*}
+                {\bf h}_i^{(l + 1)} = \sigma\left(\sum_{j\in{\cal N}_i\cup\{i\}} \alpha_{ij}^{(l)}W^{(l)}{\bf h}_j^{(l)}\right).
+            \end{equation*}
+            Hệ số chú ý được tính toán bằng cơ chế chú ý $a:\mathbb{R}^d\times\mathbb{R}^d\to\mathbb{R}$ tính toán $e_{ij}^{(l)}$, tầm quan trọng chưa chuẩn hóa của nút $i$ đối với nút $j$ dựa trên các đặc trưng của chúng:
+            \begin{equation*}
+                e_{ij}^{(l)} = a({\bf h}_i^{(l)},{\bf h}_j^{(l)}).
+            \end{equation*}
+            Once these coefficients have been calculated for all neighbors $j\in{\cal N}_i$ of $i$, coefficients are normalized using softmax function:
+            \begin{equation*}
+                \alpha_{ij}^{(l)} = \frac{\exp(e_{ij}^{(l)})}{\sum_{k\in{\cal N}_i \exp(e_{ik}^{(l)})}}.
+            \end{equation*}
+            Note this model is agnostic to attention mechanism used. E.g., in original paper, a single-layer neural network was used:
+            \begin{equation*}
+                e_{ij} = {\rm LeakyReLU}({\bf a}^\top[W{\bf h}_j,W{\bf h}_i]),
+            \end{equation*}
+            where $[,]$ denotes concatenation operation, ${\bf a}$: a vector of learnable parameters, $W$: linear transformation matrix, \& LeakyReLU is activation function:
+            \begin{equation*}
+                {\rm LeakyReLu}(x) = \left\{\begin{split}
+                    &x&&\mbox{if } x > 0,\\
+                    &\alpha x&&\mbox{if } x\le0,
+                \end{split}\right.
+            \end{equation*}
+            where $\alpha$: a small positive value (0.2 in this case) that allows a nonzero gradient for negative inputs. An importannt observation: in this approach, a linear transformation $W$ is applied to feature vectors, folowed by a concatenation \& another linear transformation ${\bf a}^\top$. Being consecutive linear operations, they can mathematically collapse into a single linear transformation. To understand why, examine equation ${\bf a}^\top[W{\bf h}_i,W{\bf h}_j]$ more closely. Despite involving a concatenation operation, this can actually be decomposed into a simple linear function of input node features. Specficially, if partititon attention vector ${\bf a}$ into 2 parts, ${\bf a} = [{\bf a}_1,{\bf a}_2]$, corresponding to dimensions used for $W{\bf h}_j$ \& $W{\bf h}_i$ resp., then
+            \begin{equation*}
+                {\bf a}^\top[W{\bf h}_j,W{\bf h}_i] = [{\bf a}_1^\top W{\bf h}_j,{\bf a}_2^\top W{\bf h}_i].
+            \end{equation*}
+            This can be further simplified by defining $W_1 = {\bf a}_1^\top W,W_2 = {\bf a}_2^\top W$ yielding
+            \begin{equation*}
+                {\bf a}^\top[W{\bf h}_j,W{\bf h}_i] = [W_1{\bf h}_j,W_2{\bf h}_i].
+            \end{equation*}
+            Thus, without LeakyReLU, sequence of linear transformations followed by concatenation \& another linear transformation would mathematically collapse into a single weighted sum of original node features. This limits model's ability to capture complex relationships between nodes. It is for this reason: it has recently been proposed to modify this attention mechanism as follows (Brody et al., 2022):
+            \begin{equation*}
+                e_{ij} = {\bf a}^\top{\rm LeakyReLU}([W{\bf h}_j,W{\bf h}_i]).
+            \end{equation*}
+            -- Sau khi tính toán các hệ số này cho tất cả các lân cận $j\in{\cal N}_i$ của $i$, các hệ số được chuẩn hóa bằng hàm softmax:
+            \begin{equation*}
+                \alpha_{ij}^{(l)} = \frac{\exp(e_{ij}^{(l)})}{\sum_{k\in{\cal N}_i \exp(e_{ik}^{(l)})}}.
+            \end{equation*}
+            Lưu ý rằng mô hình này không phụ thuộc vào cơ chế chú ý được sử dụng. Ví dụ, trong bài báo gốc, mạng nơ-ron một lớp đã được sử dụng:
+            \begin{equation*}
+                e_{ij} = {\rm LeakyReLU}({\bf a}^\top[W{\bf h}_j,W{\bf h}_i]),
+            \end{equation*}
+            trong đó $[,]$ biểu thị phép nối, ${\bf a}$: một vectơ tham số có thể học được, $W$: ma trận biến đổi tuyến tính, \& LeakyReLU là hàm kích hoạt:
+            \begin{equation*}
+                {\rm LeakyReLu}(x) = \left\{\begin{split}
+                    &x&&\mbox{nếu } x > 0,\\
+                    &\alpha x&&\mbox{nếu } x\le0,
+                \end{split}\right.
+            \end{equation*}
+            trong đó $\alpha$: một giá trị dương nhỏ (trong trường hợp này là 0,2) cho phép gradient khác không đối với các đầu vào âm. Một quan sát quan trọng: trong phương pháp này, một phép biến đổi tuyến tính $W$ được áp dụng cho các vectơ đặc trưng, theo sau là một phép nối \& một phép biến đổi tuyến tính khác ${\bf a}^\top$. Là các phép toán tuyến tính liên tiếp, về mặt toán học, chúng có thể được thu gọn thành một phép biến đổi tuyến tính duy nhất. Để hiểu lý do, hãy xem xét kỹ hơn phương trình ${\bf a}^\top[W{\bf h}_i,W{\bf h}_j]$. Mặc dù bao gồm một phép nối, phương trình này thực sự có thể được phân tích thành một hàm tuyến tính đơn giản của các đặc trưng nút đầu vào. Cụ thể, nếu phân chia vectơ chú ý ${\bf a}$ thành 2 phần, ${\bf a} = [{\bf a}_1,{\bf a}_2]$, tương ứng với các chiều được sử dụng cho $W{\bf h}_j$ \& $W{\bf h}_i$ tương ứng, thì
+            \begin{equation*}
+                {\bf a}^\top[W{\bf h}_j,W{\bf h}_i] = [{\bf a}_1^\top W{\bf h}_j,{\bf a}_2^\top W{\bf h}_i].
+            \end{equation*}
+            Điều này có thể được đơn giản hóa hơn nữa bằng cách định nghĩa $W_1 = {\bf a}_1^\top W,W_2 = {\bf a}_2^\top W$, tạo ra
+            \begin{equation*}
+                {\bf a}^\top[W{\bf h}_j,W{\bf h}_i] = [W_1{\bf h}_j,W_2{\bf h}_i].
+            \end{equation*}
+            Do đó, nếu không có LeakyReLU, chuỗi các phép biến đổi tuyến tính theo sau bởi phép nối \& một phép biến đổi tuyến tính khác về mặt toán học sẽ bị thu gọn thành một tổng trọng số duy nhất của các đặc trưng nút ban đầu. Điều này hạn chế khả năng của mô hình trong việc nắm bắt các mối quan hệ phức tạp giữa các nút. Vì lý do này: gần đây người ta đã đề xuất sửa đổi cơ chế chú ý này như sau (Brody và cộng sự, 2022):
+            \begin{equation*}
+                e_{ij} = {\bf a}^\top{\rm LeakyReLU}([W{\bf h}_j,W{\bf h}_i]).
+            \end{equation*}
+            By introducing LeakyReLU nonlinearity between linear transformations, model can learn more complex functions that better capture interactions between nodes. This seemingly simple change allows model to approximate any desired attention function thanks to universal approximation theorem (Hornik et al., 1989). For this reason, this latter variant is most used in practice. However, in general, any attention mechanism can be used.
+
+            -- Bằng cách áp dụng tính phi tuyến tính LeakyReLU giữa các phép biến đổi tuyến tính, mô hình có thể học các hàm phức tạp hơn, nắm bắt tốt hơn các tương tác giữa các nút. Sự thay đổi tưởng chừng đơn giản này cho phép mô hình xấp xỉ bất kỳ hàm chú ý mong muốn nào nhờ định lý xấp xỉ phổ quát (Hornik và cộng sự, 1989). Vì lý do này, biến thể sau được sử dụng nhiều nhất trong thực tế. Tuy nhiên, nhìn chung, bất kỳ cơ chế chú ý nào cũng có thể được sử dụng.
+
+            On other hand, multiple attention ``heads'' are employed in parallel to improve stability \& expressive power of model (in same way as transformers). To do this, aforementioned process is replicated independently $K$ times using different parameters. This way, each head can learn to capture different types of relationships between nodes. Final aggregation is obtained by concatenating or averaging outputs of all heads:
+            \begin{enumerate}
+                \item Average: ${\bf h}_i^{(l + 1)} = \sigma\left(\frac{1}{K}\sum_{k=1}^K\sum_{j\in{\cal N}_i\cup\{i\}} \alpha_{ij}^{(l,k)}W^{(l,k)}{\bf h}_j^{(l)}\right)$
+                \item Concatenation: [...]
+            \end{enumerate}
+            here denote concatenation $\parallel$.
+
+            -- Mặt khác, nhiều ``đầu'' chú ý được sử dụng song song để cải thiện tính ổn định \& khả năng biểu đạt của mô hình (tương tự như bộ biến đổi). Để làm được điều này, quá trình nói trên được lặp lại độc lập $K$ lần bằng các tham số khác nhau. Bằng cách này, mỗi đầu có thể học cách nắm bắt các loại mối quan hệ khác nhau giữa các nút. Tổng hợp cuối cùng thu được bằng cách nối hoặc lấy trung bình các đầu ra của tất cả các đầu:
+            \begin{enumerate}
+                \item Trung bình: ${\bf h}_i^{(l + 1)} = \sigma\left(\frac{1}{K}\sum_{k=1}^K\sum_{j\in{\cal N}_i\cup\{i\}} \alpha_{ij}^{(l,k)}W^{(l,k)}{\bf h}_j^{(l)}\right)$.
+                \item Nối: [...]
+            \end{enumerate}
+            ở đây ký hiệu nối $\parallel$.
+
+            In summary, a GAT layer with multi-head attention operates as follows: each neighboring node $j\in{\cal N}_i$ sends a vector of attention coefficients $\boldsymbol{\alpha}_{ij} = [\alpha_{ij}^{(1)},\ldots,\alpha_{ij}^{(K)}]$, where each element corresponds to a different attention head. These coefficients are used to compute $K$ independent linear combinations of the neighbors' features ${\bf h}_j$. Subsequently, these representations are aggregated (typically through concatenation or averaging) to obtain updated representation of node $i$, denoted as ${\bf h}_i^{(l + 1)}$.
+
+            -- Tóm lại, một lớp GAT với sự chú ý đa đầu hoạt động như sau: mỗi nút lân cận $j\in{\cal N}_i$ gửi một vectơ hệ số chú ý $\boldsymbol{\alpha}_{ij} = [\alpha_{ij}^{(1)},\ldots,\alpha_{ij}^{(K)}]$, trong đó mỗi phần tử tương ứng với một đầu chú ý khác nhau. Các hệ số này được sử dụng để tính $K$ tổ hợp tuyến tính độc lập của các đặc trưng ${\bf h}_j$ của các nút lân cận. Sau đó, các biểu diễn này được tổng hợp (thường thông qua phép nối hoặc lấy trung bình) để thu được biểu diễn cập nhật của nút $i$, được ký hiệu là ${\bf h}_i^{(l + 1)}$.
+            \item {\sf3.2.3. Graph Isomorphism Networks.} GINs emerge as an architecture designed to maximize discriminative power in graph processing (Xu et al., 2019). GIN bases its design on Weisfeiler-Lehman (WL) isomorphism test, an algorithm for determining whether 2 graphs are non-isomorphic. It aims to develop a GNN whose representational power is equivalent to WL test.
+
+            -- {\sf Mạng Đồng cấu Đồ thị.} GIN nổi lên như một kiến trúc được thiết kế để tối đa hóa khả năng phân biệt trong xử lý đồ thị (Xu và cộng sự, 2019). GIN dựa trên phép thử đồng cấu Weisfeiler-Lehman (WL), một thuật toán dùng để xác định xem 2 đồ thị có phải là không đồng cấu hay không. Mục tiêu của nó là phát triển một GNN có khả năng biểu diễn tương đương với phép thử WL.
+        \end{itemize}
+        \item {\sf3.3. Relational Graph Neural Networks.}
+    \end{itemize}
     \item {\sf4. Reinforcement Learning vs. Imitation Learning.}
     \item {\sf5. Literature Review \& Problem Formulation.}
 

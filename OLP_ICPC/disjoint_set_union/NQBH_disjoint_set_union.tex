@@ -1,0 +1,121 @@
+\documentclass{article}
+\usepackage[backend=biber,natbib=true,style=alphabetic,maxbibnames=50]{biblatex}
+\addbibresource{/home/nqbh/reference/bib.bib}
+\usepackage[utf8]{vietnam}
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=red,citecolor=magenta]{hyperref}
+\usepackage{amsmath,amssymb,amsthm,enumitem,fancyvrb,float,graphicx,mathtools,tikz}
+\usetikzlibrary{angles,calc,intersections,matrix,patterns,quotes,shadings}
+\allowdisplaybreaks
+\newtheorem{assumption}{Assumption}
+\newtheorem{baitoan}{Bài toán}
+\newtheorem{cauhoi}{Câu hỏi}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{corollary}{Corollary}
+\newtheorem{dangtoan}{Dạng toán}
+\newtheorem{definition}{Definition}
+\newtheorem{dinhly}{Định lý}
+\newtheorem{dinhnghia}{Định nghĩa}
+\newtheorem{example}{Example}
+\newtheorem{ghichu}{Ghi chú}
+\newtheorem{hequa}{Hệ quả}
+\newtheorem{hypothesis}{Hypothesis}
+\newtheorem{lemma}{Lemma}
+\newtheorem{luuy}{Lưu ý}
+\newtheorem{nhanxet}{Nhận xét}
+\newtheorem{notation}{Notation}
+\newtheorem{note}{Note}
+\newtheorem{principle}{Principle}
+\newtheorem{problem}{Problem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{question}{Question}
+\newtheorem{remark}{Remark}
+\newtheorem{theorem}{Theorem}
+\newtheorem{vidu}{Ví dụ}
+\usepackage[left=1cm,right=1cm,top=5mm,bottom=5mm,footskip=4mm]{geometry}
+\def\labelitemii{$\circ$}
+\DeclareRobustCommand{\divby}{%
+    \mathrel{\vbox{\baselineskip.65ex\lineskiplimit0pt\hbox{.}\hbox{.}\hbox{.}}}%
+}
+\setlist[itemize]{leftmargin=*}
+\setlist[enumerate]{leftmargin=*}
+
+\title{Disjoint Set Union (DSU) -- Hợp Tập Hợp Rời Rạc}
+\author{Nguyễn Quản Bá Hồng\footnote{A scientist- {\it\&} creative artist wannabe, a mathematics {\it\&} computer science lecturer of Department of Artificial Intelligence {\it\&} Data Science (AIDS), School of Technology (SOT), UMT Trường Đại học Quản lý {\it\&} Công nghệ TP.HCM, Hồ Chí Minh City, Việt Nam.\\E-mail: {\sf nguyenquanbahong@gmail.com} {\it\&} {\sf hong.nguyenquanba@umt.edu.vn}. Website: \url{https://nqbh.github.io/}. GitHub: \url{https://github.com/NQBH}.}}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+    This text is a part of the series {\it Some Topics in Advanced STEM \& Beyond}:
+
+    {\sc url}: \url{https://nqbh.github.io/advanced_STEM/}.
+
+    Latest version:
+    \begin{itemize}
+        \item {\it Disjoint Set Union (DSU) -- Hợp Tập Hợp Rời Rạc}.
+
+        PDF: {\sc url}: \url{.pdf}.
+
+        \TeX: {\sc url}: \url{.tex}.
+        \item {\it }.
+
+        PDF: {\sc url}: \url{.pdf}.
+
+        \TeX: {\sc url}: \url{.tex}.
+    \end{itemize}
+\end{abstract}
+\tableofcontents
+
+%------------------------------------------------------------------------------%
+
+\section{Introduction to Disjoint Set Union -- Nhập Môn Hợp Tập Hợp Rời Rạc}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://cp-algorithms.com/data_structures/disjoint_set_union.html}{Algorithms for Competitive Programming{\tt/}disjoint set union}.
+
+    \item {\sc Benjamin Qi, Andrew Wang, Nathan Gong, Michael Cao}. \href{https://usaco.guide/gold/dsu?lang=cpp}{USACO Guide{\tt/}Disjoint Set Union}.
+
+    {\sf Abstract.} The Disjoint Set Union (DSU) data structure, which allows you to add edges to a graph \& test whether 2 vertices of a graph are connected.
+
+    -- Cấu trúc dữ liệu Disjoint Set Union (DSU), cho phép bạn thêm các cạnh vào đồ thị \& kiểm tra xem 2 đỉnh của đồ thị có được kết nối hay không.
+
+    \item {\sc Ngô Quang Nhật}. \href{https://wiki.vnoi.info/algo/data-structures/disjoint-set-union}{VNOI Wiki{\tt/}Disjoint Set Union}.
+
+    \item \href{https://en.wikipedia.org/wiki/Disjoint-set_data_structure}{Wikipedia{\tt/}disjoint-set data structure}.
+\end{enumerate}
+Disjoint Set Union (abbr., DSU) là 1 cấu trúc dữ liệu hữu dụng, thường xuất hiện trong các kỳ thi Lập trình Thi Đấu, \& có thể được dùng để quản lý 1 cách hiệu 1 tập hợp của các tập hợp.
+
+\begin{baitoan}
+    Cho 1 đồ thị $G = (V,E)$ có $|V| = n\in\mathbb{N}^\star$ đỉnh, ban đầu không có cạnh nào, $E = \emptyset$. Ta cần xử lý 2 loại truy vấn:
+    \begin{enumerate}
+        \item Thêm 1 cạnh giữa 2 đỉnh $x,y\in V$ trong đồ thị, i.e., $E = E\cup\{\{x,y\}\}$ nếu $G$ là đồ thị vô hướng \& $E = E\cup\{(x,y)\}$ nếu $G$ là đồ thị có hướng.
+        \item In ra {\tt yes} nếu như 2 đỉnh $x,y$ nằm trong cùng 1 thành phần liên thông. In ra {\tt no} nếu ngược lại.
+    \end{enumerate}
+\end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Cấu trúc dữ liệu Disjoint Set Union}
+Cho tiện, ta đánh số $n$ đỉnh của đồ thị $G$ bởi $1,2,\ldots,n$ (trường hợp $n$ đỉnh được dán nhãn bởi $v_1,v_2,\ldots,v_n$ hoàn toàn tương tự vì ta có thể làm việc trên chỉ số $i$ của $v_i$), khi đó $V = [n]$. Giả sử $G$ có $c\coloneqq$ \verb|num_connected_component| $\in\mathbb{N}^\star$ (số thành phần liên thông) $C_1,C_2,\ldots,C_c$ với $\{C_i\}_{i=1}^c$ là 1 phân hoạch của $V = [n]$, i.e.:
+\begin{equation*}
+    \bigcup_{i=1}^c C_i = [n],\ C_i\cap C_j = \emptyset,\ \forall i,j\in[c],\ i\ne j.
+\end{equation*}
+Nếu ta coi mỗi đỉnh của đồ thị $G = (V,E)$ là 1 phần tử \& mỗi thành phần liên thông (connected component) trong đồ thị là 1 tập hợp, truy vấn 1 sẽ trở thành gộp 2 tập hợp lần lượt chứa phần tử $x,y$ thành 1 tập hợp mới \& truy vấn 2 trở thành việc hỏi 2 phần tử $x,y$ có nằm trong cùng 1 tập hợp không.
+
+Để tiện tính toán \& lý luận về mặt toán học cho riêng cấu trúc dữ liệu DSU, sau đây là 1 định nghĩa cá nhân của tác giả [NQBH], hoàn toàn không chính thống trong Lý thuyết Đồ thị:
+
+\begin{dinhnghia}[Chỉ số thành phần liên thông]
+    Gọi $C(i)\subset[n]$ là thành phần liên thông của $G = (V,E)$ chứa đỉnh $i\in[n]$ \& gọi chỉ số của thành phần liên thông chứa đỉnh $i$ là ${\rm cid}(i)$, i.e., $i\in C_{{\rm cid}(i)}\equiv C(i)$.
+\end{dinhnghia}
+
+%------------------------------------------------------------------------------%
+
+\section{Miscellaneous}
+
+%------------------------------------------------------------------------------%
+
+\printbibliography[heading=bibintoc]
+
+\end{document}

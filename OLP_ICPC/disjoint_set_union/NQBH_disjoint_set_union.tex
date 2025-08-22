@@ -91,7 +91,7 @@ Disjoint Set Union (abbr., DSU) là 1 cấu trúc dữ liệu hữu dụng, thư
     \label{prob: query connectedness}
     Cho 1 đồ thị $G = (V,E)$ có $|V| = n\in\mathbb{N}^\star$ đỉnh, ban đầu không có cạnh nào, $E = \emptyset$. Ta cần xử lý 2 loại truy vấn:
     \begin{enumerate}
-        \item Thêm 1 cạnh giữa 2 đỉnh $x,y\in V$ trong đồ thị, i.e., $E = E\cup\{\{x,y\}\}$ nếu $G$ là đồ thị vô hướng \& $E = E\cup\{(x,y)\}$ nếu $G$ là đồ thị có hướng (trước tiên ta chỉ xét trường hợp đồ thị vô hướng cho đơn giản).
+        \item Thêm 1 cạnh giữa 2 đỉnh $x,y\in V$ trong đồ thị, i.e., $E = E\cup\{\{x,y\}\}$ nếu $G$ là đồ thị vô hướng \& $E = E\cup\{(x,y)\}$ nếu $G$ là đồ thị có hướng; tuy nhiên DSU thường chỉ áp dụng cho đồ thị vô hướng nên ta chỉ xét trường hợp đồ thị vô hướng cho đơn giản.
         \item In ra {\tt yes} nếu như 2 đỉnh $x,y$ nằm trong cùng 1 thành phần liên thông. In ra {\tt no} nếu ngược lại.
     \end{enumerate}
 \end{baitoan}
@@ -125,11 +125,11 @@ Với định nghĩa \ref{def: index component}, ta có ngay
     Cho đồ thị vô hướng $G = (V,E)$.
     (i) 2 đỉnh trên 1 đồ thị $G$ không liên thông với nhau, i.e., không có đường đi nào trên $G$ nối chúng khi \& chỉ khi chúng thuộc 2 thành phần liên thông khác nhau, i.e.,
     \begin{equation*}
-        i,j\mbox{ are not connected}\Leftrightarrow C(i)\ne C(j)\Leftrightarrow C(i)\cap C(j) = \emptyset\Leftrightarrow{\rm cid}(i)\ne{\rm cid}(j),\ \forall i,j\in[n].
+        \boxed{i,j\mbox{ are not connected}\Leftrightarrow C(i)\ne C(j)\Leftrightarrow C(i)\cap C(j) = \emptyset\Leftrightarrow{\rm cid}(i)\ne{\rm cid}(j),\ \forall i,j\in[n].}
     \end{equation*}
     \item(ii) 2 đỉnh trên đồ thị $G$ liên thông với nhau, i.e., có đường đi trên trên $G$ nối chúng khi \& chỉ khi chúng cùng thuộc 1 thành phần liên thông, i.e.:
     \begin{equation*}
-        i,j\mbox{ are connected}\Leftrightarrow C(i) = C(j)\Leftrightarrow C(i)\cap C(j)\ne\emptyset\Leftrightarrow{\rm cid}(i) = {\rm cid}(j),\ \forall i,j\in[n].
+        \boxed{i,j\mbox{ are connected}\Leftrightarrow C(i) = C(j)\Leftrightarrow C(i)\cap C(j)\ne\emptyset\Leftrightarrow{\rm cid}(i) = {\rm cid}(j),\ \forall i,j\in[n].}
     \end{equation*}
 \end{lemma}
 Với truy vấn 1, giả sử 2 đỉnh $i,j\in[n]$ chưa có cạnh nối chúng trực tiếp, i.e., $\{i,j\}\notin E$. Có 2 trường hợp xảy ra:
@@ -145,15 +145,123 @@ Với truy vấn 2, với 2 đỉnh $i,j\in[n]$, $i\ne j$, ta có thể kiểm t
 
 Về mặt cài đặt, để giải Bài toán \ref{prob: query connectedness}, ta sẽ xây dựng 1 cấu trúc dữ liệu có 3 thao tác sau:
 \begin{enumerate}
-    \item \verb|make_set(v)| tạo ra 1 tập hợp mới chỉ chứa phần tử $v$: \verb|make_set(v)| $= \{v\}$.
+    \item \verb|make_set(v)| tạo ra 1 tập hợp mới chỉ chứa phần tử $v$: output of \verb|make_set(v)| $= \{v\}$.
     \item \verb|union_sets(a,b)| gộp tập hợp chứa phần tử $a$ \& tập hợp chứa phần tử $b$ thành 1, i.e., bước cập nhật thành phần liên thông chung bằng cách lấy hợp của 2 thành phần liên thông tương ứng: $C_{\rm new}(i) = C_{\rm new}(j)\coloneqq C(i)\cup C(j)$ đã để cập.
     \item \verb|find_set(v)| cho biết {\it đại diện} (representative) của tập hợp có chứa phần tử $v$ (phần tử đại diện cho $v$ không nhất thiết phải là $v$, e.g., người đỡ đầu cho 1 tập hợp các đứa trẻ trong 1 trại trẻ mồ côi). Đại diện này là sẽ 1 phần tử của tập hợp đó \& có thể thay đổi sau mỗi lần gọi thao tác \verb|union_sets| (e.g., nếu chọn phần tử đại diện là đỉnh có giá trị nhỏ nhất thì nếu tìm được đỉnh mới nhỏ hơn phần tử đại diện hiện tại, thì phải cập nhật phần tử đại diện mới này). Ta có thể sử dụng đại diện đó để kiểm tra 2 phần tử có nằm trong cùng 1 tập hợp hay không. $a,b$ nằm trong cùng 1 tập hợp nếu như đại diện của 2 tập chứa chúng là giống nhau \& không nằm trong cùng 1 tập hợp nếu ngược lại.
 \end{enumerate}
 Ta có thể xử lý 3 thao tác này 1 cách hiệu quả với các tập hợp được biểu diễn dưới dạng các cây (tree-based representation), mỗi phần tử là 1 đỉnh \& mỗi cây tương ứng với 1 tập hợp. Gốc của mỗi cây sẽ là đại diện của tập hợp đó.
 
+Ban đầu, mỗi phần tử thuộc 1 tập hợp riêng biệt: $\{1\},\{2\},\ldots,\{n\}$, nên mỗi đỉnh là 1 cây riêng biệt, cũng là 1 thành phần liên thông riêng biệt. $|E|$ bước tiếp theo, ở bước thứ $i\in[|E|]$, ta gộp 2 tập hợp chứa phần tử $a_i,b_i\in[n]$, $a_i\ne b_i$. Sau $|E|$ bước, ta được $c$ thành phần liên thông $\{C_i\}_{i=1}^c$. Với cách cài đặt này, ta sẽ lưu 1 mảng {\tt parent} với {\tt parent[v]} là cha của phần tử $v$.
 
+%------------------------------------------------------------------------------%
 
+\subsubsection{Naive implementation of DSU -- Cài đặt ``ngây thơ'' của DSU}
+Nếu 1 cây được đánh số sao cho nhãn của node cha luôn nhỏ hơn nhãn của node con thì ta có thể dễ dàng định nghĩa khái niệm {\it gốc} của 1 cây như sau:
 
+\begin{dinhnghia}
+    \label{def: root of tree}
+    Cho 1 đồ thị vô hướng $G = (V,E)$, $V = [n]$. {\rm Gốc} của 1 cây chứa 1 đỉnh $i\in[n]$ được định nghĩa bởi công thức
+    \begin{equation*}
+        r(i)\coloneqq\min\{j\in[n];i,j\mbox{ are connected}\}.
+    \end{equation*}
+\end{dinhnghia}
+Để tạo 1 tập hợp mới gồm phần tử $v$ bởi \verb|make_set(v)|, ta chỉ cần tạo 1 cây có gốc là $v$, với \verb|parent[v] = v| (giống như kiểu phim \href{https://www.imdb.com/title/tt2397535/}{\it Predestination} (2014) -- tạm dịch: {\it Tiền Định{\tt/}Định Mệnh}, mình là cha \& là mẹ của chính mình, cũng là con của chính mình luôn). Để gộp 2 tập hợp lần lượt chứa 2 phần tử $a,b\in[n]$ bởi \verb|union_sets(a,b)|, ta sẽ tìm gốc $r(a)\in[n]$ của cây có chứa phần tử $a$ \& gốc $r(b)\in[n]$ của cây có chứa phần tử $b$. Nếu 2 giá trị này giống nhau $r(a) = r(b) = r\in[n]$, thì $r\in C(a)\cap C(b)\Rightarrow C(a)\cap C(b)\ne\emptyset$ nên theo Lem. \ref{lem: characterization connectedness}(ii), $C(a) = C(b)$ hay $a,b$ đã liên thông sẵn, nên ta sẽ không làm gì do 2 phần tử $a,b$ đã nằm trong cùng 1 tập hợp chứa gốc chung $r$. Còn nếu không, i.e., $r(a)\ne r(b)$, ta sẽ đặt gốc cây này là cha của gốc cây còn lại. Cụ thể hơn, nếu muốn khớp với Định nghĩa \ref{def: root of tree}, ta áp dụng truy vấn 1 để thêm 1 cạnh giữa 2 đỉnh $r(a),r(b)\in[n]$: $E\leftarrow E\cup\{\{r(a),r(b)\}\}$. Dễ thấy điều này sẽ gộp 2 cây lại thành 1. Hơn nữa, gốc chung mới vừa được cập nhật của cây chứa cả 2 đỉnh $a,b$ chính là $\min\{r(a),r(b)\}$.
+
+Để tìm ký hiệu của 1 tập hợp có chứa phần tử $v$ bởi \verb|find_set(v)|, ta đơn giản nhảy lên các tổ tiên của đỉnh $v$ cho đến khi ta đến gốc của cây. Thao tác này có thể dễ dàng được cài đặt bằng đệ quy.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+void make_set(int v) {
+    parent[v] = v; // tạo ra cây mới có gốc là đỉnh v
+}
+
+int find_set(int v) {
+    if (v == parent[v]) return v; // trả về đỉnh v nếu như đỉnh v là gốc của cây
+    return find_set(parent[v]); // đệ quy lên cha của đỉnh v
+}
+
+void union_set(int a, int b) {
+    a = find_set(a); // tìm gốc của cây có chứa đỉnh a
+    b = find_set(b); // tìm gốc của cây có chứa đỉnh b
+    if (a != b) parent[b] = a; // gộp 2 cây nếu như 2 phần tử ở 2 cây khác nhau
+}
+\end{Verbatim}
+Vì đây là cách cài đặt ngây thơ, ta có thể dễ dàng tạo ra 1 ví dụ sao cho khi sử dụng cách cài đặt này, cây sẽ trở thành 1 đoạn thẳng gồm $n$ phần tử. Khi đó, độ phức tạp của thao tác \verb|find_set| sẽ là $O(n)$ -- hiển nhiên không thể chấp nhận được, nên ta tìm hiểu 2 phương pháp tối ưu thuật toán sau.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{1st Optimization: Merge according to size{\tt/}height -- Tối ưu 1: Gộp theo kích cỡ{\tt/}độ cao}
+Phương pháp tối ưu này sẽ thay đổi thao tác \verb|union_sets|, i.e., thay đổi cách xét trong 2 cây đang gộp, gốc của cây nào sẽ là cha của gốc của cây còn lại. Có khá nhiều cách để xét điều này, nhưng 2 cách được sử dụng nhiều nhất chính là gộp theo kích cỡ \& gộp theo độ cao của cây. Giả sử mỗi cây có 1 giá trị, lần lượt là kích cỡ \& độ cao của cây theo 2 cách gộp. Ở cả 2 cách gộp, ta sẽ luôn đặt gốc của cây có giá trị lớn hơn là cha của gốc của cây có giá trị nhỏ hơn.
+
+Thao tác \verb|union_sets| được tối ưu gộp theo kích cỡ:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// merge according to size
+void make_set_size(int v) {
+    parent[v] = v;
+    size[v] = 1; // ban đầu tập hợp chứa v có kích cỡ là 1
+}
+
+void union_set_size(int a, int b) {
+    a = find_set(a);
+    b = find_set(b);
+    if (a != b) {
+        if (size[a] < size[b]) swap(a, b); // đặt biến a là gốc của cây có kích cỡ lớn hơn
+        parent[b] = a;
+        size[a] += size[b]; // cập nhật kích cỡ của cây mới gộp lại
+    }
+}
+\end{Verbatim}
+Thao tác \verb|union_sets| được tối ưu gộp theo độ cao:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// merge according to size
+void make_set_height(int v) {
+    parent[v] = v;
+    rank[v] = 0; // gốc của cây có độ cao là 0
+}
+
+void union_set_height(int a, int b) {
+    a = find_set(a);
+    b = find_set(b);
+    if (a != b) {
+        if (rank[a] < rank[b]) swap(a, b); // đặt biến a là gốc của cây có độ cao lớn hơn
+        parent[b] = a;
+        if (rank[a] == rank[b]) ++rank[a]; // nếu 2 cây có cùng 1 độ cao, độ cao của cây mới
+            // sau khi gộp sẽ tăng 1
+    }
+}
+\end{Verbatim}
+Chỉ cần sử dụng phương pháp tối ưu này, với 1 trong 2 cách cài đặt, độ phức tạp của thao tác \verb|find_set| sẽ trở thành $O(\log n)$. Tuy nhiên, ta có thể tối ưu hóa hơn nữa khi kết hợp với phương pháp tối ưu thứ 2.
+
+\begin{question}
+    Có cách nào hybrid để trộn giữa 2 cách hộp theo kích cỡ \& độ cao không?
+\end{question}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{2nd Optimization: Path compression -- Tối ưu 2: Nén đường đi}
+Phương pháp tối ưu nén đường đi nhằm tăng tốc thao tác \verb|find_set|. Giả sử ta gọi hàm \verb|find_set(v)| với 1 đỉnh $v\in[n]$ bất kỳ, ta tìm được $p$ là gốc của cây, đồng thời cũng là giá trị của mọi hàm \verb|find_set(u)| với $u$ là 1 đỉnh nằm trên đường đi từ $v$ đến $p$.\footnote{NQBH: Trong bài viết gốc \href{https://wiki.vnoi.info/algo/data-structures/disjoint-set-union}{VNOI Wiki{\tt/}disjoint set union}, tác giả viết nhầm thành ``với $u$ là 1 đỉnh nằm trên đường đi từ $u$ đến $p$'' sửa lại thành ``với $u$ là 1 đỉnh nằm trên đường đi từ $v$ đến $p$''.} Cách tối ưu ở đây chính là làm cho đường đi đến gốc của các đỉnh $u$ ngắn đi bằng cách gán trực tiếp cha của các đỉnh $u$ này thành $p$.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// path compression
+int find_set_path_compression(int v) {
+    if (v == parent[v]) return v; // trả về đỉnh v nếu như đỉnh v là gốc của cây
+    int p = find_set(parent[v]); // đệ quy lên cha của đỉnh v
+    parent[v] = p; // nén đoạn từ v lên gốc của cây
+    return p;
+}
+\end{Verbatim}
+1 cách cài đặt khác của thao tác \verb|find_set| thường được sử dụng nhiều trong Competitive Programming do tính ngắn gọn của nó:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// brief find set
+int find_set_brief(int v) {
+    return v == parent[v] ? v : parent[v] = find_set_brief(parent[v]);
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Time complexity \& its proof -- Độ phức tạp thời gian \& chứng minh}
+
+%------------------------------------------------------------------------------%
+
+\section{Some Applications of DSU -- Vài Ứng Dụng của DSU}
 
 %------------------------------------------------------------------------------%
 

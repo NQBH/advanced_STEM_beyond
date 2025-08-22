@@ -88,9 +88,10 @@
 Disjoint Set Union (abbr., DSU) là 1 cấu trúc dữ liệu hữu dụng, thường xuất hiện trong các kỳ thi Lập trình Thi Đấu, \& có thể được dùng để quản lý 1 cách hiệu 1 tập hợp của các tập hợp.
 
 \begin{baitoan}
+    \label{prob: query connectedness}
     Cho 1 đồ thị $G = (V,E)$ có $|V| = n\in\mathbb{N}^\star$ đỉnh, ban đầu không có cạnh nào, $E = \emptyset$. Ta cần xử lý 2 loại truy vấn:
     \begin{enumerate}
-        \item Thêm 1 cạnh giữa 2 đỉnh $x,y\in V$ trong đồ thị, i.e., $E = E\cup\{\{x,y\}\}$ nếu $G$ là đồ thị vô hướng \& $E = E\cup\{(x,y)\}$ nếu $G$ là đồ thị có hướng.
+        \item Thêm 1 cạnh giữa 2 đỉnh $x,y\in V$ trong đồ thị, i.e., $E = E\cup\{\{x,y\}\}$ nếu $G$ là đồ thị vô hướng \& $E = E\cup\{(x,y)\}$ nếu $G$ là đồ thị có hướng (trước tiên ta chỉ xét trường hợp đồ thị vô hướng cho đơn giản).
         \item In ra {\tt yes} nếu như 2 đỉnh $x,y$ nằm trong cùng 1 thành phần liên thông. In ra {\tt no} nếu ngược lại.
     \end{enumerate}
 \end{baitoan}
@@ -134,8 +135,23 @@ Với định nghĩa \ref{def: index component}, ta có ngay
 Với truy vấn 1, giả sử 2 đỉnh $i,j\in[n]$ chưa có cạnh nối chúng trực tiếp, i.e., $\{i,j\}\notin E$. Có 2 trường hợp xảy ra:
 \begin{itemize}
     \item Trường hợp 1: Giả sử $i,j$ cùng thuộc 1 thành phần liên thông, theo Lem. \ref{lem: characterization connectedness}, có $C(i) = C(j)$, ${\rm cid}(i) = {\rm cid}(j)$ nên ta chỉ cần thêm cạnh $\{i,j\}$ vào tập cạnh $E$: $E\leftarrow E\cup\{\{i,j\}\}$ hay \verb|edge_list.append({i, j})| mà không cần cập nhật $c$ tập liên thông $\{C_i\}_{i=1}^c$ hay hàm chỉ số liên thông ${\rm cid}(\cdot)$.
-    \item Trường hợp 2: Giả sử $i,j$ thuộc 2 thành phần liên thông khác nhau, theo \ref{lem: characterization connectedness}, có $C(i)\ne C(j)$, ${\rm cid}(i)\ne {\rm cid}(j)$
+    \item Trường hợp 2: Giả sử $i,j$ thuộc 2 thành phần liên thông khác nhau, theo \ref{lem: characterization connectedness}, có $C(i)\ne C(j)$, ${\rm cid}(i)\ne {\rm cid}(j)$. Khi đó, việc nối cạnh $i,j$ với nhau, i.e., cập nhập tập cạnh bằng cách thêm cạnh $\{i,j\}$ vào tập cạnh $E$: $E\leftarrow E\cup\{\{i,j\}\}$ hay \verb|edge_list.append({i, j})|, nhưng điều khác biệt ở đây nằm ở chỗ: ta cũng cần phải cập nhật tập các thành phần liên thông \& hàm chỉ số liên thông như sau:
+    \begin{enumerate}
+        \item Cập nhật thành phần liên thông chứa cả $i$ \& $j$ bằng cách lấy hợp của 2 tập hợp $C(i),C(j)$, i.e., $C_{\rm new}(i) = C_{\rm new}(j)\coloneqq C(i)\cup C(j)$.
+        \item Cập nhật hàm chỉ số liên thông: ${\rm cid}_{\rm new}(i) = {\rm cid}_{\rm new}(j) = \min\{{\rm cid}(i),{\rm cid}(j)\}$ (cũng có thể lấy $\max$ thay vì $\min$ nhưng theo quy ước của DSU data structure, ta nên lấy min để đảm bảo tính nhất quán\footnote{Consistency is 1 of the kings in natural sciences.}) \& sau đó ta có thể đánh chỉ số các thành phần liên thông lại nếu cần vì sau khi nối $i,j$ với nhau, số thành phần liên thông $c$ đã giảm đi 1, i.e., $c\leftarrow c - 1$ hay {\tt--c}.
+    \end{enumerate}
 \end{itemize}
+Với truy vấn 2, với 2 đỉnh $i,j\in[n]$, $i\ne j$, ta có thể kiểm tra 2 đỉnh này có cùng nằm trong 1 thành phần liên thông hay không bằng cách so sánh $C(i)$ \& $C(j)$ hoặc ${\rm cid}(i)$ \& ${\rm cid}(j)$, nhờ Lem. \ref{lem: characterization connectedness}. Việc thực hiện truy vấn này khá hiển nhiên do bản chất của cấu trúc dữ liệu DSU chính là rã sự liên thông thành các thành phần liên khác nhau để tiện quản lý.
+
+Về mặt cài đặt, để giải Bài toán \ref{prob: query connectedness}, ta sẽ xây dựng 1 cấu trúc dữ liệu có 3 thao tác sau:
+\begin{enumerate}
+    \item \verb|make_set(v)| tạo ra 1 tập hợp mới chỉ chứa phần tử $v$: \verb|make_set(v)| $= \{v\}$.
+    \item \verb|union_sets(a,b)| gộp tập hợp chứa phần tử $a$ \& tập hợp chứa phần tử $b$ thành 1, i.e., bước cập nhật thành phần liên thông chung bằng cách lấy hợp của 2 thành phần liên thông tương ứng: $C_{\rm new}(i) = C_{\rm new}(j)\coloneqq C(i)\cup C(j)$ đã để cập.
+    \item \verb|find_set(v)| cho biết {\it đại diện} (representative) của tập hợp có chứa phần tử $v$ (phần tử đại diện cho $v$ không nhất thiết phải là $v$, e.g., người đỡ đầu cho 1 tập hợp các đứa trẻ trong 1 trại trẻ mồ côi). Đại diện này là sẽ 1 phần tử của tập hợp đó \& có thể thay đổi sau mỗi lần gọi thao tác \verb|union_sets| (e.g., nếu chọn phần tử đại diện là đỉnh có giá trị nhỏ nhất thì nếu tìm được đỉnh mới nhỏ hơn phần tử đại diện hiện tại, thì phải cập nhật phần tử đại diện mới này). Ta có thể sử dụng đại diện đó để kiểm tra 2 phần tử có nằm trong cùng 1 tập hợp hay không. $a,b$ nằm trong cùng 1 tập hợp nếu như đại diện của 2 tập chứa chúng là giống nhau \& không nằm trong cùng 1 tập hợp nếu ngược lại.
+\end{enumerate}
+Ta có thể xử lý 3 thao tác này 1 cách hiệu quả với các tập hợp được biểu diễn dưới dạng các cây (tree-based representation), mỗi phần tử là 1 đỉnh \& mỗi cây tương ứng với 1 tập hợp. Gốc của mỗi cây sẽ là đại diện của tập hợp đó.
+
+
 
 
 

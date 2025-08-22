@@ -97,18 +97,47 @@ Disjoint Set Union (abbr., DSU) là 1 cấu trúc dữ liệu hữu dụng, thư
 
 %------------------------------------------------------------------------------%
 
-\subsection{Cấu trúc dữ liệu Disjoint Set Union}
+\subsection{Data Structure Disjoint Set Union -- Cấu trúc dữ liệu Disjoint Set Union}
 Cho tiện, ta đánh số $n$ đỉnh của đồ thị $G$ bởi $1,2,\ldots,n$ (trường hợp $n$ đỉnh được dán nhãn bởi $v_1,v_2,\ldots,v_n$ hoàn toàn tương tự vì ta có thể làm việc trên chỉ số $i$ của $v_i$), khi đó $V = [n]$. Giả sử $G$ có $c\coloneqq$ \verb|num_connected_component| $\in\mathbb{N}^\star$ (số thành phần liên thông) $C_1,C_2,\ldots,C_c$ với $\{C_i\}_{i=1}^c$ là 1 phân hoạch của $V = [n]$, i.e.:
 \begin{equation*}
     \bigcup_{i=1}^c C_i = [n],\ C_i\cap C_j = \emptyset,\ \forall i,j\in[c],\ i\ne j.
 \end{equation*}
 Nếu ta coi mỗi đỉnh của đồ thị $G = (V,E)$ là 1 phần tử \& mỗi thành phần liên thông (connected component) trong đồ thị là 1 tập hợp, truy vấn 1 sẽ trở thành gộp 2 tập hợp lần lượt chứa phần tử $x,y$ thành 1 tập hợp mới \& truy vấn 2 trở thành việc hỏi 2 phần tử $x,y$ có nằm trong cùng 1 tập hợp không.
 
-Để tiện tính toán \& lý luận về mặt toán học cho riêng cấu trúc dữ liệu DSU, sau đây là 1 định nghĩa cá nhân của tác giả [NQBH], hoàn toàn không chính thống trong Lý thuyết Đồ thị:
+Để tiện tính toán \& lý luận về mặt toán học cho riêng cấu trúc dữ liệu DSU, sau đây là 1 định nghĩa lai Toán--Tin mang tính cá nhân của tác giả [NQBH], hoàn toàn không chính thống trong Lý thuyết Đồ thị:
 
 \begin{dinhnghia}[Chỉ số thành phần liên thông]
-    Gọi $C(i)\subset[n]$ là thành phần liên thông của $G = (V,E)$ chứa đỉnh $i\in[n]$ \& gọi chỉ số của thành phần liên thông chứa đỉnh $i$ là ${\rm cid}(i)$, i.e., $i\in C_{{\rm cid}(i)}\equiv C(i)$.
+    \label{def: index component}
+    Cho đồ thị vô hướng $G = (V,E)$ với $V = [n]$. Gọi $C(i)\subset[n]$ là thành phần liên thông của $G = (V,E)$ chứa đỉnh $i\in[n]$ \& gọi chỉ số của thành phần liên thông chứa đỉnh $i$ là ${\rm cid}(i)$, i.e., $i\in C_{{\rm cid}(i)}\equiv C(i)$, với hàm ${\rm cid}:[n]\to[c]$ được gọi là {\rm hàm chỉ số liên thông}.
 \end{dinhnghia}
+Với định nghĩa \ref{def: index component}, ta có ngay
+\begin{equation*}
+    \left\{\begin{split}
+        &i\in C(i) = C_{{\rm cid}(i)}\subset[n],\\
+        &i,j\mbox{ are connected},\ \forall j\in C(i).
+    \end{split}\right.\ \forall i\in[n].
+\end{equation*}
+Ở đây, ta coi mỗi đỉnh của đồ thị tự liên thông với chính nó theo nghĩa đỉnh đó đến được (reachability) chính đỉnh đó thông qua 1 đường đi có độ dài 0, được gọi là 1 {\it đường đi tầm thường}, chứ không phải theo nghĩa khuyên (loop).
+
+\begin{lemma}[A characterization of connectedness -- 1 đặc trưng hóa của tính liên thông]
+    \label{lem: characterization connectedness}
+    Cho đồ thị vô hướng $G = (V,E)$.
+    (i) 2 đỉnh trên 1 đồ thị $G$ không liên thông với nhau, i.e., không có đường đi nào trên $G$ nối chúng khi \& chỉ khi chúng thuộc 2 thành phần liên thông khác nhau, i.e.,
+    \begin{equation*}
+        i,j\mbox{ are not connected}\Leftrightarrow C(i)\ne C(j)\Leftrightarrow C(i)\cap C(j) = \emptyset\Leftrightarrow{\rm cid}(i)\ne{\rm cid}(j),\ \forall i,j\in[n].
+    \end{equation*}
+    \item(ii) 2 đỉnh trên đồ thị $G$ liên thông với nhau, i.e., có đường đi trên trên $G$ nối chúng khi \& chỉ khi chúng cùng thuộc 1 thành phần liên thông, i.e.:
+    \begin{equation*}
+        i,j\mbox{ are connected}\Leftrightarrow C(i) = C(j)\Leftrightarrow C(i)\cap C(j)\ne\emptyset\Leftrightarrow{\rm cid}(i) = {\rm cid}(j),\ \forall i,j\in[n].
+    \end{equation*}
+\end{lemma}
+Với truy vấn 1, giả sử 2 đỉnh $i,j\in[n]$ chưa có cạnh nối chúng trực tiếp, i.e., $\{i,j\}\notin E$. Có 2 trường hợp xảy ra:
+\begin{itemize}
+    \item Trường hợp 1: Giả sử $i,j$ cùng thuộc 1 thành phần liên thông, theo Lem. \ref{lem: characterization connectedness}, có $C(i) = C(j)$, ${\rm cid}(i) = {\rm cid}(j)$ nên ta chỉ cần thêm cạnh $\{i,j\}$ vào tập cạnh $E$: $E\leftarrow E\cup\{\{i,j\}\}$ hay \verb|edge_list.append({i, j})| mà không cần cập nhật $c$ tập liên thông $\{C_i\}_{i=1}^c$ hay hàm chỉ số liên thông ${\rm cid}(\cdot)$.
+    \item Trường hợp 2: Giả sử $i,j$ thuộc 2 thành phần liên thông khác nhau, theo \ref{lem: characterization connectedness}, có $C(i)\ne C(j)$, ${\rm cid}(i)\ne {\rm cid}(j)$
+\end{itemize}
+
+
 
 %------------------------------------------------------------------------------%
 

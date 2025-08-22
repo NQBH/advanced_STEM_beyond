@@ -56,9 +56,9 @@
     \begin{itemize}
         \item {\it Disjoint Set Union (DSU) -- Hợp Tập Hợp Rời Rạc}.
 
-        PDF: {\sc url}: \url{.pdf}.
+        PDF: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/disjoint_set_union/NQBH_disjoint_set_union.pdf}.
 
-        \TeX: {\sc url}: \url{.tex}.
+        \TeX: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/disjoint_set_union/NQBH_disjoint_set_union.tex}.
         \item {\it }.
 
         PDF: {\sc url}: \url{.pdf}.
@@ -237,7 +237,7 @@ Chỉ cần sử dụng phương pháp tối ưu này, với 1 trong 2 cách cà
 %------------------------------------------------------------------------------%
 
 \subsubsection{2nd Optimization: Path compression -- Tối ưu 2: Nén đường đi}
-Phương pháp tối ưu nén đường đi nhằm tăng tốc thao tác \verb|find_set|. Giả sử ta gọi hàm \verb|find_set(v)| với 1 đỉnh $v\in[n]$ bất kỳ, ta tìm được $p$ là gốc của cây, đồng thời cũng là giá trị của mọi hàm \verb|find_set(u)| với $u$ là 1 đỉnh nằm trên đường đi từ $v$ đến $p$.\footnote{NQBH: Trong bài viết gốc \href{https://wiki.vnoi.info/algo/data-structures/disjoint-set-union}{VNOI Wiki{\tt/}disjoint set union}, tác giả viết nhầm thành ``với $u$ là 1 đỉnh nằm trên đường đi từ $u$ đến $p$'' sửa lại thành ``với $u$ là 1 đỉnh nằm trên đường đi từ $v$ đến $p$''.} Cách tối ưu ở đây chính là làm cho đường đi đến gốc của các đỉnh $u$ ngắn đi bằng cách gán trực tiếp cha của các đỉnh $u$ này thành $p$.
+Phương pháp tối ưu nén đường đi nhằm tăng tốc thao tác \verb|find_set|. Giả sử ta gọi hàm \verb|find_set(v)| với 1 đỉnh $v\in[n]$ bất kỳ, ta tìm được $p$ là gốc của cây, đồng thời cũng là giá trị của mọi hàm \verb|find_set(u)| với $u$ là 1 đỉnh nằm trên đường đi từ $v$ đến $p$.\footnote{NQBH: Trong bài viết gốc \href{https://wiki.vnoi.info/algo/data-structures/disjoint-set-union}{VNOI Wiki{\tt/}disjoint set union}, tác giả viết nhầm thành ``với $u$ là 1 đỉnh nằm trên đường đi từ $u$ đến $p$'' sửa lại thành ``với $u$ là 1 đỉnh nằm trên đường đi từ $v$ đến $p$'' \& vài chỗ khác nhầm ký hiệu đỉnh $v$ thành $u$.} Cách tối ưu ở đây chính là làm cho đường đi đến gốc của các đỉnh $u$ ngắn đi bằng cách gán trực tiếp cha của các đỉnh $u$ này thành $p$.
 \begin{Verbatim}[numbers=left,xleftmargin=5mm]
 // path compression
 int find_set_path_compression(int v) {
@@ -261,7 +261,174 @@ int find_set_brief(int v) {
 
 %------------------------------------------------------------------------------%
 
+\subsection{An alternative implementation of DSU -- 1 cách cài đặt khác}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item {\sc Lê Minh Hoàng}. {\it Giải Thuật \& Lập Trình}.
+
+    \item AtCoder Library: \url{https://github.com/atcoder/ac-library}.
+\end{enumerate}
+Thay vì cài đặt cấu trúc dữ liệu DSU bằng 2 mảng {\tt parent, size}, chỉ 1 mảng {\tt lab} được sử dụng. Nếu {\tt lab[v]} $< 0$ thì $v$ là gốc của 1 cây -{\tt lab[v]} là số lượng đỉnh của cây đó. Còn nếu {\tt lab[v]} $> 0$ thì {\tt lab[v]} là cha của đỉnh $v$.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// alternative implementation of DSU
+void make_set_lab(int v) {
+    lab[v] = -1;
+}
+
+int find_set_lab(int v) {
+    return lab[v] < 0 ? v : lab[v] = find_set_lab(lab[v]);
+}
+
+void union_set_lab(int a, int b) {
+    a = find_set_lab(a);
+    b = find_set_lab(b);
+    if (a != b) {
+        if (lab[a] > lab[b]) swap(a, b);
+        lab[a] += lab[b];
+        lab[b] = a;
+    }
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
 \section{Some Applications of DSU -- Vài Ứng Dụng của DSU}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Save additional information for each set -- Lưu thêm thông tin khác cho mỗi tập hợp}
+Ngoài việc lưu các thông tin về cấu trúc cây, ta có thể lưu các hàm có tính chất giao hoán \& kết hợp của từng tập hợp. E.g., ta có thể lưu tổng các phần tử{\tt/}giá trị phần tử nhỏ nhất hoặc lớn nhất, trung bình cộng, etc. của từng tập hợp. Khi đó, các thao tác của DSU sẽ được cài đặt như sau:
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+// save additional information for each set in DSU
+voi make_set_size_more_info(int v) {
+    parent[v] = v;
+    size[v] = 1;
+    Min[v] = value[v]; // value[v] là giá trị của phần tử thứ v
+    Max[v] = value[v];
+    sum[v] = value[v];
+    avg[v] = value[v];
+}
+
+int find_set_size_more_info(int v) {
+    return v == parent[v] ? v : parent[v] = find_set_size_more_info(parent[v]);
+}
+
+void union_set_size_more_info(int a, int b) {
+    a = find_set_size_more_info(a);
+    b = find_set_size_more_info(b);
+    if (a != b) {
+        if (size[a] < size[b]) swap(a, b);
+        parent[b] = a;
+        size[a] += size[b];
+        sum[a] += sum[b];
+        Min[a] = min(Min[a], Min[b]);
+        Max[a] = max(Min[a], Min[b]);
+        avg[a] = static_cast<double>(sum[a]) / size(a);
+    }
+}
+\end{Verbatim}
+Tương tự như thông tin về độ lớn {\tt size} của cây hay độ cao {\tt rank} của cây, ta sẽ lưu các hàm này tại gốc của từng cây.
+\begin{Verbatim}[numbers=left,xleftmargin=5mm]
+int find_sum(int v) { // trả về tổng của các phần tử trong tập hợp chứa v
+    v = find_set_size_more_info(v);
+    return sum[v];
+}
+
+int find_min(int v) { // trả về giá trị nhỏ nhất của các phần tử trong tập hợp chứa v
+    v = find_set_size_more_info(v);
+    return Min[v];
+}
+
+int find_max(int v) { // trả về giá trị lớn nhất của các phần tử trong tập hợp chứa v
+    v = find_set_size_more_info(v);
+    return Max[v];
+}
+
+double find_avg(int v) { // trả về giá trị trung bình của các phần tử trong tập hợp chứa v
+    v = find_set_size_more_info(v);
+    return avg[v];
+}
+\end{Verbatim}
+
+\begin{baitoan}[Xếp hàng]
+    Cho $n\in\mathbb{N}^\star$ người đang xếp hàng ở các vị trí từ $1$ đến $n$. Viết chương trình xử lý 2 truy vấn:
+    \begin{enumerate}
+        \item Người đứng ở vị trí thứ $i$ rời khỏi hàng.
+        \item Tìm người gần nhất về bên phải vị trí $p$ mà chưa rời khỏi hàng.
+    \end{enumerate}
+\end{baitoan}
+
+\begin{proof}[1st solution: DSU]
+    Gọi $Q_{\rm curr}\subset[n]$ là hàng đợi hiện tại gồm những người còn đứng trong hàng. Với mỗi vị trí $i\in[n]$, ta sẽ có 1 con trỏ ${\rm ptr}(i)$. Nếu người đứng ở vị trí $i$ vẫn đang đứng trong hàng, con trỏ trỏ vào vị trí đó, i.e., ${\rm ptr}(i) = i$, nếu không thì con trỏ này sẽ trỏ vào con trỏ ở vị trí ngay bên phải. Ta có công thức đệ quy cho hàm con trỏ ${\rm ptr}:[n]\to[n]$ như sau:
+    \begin{equation*}
+        {\rm ptr}(i) = \left\{\begin{split}
+            &i&&\mbox{if } i\in Q_{\rm curr},\\
+            &{\rm ptr(i + 1)}&&\mbox{if } i\notin Q_{\rm curr}.
+        \end{split}\right.
+    \end{equation*}
+    Dễ dàng dự đoán \& chứng minh bằng quy nạp công thức toán học cho hàm con trỏ ${\rm ptr}:[n]\to[n]$ như sau:
+    \begin{equation*}
+        {\rm ptr}(i) = \min\{j\in[n];i\le j,\ j\in Q_{\rm curr}\} = \min\{j\in[n];i\le j,\ {\rm ptr}(j) = j\},
+    \end{equation*}
+    có ý nghĩa là con trỏ ở vị trí $i$ trỏ vào người gần nhất tính từ vị trí $i$ về phía bên phải.
+
+    Giả sử ban đầu có $n$ người trong hàng đợi, $V\coloneqq [n]$, $Q_0 = V = [n]$, ${\rm ptr} = {\rm id}_V$, i.e., ${\rm ptr}(i) = i$, $\forall i\in[n]$. Tại các bước tiếp theo, nếu người $i\in[n]$ nào đó rời hàng, $Q_{\rm curr}\coloneqq Q_{\rm lastest}\backslash\{i\}$, ta sẽ thực hiện truy vấn 1 của Bài toán \ref{prob: query connectedness} bằng cách nối 2 đỉnh $i$ \& $i + 1$ lại với nhau, i.e., $E\leftarrow E\cup\{\{i,i + 1\}\}$, ta sẽ gán ${\rm ptr}(i) = {\rm ptr}(i + 1)$: dễ thấy để tìm người gần nhất bên phải mà chưa rời khỏi hàng, ta đi dần dần sang phải cho đến khi gặp 1 vị trí có con trỏ trỏ đến chính nó.
+
+    Ta có thể sử dụng cấu trúc dữ liệu DSU để lưu trữ các thông tin trên \& sử dụng phương pháp tối ưu nén để đoạt được độ phức tạp trung bình $O(\log n)$ với mỗi truy vấn. Vị trí ta cần tìm chính là vị trí có thứ tự lớn nhất trong mỗi tập hợp (ứng với mỗi thành phần liên thông). Ta có thể lưu phần tử lớn nhất trong 1 tập hợp như đã cài đặt, qua đó đạt được độ phức tạp trung bình $O(\alpha(n))$ với mỗi truy vấn.
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+vector<int> parent, Size, Max;
+
+void make_set_size_max(int v) {
+    parent[v] = v;
+    Size[v] = 1;
+    Max[v] = v;
+}
+
+int find_set(int v) {
+    return v == parent[v] ? v : parent[v] = find_set(parent[v]);
+}
+
+void union_set_size_max(int a, int b) {
+    a = find_set(a);
+    b = find_set(b);
+    if (a != b) {
+        if (Size[a] < Size[b]) swap(a, b);
+        parent[b] = a;
+        Size[a] += Size[b];
+        Max[a] = max(Max[a], Max[b]);
+    }
+}
+
+void leave(int v) { // người thứ v rời khỏi hàng
+    union_set_size_max(v, v + 1);
+}
+
+int find_next(int p) { // trả về thứ tự của người gần nhất bên phải vị trí p mà chưa rời khỏi hàng
+    p = find_set(p);
+    return Max[p];
+}
+
+int main() {
+    int n, num_query, type_query, node; // query has 2 types:
+    // type 1: 1 i: remove person i from current queue &
+    // type 2: 2 p: find closest person from p to the right that is still in the queue
+    cin >> n >> num_query;
+    parent.resize(n);
+    Size.resize(n);
+    Max.resize(n);
+    for (int i = 1; i <= n; ++i) make_set_size_max(i);
+    for (int i = 0; i < num_query; ++i) {
+        cin >> type_query >> node;
+        if (type_query == 1) leave(node); // remove person i from current queue
+        else cout << find_next(node) << '\n';
+    }
+}
+    \end{Verbatim}
+\end{proof}
 
 %------------------------------------------------------------------------------%
 

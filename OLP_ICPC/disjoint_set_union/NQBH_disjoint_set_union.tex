@@ -617,7 +617,44 @@ int main() {
     Cho 1 đồ thị có $n\in\mathbb{N}^\star$ đỉnh, ban đầu không có cạnh nào. Xử lý các truy vấn thêm cạnh vào đồ thị. Hỏi sau truy vấn nào thì đồ thị không còn là đồ thị 2 phía?
 \end{baitoan}
 
-
+\begin{proof}[1st solution: DSU]
+    Dựa vào tính chất của đồ thị 2 phía, với mọi cặp đỉnh thuộc cùng 1 phía sẽ có đường đi bất kỳ giữa chúng có độ dài chẵn, i.e., nếu ta chọn 1 đỉnh $l$ trong 1 thành phần liên thông, 2 đỉnh $a,b\in V$ sẽ nằm cùng 1 phía nếu như khoảng cách của 2 đỉnh này tới $l$ có cùng tính chẵn lẻ. Ta hoàn toàn có thể sử dụng cấu trúc dữ liệu DSU để lưu trữ thông tin này bằng cách lưu tính chẵn lẻ của đường đi từ mọi đỉnh tới gốc của cây. Lúc này, hàm \verb|find_set| sẽ trả trả về 1 cặp \{gốc của cây, tính chẵn lẻ của độ dài đường đi đến gốc của cây\} \& được cài đặt như sau:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+pair<int, int> find_set(int v) {
+    if (v == parent[v]) return {v, 0};
+    parent<int, int> val = find_set(parent[v]);
+    parent[v] = val.first;
+    dist[v] = (dist[v] + val.second) % 2;
+    // độ dài từ đỉnh v đến cha mới
+    // = độ dài từ đỉnh v đến đỉnh cha cũ
+    // + độ dài từ cha cũ tới cha mới (gốc của cây)
+    return {parent[a], dist[a]};
+}
+    \end{Verbatim}
+    Tương tự, hàm \verb|union_sets| cũng cần phải được thay đổi \& được cài đặt như sau:
+    \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+void union_set(int a, int b) {
+    pair<int, int> val_a = find_set(a), val_b = find_set(b);
+    a = val_a.first;
+    b = val_b.first;
+    if (a == b) {
+        if (val_a.second != val_b.second) {
+            // đồ thị không còn là đồ thị 2 phía
+        }
+    }
+    else {
+        if (sz[a] < sz[b]) swap(a, b);
+        parent[b] = a;
+        sz[a] += sz[b];
+        dist[b] = (val_a.second + val_b.second + 1) % 2;
+        // độ dài từ đỉnh b tới gốc cây
+        // = độ dài từ đỉnh a tới gốc cây ban đầu chứa a
+        // + độ dài từ đỉnh b tới gốc cây ban đầu chứa b
+        // + 1 (khoảng cách giữa 2 đỉnh a & b)
+    }
+}
+    \end{Verbatim}
+\end{proof}
 
 %------------------------------------------------------------------------------%
 
@@ -628,6 +665,171 @@ Ngoài ra tính chất của DSU còn được sử dụng trong một số kĩ 
 
 \subsection{Small-to-large merging -- Kỹ thuật gộp set}
 Giả sử ta cần lưu trực tiếp các phần tử của 1 tập hợp bằng 1 cấu trúc dữ liệu như set{\tt/}map, thì liệu có cách nào đủ hiệu quả để thực hiện thao tác \verb|union_sets| không? Có 1 kỹ thuật gộp set (small-to-large merging) để thực hiện yêu cầu đó.
+
+\begin{baitoan}[\href{https://oj.vnoi.info/problem/colquery}{VNOI{\tt/}color query}]
+    Cho 1 đồ thị vô hướng có $n\in\mathbb{N}^\star$ đỉnh, đỉnh thứ $i$ có màu $a_i$. Ban đầu đầu thị chưa có cạnh nào $E = \emptyset$. Cho $q\in\mathbb{N}^\star$ truy vấn, mỗi truy vấn thuộc 1 trong 2 dạng:
+    \begin{itemize}
+        \item $1$ $u$ $v$: thêm 1 cạnh nối giữa $u,v$.
+        \item $2$ $u$ $c$: Tính số đỉnh có màu $c$ trong thành phần liên thông chứa $u$.
+    \end{itemize}
+    \item {\sf Input.} Dòng đầu tiên chứa 2 số nguyên dương $n\in[10^5],q\in[2\cdot10^5]$. Dòng tiếp theo chứa $n$ số nguyên dương $a_i\in[n]$, $\forall i\in[n]$. $q$ dòng cuối cùng, mỗi dòng gồm 3 số nguyên dương, số đầu tiên $\in\{1,2\}$ là loại của truy vấn, 2 số nguyên còn lại $\le n$.
+    \item {\sf Output.} Với mỗi truy vấn loại 2, in ra 1 dòng kết quả của truy vấn đó.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|color_query.inp| & \verb|color_query.out| \\
+            \hline
+            5 7 & 1 \\
+            2 4 2 3 2 & 0 \\
+            1 1 2 & 3 \\
+            2 1 2 & 1 \\
+            1 3 5 & \\
+            2 2 1 & \\
+            1 1 3 & \\
+            2 3 2 & \\
+            2 4 3 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{baitoan}
+
+\begin{proof}[1st solution: DSU]
+    Ta sử dụng cấu trúc dữ liệu DSU \& lưu thêm 1 map chứa số lượng từng màu tại gốc của từng cây. Trong thao tác \verb|union_sets|, ta sẽ chuyển lần lượt các phần tử trong map của tập hợp bé hơn vào map của tập hợp lớn hơn, với độ phức tạp thời gian là $O(n\log n)$. Thật vậy, gọi số phần tử nằm trong 2 dãy số lớn hơn \& bé hơn lần lượt là $a,b$, thì $a + b\ge2b$, nên mỗi lần 1 phần tử bị di chuyển, nó sẽ bị di chuyển tới 1 dãy số có kích thước lớn hơn ít nhất 2 lần kích thước dãy số ban đầu nó nằm trong, nên 1 phần tử chỉ bị di chuyển tối đa $\log_2n$ lần, qua đó mà đạt được độ phức tạp $O(n\log n)$.
+    \item {\sc C++ implementation.}
+    \begin{enumerate}
+        \item VNOI's C++: color query:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <map>
+#include <vector>
+using namespace std;
+
+const int N = 1e5 + 5;
+int n, q, a[N];
+
+struct DSU {
+    vector<map<int, int>> color;
+    vector<int> parent, sz;
+
+    DSU(int n) : color(n), parent(n), sz(n) {};
+
+    void make_set(int v) {
+        color[v][a[v]] = 1;
+        parent[v] = v;
+        sz[v] = 1;
+    }
+
+    int find_set(int v) {
+        if (v == parent[v]) return v;
+        int p = find_set(parent[v]);
+        parent[v] = p;
+        return p;
+    }
+
+    void union_set(int a, int b) {
+        a = find_set(a);
+        b = find_set(b);
+        if (a != b) {
+            if (sz[a] < sz[b]) swap(a, b);
+            parent[b] = a;
+            sz[a] += sz[b];
+            for (auto p : color[b]) color[a][p.first] += p.second;
+            color[b].clear();
+        }
+    }
+
+    int query(int v, int c) {
+        v = find_set(v);
+        return color[v].find(c) != color[v].end() ? color[v][c] : 0;
+    }
+};
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cin >> n >> q;
+    for (int i = 1; i <= n; ++i) cin >> a[i];
+    DSU g(n + 5);
+    for (int i = 1; i <= n; ++i) g.make_set(i);
+    while (q--) {
+        int op, x, y;
+        cin >> op >> x >> y;
+        if (op == 1) g.union_set(x, y);
+        else cout << g.query(x, y) << '\n';
+    }
+}
+        \end{Verbatim}
+        \item NQBH's C++: color query:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// int n, q, a[N], parent[N], sz[N], color[N][N];
+int n, q;
+vector<int> a, parent, sz, not_merge_color;
+vector<vector<int>> color;
+
+void make_set_size(int i) {
+    parent[i] = i;
+    sz[i] = 1;
+}
+
+int find_set_size(int v) {
+    return v == parent[v] ? v : parent[v] = find_set_size(parent[v]);
+}
+
+void union_set_size(int u, int v) {
+    u = find_set_size(u);
+    v = find_set_size(v);
+    if (u != v) {
+        if (sz[u] < sz[v]) swap(u, v);
+        parent[v] = u;
+        sz[u] += sz[v];
+        if (not_merge_color[v]) { // have not taken colors in node v yet
+            for (int i = 1; i <= n; ++i) {
+                color[u][i] += color[v][i];
+                not_merge_color[v] = false;
+            }
+        }
+    }
+}
+
+int main() {
+    cin >> n >> q;
+    a.resize(n + 1);
+    parent.resize(n + 1);
+    sz.resize(n + 1);
+    not_merge_color.resize(n + 1);
+    color.resize(n + 1, vector<int>(n + 1));
+    for (int i = 1; i <= n; ++i) {
+        not_merge_color[i] = true;
+        cin >> a[i];
+        make_set_size(i);
+        color[i][a[i]] = 1;
+    }
+    for (int i = 0; i < q; ++i) {
+        int query_type;
+        cin >> query_type;
+        if (query_type == 1) {
+            int u, v;
+            cin >> u >> v;
+            union_set_size(u, v);
+        }
+        else {
+            int u, c;
+            cin >> u >> c;
+            u = find_set_size(u);
+            cout << color[u][c] << '\n';
+        }
+    }
+}
+        \end{Verbatim}
+        MLE on large-size tests on VNOI OJ.
+    \end{enumerate}
+\end{proof}
 
 %------------------------------------------------------------------------------%
 

@@ -432,7 +432,219 @@ int main() {
 
 %------------------------------------------------------------------------------%
 
+\subsection{Optimize algorithms of finding minimum spanning trees (MST) in graphs -- Tối ưu thuật toán tìm cây khung nhỏ nhất trong đồ thị}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://wiki.vnoi.info/algo/graph-theory/minimum-spanning-tree.md}{VNOI Wiki{\tt/}minimum spanning tree -- bài toán tìm cây khung nhỏ nhất trong đồ thị}.
+\end{enumerate}
+Sử dụng DSU, ta có thể tối ưu độ phức tạp của thuật toán tìm cây khung nhỏ nhất của đồ thị từ $O(m\log n + n^2)$ xuống $O(m\log n$.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Reverse query -- Đảo ngược truy vấn}
+Do tính chất 1 chiểu của cấu trúc dữ liệu DSU: chỉ thêm đỉnh hoặc cạnh của đồ thị chứ không xóa được, ở 1 số bài ta phải đảo ngược thứ tự của các truy vấn trong bài để giải.
+
+\begin{problem}[\href{https://codeforces.com/contest/722/problem/C}{CodeForces{\tt/}Intel Code Challenge Elimination Round (Div. 1 + Div. 2, combined){\tt/}C. destroying array}]
+    You are given an array consisting of $n$ nonnegative integers $a_1,a_2,\ldots,a_n$. You are going to destroy integers in the array 1 by 1. Thus, you are given the permutation of integers from $1$ to $n$ defining the order elements of the array are destroyed.
+
+    After each element is destroyed, you have to find out the segment of the array, s.t. it contains no destroyed elements \& the sum of its elements is maximum possible. The sum of elements in the empty segment is considered to be $0$.
+    \item {\sf Input.} The 1st line of the input contains a single integer $n\in[10^5]$ -- the length of the array. The 2nd line contains $n$ integers $a_1,a_2,\ldots,a_n$, $a_i\in\overline{0,10^9}$, $\forall i\in[n]$. The 3rd line contains a permutation of integers from $1$ to $n$ -- the order used to destroy elements.
+    \item {\sf Output.} Print $n$ lines. The $i$th line should contain a single integer -- the maximum possible sum of elements on the segment containing no destroyed elements, after 1st $i$ operators are performed.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|destroy_array.inp| & \verb|destroy_array.out| \\
+            \hline
+            4 & 5 \\
+            1 3 2 5 & 4 \\
+            3 4 1 2 & 3 \\
+            & 0 \\
+            \hline
+            5 & 6 \\
+            1 2 3 4 5 & 5 \\
+            4 2 3 5 1 & 5 \\
+            & 1 \\
+            & 0 \\
+            \hline
+            8 & 18 \\
+            5 5 4 4 6 6 5 5 & 16 \\
+            5 2 8 7 1 3 4 6 & 11 \\
+            & 8 \\
+            & 8 \\
+            & 6 \\
+            & 6 \\
+            & 0 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{baitoan}[Destroying array]
+    Cho mảng gồm $n\in\mathbb{N}^\star$ số tự nhiên $a_1,a_2,\ldots,a_n\in\mathbb{N}$ \& 1 hoán vị $\pi\in S_n$ của $[n]$. $n$ phần tử sẽ lần lượt bị phá hủy theo thứ tự hoán vị trên. Sau mỗi lần 1 phần tử bị phá hủy, in ra dãy con liên tiếp có tổng lớn nhất mà không có phần tử nào đã bị phá hủy. Tổng của 1 đoạn con rỗng là $0$.
+    \item {\sf Giới hạn.} $n\in[10^5],a_i\in\overline{0,10^9}$, $\forall i\in[n]$.
+\end{baitoan}
+
+\begin{proof}[1st solution: DSU]
+    Source: \url{https://wiki.vnoi.info/algo/data-structures/disjoint-set-union} Do các phần tử là các số tự nhiên, nếu nếu sau khi 1 số phần tử bị phá hủy, dãy bị chia thành $k$ đoạn con liên tiếp thì đáp án sẽ là 1 trong $k$ đoạn này. Đảo ngược thứ tự của các truy vấn, ta có thể thấy bài toán trở nên dễ dàng hơn rất nhiều: Hồi sinh 1 số bị phá hủy trở về ban đầu \& in ra đoạn con có tổng lớn nhất. Khi đó ta dùng cấu trúc dữ liệu DSU để xử lý các đoạn con liên tiếp.
+
+    Khi 1 số được hồi sinh, ta sẽ kiểm tra vị trí ngay bên trái số đó (chứ không phải tất cả vị trí bên trái số đó), nếu có số nào đã được hồi sinh từ trước thì ta sẽ thêm cạnh giữa số đó \& số ngay bên trái số đó. Tương tự với số ngay bên phải. Ở mỗi thời điểm, các thành phần liên thông trong DSU sẽ thể hiện cho 1 đoạn con liên tiếp. Việc lưu trữ tổng của 1 thành phần liên thông đã được cài đặt ở trên.
+    \item {\sf C++ implementation.}
+    \begin{enumerate}
+        \item VNOI's C++: destroying array: \url{https://wiki.vnoi.info/algo/data-structures/disjoint-set-union}:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+#define ll long long
+
+const int N = 1e5 + 5;
+int n, a[N], p[N];
+ll ans, res[N];
+bool flag[N];
+
+struct DSU {
+    vector<ll> parent, sz, sum;
+    DSU(ll n) : parent(n), sz(n), sum(n) {};
+
+    void make_set(ll v) {
+        parent[v] = v;
+        sz[v] = 1;
+        sum[v] = a[v];
+    }
+
+    ll find_set(ll v) {
+        return v == parent[v] ? v : parent[v] = find_set(parent[v]);
+    }
+
+    void join_sets(ll a, ll b) {
+        a = find_set(a);
+        b = find_set(b);
+        if (a != b) {
+            if (sz[a] < sz[b]) swap(a, b);
+            parent[b] = a;
+            sz[a] += sz[b];
+            sum[a] += sum[b];
+        }
+    }
+};
+
+int main() {
+    ios_base::sync_with_stdio(false); cin.tie(NULL);
+    cin >> n;
+    for (int i = 1; i <= n; ++i) cin >> a[i];
+    for (int i = 1; i <= n; ++i) cin >> p[i];
+    DSU g(n + 5);
+    for (int i = 1; i <= n; i++) g.make_set(i);
+    for (int i = n; i >= 1; --i) {
+        flag[p[i]] = true;
+        if (p[i] > 1 && flag[p[i] - 1]) g.join_sets(p[i], p[i] - 1);
+        if (p[i] < n && flag[p[i] + 1]) g.join_sets(p[i], p[i] + 1);
+        ans = max(ans, g.sum[g.find_set(p[i])]);
+        res[i - 1] = ans;
+    }
+    for (int i = 1; i <= n; ++i) cout << res[i] << '\n';
+}
+        \end{Verbatim}
+        \item NQBH's C++: destroying array:
+        \begin{Verbatim}[numbers=left,xleftmargin=5mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+vector<int> a, p, parent, sz;
+vector<long long> res, sum;
+vector<bool> activated_pos;
+
+void make_set_size_sum(int i) {
+    parent[i] = i;
+    sz[i] = 1;
+    sum[i] = a[i];
+}
+
+int find_set_size_sum(int v) {
+    return v == parent[v] ? v : parent[v] = find_set_size_sum(parent[v]);
+}
+
+void union_set_size_sum(int a, int b) {
+    a = find_set_size_sum(a);
+    b = find_set_size_sum(b);
+    if (a != b) {
+        if (sz[a] < sz[b]) swap(a, b);
+        parent[b] = a;
+        sz[a] += sz[b];
+        sum[a] += sum[b];
+    }
+}
+
+int main() {
+    int n;
+    cin >> n;
+    vector<bool> activated_pos(n + 1, false);
+    a.resize(n + 1);
+    p.resize(n + 1);
+    parent.resize(n + 1);
+    sz.resize(n + 1);
+    res.resize(n + 1);
+    sum.resize(n + 1);
+    res[n] = 0; // last result is always 0
+    for (int i = 1; i <= n; ++i) cin >> a[i];
+    for (int i = 1; i <= n; ++i) cin >> p[i];
+    activated_pos[p[n]] = true;
+    long long ans = a[p[n]]; // initialize current max sum
+    res[n - 1] = ans; // last element being destroyed
+    make_set_size_sum(p[n]);
+    for (int i = n - 1; i >= 1; --i) {
+        activated_pos[p[i]] = true;
+        make_set_size_sum(p[i]);
+        if (p[i] > 1 && activated_pos[p[i] - 1]) union_set_size_sum(p[i], p[i] - 1);
+        if (p[i] < n && activated_pos[p[i] + 1]) union_set_size_sum(p[i], p[i] + 1);
+        ans = max(ans, sum[find_set_size_sum(p[i])]);
+        res[i - 1] = ans;
+    }
+    for (int i = 1; i <= n; ++i) cout << res[i] << '\n';
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Kiểm tra tính chất 2 phía của đồ thị online}
+
+\begin{baitoan}
+    Cho 1 đồ thị có $n\in\mathbb{N}^\star$ đỉnh, ban đầu không có cạnh nào. Xử lý các truy vấn thêm cạnh vào đồ thị. Hỏi sau truy vấn nào thì đồ thị không còn là đồ thị 2 phía?
+\end{baitoan}
+
+
+
+%------------------------------------------------------------------------------%
+
+\section{Some Techniques Using DSU's Properties -- Vài Kỹ Thuật Sử Dụng Tính Chất của DSU}
+Ngoài ra tính chất của DSU còn được sử dụng trong một số kĩ thuật khá phổ biến.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Small-to-large merging -- Kỹ thuật gộp set}
+Giả sử ta cần lưu trực tiếp các phần tử của 1 tập hợp bằng 1 cấu trúc dữ liệu như set{\tt/}map, thì liệu có cách nào đủ hiệu quả để thực hiện thao tác \verb|union_sets| không? Có 1 kỹ thuật gộp set (small-to-large merging) để thực hiện yêu cầu đó.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Kỹ thuật DSU trên cây (Sack)}
+Kỹ thuật DSU trên cây (Sack) là 1 thuật toán sử dụng ý tưởng của kỹ thuậts gộp set để  giải quyết 1 số bài toán truy vấn trên cây 1 cách hiệu quả.
+
+\begin{baitoan}
+    Cho 1 cây có $n\in\mathbb{N}^\star$ đỉnh với gốc là đỉnh $1$, đỉnh thứ $i$ được tô màu $c_i$. Cho $q\in\mathbb{N}^\star$ truy vấn có dạng $v$ $c$, với mỗi truy vấn in ra số lượng đỉnh có màu $c$ trong cây con gốc $v$.
+\end{baitoan}
+
+%------------------------------------------------------------------------------%
+
 \section{Miscellaneous}
+
+\begin{question}[DSU vs. GNNs, GCNs, GATs]
+    Liệu DSU data structure có thể có lợi để cài đặt Graph Neural Networks (GNNs), Graph Convolutional Network (GCNs), Graph Attention Networks (GATs) không?
+\end{question}
 
 %------------------------------------------------------------------------------%
 

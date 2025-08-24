@@ -2,7 +2,7 @@
 #include <vector>
 using namespace std;
 
-vector<int> parent, rank, Size, Max, Min, sum, avg;
+vector<int> parent, rank, sz, Max, Min, sum, avg;
 
 // naive merge
 void make_set(int v) {
@@ -23,16 +23,16 @@ void union_set(int a, int b) {
 // merge according to size
 void make_set_size(int v) {
 	parent[v] = v;
-	Size[v] = 1; // ban đầu tập hợp chứa v có kích cỡ là 1
+	sz[v] = 1; // ban đầu tập hợp chứa v có kích cỡ là 1
 }
 
 void union_set_size(int a, int b) {
 	a = find_set(a);
 	b = find_set(b);
 	if (a != b) {
-		if (Size[a] < Size[b]) swap(a, b); // đặt biến a là gốc của cây có kích cỡ lớn hơn
+		if (sz[a] < sz[b]) swap(a, b); // đặt biến a là gốc của cây có kích cỡ lớn hơn
 		parent[b] = a;
-		Size[a] += Size[b]; // cập nhật kích cỡ của cây mới gộp lại
+		sz[a] += sz[b]; // cập nhật kích cỡ của cây mới gộp lại
 	}
 }
 
@@ -85,9 +85,9 @@ void union_set_lab(int a, int b) {
 }
 
 // save additional information for each set in DSU
-voi make_set_size_more_info(int v) {
+void make_set_size_more_info(int v) {
 	parent[v] = v;
-	Size[v] = 1;
+	sz[v] = 1;
 	Min[v] = value[v]; // value[v] là giá trị của phần tử thứ v
 	Max[v] = value[v];
 	sum[v] = value[v];
@@ -102,13 +102,13 @@ void union_set_size_more_info(int a, int b) {
 	a = find_set_size_more_info(a);
 	b = find_set_size_more_info(b);
 	if (a != b) {
-		if (Size[a] < Size[b]) swap(a, b);
+		if (sz[a] < sz[b]) swap(a, b);
 		parent[b] = a;
-		Size[a] += Size[b];
+		sz[a] += sz[b];
 		sum[a] += sum[b];
 		Min[a] = min(Min[a], Min[b]);
 		Max[a] = max(Min[a], Min[b]);
-		avg[a] = static_cast<double>(sum[a]) / Size(a);
+		avg[a] = static_cast<double>(sum[a]) / sz(a);
 	}
 }
 
@@ -136,7 +136,7 @@ int main() {
 	int n, num_query, type_query, node;
 	cin >> n >> num_query;
 	parent.resize(n);
-	Size.resize(n);
+	sz.resize(n);
 	Max.resize(n);
 	for (int i = 1; i <= n; ++i) make_set_size_max(i);
 }

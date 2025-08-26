@@ -1410,309 +1410,6 @@ Sorting refers to arranging items in some particular order.
 
 %------------------------------------------------------------------------------%
 
-\subsection{Static arrays -- Mảng tĩnh}
-To sort static arrays, use {\tt sort(arr, arr + n)}  where $n\in\mathbb{N}$ is the number of elements to be sorted. The range can also be specified by replacing {\tt arr, arr + n} with the intended range, e.g., {\tt sort(arr + 1, arr + 4)} sorts indices $[1,4)$.
-
--- Để sắp xếp các mảng tĩnh, hãy sử dụng {\tt sort(arr, arr + n)} trong đó $n\in\mathbb{N}$ là số phần tử cần sắp xếp. Phạm vi cũng có thể được chỉ định bằng cách thay thế {\tt arr, arr + n} bằng phạm vi mong muốn, e.g.: {\tt sort(arr + 1, arr + 4)} sắp xếp các chỉ số $[1,4)$.
-\begin{Verbatim}[numbers=left,xleftmargin=0mm]
-#include <algorithm>
-#include <iostream>
-#include <vector>
-
-using namespace std;
-
-int main() {
-    // static arrays
-    int arr[] = {5, 1, 3, 2, 4}, n = 5;
-    sort(arr, arr + n);
-    for (int i = 0; i < n; ++i) cout << arr[i] << " "; // output: 1 2 3 4 5
-    cout << '\n';
-
-    int arr2[] = {5, 1, 3, 2, 4};
-    sort(arr2 + 1, arr2 + 4);
-    for (int i = 0; i < n; ++i) cout << arr2[i] << " "; // output: 5 1 2 3 4
-}
-\end{Verbatim}
-
-%------------------------------------------------------------------------------%
-
-\subsection{Dynamic arrays -- Mảng động}
-In order to sort a dynamic array, use {\tt sort(v.begin(), v.end())} or {\tt sort(begin(v), end(v))}. The default sort function sorts the array in ascending order. Similarly, we can specify the range. E.g., {\tt sort(v.begin() + 1, v.begin() + 4)} sorts indices $[1,4)$.
-
--- Để sắp xếp 1 mảng động, hãy sử dụng {\tt sort(v.begin(), v.end())} hoặc {\tt sort(begin(v), end(v))}. Hàm sort mặc định sẽ sắp xếp mảng theo thứ tự tăng dần. Tương tự, chúng ta có thể chỉ định phạm vi. Ví dụ: {\tt sort(v.begin() + 1, v.begin() + 4)} sắp xếp các chỉ số $[1,4)$.
-\begin{Verbatim}[numbers=left,xleftmargin=0mm]
-#include <algorithm>
-#include <iostream>
-#include <vector>
-
-using namespace std;
-
-int main() {
-    // dynamic arrays
-    vector<int> v{5, 1, 3, 2, 4};
-    sort(v.begin(), v.end());
-    for (int i : v) cout << i << " "; // output: 1 2 3 4 5
-    cout << '\n';
-
-    v = {5, 1, 3, 2, 4};
-    sort(v.begin() + 1, v.begin() + 4);
-    for (int i : v) cout << i << " "; // output: 5 1 2 3 4
-    cout << '\n';
-}
-\end{Verbatim}
-
-%------------------------------------------------------------------------------%
-
-\subsection{Dynamic arrays of pairs \& tuples -- Mảng động gồm các cặp hoặc các bộ}
-By default, C++ pairs are sorted by 1st element and then 2nd element in case of a tie. Tuples are sorted similarly.
-
--- Theo mặc định, các cặp C++ được sắp xếp theo phần tử thứ nhất \& sau đó là phần tử thứ hai trong trường hợp hòa. Các bộ cũng được sắp xếp tương tự.
-\begin{Verbatim}[numbers=left,xleftmargin=0mm]
-#include <algorithm>
-#include <iostream>
-#include <vector>
-
-using namespace std;
-
-int main() {
-    // dynamic arrays of pairs & tuples
-    vector<pair<int, int>> u{{1, 5}, {2, 3}, {1, 2}};
-    sort(u.begin(), u.end());
-    for (pair<int, int> p : u) cout << p.first << " " << p.second << '\n';
-}
-\end{Verbatim}
-Output:
-\begin{verbatim}
-1 2
-1 5
-2 3
-\end{verbatim}
-
-\begin{problem}[\href{https://cses.fi/problemset/task/1621}{CSES Problem Set{\tt/}distinct numbers}]
-    You are given a list of $n\in\mathbb{N}^\star$ integers. Calculate the number of {\rm distinct} values in the list.
-    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the number of values. The 2nd line has $n$ integers $x_1,x_2,\ldots,x_n\in\mathbb{Z}$.
-    \item {\sf Output.} Print $1$ integer: the
-    \item {\sf Constraints.} $n\in[2\cdot10^5],m\in[100],x_i\in[10^9]$.
-    \item {\sf Sample.}
-    \begin{table}[H]
-        \centering
-        \begin{tabular}{|l|l|}
-            \hline
-            \verb|distinct_number.inp| & \verb|distinct_number.out| \\
-            \hline
-            5 & 2 \\
-            2 3 2 2 3 & \\
-            \hline
-        \end{tabular}
-    \end{table}
-\end{problem}
-
-\begin{baitoan}[Số số phân biệt]
-    Bạn được cung cấp 1 danh sách gồm $n\in\mathbb{N}^\star$ số nguyên. Tính số giá trị {\rm phân biệt} trong danh sách.
-    \item {\sf Đầu vào.} Dòng đầu vào thứ nhất chứa 1 số nguyên $n\in\mathbb{N}^\star$: số lượng các giá trị. Dòng thứ hai chứa $n$ số nguyên $x_1,x_2,\ldots,x_n\in\mathbb{Z}$.
-    \item {\sf Đầu ra.} In ra $1$ số nguyên:
-    \item {\sf Ràng buộc.} $n\in[2\cdot10^5],m\in[100],x_i\in[10^9]$.
-\end{baitoan}
-
-\begin{proof}[Solution]
-    C++ implementation:
-    \begin{enumerate}
-        \item NQBH's C++: distinct numbers: {\it Ý tưởng}: Sắp xếp dãy theo thứ tự tăng dần, duyệt mảng để đếm số cặp phần tử liền kề khác nhau.
-        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
-#include <algorithm>
-#include <iostream>
-using namespace std;
-
-int main() {
-    int n, ans = 1;
-    cin >> n;
-    int a[n];
-    for (int i = 0; i < n; ++i) cin >> a[i];
-    sort(a, a + n);
-    for (int i = 1; i < n; ++i) if (a[i] != a[i - 1]) ++ans;
-    cout << ans;
-}
-        \end{Verbatim}
-        or vector version:
-        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
-#include <algorithm>
-#include <iostream>
-#include <vector>
-using namespace std;
-
-int main() {
-    int n, ans = 1;
-    cin >> n;
-    vector<int> a(n);
-    for (int& i : a) cin >> i;
-    sort(a.begin(), a.end());
-    for (int i = 1; i < n; ++i) if (a[i] != a[i - 1]) ++ans;
-    cout << ans;
-}
-        \end{Verbatim}
-        \item Loser: \url{https://codeforces.com/blog/entry/74684}: Just use set to store the elements and answer is the size of set.
-           \begin{Verbatim}[numbers=left,xleftmargin=0mm]
-#include <iostream>
-#include <set>
-using namespace std;
-
-int main() {
-    int n, x;
-    cin >> n;
-    set<int> s;
-    for (int i = 0; i < n; ++i) {
-        cin >> x;
-        s.insert(x);
-    }
-    cout << s.size();
-}
-           \end{Verbatim}
-    \end{enumerate}
-\end{proof}
-
-\begin{problem}[\href{https://cses.fi/problemset/task/1084}{CSES Problem Set{\tt/}apartments}]
-    There are $n\in\mathbb{N}^\star$ applicants \& $m\in\mathbb{N}^\star$ free apartments. Distribute the apartments so that as many applicants as possible will get an apartment. Each applicant has a desired apartment size, \& they will accept any apartment whose size is close enough to the desired size.
-    \item {\sf Input.} The 1st input line has $3$ integers $n,m,k\in\mathbb{N}^\star$: the number of applicants, the number of apartments, \& the maximum allowed difference. The next line contains $n$ integers $a_1,a_2,\ldots,a_n$: the desired apartment size of each applicant. If the desired size of an applicant is $x$, they will accept any apartment whose size is between $x - k$ \& $x + k$. The last line contains $m$ integers $b_1,b_2,\ldots,b_m$: the size of each apartment.
-    \item {\sf Output.} Print $1$ integer: the number of applicants who will get an apartment.
-    \item {\sf Constraints.} $m,n\in[2\cdot10^5],k\in\overline{0,10^9},a_i,b_j\in[10^9]$, $\forall i\in[n]$, $\forall j\in[m]$.
-    \item {\sf Sample.}
-    \begin{table}[H]
-        \centering
-        \begin{tabular}{|l|l|}
-            \hline
-            \verb|apartment.inp| & \verb|apartment.out| \\
-            \hline
-            4 3 5 & 2 \\
-            60 45 80 60 & \\
-            30 60 75 & \\
-            \hline
-        \end{tabular}
-    \end{table}
-\end{problem}
-
-\begin{baitoan}[Căn hộ]
-    Có $n\in\mathbb{N}^\star$ ứng viên \& $m\in\mathbb{N}^\star$ căn hộ trống. Phân phối các căn hộ sao cho càng nhiều ứng viên càng tốt sẽ nhận được 1 căn hộ. Mỗi ứng viên có 1 kích thước căn hộ mong muốn, \& họ sẽ chấp nhận bất kỳ căn hộ nào có kích thước gần với kích thước mong muốn.
-    \item {\sf Input.} Dòng đầu vào thứ nhất chứa $3$ số nguyên $n,m,k\in\mathbb{N}^\star$: số lượng ứng viên, số lượng căn hộ, \& chênh lệch tối đa được phép. Dòng tiếp theo chứa $n$ số nguyên $a_1,a_2,\ldots,a_n$: kích thước căn hộ mong muốn của mỗi ứng viên. Nếu kích thước mong muốn của 1 ứng viên là $x$, họ sẽ chấp nhận bất kỳ căn hộ nào có kích thước từ $x - k$ \& $x + k$. Dòng cuối cùng chứa $m$ số nguyên $b_1,b_2,\ldots,b_m$: diện tích của mỗi căn hộ.
-    \item {\sf Đầu ra.} In ra $1$ số nguyên: số lượng người nộp đơn sẽ nhận được căn hộ.
-    \item {\sf Ràng buộc.} $m,n\in[2\cdot10^5],k\in\overline{0,10^9},a_i,b_j\in[10^9]$, $\forall i\in[n]$, $\forall j\in[m]$.
-\end{baitoan}
-
-\begin{proof}[Solution]
-    C++ implementation:
-    \begin{enumerate}
-        \item NQBH's C++: apartment:
-        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
-#include <algorithm>
-#include <iostream>
-using namespace std;
-
-int main() {
-    int n, m, k, ans = 0;
-    cin >> n >> m >> k;
-    int a[n], b[m];
-    for (int i = 0; i < n; ++i) cin >> a[i];
-    for (int i = 0; i < m; ++i) cin >> b[i];
-    sort(a, a + n);
-    sort(b, b + m);
-    int i = 0, j = 0;
-    while (i < n && j < m) {
-        if (a[i] - k <= b[j] && b[j] <= a[i] + k) { // ith applicant receives jth apartment
-            ++ans;
-            ++i;
-            ++j;
-        }
-        else if (b[j] < a[i] - k) ++j;
-        else ++i;
-    }
-    cout << ans;
-}
-        \end{Verbatim}
-        \item Partha P. Mazumder (Perdente)'s C++: apartment: +++
-    \end{enumerate}
-\end{proof}
-
-\begin{problem}[\href{https://codeforces.com/contest/1808/problem/B}{CodeForces{\tt/}playing in a casino}]
-    Galaxy Luck, a well-known casino in the entire solar system, introduces a new card game. In this game, there is a deck that consists of $n$ cards. Each card has $m$ numbers written on it. Each of the $n$ players receives exactly $1$ card from the deck. Then all players play with each other in pairs, \& each pair of players plays exactly once. Thus, if there are, e.g., $4$ plays in total, then $\binom{4}{2} = 6$ games are played: the 1st against the 2nd, the 1st against the 3rd, the 1st against the 4th, the 2nd against the 3rd, the 2nd against the 4th, the 3rd against the 4th.
-
-    Each of these games determines the winner in some way, but the rules are quite complicated, so we will not describe them here. All that matters is how many chips are paid out to the winner. Let the 1st player's card have the numbers $a_1,a_2,\ldots,a_m$ \& the 2nd player's card $b_1,b_2,\ldots,b_m$. Then the winner of the game gets $\sum_{i=1}^m |a_i - b_i|$ chips from the total pot, where $|x|$ denotes the absolute value of $x$.
-
-    To determine the size of the total pot, it is necessary to calculate the winners' total winnings for all games. Since there an be many cards in a deck \& many players, you have been assigned to write a program that does all the necessary calculations.
-    \item {\sf Input.} Each test consists of several test cases. The 1st line contains 1 integer $t\in[10^3]$ -- the number of test cases. The description of the test cases follows. The 1st line of each test case contains 2 integers $n,m\in[3\cdot10^5]$ -- the number of cards in the deck \& the count of numbers on the 1 card. Each of the following $n$ lines of the test case set contains $m$ integers $c_{ij}\in[10^6]$ -- a description of the $i$th card. It is guaranteed that the total $mn$ in all tests does not exceed $3\cdot10^5$.
-    \item {\sf Output.} For each test case, print 1 number -- the total amount of winnings from all games.
-    \item {\sf Sample.}
-    \begin{table}[H]
-        \centering
-        \begin{tabular}{|l|l|}
-            \hline
-            \verb|play_casino.inp| & \verb|play_casino.out| \\
-            \hline
-            3 & 50 \\
-            3 5 & 0 \\
-            1 4 2 8 5 & 31 \\
-            7 9 2 1 4 & \\
-            3 8 5 3 1 & \\
-            1 4 & \\
-            4 15 1 10 & \\
-            4 3 & \\
-            1 2 3 & \\
-            3 2 1 & \\
-            1 2 1 & \\
-            4 2 7 & \\
-            \hline
-        \end{tabular}
-    \end{table}
-\end{problem}
-
-\begin{baitoan}[Chơi ở sòng bạc]
-    Galaxy Luck, 1 sòng bạc nổi tiếng khắp hệ mặt trời, giới thiệu 1 trò chơi bài mới. Trong trò chơi này, bộ bài gồm $n$ lá bài. Mỗi lá bài có $m$ số được ghi trên đó. Mỗi người chơi trong số $n$ người chơi nhận được đúng $1$ lá bài từ bộ bài. Sau đó, tất cả người chơi chơi với nhau theo cặp, \& mỗi cặp chơi đúng 1 lần. Do đó, nếu có, e.g., $4$ lượt chơi, thì $\binom{4}{2} = 6$ ván bài được chơi: ván 1 đấu với ván 2, ván 1 đấu với ván 3, ván 1 đấu với ván 4, ván 2 đấu với ván 3, ván 2 đấu với ván 4, ván 3 đấu với ván 4.
-
-    Mỗi ván bài này đều quyết định người chiến thắng theo 1 cách nào đó, nhưng luật chơi khá phức tạp, vì vậy chúng tôi sẽ không mô tả chúng ở đây. Điều quan trọng nhất là số chip được trả cho người chiến thắng. Giả sử quân bài của người chơi thứ nhất có các số $a_1, a_2,\ldots, a_m$ \& quân bài của người chơi thứ hai có các số $b_1, b_2,\ldots, b_m$. Khi đó, người chiến thắng sẽ nhận được $\sum_{i=1}^m |a_i - b_i|$ chip từ tổng số tiền cược, trong đó $|x|$ biểu thị giá trị tuyệt đối của $x$.
-
-    Để xác định tổng số tiền cược, cần phải tính tổng số tiền thắng của người chiến thắng trong tất cả các ván đấu. Vì có thể có nhiều quân bài trong 1 bộ bài \& nhiều người chơi, bạn được giao nhiệm vụ viết 1 chương trình thực hiện tất cả các phép tính cần thiết.
-    \item {\sf Input.} Mỗi bài kiểm tra bao gồm 1 số trường hợp kiểm tra. Dòng đầu tiên chứa 1 số nguyên $t\in[10^3]$ -- số lượng các trường hợp kiểm tra. Mô tả các trường hợp kiểm tra như sau. Dòng đầu tiên của mỗi test case chứa 2 số nguyên $n,m\in[3\cdot10^5]$ -- số lá bài trong bộ bài \& số lượng lá bài thứ nhất. Mỗi dòng trong số $n$ dòng tiếp theo của bộ test case chứa $m$ số nguyên $c_{ij}\in[10^6]$ -- mô tả lá bài thứ $i$. Đảm bảo tổng $mn$ trong tất cả các test case không vượt quá $3\cdot10^5$.
-    \item {\sf Output.} Với mỗi test case, in ra 1 số -- tổng số tiền thắng từ tất cả các ván chơi.
-\end{baitoan}
-
-\begin{problem}[\href{https://codeforces.com/contest/863/problem/B}{CodeForces{\tt/}kayaking}]
-    Vadim is really keen on traveling. Recently he heard about kayaking activity near his town \& became very excited about it, so he joined a party of kayakers. Now the party is ready to start its journey, but 1st they have to choose kayaks. There are $2n$ people in the group (including Vadim), \& they have exactly $n - 1$ tandem kayaks (each of which, obviously, can carry $2$ people) \& $2$ single kayaks. $i$th person's weight is $w_i$, \& weight is an important matter in kayaking -- if the difference between the weights of 2 people that sit in the same tandem kayak is too large, then it can crash. \&, of course, people want to distribute their seats in kayaks in order to minimize the chances that kayaks will crash.
-
-    Formally, the instability of a single kayak is always $0$, \& the instability of a tandem kayak is the absolute difference between weights of people that are in this kayak. Instability of the whole journey is the total instability of all kayaks. Help the party to determine minimum possible total instability.
-    \item {\sf Input.} The 1st line contains 1 number $n\in\overline{2,50}$. The 2nd line contains $2n$ integer number $w_1,w_2,\ldots,w_{2n}$, where $w_i\in[10^3]$ is weight of person $i$.
-    \item {\sf Output.} Print minimum possible total instability.
-    \item {\sf Sample.}
-    \begin{table}[H]
-        \centering
-        \begin{tabular}{|l|l|}
-            \hline
-            \verb|kayaking.inp| & \verb|kayaking.out| \\
-            \hline
-            2 & 1 \\
-            1 2 3 4 & \\
-            \hline
-            4 & 5 \\
-            1 3 4 6 3 4 100 200 & \\
-            \hline
-        \end{tabular}
-    \end{table}
-\end{problem}
-
-\begin{baitoan}[Chèo thuyền kayak]
-    Vadim rất thích du lịch. Gần đây, anh ấy nghe nói về hoạt động chèo thuyền kayak gần thị trấn của mình \& rất hào hứng với nó, vì vậy anh ấy đã tham gia 1 nhóm người chèo thuyền kayak. Giờ thì nhóm đã sẵn sàng để bắt đầu hành trình, nhưng trước tiên họ phải chọn thuyền kayak. Có $2n$ người trong nhóm (bao gồm cả Vadim), \& họ có chính xác $n - 1$ thuyền kayak đôi (mỗi thuyền, rõ ràng, có thể chở $2$ người) \& $2$ thuyền kayak đơn. Trọng lượng của người $i$ là $w_i$, \& trọng lượng là 1 vấn đề quan trọng trong chèo thuyền kayak -- nếu chênh lệch trọng lượng giữa 2 người ngồi trên cùng 1 chiếc thuyền kayak đôi quá lớn, thì nó có thể bị rơi. \&, tất nhiên, mọi người muốn phân bổ chỗ ngồi của mình trên thuyền kayak để giảm thiểu khả năng thuyền bị rơi.
-
-    Về mặt hình thức, độ mất ổn định của 1 chiếc thuyền kayak đơn luôn bằng $0$, \& độ mất ổn định của 1 chiếc thuyền kayak đôi là chênh lệch tuyệt đối giữa trọng lượng của những người ngồi trên chiếc thuyền kayak này. Độ mất ổn định của toàn bộ hành trình là độ mất ổn định tổng thể của tất cả các thuyền kayak. Hãy giúp nhóm xác định độ mất ổn định tổng thể nhỏ nhất có thể.
-    \item {\sf Đầu vào.} Dòng đầu tiên chứa 1 số $n\in\overline{2,50}$. Dòng thứ hai chứa $2n$ số nguyên $w_1,w_2,\ldots,w_{2n}$, trong đó $w_i\in[10^3]$ là trọng lượng của người $i$.
-    \item {\sf Đầu ra.} In ra độ mất ổn định tổng thể nhỏ nhất có thể.
-\end{baitoan}
-
-\begin{proof}[Solution]
-    C++ implementation:
-    \begin{enumerate}
-        \item \url{https://github.com/MishkatIT/codeforces-atcoder-submissions/blob/main/codeforces/1808/1808B%20Playing%20in%20a%20Casino.cpp}.
-    \end{enumerate}
-\end{proof}
-
-%------------------------------------------------------------------------------%
-
 \section{Basic Terminologies -- Thuật Ngữ Cơ Bản}
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
@@ -5423,6 +5120,331 @@ Làm tròn là đủ \verb|(int) round(pow(max_dist, 2))|, nhưng điều quan t
 
 %------------------------------------------------------------------------------%
 
+\section{Introduction to Sorting -- Giới Thiệu về Sắp Xếp}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item {\sc Darren Yao, Benjamin Qi, Allen Li, Andrew Wang}. \href{https://usaco.guide/bronze/intro-sorting}{USACO Guide{\tt/}introduction to sorting}.
+
+    {\sf Abstract.} Arranging collections in increasing order. -- Sắp xếp các bộ sưu tập theo thứ tự tăng dần.
+\end{enumerate}
+Sorting refers to arranging items in some particular order.
+
+-- Phân loại là sắp xếp các mục theo một thứ tự cụ thể.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Static arrays -- Mảng tĩnh}
+To sort static arrays, use {\tt sort(arr, arr + n)}  where $n\in\mathbb{N}$ is the number of elements to be sorted. The range can also be specified by replacing {\tt arr, arr + n} with the intended range, e.g., {\tt sort(arr + 1, arr + 4)} sorts indices $[1,4)$.
+
+-- Để sắp xếp các mảng tĩnh, hãy sử dụng {\tt sort(arr, arr + n)} trong đó $n\in\mathbb{N}$ là số phần tử cần sắp xếp. Phạm vi cũng có thể được chỉ định bằng cách thay thế {\tt arr, arr + n} bằng phạm vi mong muốn, e.g.: {\tt sort(arr + 1, arr + 4)} sắp xếp các chỉ số $[1,4)$.
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    // static arrays
+    int arr[] = {5, 1, 3, 2, 4}, n = 5;
+    sort(arr, arr + n);
+    for (int i = 0; i < n; ++i) cout << arr[i] << " "; // output: 1 2 3 4 5
+    cout << '\n';
+
+    int arr2[] = {5, 1, 3, 2, 4};
+    sort(arr2 + 1, arr2 + 4);
+    for (int i = 0; i < n; ++i) cout << arr2[i] << " "; // output: 5 1 2 3 4
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Dynamic arrays -- Mảng động}
+In order to sort a dynamic array, use {\tt sort(v.begin(), v.end())} or {\tt sort(begin(v), end(v))}. The default sort function sorts the array in ascending order. Similarly, we can specify the range. E.g., {\tt sort(v.begin() + 1, v.begin() + 4)} sorts indices $[1,4)$.
+
+-- Để sắp xếp 1 mảng động, hãy sử dụng {\tt sort(v.begin(), v.end())} hoặc {\tt sort(begin(v), end(v))}. Hàm sort mặc định sẽ sắp xếp mảng theo thứ tự tăng dần. Tương tự, chúng ta có thể chỉ định phạm vi. Ví dụ: {\tt sort(v.begin() + 1, v.begin() + 4)} sắp xếp các chỉ số $[1,4)$.
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    // dynamic arrays
+    vector<int> v{5, 1, 3, 2, 4};
+    sort(v.begin(), v.end());
+    for (int i : v) cout << i << " "; // output: 1 2 3 4 5
+    cout << '\n';
+
+    v = {5, 1, 3, 2, 4};
+    sort(v.begin() + 1, v.begin() + 4);
+    for (int i : v) cout << i << " "; // output: 5 1 2 3 4
+    cout << '\n';
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Dynamic arrays of pairs \& tuples -- Mảng động gồm các cặp hoặc các bộ}
+By default, C++ pairs are sorted by 1st element and then 2nd element in case of a tie. Tuples are sorted similarly.
+
+-- Theo mặc định, các cặp C++ được sắp xếp theo phần tử thứ nhất \& sau đó là phần tử thứ hai trong trường hợp hòa. Các bộ cũng được sắp xếp tương tự.
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <algorithm>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    // dynamic arrays of pairs & tuples
+    vector<pair<int, int>> u{{1, 5}, {2, 3}, {1, 2}};
+    sort(u.begin(), u.end());
+    for (pair<int, int> p : u) cout << p.first << " " << p.second << '\n';
+}
+\end{Verbatim}
+Output:
+\begin{verbatim}
+1 2
+1 5
+2 3
+\end{verbatim}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1621}{CSES Problem Set{\tt/}distinct numbers}]
+    You are given a list of $n\in\mathbb{N}^\star$ integers. Calculate the number of {\rm distinct} values in the list.
+    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the number of values. The 2nd line has $n$ integers $x_1,x_2,\ldots,x_n\in\mathbb{Z}$.
+    \item {\sf Output.} Print $1$ integer: the
+    \item {\sf Constraints.} $n\in[2\cdot10^5],m\in[100],x_i\in[10^9]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|distinct_number.inp| & \verb|distinct_number.out| \\
+            \hline
+            5 & 2 \\
+            2 3 2 2 3 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{baitoan}[Số số phân biệt]
+    Bạn được cung cấp 1 danh sách gồm $n\in\mathbb{N}^\star$ số nguyên. Tính số giá trị {\rm phân biệt} trong danh sách.
+    \item {\sf Đầu vào.} Dòng đầu vào thứ nhất chứa 1 số nguyên $n\in\mathbb{N}^\star$: số lượng các giá trị. Dòng thứ hai chứa $n$ số nguyên $x_1,x_2,\ldots,x_n\in\mathbb{Z}$.
+    \item {\sf Đầu ra.} In ra $1$ số nguyên:
+    \item {\sf Ràng buộc.} $n\in[2\cdot10^5],m\in[100],x_i\in[10^9]$.
+\end{baitoan}
+\noindent\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item {\sc Andrew Wang, Maggie Liu}. \href{https://usaco.guide/problems/cses-1621-distinct-numbers/solution}{USACO Guide{\tt/}CSES{\tt/}distinct numbers}.
+
+    \item \url{https://codeforces.com/blog/entry/74684}
+\end{enumerate}
+
+\begin{proof}[Solution]
+    Sort the array of numbers. Loop through the array \& increment the answer for every distinct number. Distinct numbers can be found if the current number is not equal to the previous number in the array.
+
+    -- Sắp xếp mảng số. Lặp qua mảng \& tăng giá trị của kết quả cho mỗi số khác biệt. Có thể tìm thấy các số khác biệt nếu số hiện tại không bằng số trước đó trong mảng.
+    \item {\sf C++ implementation.}
+    \begin{enumerate}
+        \item NQBH's C++: distinct numbers: {\it Ý tưởng}: Sắp xếp dãy theo thứ tự tăng dần, duyệt mảng để đếm số cặp phần tử liền kề khác nhau. Time complexity: $O(n\log n)$.
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <algorithm>
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n, ans = 1;
+    cin >> n;
+    int a[n];
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    sort(a, a + n);
+    for (int i = 1; i < n; ++i) if (a[i] != a[i - 1]) ++ans;
+    cout << ans;
+}
+        \end{Verbatim}
+        or vector version:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <algorithm>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n, ans = 1;
+    cin >> n;
+    vector<int> a(n);
+    for (int& i : a) cin >> i;
+    sort(a.begin(), a.end());
+    for (int i = 1; i < n; ++i) if (a[i] != a[i - 1]) ++ans;
+    cout << ans;
+}
+        \end{Verbatim}
+        \item Loser: \url{https://codeforces.com/blog/entry/74684}: Just use set to store the elements and answer is the size of set.
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+ #include <iostream>
+#include <set>
+using namespace std;
+
+int main() {
+    int n, x;
+    cin >> n;
+    set<int> s;
+    for (int i = 0; i < n; ++i) {
+        cin >> x;
+        s.insert(x);
+    }
+    cout << s.size();
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1084}{CSES Problem Set{\tt/}apartments}]
+    There are $n\in\mathbb{N}^\star$ applicants \& $m\in\mathbb{N}^\star$ free apartments. Distribute the apartments so that as many applicants as possible will get an apartment. Each applicant has a desired apartment size, \& they will accept any apartment whose size is close enough to the desired size.
+    \item {\sf Input.} The 1st input line has $3$ integers $n,m,k\in\mathbb{N}^\star$: the number of applicants, the number of apartments, \& the maximum allowed difference. The next line contains $n$ integers $a_1,a_2,\ldots,a_n$: the desired apartment size of each applicant. If the desired size of an applicant is $x$, they will accept any apartment whose size is between $x - k$ \& $x + k$. The last line contains $m$ integers $b_1,b_2,\ldots,b_m$: the size of each apartment.
+    \item {\sf Output.} Print $1$ integer: the number of applicants who will get an apartment.
+    \item {\sf Constraints.} $m,n\in[2\cdot10^5],k\in\overline{0,10^9},a_i,b_j\in[10^9]$, $\forall i\in[n]$, $\forall j\in[m]$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|apartment.inp| & \verb|apartment.out| \\
+            \hline
+            4 3 5 & 2 \\
+            60 45 80 60 & \\
+            30 60 75 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{baitoan}[Căn hộ]
+    Có $n\in\mathbb{N}^\star$ ứng viên \& $m\in\mathbb{N}^\star$ căn hộ trống. Phân phối các căn hộ sao cho càng nhiều ứng viên càng tốt sẽ nhận được 1 căn hộ. Mỗi ứng viên có 1 kích thước căn hộ mong muốn, \& họ sẽ chấp nhận bất kỳ căn hộ nào có kích thước gần với kích thước mong muốn.
+    \item {\sf Input.} Dòng đầu vào thứ nhất chứa $3$ số nguyên $n,m,k\in\mathbb{N}^\star$: số lượng ứng viên, số lượng căn hộ, \& chênh lệch tối đa được phép. Dòng tiếp theo chứa $n$ số nguyên $a_1,a_2,\ldots,a_n$: kích thước căn hộ mong muốn của mỗi ứng viên. Nếu kích thước mong muốn của 1 ứng viên là $x$, họ sẽ chấp nhận bất kỳ căn hộ nào có kích thước từ $x - k$ \& $x + k$. Dòng cuối cùng chứa $m$ số nguyên $b_1,b_2,\ldots,b_m$: diện tích của mỗi căn hộ.
+    \item {\sf Đầu ra.} In ra $1$ số nguyên: số lượng người nộp đơn sẽ nhận được căn hộ.
+    \item {\sf Ràng buộc.} $m,n\in[2\cdot10^5],k\in\overline{0,10^9},a_i,b_j\in[10^9]$, $\forall i\in[n]$, $\forall j\in[m]$.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    C++ implementation:
+    \begin{enumerate}
+        \item NQBH's C++: apartment:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <algorithm>
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n, m, k, ans = 0;
+    cin >> n >> m >> k;
+    int a[n], b[m];
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    for (int i = 0; i < m; ++i) cin >> b[i];
+    sort(a, a + n);
+    sort(b, b + m);
+    int i = 0, j = 0;
+    while (i < n && j < m) {
+        if (a[i] - k <= b[j] && b[j] <= a[i] + k) { // ith applicant receives jth apartment
+            ++ans;
+            ++i;
+            ++j;
+        }
+        else if (b[j] < a[i] - k) ++j;
+        else ++i;
+    }
+    cout << ans;
+}
+        \end{Verbatim}
+        \item Partha P. Mazumder (Perdente)'s C++: apartment: +++
+    \end{enumerate}
+\end{proof}
+
+\begin{problem}[\href{https://codeforces.com/contest/1808/problem/B}{CodeForces{\tt/}playing in a casino}]
+    Galaxy Luck, a well-known casino in the entire solar system, introduces a new card game. In this game, there is a deck that consists of $n$ cards. Each card has $m$ numbers written on it. Each of the $n$ players receives exactly $1$ card from the deck. Then all players play with each other in pairs, \& each pair of players plays exactly once. Thus, if there are, e.g., $4$ plays in total, then $\binom{4}{2} = 6$ games are played: the 1st against the 2nd, the 1st against the 3rd, the 1st against the 4th, the 2nd against the 3rd, the 2nd against the 4th, the 3rd against the 4th.
+
+    Each of these games determines the winner in some way, but the rules are quite complicated, so we will not describe them here. All that matters is how many chips are paid out to the winner. Let the 1st player's card have the numbers $a_1,a_2,\ldots,a_m$ \& the 2nd player's card $b_1,b_2,\ldots,b_m$. Then the winner of the game gets $\sum_{i=1}^m |a_i - b_i|$ chips from the total pot, where $|x|$ denotes the absolute value of $x$.
+
+    To determine the size of the total pot, it is necessary to calculate the winners' total winnings for all games. Since there an be many cards in a deck \& many players, you have been assigned to write a program that does all the necessary calculations.
+    \item {\sf Input.} Each test consists of several test cases. The 1st line contains 1 integer $t\in[10^3]$ -- the number of test cases. The description of the test cases follows. The 1st line of each test case contains 2 integers $n,m\in[3\cdot10^5]$ -- the number of cards in the deck \& the count of numbers on the 1 card. Each of the following $n$ lines of the test case set contains $m$ integers $c_{ij}\in[10^6]$ -- a description of the $i$th card. It is guaranteed that the total $mn$ in all tests does not exceed $3\cdot10^5$.
+    \item {\sf Output.} For each test case, print 1 number -- the total amount of winnings from all games.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|play_casino.inp| & \verb|play_casino.out| \\
+            \hline
+            3 & 50 \\
+            3 5 & 0 \\
+            1 4 2 8 5 & 31 \\
+            7 9 2 1 4 & \\
+            3 8 5 3 1 & \\
+            1 4 & \\
+            4 15 1 10 & \\
+            4 3 & \\
+            1 2 3 & \\
+            3 2 1 & \\
+            1 2 1 & \\
+            4 2 7 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{baitoan}[Chơi ở sòng bạc]
+    Galaxy Luck, 1 sòng bạc nổi tiếng khắp hệ mặt trời, giới thiệu 1 trò chơi bài mới. Trong trò chơi này, bộ bài gồm $n$ lá bài. Mỗi lá bài có $m$ số được ghi trên đó. Mỗi người chơi trong số $n$ người chơi nhận được đúng $1$ lá bài từ bộ bài. Sau đó, tất cả người chơi chơi với nhau theo cặp, \& mỗi cặp chơi đúng 1 lần. Do đó, nếu có, e.g., $4$ lượt chơi, thì $\binom{4}{2} = 6$ ván bài được chơi: ván 1 đấu với ván 2, ván 1 đấu với ván 3, ván 1 đấu với ván 4, ván 2 đấu với ván 3, ván 2 đấu với ván 4, ván 3 đấu với ván 4.
+
+    Mỗi ván bài này đều quyết định người chiến thắng theo 1 cách nào đó, nhưng luật chơi khá phức tạp, vì vậy chúng tôi sẽ không mô tả chúng ở đây. Điều quan trọng nhất là số chip được trả cho người chiến thắng. Giả sử quân bài của người chơi thứ nhất có các số $a_1, a_2,\ldots, a_m$ \& quân bài của người chơi thứ hai có các số $b_1, b_2,\ldots, b_m$. Khi đó, người chiến thắng sẽ nhận được $\sum_{i=1}^m |a_i - b_i|$ chip từ tổng số tiền cược, trong đó $|x|$ biểu thị giá trị tuyệt đối của $x$.
+
+    Để xác định tổng số tiền cược, cần phải tính tổng số tiền thắng của người chiến thắng trong tất cả các ván đấu. Vì có thể có nhiều quân bài trong 1 bộ bài \& nhiều người chơi, bạn được giao nhiệm vụ viết 1 chương trình thực hiện tất cả các phép tính cần thiết.
+    \item {\sf Input.} Mỗi bài kiểm tra bao gồm 1 số trường hợp kiểm tra. Dòng đầu tiên chứa 1 số nguyên $t\in[10^3]$ -- số lượng các trường hợp kiểm tra. Mô tả các trường hợp kiểm tra như sau. Dòng đầu tiên của mỗi test case chứa 2 số nguyên $n,m\in[3\cdot10^5]$ -- số lá bài trong bộ bài \& số lượng lá bài thứ nhất. Mỗi dòng trong số $n$ dòng tiếp theo của bộ test case chứa $m$ số nguyên $c_{ij}\in[10^6]$ -- mô tả lá bài thứ $i$. Đảm bảo tổng $mn$ trong tất cả các test case không vượt quá $3\cdot10^5$.
+    \item {\sf Output.} Với mỗi test case, in ra 1 số -- tổng số tiền thắng từ tất cả các ván chơi.
+\end{baitoan}
+
+\begin{problem}[\href{https://codeforces.com/contest/863/problem/B}{CodeForces{\tt/}kayaking}]
+    Vadim is really keen on traveling. Recently he heard about kayaking activity near his town \& became very excited about it, so he joined a party of kayakers. Now the party is ready to start its journey, but 1st they have to choose kayaks. There are $2n$ people in the group (including Vadim), \& they have exactly $n - 1$ tandem kayaks (each of which, obviously, can carry $2$ people) \& $2$ single kayaks. $i$th person's weight is $w_i$, \& weight is an important matter in kayaking -- if the difference between the weights of 2 people that sit in the same tandem kayak is too large, then it can crash. \&, of course, people want to distribute their seats in kayaks in order to minimize the chances that kayaks will crash.
+
+    Formally, the instability of a single kayak is always $0$, \& the instability of a tandem kayak is the absolute difference between weights of people that are in this kayak. Instability of the whole journey is the total instability of all kayaks. Help the party to determine minimum possible total instability.
+    \item {\sf Input.} The 1st line contains 1 number $n\in\overline{2,50}$. The 2nd line contains $2n$ integer number $w_1,w_2,\ldots,w_{2n}$, where $w_i\in[10^3]$ is weight of person $i$.
+    \item {\sf Output.} Print minimum possible total instability.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|kayaking.inp| & \verb|kayaking.out| \\
+            \hline
+            2 & 1 \\
+            1 2 3 4 & \\
+            \hline
+            4 & 5 \\
+            1 3 4 6 3 4 100 200 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{baitoan}[Chèo thuyền kayak]
+    Vadim rất thích du lịch. Gần đây, anh ấy nghe nói về hoạt động chèo thuyền kayak gần thị trấn của mình \& rất hào hứng với nó, vì vậy anh ấy đã tham gia 1 nhóm người chèo thuyền kayak. Giờ thì nhóm đã sẵn sàng để bắt đầu hành trình, nhưng trước tiên họ phải chọn thuyền kayak. Có $2n$ người trong nhóm (bao gồm cả Vadim), \& họ có chính xác $n - 1$ thuyền kayak đôi (mỗi thuyền, rõ ràng, có thể chở $2$ người) \& $2$ thuyền kayak đơn. Trọng lượng của người $i$ là $w_i$, \& trọng lượng là 1 vấn đề quan trọng trong chèo thuyền kayak -- nếu chênh lệch trọng lượng giữa 2 người ngồi trên cùng 1 chiếc thuyền kayak đôi quá lớn, thì nó có thể bị rơi. \&, tất nhiên, mọi người muốn phân bổ chỗ ngồi của mình trên thuyền kayak để giảm thiểu khả năng thuyền bị rơi.
+
+    Về mặt hình thức, độ mất ổn định của 1 chiếc thuyền kayak đơn luôn bằng $0$, \& độ mất ổn định của 1 chiếc thuyền kayak đôi là chênh lệch tuyệt đối giữa trọng lượng của những người ngồi trên chiếc thuyền kayak này. Độ mất ổn định của toàn bộ hành trình là độ mất ổn định tổng thể của tất cả các thuyền kayak. Hãy giúp nhóm xác định độ mất ổn định tổng thể nhỏ nhất có thể.
+    \item {\sf Đầu vào.} Dòng đầu tiên chứa 1 số $n\in\overline{2,50}$. Dòng thứ hai chứa $2n$ số nguyên $w_1,w_2,\ldots,w_{2n}$, trong đó $w_i\in[10^3]$ là trọng lượng của người $i$.
+    \item {\sf Đầu ra.} In ra độ mất ổn định tổng thể nhỏ nhất có thể.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    C++ implementation:
+    \begin{enumerate}
+        \item \url{https://github.com/MishkatIT/codeforces-atcoder-submissions/blob/main/codeforces/1808/1808B%20Playing%20in%20a%20Casino.cpp}.
+    \end{enumerate}
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
 \chapter{Recursion \& Backtracking -- Đệ Quy \& Thuật Toán Quay Lui}
 \minitoc
 
@@ -6187,14 +6209,9 @@ int main() {
 
 %------------------------------------------------------------------------------%
 
-\subsection{Permutation -- Hoán vị}
-A {\it permutation} is a reordering of a list of elements.
+\subsection{Permutation \& lexicographical order -- Hoán vị \& thứ tự từ điển}
+A {\it permutation} is a reordering of a list of elements. -- 1 hoán vị là 1 sự sắp xếp lại danh sách các phần tử.
 
--- 1 hoán vị là 1 sự sắp xếp lại danh sách các phần tử.
-
-%------------------------------------------------------------------------------%
-
-\subsubsection{Lexicographical order -- Thứ tự từ điển}
 Think about how are words ordered in a dictionary, which in fact, this is where the term ``lexicographical'' comes from. In dictionaries, you will see that words beginning with the letter $a$ appears at the very beginning, followed by words beginning with $b$, \& so on. If 2 words have the same starting letter, the 2nd letter is used to compare them; if both the 1st \& 2nd letters are the same, then use the 3rd letter to compare them, \& so on until we either reach a letter that is different, or we reach the end of some word (in this case, the shorter word goes 1st).
 
 -- Hãy nghĩ về cách các từ được sắp xếp trong từ điển, \& thực tế, đây chính là nguồn gốc của thuật ngữ ``lexicographical''. Trong từ điển, bạn sẽ thấy các từ bắt đầu bằng chữ $a$ xuất hiện ở đầu, tiếp theo là các từ bắt đầu bằng chữ $b$, \& vân vân. Nếu 2 từ có cùng chữ cái bắt đầu, chữ cái thứ 2 được dùng để so sánh; nếu cả chữ cái thứ 1 \& chữ cái thứ 2 giống nhau, thì dùng chữ cái thứ 3 để so sánh, \& vân vân cho đến khi gặp 1 chữ cái khác, hoặc đến cuối 1 từ nào đó (trong trường hợp này, từ ngắn hơn sẽ đứng đầu).
@@ -6402,20 +6419,338 @@ int main() {
     \end{table}
     \item {\sf Giải thích.} Một giải pháp khả thi giúp tiết kiệm chi phí nhất là chọn những giải pháp làm mát các khoảng $[2,9],[1,2],[6,9]$, với chi phí là $3 + 2 + 5 = 10$.
 \end{baitoan}
-\noindent\textbf{\textsf{Resources -- Tài nguyên.}} {\sc Chuyang Wang, Kevin Sheng}. \href{https://usaco.guide/problems/usaco-1276-air-cownditioning-ii/solution}{USACO Bronze 2023 January - Air Cownditioning II}.
+\noindent\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item Official solution: \url{https://usaco.org/current/data/sol_prob2_bronze_jan23.html}.
 
-\begin{proof}[1st solution: Subset with recursion -- Tập con với đệ quy]
-    Since $m = 10$ is given, we can iterate through all $2^{10}$ possible subsets of air conditioners. For each of them, we check if this subset of air conditioners satisfy the requirements of the cows by iterating through all possible positions $i\in[100]$. For each position $i$, we can iterate through all available air conditioners in the current subset to find out the temperature reduced at $i$ \& iterate through all cows to find the cow at this position \& its demand. If the requirement at each position is fulfilled, we update the minimal cost accordingly. We can generate subsets with recursion or bitmasks.
+    \item {\sc Chuyang Wang, Kevin Sheng}. \href{https://usaco.guide/problems/usaco-1276-air-cownditioning-ii/solution}{USACO Bronze 2023 January - Air Cownditioning II}.
+\end{enumerate}
 
-    -- Vì $m = 10$ đã cho, ta có thể lặp qua tất cả $2^{10}$ tập con máy điều hòa không khí khả thi. Với mỗi tập con, ta kiểm tra xem tập con máy điều hòa không khí này có đáp ứng yêu cầu của bò hay không bằng cách lặp qua tất cả các vị trí khả thi $i\in[100]$. Với mỗi vị trí $i$, ta có thể lặp qua tất cả các máy điều hòa không khí khả dụng trong tập con hiện tại để tìm nhiệt độ giảm tại $i$ \& lặp qua tất cả các con bò để tìm con bò tại vị trí này \& nhu cầu của nó. Nếu yêu cầu tại mỗi vị trí được đáp ứng, ta sẽ cập nhật chi phí tối thiểu cho phù hợp. Ta có thể tạo các tập con bằng đệ quy hoặc mặt nạ bit.
-    \item {\sf C++ implementation.} USACO Guide's C++: air conditioning II with time complexity $O(2^m\cdot100\cdot(m + n))$:
+\begin{proof}[Official solution: Analysis by {\sc Mythreya Dharani}]
+    Notice that the number of conditioners is low, motivating us to think about a brute force solution. Let's count how many distinct sets of conditioners FJ can use to cool down the cows. For every conditioners, we have 2 choices: use it or do not use it. Therefore, overall all $m$ conditioners, there are $2^m$ sets of conditioners FJ can use, which happens to be relatively small at $2^{10} = 1024\approx1000$ subsets. Thus, we can just generate all possible subsets of conditioners we can use, \& for each one, check if it makes all cows comfortable. If it does, \& the total cost is less than what our answer was, we update our answer.
+
+    -- Lưu ý rằng số lượng chất điều hòa thấp, thúc đẩy chúng ta nghĩ đến một giải pháp vũ lực. Hãy đếm xem FJ có thể sử dụng bao nhiêu bộ chất điều hòa riêng biệt để làm mát cho đàn bò. Với mỗi bộ chất điều hòa, chúng ta có 2 lựa chọn: sử dụng hoặc không sử dụng. Do đó, nhìn chung với $m$ chất điều hòa, có $2^m$ bộ chất điều hòa mà FJ có thể sử dụng, tương đối nhỏ ở mức $2^{10} = 1024\approx1000$ tập hợp con. Do đó, chúng ta có thể tạo ra tất cả các tập hợp con chất điều hòa có thể sử dụng, \& với mỗi tập hợp, hãy kiểm tra xem nó có làm cho tất cả các con bò cảm thấy thoải mái hay không. Nếu có, \& tổng chi phí ít hơn câu trả lời của chúng ta, chúng ta sẽ cập nhật câu trả lời của mình.
+
+    Some implementation notes:
+    \begin{itemize}
+        \item When we generate our subsets, we do it recursively, storing it as a binary string. The $i$th character being a 1 means that we use the $i$th conditioner. Note that this can also be done iteratively.
+        \item For each subset, we go through all points from 1 to 100, calculating its ``coldness'' by iterating through the conditioners we are using. Then, we check \& update the answer accordingly.
+    \end{itemize}
+    The overall time complexity of this solution is $O(100(m + n)2^m)$.
+    \item {\sf C++ implementation.}
     \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+#include <limits>
+#include <vector>
+using namespace std;
 
+vector<pair<int, int>> cowlocs;
+vector<int> comfort;
+vector<pair<int, int>> conditioners;
+vector<int> cost, power;
+int ans = 1e9;
+
+int check(string subset) {
+    vector<int> cold(101); // generate coldness of all points
+    for (int i = 1; i <= 100; ++i)
+        for (int j = 0; j < conditioners.size(); ++j)
+            if (subset[j] == '1' && conditioners[j].first <= i && conditioners[j].second >= i)
+                cold[i] += power[j];
+    bool works = true;
+    for (int i = 0; i < cowlocs.size(); ++i)
+        for (int j = cowlocs[i].first; j <= cowlocs[i].second; ++j)
+            if (cold[j] < comfort[i]) works = false; // check if comfortable
+    int price = 0;
+    for (int i = 0; i < subset.size(); ++i)
+        if (subset[i] == '1') price += cost[i]; // calculate price of conditioners used
+    if (works) return price;
+    return 1e9; // does not work,
+}
+
+void build_subset(string curr, int m) {
+    if (curr.size() == m) ans = min(ans, check(curr)); // full subset of conditioners
+    else {
+        build_subset(curr + "1", m); // use conditioner
+        build_subset(curr + "0", m); // skip it
+    }
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    int n, m;
+    cin >> n >> m;
+    for (int i = 0; i < n; ++i) {
+        int s, t, c;
+        cin >> s >> t >> c;
+        cowlocs.push_back({s, t});
+        comfort.push_back(c);
+    }
+    for (int i = 0; i < m; ++i) {
+        int a, b, p, c;
+        cin >> a >> b >> p >> c;
+        conditioners.push_back({a, b});
+        power.push_back(p);
+        cost.push_back(c);
+    }
+    build_subset("", m);
+    cout << ans << '\n';
+}
+    \end{Verbatim}
+    \item {\sf Python implementation.} This code does not use recursion: {\sc Nick Wu}'s Python codE:
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+n, m = (int(x) for x in input().split())
+regions = []
+for _ in range(n):
+    regions.append([int(x) for x in input().split()])
+acs = []
+for _ in range(m):
+    acs.append([int(x) for x in input().split()])
+ret = sum([x[3] for x in acs])
+for used in range(2 ** m):
+    cool = [0] * 101;
+    cost = 0
+    for i in range(m):
+        if used & (2 ** i):
+            cost += acs[i][3]
+            for x in range(acs[i][0], acs[i][1] + 1):
+                cool[x] += acs[i][2]
+    valid = True
+    for i in range(n):
+        valid = valid and all([cool[x] >= regions[i][2] for x in range(regions[i][0], regions[i][1] + 1)])
+    if valid:
+        ret = min(ret, cost)
+print(ret)
+    \end{Verbatim}
+    \item {\sf Java implementation.} This code does not use recursion: {\sc Danny Mittal}'s Java:
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+public class AirConditioningII {
+    public static void main(String[] args) throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer tokenizer = new StringTokenizer(in.readLine());
+        int n = Integer.parseInt(tokenizer.nextToken());
+        int m = Integer.parseInt(tokenizer.nextToken());
+        CowInterval[] cowIntervals = new CowInterval[n];
+        for (int j = 0; j < n; ++j) {
+            tokenizer = new StringTokenizer(in.readLine());
+            int from = Integer.parseInt(tokenizer.nextToken());
+            int to = Integer.parseInt(tokenizer.nextToken());
+            int requiredCoolness = Integer.parseInt(tokenizer.nextToken());
+            cowIntervals[j] = new CowInterval(from, to, requiredCoolness);
+        }
+        AirConditioner[] airConditioners = new AirConditioner[m];
+        for (int j = 0; j < m; ++j) {
+            tokenizer = new StringTokenizer(in.readLine());
+            int from = Integer.parseInt(tokenizer.nextToken());
+            int to = Integer.parseInt(tokenizer.nextToken());
+            int power = Integer.parseInt(tokenizer.nextToken());
+            int money = Integer.parseInt(tokenizer.nextToken());
+            airConditioners[j] = new AirConditioner(from, to, power, money);
+        }
+        int answer = m * 1000;
+        for (int mask = 0; mask < 1 << m; ++mask) {
+            int[] numberLine = new int[101];
+            int totalCost = 0;
+            for (int j = 0; j < m; ++j)
+            if ((mask & (1 << j)) != 0) {
+                totalCost += airConditioners[j].money;
+                AirConditioner airConditioner = airConditioners[j];
+                for (int x = airConditioner.from; x <= airConditioner.to; ++x)
+                numberLine[x] += airConditioner.power;
+            }
+            boolean works = true;
+            for (int j = 0; j < n; ++j) {
+                CowInterval cowInterval = cowIntervals[j];
+                for (int x = cowInterval.from; x <= cowInterval.to; ++x)
+                if (numberLine[x] < cowInterval.requiredCoolness) works = false;
+            }
+            if (works) answer = Math.min(answer, totalCost);
+        }
+        System.out.println(answer);
+    }
+
+    static class CowInterval {
+        final int from;
+        final int to;
+        final int requiredCoolness;
+        CowInterval(int from, int to, int requiredCoolness) {
+            this.from = from;
+            this.to = to;
+            this.requiredCoolness = requiredCoolness;
+        }
+    }
+
+    static class AirConditioner {
+        final int from;
+        final int to;
+        final int power;
+        final int money;
+        public AirConditioner(int from, int to, int power, int money) {
+            this.from = from;
+            this.to = to;
+            this.power = power;
+            this.money = money;
+        }
+    }
+}
     \end{Verbatim}
 \end{proof}
 
-\begin{proof}[2nd solution: Subset with bitmask]
+\begin{proof}[2nd solution: Subset with recursion -- Tập con với đệ quy]
+    Since $m = 10$ is given, we can iterate through all $2^{10}$ possible subsets of air conditioners. For each of them, we check if this subset of air conditioners satisfy the requirements of the cows by iterating through all possible positions $i\in[100]$. For each position $i$, we can iterate through all available air conditioners in the current subset to find out the temperature reduced at $i$ \& iterate through all cows to find the cow at this position \& its demand. If the requirement at each position is fulfilled, we update the minimal cost accordingly. We can generate subsets with recursion or bitmasks.
 
+    -- Vì $m = 10$ đã cho, ta có thể lặp qua tất cả $2^{10}$ tập con máy điều hòa không khí khả thi. Với mỗi tập con, ta kiểm tra xem tập con máy điều hòa không khí này có đáp ứng yêu cầu của bò hay không bằng cách lặp qua tất cả các vị trí khả thi $i\in[100]$. Với mỗi vị trí $i$, ta có thể lặp qua tất cả các máy điều hòa không khí khả dụng trong tập con hiện tại để tìm nhiệt độ giảm tại $i$ \& lặp qua tất cả các con bò để tìm con bò tại vị trí này \& nhu cầu của nó. Nếu yêu cầu tại mỗi vị trí được đáp ứng, ta sẽ cập nhật chi phí tối thiểu cho phù hợp. Ta có thể tạo các tập con bằng đệ quy hoặc mặt nạ bit.
+    \item {\sf C++ implementation.} USACO Guide's C++: air conditioning II with time complexity $O(100(m + n)2^m)$:
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <array>
+#include <iostream>
+#include <limits>
+#include <vector>
+using namespace std;
+
+int n, m;
+vector<array<int, 3>> cows; // {s, t, c}
+vector<array<int, 4>> air_conditioners; // {a, b, p, m}
+vector<bool> uses; // uses[i] == true: the i-th air conditioner is used
+int min_cost = numeric_limits<int>().max(); // the minimum amount of money needed to keep all cows comfortable
+
+/**
+ * Based on 'uses', determine if the current subset of air conditioners suffices
+ * the constraints, and if so, update the minimum cost
+ */
+void update() {
+    bool is_feasible = true;
+    // iterate through all positions to check if the current subset is feasible
+    for (int i = 1; i <= 100; ++i) {
+        // iterate through air conditioners to find the current cooling units
+        int cooling = 0;
+        for (int j = 0; j < m; ++j) {
+            if (!uses[j]) continue;
+            auto &[a, b, p, m] = air_conditioners[j];
+            if (a <= i && i <= b) cooling += p;
+        }
+        // iterate through cows to find the current cow
+        int cow_requirement = 0;
+        for (int j = 0; j < n; ++j) {
+            auto &[s, t, c] = cows[j];
+            if (s <= i && i <= t) {
+                cow_requirement = c;
+                break;
+            }
+        }
+        // for each position, the requirement of the cow must be met
+        if (cooling < cow_requirement) {
+            is_feasible = false;
+            break;
+        }
+    }
+    if (is_feasible) {
+        int cost = 0;
+        for (int i = 0; i < m; ++i)
+            if (uses[i]) cost += air_conditioners[i][3];
+        min_cost = min(min_cost, cost);
+    }
+}
+
+/**
+ * Expand the subset, represented by 'uses', by choosing to (not) use the i-th air conditioner
+ */
+void search(int i) {
+    if (i == m) update();
+    else {
+        uses[i] = false;
+        search(i + 1);
+        uses[i] = true;
+        search(i + 1);
+    }
+}
+
+int main() {
+    cin >> n >> m;
+    for (int i = 0; i < n; ++i) {
+        int s, t, c;
+        cin >> s >> t >> c;
+        cows.push_back({s, t, c});
+    }
+    for (int i = 0; i < m; ++i) {
+        int a, b, p, m;
+        cin >> a >> b >> p >> m;
+        air_conditioners.push_back({a, b, p, m});
+    }
+    uses.assign(m, false);
+    search(0);
+    cout << min_cost << '\n';
+}
+    \end{Verbatim}
+\end{proof}
+
+\begin{proof}[3rd solution: Subset with bitmask]
+    \item {\sf C++ implementation.} USACO Guide's C++: air conditioning II with time complexity $O(100(m + n)2^m)$:
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <array>
+#include <iostream>
+#include <limits>
+#include <vector>
+using namespace std;
+
+/** @return if the given AC units satisfy the constraints of the cows */
+bool check(vector<array<int, 3>> &cows, vector<array<int, 4>> &air_conditioners) {
+    // iterate through all positions to check if the current subset is feasible
+    for (int i = 1; i <= 100; ++i) {
+        int cooling = 0;
+        for (int j = 0; j < air_conditioners.size(); ++j) {
+            auto &[a, b, p, m] = air_conditioners[j];
+            if (a <= i && i <= b) cooling += p;
+        }
+        //  iterate through cows to find the current cow
+        int cow_requirement = 0;
+        for (int j = 0; j < cows.size(); ++j) {
+            auto &[s, t, c] = cows[j];
+            if (s <= i && i <= t) {
+                cow_requirement = c;
+                break;
+            }
+        }
+        // for each position, the requirement of the cow must be met
+        if (cooling < cow_requirement) return false;
+    }
+    return true;
+}
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<array<int, 3>> cows;
+    for (int i = 0; i < n; ++i) {
+        int s, t, c;
+        cin >> s >> t >> c;
+        cows.push_back({s, t, c});
+    }
+    vector<array<int, 4>> air_conditioners;
+    for (int i = 0; i < m; ++i) {
+        int a, b, p, m;
+        cin >> a >> b >> p >> m;
+        air_conditioners.push_back({a, b, p, m});
+    }
+    int min_cost = numeric_limits<int>().max();
+    for (int mask = 0; mask < (1 << m); ++mask) { // use a bit mask to get all subsets
+        int cost = 0;
+        vector<array<int, 4>> used_conditioners;
+        for (int i = 0; i < m; ++i)
+            if (mask & (1 << i)) {
+                used_conditioners.push_back(air_conditioners[i]);
+                cost += air_conditioners[i][3];
+            }
+        if (check(cows, used_conditioners)) min_cost = min(min_cost, cost);
+    }
+    cout << min_cost << '\n';
+}
+    \end{Verbatim}
 \end{proof}
 
 \begin{problem}[livestock liveup]
@@ -7259,8 +7594,7 @@ int main() {
         \end{Verbatim}
     \end{enumerate}
 \end{proof}
-
-\textbf{\textsf{Resources -- Tài nguyên.}}
+\noindent\textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
     \item \href{https://en.wikipedia.org/wiki/Tower_of_Hanoi}{Wikipedia{\tt/}tower of Hanoi}.
 \end{enumerate}

@@ -5240,7 +5240,7 @@ Output:
 \begin{enumerate}
     \item {\sc Andrew Wang, Maggie Liu}. \href{https://usaco.guide/problems/cses-1621-distinct-numbers/solution}{USACO Guide{\tt/}CSES{\tt/}distinct numbers}.
 
-    \item \url{https://codeforces.com/blog/entry/74684}
+    \item \item {\sc Darren Yao, Benjamin Qi, Allen Li, Jesse Choe, Nathan Gong, Elliott Harper}. \href{https://usaco.guide/bronze/intro-sets?lang=cpp}{USACO Guide{\tt/}introduction to sets \& maps}.
 \end{enumerate}
 
 \begin{proof}[Solution]
@@ -5282,9 +5282,9 @@ int main() {
     cout << ans;
 }
         \end{Verbatim}
-        \item Loser: \url{https://codeforces.com/blog/entry/74684}: Just use set to store the elements and answer is the size of set.
+        \item Just use sorted set to store the elements and answer is the size of set:
         \begin{Verbatim}[numbers=left,xleftmargin=0mm]
- #include <iostream>
+#include <iostream>
 #include <set>
 using namespace std;
 
@@ -5299,6 +5299,26 @@ int main() {
     cout << s.size();
 }
         \end{Verbatim}
+        or with sorted set replaced by a hashset.
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+#include <unordered_set>
+using namespace std;
+
+int main() {
+    int n, number;
+    cin >> n;
+    unordered_set<int> distinctNumbers;
+    for (int i = 0; i < n; ++i) {
+        cin >> number;
+        distinctNumbers.insert(number);
+    }
+    cout << distinctNumbers.size() << '\n';
+}
+        \end{Verbatim}
+        However, this fails on 1 test designed specifically to cause \verb|unordered_set| to run in $\Theta(n^2)$ time. To get around this, you can either switch to {\tt set} or use a custom hash functions. {\it Should I worry about anti-hash tests in USACO?} No -- historically, no USACO problem has included an anti-hash test. However, these sorts of tests often appear in CodeForces, especially in educational rounds, where open hacking is allowed.
+
+        -- Tuy nhiên, điều này không thành công ở 1 bài kiểm tra được thiết kế riêng để khiến \verb|unordered_set| chạy trong thời gian $\Theta(n^2)$. Để khắc phục điều này, bạn có thể chuyển sang {\tt set} hoặc sử dụng các hàm băm tùy chỉnh. {\it Tôi có nên lo lắng về các bài kiểm tra chống băm trong USACO không?} Không -- trước đây, không có bài toán nào của USACO bao gồm bài kiểm tra chống băm. Tuy nhiên, những bài kiểm tra kiểu này thường xuất hiện trong CodeForces, đặc biệt là trong các vòng đào tạo, nơi cho phép hack công khai.
     \end{enumerate}
 \end{proof}
 
@@ -5442,6 +5462,129 @@ int main() {
         \item \url{https://github.com/MishkatIT/codeforces-atcoder-submissions/blob/main/codeforces/1808/1808B%20Playing%20in%20a%20Casino.cpp}.
     \end{enumerate}
 \end{proof}
+
+%------------------------------------------------------------------------------%
+
+\section{Introduction to Sets \& Maps -- Giới Thiệu Tập Hợp \& Bản Đồ}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item {\sc Darren Yao, Benjamin Qi, Allen Li, Jesse Choe, Nathan Gong, Elliott Harper}. \href{https://usaco.guide/bronze/intro-sets?lang=cpp}{USACO Guide{\tt/}introduction to sets \& maps}.
+
+    {\sf Abstract.} Maintaining collections of distinct elements{\tt/}keys with sets \& maps.
+
+    -- Duy trì các bộ sưu tập các phần tử riêng biệt{\tt/}khóa với các tập hợp \& bản đồ.
+
+    \item \href{https://www.cplusplus.com/reference/set/set/}{C++ reference{\tt/}set}
+\end{enumerate}
+A {\it set} is a collection of unique elements. Sets have 3 primary methods:
+\begin{enumerate}
+    \item add an element
+    \item remove an element
+    \item check whether an element is present.
+\end{enumerate}
+-- Một {\it tập hợp} là một tập hợp các phần tử duy nhất. Các tập hợp có 3 phương thức chính:
+\begin{enumerate}
+    \item thêm một phần tử
+    \item xóa một phần tử
+    \item kiểm tra xem một phần tử có tồn tại hay không.
+\end{enumerate}
+A {\it map} is a collection of entries, each consisting of a key \& a value. In a map, all keys are required to be unique (i.e., they will form a set), but values can be repeated. Maps have 3 primary methods:
+\begin{enumerate}
+    \item add a specified key-value pairing
+    \item remove a key-value pairing
+    \item retrieve the value for a given key.
+\end{enumerate}
+C++ \& Java both have 2 implementations of sets \& maps; one uses {\it sorting} while the other uses {\it hashing}. Python's implementation of sets \& maps uses hashing.
+
+-- Bản đồ là một tập hợp các mục, mỗi mục bao gồm một khóa \& một giá trị. Trong bản đồ, tất cả các khóa đều phải duy nhất (tức là chúng sẽ tạo thành một tập hợp), nhưng các giá trị có thể được lặp lại. Bản đồ có 3 phương thức chính:
+\begin{enumerate}
+    \item thêm một cặp khóa-giá trị được chỉ định
+    \item xóa một cặp khóa-giá trị
+    \item lấy giá trị cho một khóa nhất định.
+\end{enumerate}
+C++ \& Java đều có 2 cách triển khai tập hợp \& bản đồ; một cách sử dụng sắp xếp trong khi cách còn lại sử dụng băm. Cách triển khai tập hợp \& bản đồ của Python sử dụng băm.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Sets -- Tập hợp}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Sorted sets -- Tập hợp đã sắp thứ tự}
+Sorted sets store elements in sorted order. All primary methods (adding, removing, \& checking) run in $O(\log n)$ worst-case time, where $n\in\mathbb{N}^\star$ is the number of elements in the set. Sorted sets are implemented in C++ by {\tt std::set} in the {\tt<set>} header. Some basic operations on an {\tt std::set} named {\tt s} include:
+\begin{enumerate}
+    \item {\tt s.insert(x)}, which adds the element {\tt x} to {\tt s} if not already present.
+    \item {\tt s.erase(x)}, which removes the element {\tt x} from {\tt s} if present.
+    \item {\tt s.count(x)}, which returns {\tt1} if {\tt s} contains {\tt x} \& {\tt0} if it does not.
+\end{enumerate}
+You can also iterate through a set in sorted order using a for-each loop.
+
+-- Các tập hợp được sắp xếp lưu trữ các phần tử theo thứ tự đã được sắp xếp. Tất cả các phương thức chính (thêm, xóa, \& kiểm tra) chạy trong thời gian trường hợp xấu nhất là $O(\log n)$, trong đó $n\in\mathbb{N}^\star$ là số phần tử trong tập hợp. Các tập hợp được sắp xếp được triển khai trong C++ bằng {\tt std::set} trong tiêu đề {\tt<set>}. Một số thao tác cơ bản trên {\tt std::set} có tên {\tt s} bao gồm:
+
+\begin{enumerate}
+    \item {\tt s.insert(x)}, thêm phần tử {\tt x} vào {\tt s} nếu chưa có.
+
+    \item {\tt s.erase(x)}, xóa phần tử {\tt x} khỏi {\tt s} nếu có.
+
+    \item {\tt s.count(x)}, trả về {\tt1} nếu {\tt s} chứa {\tt x} \& {\tt0} nếu không.
+\end{enumerate}
+Bạn cũng có thể lặp qua một tập hợp theo thứ tự đã được sắp xếp bằng cách sử dụng vòng lặp for-each.
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+#include <set>
+using namespace std;
+
+void demo() {
+    set<int> s;
+    s.insert(1);                 // [1]
+    s.insert(4);                 // [1, 4]
+    s.insert(2);                 // [1, 2, 4]
+    s.insert(1);                 // do nothing because 1's already in the set
+    cout << s.count(1) << '\n';  // 1
+    s.erase(1);                  // [2, 4]
+    cout << s.count(5) << endl;  // 0
+    s.erase(0);                  // do nothing because 0 wasn't in the set
+    s.insert(6);                 // [2, 4, 6]
+    for (int element : s) { cout << element << " "; } // output 2, 4, & 6 separated by spaces
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Hashsets -- Tập hợp băm}
+Hashsets store elements using hashing. Roughly, a hashset consists of some number of buckets $b$, \& each element is mapped to a bucket via hash function. If $b\approx n$ \& the hash function independently maps each distinct element to a uniformly random bucket, then no bucket is expected to contain many elements, \& all primary methods will all run in $O(1)$ expected time. In the worst case, hashsets in C++ may take proportional to $n$ time per operation. Hashsets are implemented in C++ by \verb|std::unordered_set| in the \verb|<unordered_set>| header.
+
+-- Hashset lưu trữ các phần tử bằng cách sử dụng băm. Về cơ bản, một hashset bao gồm một số bucket $b$, \& mỗi phần tử được ánh xạ vào một bucket thông qua hàm băm. Nếu $b\approx n$ \& hàm băm ánh xạ độc lập từng phần tử riêng biệt vào một bucket ngẫu nhiên đồng đều, thì không bucket nào được kỳ vọng chứa nhiều phần tử, \& tất cả các phương thức chính sẽ chạy trong thời gian dự kiến $O(1)$. Trong trường hợp xấu nhất, hashset trong C++ có thể mất tỷ lệ với $n$ thời gian cho mỗi thao tác. Hashset được triển khai trong C++ bởi \verb|std::unordered_set| trong tiêu đề \verb|<unordered_set>|.
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+#include <unordered_set>
+using namespace std;
+
+void demo() {
+    unordered_set<int> s;
+    s.insert(1);                 // {1}
+    s.insert(4);                 // {1, 4}
+    s.insert(2);                 // {1, 2, 4}
+    s.insert(1);                 // do nothing because 1's already in the set
+    cout << s.count(1) << '\n';  // 1
+    s.erase(1);                  // {2, 4}
+    cout << s.count(5) << '\n';  // 0
+    s.erase(0);                  // do nothing because 0 wasn't in the set
+    s.insert(6);                 // {2, 4, 6}
+    // outputs 6, 2, & 4 separated by spaces (not in sorted order)
+    for (int element : s) cout << element << " ";
+}
+\end{Verbatim}
+Hashsets work with primitive types, but require a \href{https://usaco.guide/gold/hashmaps#custom-hashing}{custom hash function} for structures{\tt/}classes like {\tt vector}s \& {\tt pair}s.
+
+-- Hashset hoạt động với các kiểu dữ liệu nguyên thủy, nhưng yêu cầu hàm băm tùy chỉnh cho các lớp cấu trúc như {\tt vector}s \& {\tt pair}s.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Maps -- Bản đồ}
+In sorted maps, the pairs are sorted in order of key. As with sorted sets, all primary methods run in $O(\log n)$ worst-case time, where $n\in\mathbb{N}^\star$ is the number of pairs in the map. In hashmaps, the pairs are hashed to buckets by the key, \& as with hashsets, all primary methods run in $O(1)$ expected time under some assumptions about the hash function. In C++, sorted maps are implemented with {\tt std::map} \& hashmaps are implemented with \verb|std::unordered_map|.
+
+-- Trong các bản đồ được sắp xếp, các cặp được sắp xếp theo thứ tự khóa. Giống như với các tập hợp được sắp xếp, tất cả các phương thức chính đều chạy trong thời gian trường hợp xấu nhất $O(\log n)$, trong đó $n\in\mathbb{N}^\star$ là số cặp trong bản đồ. Trong các bản đồ băm, các cặp được băm thành các nhóm theo khóa, \& giống như với các tập băm, tất cả các phương thức chính đều chạy trong thời gian dự kiến $O(1)$ với một số giả định về hàm băm. Trong C++, các bản đồ được sắp xếp được triển khai với {\tt std::map} \& các bản đồ băm được triển khai với \verb|std::unordered_map|.
 
 %------------------------------------------------------------------------------%
 

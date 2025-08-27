@@ -62,3 +62,4 @@ int main() {
 	}
 }
 // MLE on test 2 VNOI OJ
+// USE SET OR MAP INSTEAD OF A FUCKING SLOW 2D VECTOR

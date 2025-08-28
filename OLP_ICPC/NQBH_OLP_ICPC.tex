@@ -4019,7 +4019,9 @@ using namespace std;
 int main() {
     int a, b, c, d;
     cin >> a >> b >> c >> d;
-    cout << max(b, d) - min(a, c);
+    if (b <= c || d <= a) cout << b - a + d - c; // [a,b] & [c,d] are disjoint or has only 1 element
+    else if (a < c) cout << max(b, d) - a; // when a < c < b < d or a < c < d < b
+    else cout << max(b, d) - c; // when c < a < d < b or c < a < b < d
 }
         \end{Verbatim}
         \item USACO Guide's C++: fence painting. Ý tưởng: duyệt 2 lần sơn của John \& Bessie \& đếm từng phần tử thỏa mãn (các phần tử được sơn 2 lần chỉ đếm 1 lần nhờ bật mảng {\tt cover} ở vị trí tương ứng từ {\tt false} thành {\tt true} nên không sợ bị đếm dư): using {\tt freopen} input method:
@@ -6089,7 +6091,7 @@ Graphs can be used to represent many things, from images to wireless signals, bu
 \end{enumerate}
 or USACO Bronze, it suffices to learn the basics of how graphs are represented (usually adjacency lists).
 
--- Biểu đồ có thể được sử dụng để biểu diễn nhiều thứ, từ hình ảnh đến tín hiệu không dây, nhưng một trong những phép so sánh đơn giản nhất là với bản đồ. Hãy xem xét một bản đồ với nhiều thành phố \& các con đường hai chiều nối liền các thành phố. Một số vấn đề liên quan đến biểu đồ là:
+-- Biểu đồ có thể được sử dụng để biểu diễn nhiều thứ, từ hình ảnh đến tín hiệu không dây, nhưng một trong những phép so sánh đơn giản nhất là với bản đồ. Hãy xem xét một bản đồ với nhiều thành phố \& các con đường hai chiều nối liền các thành phố. 1 số vấn đề liên quan đến biểu đồ là:
 \begin{enumerate}
     \item Thành phố $A$ có được kết nối với thành phố $B$ không? Hãy xem xét một vùng là một nhóm các thành phố sao cho mỗi thành phố trong nhóm có thể kết nối với bất kỳ thành phố nào khác trong nhóm đó, nhưng không kết nối với bất kỳ thành phố nào khác. Có bao nhiêu vùng trong bản đồ này, \& những thành phố nào thuộc vùng nào? (USACO Bạc)
     \item Khoảng cách ngắn nhất tôi phải đi để đi từ thành phố $A$ đến thành phố $B$ là bao nhiêu? (USACO Vàng)
@@ -6332,6 +6334,452 @@ int main() {
 Most problems in this category include only 2 or 3 squares or rectangles, in which case you can simply draw out cases on paper. This should logically lead to a solution.
 
 -- Hầu hết các bài toán trong thể loại này chỉ bao gồm 2 hoặc 3 hình vuông hoặc hình chữ nhật, trong trường hợp đó, bạn chỉ cần vẽ các trường hợp trên giấy. Điều này về mặt logic sẽ dẫn đến một giải pháp.
+
+\begin{problem}[\href{https://usaco.org/index.php?page=viewproblem2&cpid=567}{USACO 2015 Dec contest, bronze, problem 1: fence painting}]
+    Several seasons of hot summers \& cold winters have taken their toll on Farmer John's fence, \& he decides it is time to repaint it, along with the help of his favorite cow, Bessie. Unfortunately, while Bessie is actually remarkably proficient at painting, she is not as good at understanding Farmer John's instructions.
+
+    If we regard the fence as a 1D number line, Farmer John paints the interval between $x = a$ \& $x = b$. E.g., if $a = 3,b = 5$, then Farmer John paints an interval of length $2$. Bessie, misunderstanding Farmer's John instructions\footnote{NQBH: ``Ngu như bò'' is real.}, paints the interval from $x = c$ to $x = d$, which may possibly overlap with part of all of Farmer John's interval. Determine the total length of fence that is now covered with paint.
+    \item {\sf Input.} The 1st line of input contains 2 integers $a,b\in\mathbb{N}$, $a < b$, separated by a space. The 2nd line contains integers $c,d\in\mathbb{N}$, $a < b$, separated by a space. The values of $a,b,c,d$ all lie in the range $0,\ldots,100$, inclusive.
+    \item {\sf Output.} Output a single line containing the total length of fence covered with paint.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|fence_painting.inp| & \verb|fence_painting.out| \\
+            \hline
+            7 10 & 6 \\
+            4 8 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{baitoan}[Sơn hàng rào]
+    Nhiều mùa hè nóng nực \& mùa đông lạnh giá đã ảnh hưởng đến hàng rào của bác nông dân John, \& bác quyết định đã đến lúc sơn lại nó, cùng với sự giúp đỡ của chú bò yêu quý Bessie. Thật không may, mặc dù Bessie thực sự rất giỏi vẽ, nhưng cô bé lại không hiểu rõ hướng dẫn của bác nông dân John.
+
+    Nếu chúng ta coi hàng rào là 1 đường số 1 chiều, bác nông dân John sẽ vẽ khoảng giữa $x = a$ \& $x = b$. Ví dụ: nếu $a = 3,b = 5$, thì bác nông dân John sẽ vẽ 1 khoảng có độ dài $2$. Do hiểu sai hướng dẫn của bác nông dân John\footnote{NQBH: ``Ngư như bò'' là thiệt.}, Bessie đã vẽ khoảng từ $x = c$ đến $x = d$, khoảng này có thể trùng với 1 phần của toàn bộ khoảng của bác nông dân John. Hãy xác định tổng chiều dài của hàng rào hiện được phủ sơn.
+    \item {\sf Input.} Dòng đầu tiên chứa 2 số nguyên $a,b\in\mathbb{N}$, $a < b$, cách nhau bởi 1 khoảng trắng. Dòng thứ hai chứa các số nguyên $c,d\in\mathbb{N}$, $a < b$, cách nhau bởi 1 khoảng trắng. Các giá trị của $a,b,c,d$ đều nằm trong khoảng $0,\ldots,100$, bao gồm cả hai giá trị.
+    \item {\sf Output.} Xuất ra 1 dòng duy nhất chứa tổng chiều dài của hàng rào được phủ sơn.
+\end{baitoan}
+
+\begin{proof}[Slow solution]
+    Since all the intervals lie between the range $\overline{0,100}$, we can mark each interval of length 1 contained within each interval as painted using a loop. Then the answer will be the number of marked intervals.
+
+    -- Vì tất cả các khoảng đều nằm trong khoảng $\overline{0,100}$, ta có thể đánh dấu mỗi khoảng có độ dài 1 nằm trong mỗi khoảng là đã được tô màu bằng một vòng lặp. Khi đó, đáp án sẽ là số khoảng đã được đánh dấu.
+    \item {\sf C++ implementation.} USACO Guide's C++: fence painting: Time complexity $O(\mbox{max coordinate})$.
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+#include <map>
+#include <vector>
+using namespace std;
+
+const int MAX_POS = 100;
+
+int main() {
+    int a, b, c, d, total = 0;
+    cin >> a >> b >> c >> d;
+    vector<bool> painted(MAX_POS + 1);
+    for (int i = a; i < b; ++i) painted[i] = true; // add Farmer John's painted interval
+    for (int i = c; i < d; ++i) painted[i] = true; // add Bessie's painted interval
+    for (bool i : painted) total += i; // count the total amount of intervals painted
+    cout << total << '\n';
+}
+    \end{Verbatim}
+    However, this solution would not work for higher constraints, e.g., if the coordinates were up to $10^9$.
+
+    -- Tuy nhiên, giải pháp này sẽ không hiệu quả với những ràng buộc cao hơn, ví dụ nếu tọa độ lên tới $10^9$.
+\end{proof}
+
+\begin{proof}[Fast solution]
+    Calculate the answer by adding the original lengths \& subtracting the intersection length.
+    \begin{equation*}
+        (b - a) + (d - c) - {\rm intersection}([a,b],[c,d]).
+    \end{equation*}
+    The official analysis \url{http://www.usaco.org/current/data/sol_paint_bronze_dec15.html} splits computing the intersection length into several cases. However, we can do it in a simpler way. An interval $[x,x + 1]$ is contained within both $[a,b]$ \& $[c,d]$ if $a\le x,c\le x,x < b,x < d$, i.e., if $\max\{a,c\}\le x < \min\{b,d\}$. So the length of the intersection is $\min\{b,d\} - \max\{a,c\}$ if this quantity is positive \& 0 otherwise.
+
+    -- Tính toán kết quả bằng cách cộng các độ dài ban đầu \& trừ đi độ dài giao điểm.
+    \begin{equation*}
+        (b - a) + (d - c) - {\rm giao}([a,b],[c,d]).
+    \end{equation*}
+    Phân tích chính thức \url{http://www.usaco.org/current/data/sol_paint_bronze_dec15.html} chia việc tính toán độ dài giao điểm thành nhiều trường hợp. Tuy nhiên, chúng ta có thể thực hiện theo cách đơn giản hơn. 1 khoảng $[x,x + 1]$ nằm trong cả $[a,b]$ \& $[c,d]$ nếu $a\le x,c\le x,x < b,x < d$, tức là nếu $\max\{a,c\}\le x < \min\{b,d\}$. Vì vậy, độ dài của giao điểm là $\min\{b,d\} - \max\{a,c\}$ nếu số lượng này dương \& 0 nếu không.
+    \item {\sf C++ implementation.}
+    \begin{enumerate}
+        \item USACO Guide's C++: fence painting: Time complexity $O(1)$.
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int a, b, c, d;
+    cin >> a >> b >> c >> d;
+    int total = (b - a) + (d - c); // the sum of the 2 intervals
+    int intersection = max(min(b, d) - max(a, c), 0); // subtract the intersection
+    int ans = total - intersection;
+    cout << ans << '\n';
+}
+        \end{Verbatim}
+    \end{enumerate}
+
+\end{proof}
+
+\begin{proof}[3rd solution: Divide to conquer]
+    Chiều dài hàng rào được sơn bằng $\max\{b,d\} - \min\{a,c\}$.
+    \item {\sf C++ implementation.}
+    \begin{enumerate}
+        \item NQBH's C++: fence painting:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a, b, c, d;
+    cin >> a >> b >> c >> d;
+    if (b <= c || d <= a) cout << b - a + d - c; // [a,b] & [c,d] are disjoint or has only 1 element
+    else if (a < c) cout << max(b, d) - a; // when a < c < b < d or a < c < d < b
+    else cout << max(b, d) - c; // when c < a < d < b or c < a < b < d
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{problem}[\href{https://usaco.org/index.php?page=viewproblem2&cpid=759}{USACO 2017 Dec Contest, Bronze, Problem 1: blocked billboard}]
+    During long milking sessions, Bessie the cow likes to stare out the window of her barn at 2 huge rectangular billboards across the street advertising ``Farmer Alex's Amazingly Appetizing Alfalfa'' \& ``Farmer Greg's Great Grain''. Pictures of these 2 cow feed products on the billboards look much tastier to Bessie than the grass from her farm.
+
+    1 day, as Bessie is staring out the window, she is alarmed to see a huge rectangular truck parking across the street. The side of the truck has an advertisement for ``Farmer Smith's Superb Steaks'', which Bessie does not quite understand, but she is mostly concerned about the truck potentially blocking the view of her 2 favorite billboards.
+
+    Given the locations of the 2 billboards \& the location of the truck, calculate the total combined area of both billboards that is still visible. It is possible that the truck obscures neither, both, or only 1 of the billboards.
+    \item {\sf Input.} The 1st line of input contains 4 space-separated integers $x_1$ $y_1$ $x_2$ $y_2$ where $(x_1,y_1),(x_2,y_2)$ are the coordinates of the lower-left \& upper-right corners of the 1st billboard in Bessie's 2D field of view. The next line contains 4 more integers, similarly specifying the lower-left \& upper-right corners of the 2nd billboard. The 3rd \& final line of input contains 4 integers specifying the lower-left \& upper-right corners of the truck. All coordinates are in the range $\overline{-1000,1000}$. The 2 billboards are guaranteed not to have any positive area of overlap between themselves.
+    \item {\sf Output.} Output the total combined area of both billboards that remains visible.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|blocked_billboard.inp| & \verb|blocked_billboard.out| \\
+            \hline
+            1 2 3 5 & 17 \\
+            6 0 10 4 & \\
+            2 1 8 3 & \\
+            & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \item {\sf Explanation.} Here, $5$ units of area from the 1st billboard \& $12$ units of area from the 2nd billboard remain visible.
+\end{problem}
+
+\begin{baitoan}[Biển quảng cáo bị chặn]
+    Trong những buổi vắt sữa kéo dài, cô bò Bessie thích nhìn ra ngoài cửa sổ chuồng trại, nơi có 2 tấm biển quảng cáo hình chữ nhật khổng lồ bên kia đường quảng cáo ``Cỏ linh lăng hấp dẫn tuyệt vời của nông dân Alex'' \& ``Ngũ cốc tuyệt vời của nông dân Greg''. Hình ảnh 2 sản phẩm thức ăn cho bò này trên biển quảng cáo trông ngon miệng hơn nhiều so với cỏ trong trang trại của Bessie.
+
+    1 ngày nọ, khi Bessie đang nhìn ra cửa sổ, cô bé hoảng hốt khi thấy một chiếc xe tải hình chữ nhật khổng lồ đậu bên kia đường. Bên hông xe tải có quảng cáo ``Bít tết tuyệt hảo của nông dân Smith'', điều mà Bessie không hiểu rõ lắm, nhưng cô bé chủ yếu lo lắng rằng chiếc xe tải có thể che khuất tầm nhìn của 2 tấm biển quảng cáo yêu thích của mình.
+
+    Dựa trên vị trí của 2 tấm biển quảng cáo \& vị trí của chiếc xe tải, hãy tính tổng diện tích của cả hai tấm biển quảng cáo vẫn còn nhìn thấy được. Có thể chiếc xe tải không che khuất tấm biển nào, cả hai, hoặc chỉ che khuất 1 trong hai tấm biển quảng cáo.
+    \item {\sf Input.} Dòng đầu tiên chứa 4 số nguyên cách nhau bởi dấu cách $x_1$ $y_1$ $x_2$ $y_2$ trong đó $(x_1,y_1),(x_2,y_2)$ là tọa độ của góc dưới bên trái \& góc trên bên phải của biển quảng cáo thứ nhất trong trường nhìn 2D của Bessie. Dòng tiếp theo chứa thêm 4 số nguyên, tương tự xác định góc dưới bên trái \& góc trên bên phải của biển quảng cáo thứ hai. Dòng đầu vào thứ 3 \& cuối cùng chứa 4 số nguyên xác định góc dưới bên trái \& góc trên bên phải của xe tải. Tất cả tọa độ đều nằm trong khoảng $\overline{-1000,1000}$. 2 biển quảng cáo được đảm bảo không có bất kỳ diện tích dương nào chồng lên nhau.
+    \item {\sf Output.} Xuất ra tổng diện tích của cả hai biển quảng cáo vẫn hiển thị.
+    \item {\sf Mẫu.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|blocked_billboard.inp| & \verb|blocked_billboard.out| \\
+            \hline
+            1 2 3 5 & 17 \\
+            6 0 10 4 & \\
+            2 1 8 3 & \\
+            & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \item {\sf Giải thích.} Ở đây, $5$ đơn vị diện tích từ biển quảng cáo thứ nhất \& $12$ đơn vị diện tích từ biển quảng cáo thứ hai vẫn hiển thị.
+\end{baitoan}
+Think of this as the 2D analog of the fence painting problem.
+
+-- Nghĩ về điều này như là bài toán tương tự 2D về sơn hàng rào.
+
+\begin{proof}[Slow solution]
+    Since all coordinates are in the range $\overline{-1000,1000}$, we can simply go through each of $2000^2$ possible visible squares \& check which ones are visible using nested {\tt for} loops.
+
+    -- Vì tất cả các tọa độ đều nằm trong phạm vi $\overline{-1000,1000}$, chúng ta có thể chỉ cần duyệt qua mỗi $2000^2$ ô vuông có thể nhìn thấy \& kiểm tra xem ô nào có thể nhìn thấy bằng cách sử dụng vòng lặp {\tt for} lồng nhau.
+    \item {\sf C++ implementation.} USACO Guide's C++: blocked billboard: Time complexity $O((\mbox{max coordinate})^2)$:
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+using namespace std;
+
+const int MAX_POS = 2000;
+bool visible[MAX_POS][MAX_POS];
+
+int main() {
+    for (int i = 0; i < 3; ++i) {
+        int x1, y1, x2, y2;
+        cin >> x1 >> y1 >> x2 >> y2;
+        // make all the coordinates positive
+        x1 += MAX_POS / 2;
+        y1 += MAX_POS / 2;
+        x2 += MAX_POS / 2;
+        y2 += MAX_POS / 2;
+        for (int x = x1; x < x2; ++x) // mark billboard area as visible, truck as not visible
+            for (int y = y1; y < y2; ++y) visible[x][y] = i < 2;
+    }
+    // count all visible billboard squares
+    int ans = 0;
+    for (int x = 0; x < MAX_POS; ++x)
+        for (int y = 0; y < MAX_POS; ++y) ans += visible[x][y];
+    cout << ans << '\n';
+}
+    \end{Verbatim}
+    This would not suffice if the coordinates were changed to be up to $10^9$.
+
+    -- Điều này sẽ không đủ nếu tọa độ được thay đổi lên tới $10^9$.
+\end{proof}
+
+\begin{proof}[Fast solution]
+    {\sf C++ implementation.}
+    \begin{enumerate}
+        \item NQBH's C++: blocked billboard:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+using namespace std;
+
+int area_intersection(int a1, int b1, int c1, int d1, int a2, int b2, int c2, int d2) {
+    int width_intersection = max(min(c1, c2) - max(a1, a2), 0);
+    int height_intersection = max(min(d1, d2) - max(b1, b2), 0);
+    return width_intersection * height_intersection;
+}
+
+int main() {
+    int a1, b1, c1, d1, a2, b2, c2, d2, a3, b3, c3, d3, ans = 0;
+    cin >> a1 >> b1 >> c1 >> d1 >> a2 >> b2 >> c2 >> d2 >> a3 >> b3 >> c3 >> d3;
+    ans += (c1 - a1) * (d1 - b1) + (c2 - a2) * (d2 - b2);
+    ans -= area_intersection(a1, b1, c1, d1, a3, b3, c3, d3);
+    ans -= area_intersection(a2, b2, c2, d2, a3, b3, c3, d3);
+    cout << ans << '\n';
+}
+        \end{Verbatim}
+        \item USACO Guide's C++: blocked billboard: Time complexity $O(1)$. Note how creating a struct {\tt Rect} to represent a rectangle makes the code easier to understand.
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+using namespace std;
+
+struct Rect {
+    int x1, y1, x2, y2;
+    void read() {
+        cin >> x1 >> y1 >> x2 >> y2;
+    }
+    int area() { // area of the rectangle
+        return (y2 - y1) * (x2 - x1);
+    }
+}
+
+int intersect(Rect p, Rect q) {
+    // calculate overlap in x & y directions
+    int x_overlap = max(0, min(p.x2, q.x2) - max(p.x1, q.x1));
+    int y_overlap = max(0, min(p.y2, q.y2) - max(p.y1, q.y1));
+    return x_overlap * y_overlap; // area of intersection
+}
+
+int main() {
+    Rect a, b, t; // billboards a, b, & the truck
+    a.read();
+    b.read();
+    t.read();
+    // total visible area = area of both billboards - area covered by truck
+    cout << a.area() + b.area() - intersect(a, t) - intersect(b, t) << '\n';
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Common formulas -- Công thức chung}
+Certain tasks show up often in rectangle geometry problems. E.g., many problems involve finding the overlapping area of 2 or more rectangles based on their coordinate points, or determining whether 2 rectangles intersect. We now discuss these formulas. Note that these formulas only apply to rectangles which have sides parallel to the coordinate axes.
+
+-- 1 số bài toán thường xuất hiện trong các bài toán hình học hình chữ nhật. Ví dụ, nhiều bài toán liên quan đến việc tìm diện tích chồng lấn của 2 hoặc nhiều hình chữ nhật dựa trên các điểm tọa độ của chúng, hoặc xác định xem 2 hình chữ nhật có cắt nhau hay không. Bây giờ chúng ta sẽ thảo luận về các công thức này. Lưu ý rằng các công thức này chỉ áp dụng cho hình chữ nhật có các cạnh song song với trục tọa độ.
+
+\begin{remark}[Coordinates -- Tọa độ]
+    A rectangle can be represented with 2 points: its top right corner \& bottom left corner. We will label these points {\tt tl} (top right) \& {\tt bl} (bottom left). In this module, we will assume that increasing $x$ moves to the right \& increasing $y$ moves up.
+
+    -- 1 hình chữ nhật có thể được biểu diễn bằng 2 điểm: góc trên bên phải \& góc dưới bên trái. Chúng ta sẽ gán nhãn các điểm này là {\tt tl} (góc trên bên phải) \& {\tt bl} (góc dưới bên trái). Trong mô-đun này, chúng ta sẽ giả định rằng $x$ tăng sẽ di chuyển sang phải \& $y$ tăng sẽ di chuyển lên trên.
+\end{remark}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Calculate area -- Tính diện tích}
+The formula for finding the area of an individual rectangle is $wl$, where {\tt length} $l$ is the length of the vertical sides, \& {\tt width} $w$ is the length of the horizontal sides.
+
+-- Công thức tính diện tích của một hình chữ nhật riêng lẻ là $wl$, trong đó {\tt length} $l$ là độ dài của các cạnh dọc, \& {\tt width} $w$ là độ dài của các cạnh ngang.
+\begin{enumerate}
+    \item ${\tt width} = {\tt tr}_x - {\tt bl}_x$
+    \item ${\tt length} = {\tt tr}_y - {\tt bl}_y$
+    \item ${\tt area} = {\tt width}\cdot{\tt length}$.
+\end{enumerate}
+{\sf C++ implementation.}
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+long long area(int bl_x, int bl_y, int tr_x, int tr_y) {
+    long long length = tr_y - bl_y;
+    long long width = tr_x - bl_x;
+    return length * width;
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Checking if 2 rectangles intersect -- Kiểm tra xem 2 hình chữ nhật có giao nhau không}
+Given 2 rectangles $a,b$, there are only 2 cases where they do not interact:
+\begin{enumerate}
+    \item ${\tt tr}_{a_y}\le{\tt bl}_{b_y}$ or ${\tt bl}_{a_y}\ge{\tt tr}_{b_y}$.
+    \item ${\tt bl}_{a_x}\ge{\tt tr}_{b_x}$ or ${\tt tr}_{a_x}\le{\tt bl}_{b_x}$.
+\end{enumerate}
+In all other cases, these 2 rectangles intersect.
+
+-- Cho 2 hình chữ nhật $a, b$, chỉ có 2 trường hợp chúng không tương tác:
+\begin{enumerate}
+    \item ${\tt tr}_{a_y}\le{\tt bl}_{b_y}$ hoặc ${\tt bl}_{a_y}\ge{\tt tr}_{b_y}$.
+    \item ${\tt bl}_{a_x}\ge{\tt tr}_{b_x}$ hoặc ${\tt tr}_{a_x}\le{\tt bl}_{b_x}$.
+\end{enumerate}
+Trong tất cả các trường hợp khác, 2 hình chữ nhật này giao nhau.
+
+\noindent{\sf C++ implementation.}
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+// checking if 2 rectangles intersect
+bool intersect(vector<int> s1, vector<int> s2) {
+    int bl_a_x = s1[0], bl_a_y = s1[1], tr_a_x = s1[2], tr_a_y = s1[3];
+    int bl_b_x = s2[0], bl_b_y = s2[1], tr_b_x = s2[2], tr_b_y = s2[3];
+    // no overlap
+    if (bl_a_x >= tr_b_x || tr_a_x <= bl_b_x || bl_a_y >= tr_b_y || tr_a_y <= bl_b_y) return false;
+    else return true;
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Finding area of intersection of 2 rectangles -- Tính diện tích phần giao nhau của 2 hình chữ nhật}
+We will assume that the shape formed by the intersection of 2 rectangles is itself a rectangle. 1st, we will find this rectangle's length \& width.
+\begin{align*}
+    {\tt width} &= \min\{{\tt tr}_{a_x},{\tt tr}_{b_x}\} - \max\{{\tt bl}_{a_x},{\tt bl}_{b_x}\},\\
+    {\tt length} &= \min\{{\tt tr}_{a_y},{\tt tr}_{b_y}\} - \max\{{\tt bl}_{a_y},{\tt bl}_{b_y}\}.
+\end{align*}
+If either of these values are negative, the rectangles do not intersect. If they are zero, the rectangles intersect at a single point. Multiply the length \& width to find the overlapping area.
+
+-- Chúng ta sẽ giả định rằng hình được tạo thành bởi giao điểm của 2 hình chữ nhật chính là một hình chữ nhật. Đầu tiên, chúng ta sẽ tìm chiều dài \& chiều rộng của hình chữ nhật này.
+\begin{align*}
+    {\tt width} &= \min\{{\tt tr}_{a_x},{\tt tr}_{b_x}\} - \max\{{\tt bl}_{a_x},{\tt bl}_{b_x}\},\\
+    {\tt length} &= \min\{{\tt tr}_{a_y},{\tt tr}_{b_y}\} - \max\{{\tt bl}_{a_y},{\tt bl}_{b_y}\}.
+\end{align*}
+Nếu một trong hai giá trị này âm, các hình chữ nhật sẽ không giao nhau. Nếu chúng bằng 0, các hình chữ nhật sẽ giao nhau tại một điểm duy nhất. Nhân chiều dài \& chiều rộng để tìm diện tích chồng lấn.
+
+\noindent{\sf C++ implementation.}
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+// calculate area of intersection
+int intersection_area(vector<int> s1, vector<int> s2) {
+    int bl_a_x = s1[0], bl_a_y = s1[1], tr_a_x = s1[2], tr_a_y = s1[3];
+    int bl_b_x = s2[0], bl_b_y = s2[1], tr_b_x = s2[2], tr_b_y = s2[3];
+    return ((min(tr_a_x, tr_b_x) - max(bl_a_x, bl_b_x)) * (min(tr_a_y, tr_b_y) - max(bl_a_y, bl_b_y)));
+}
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Problems: Square \& rectangle geometry -- Bài tập: Hình học hình vuông \& hình hộp chữ nhật}
+
+\begin{problem}[\href{https://usaco.org/index.php?page=viewproblem2&cpid=663}{USACO 2016 Dec Contest, Bronze, Problem 1: square pasture}]
+    Farmer John has decided to update his farm to simplify its geometry. Previously, his cows grazed in 2 rectangular fenced-in pastures. Farmer John would like to replace these with a single square fenced-in pasture of minimum size that still covers all the regions of his farm that were previously enclosed by the former 2 fences.
+
+    Help Farmer John figure out the minimum area he needs to make his new square pasture so that if he places it appropriately, it can still cover all the area formerly covered by the 2 older rectangular pastures. The square pasture should have its sides parallel to the $x,y$ axes.
+    \item {\sf Input.} The 1st line in the input file specifies 1 of the original rectangular pastures with 4 space-separated integers $x_1$ $y_1$ $x_2$ $y_2$, each in the range $\overline{0,10}$. The lower-left corner of the pasture is at the point $(x_1,y_1)$, \& the upper-right corner is at the point $(x_2,y_2)$, where $x_2 > x_1$ \& $y_2 > y_1$. The 2nd line of input has the same $4$-integer format as the 1st line, \& specifies the 2nd original rectangular pasture. This pasture will not overlap or touch the 1st pasture.
+    \item {\sf Output.} The output should consist of 1 line containing the minimum area required of a square pasture that would cover all the regions originally enclosed by the 2 rectangular pastures.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|square_pasture.inp| & \verb|square_pasture.out| \\
+            \hline
+            6 6 8 8 & 49 \\
+            1 8 4 9 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \item {\sf Explanation.} In this example, the 1st original rectangle has corners  $(6,6),(8,8)$. The 2nd has corners at $(1,8),(4,9)$. By drawing a square fence of side length $7$ with corners $(1,6),(8,13)$, the original areas can still be enclosed; moreover, this is the best possible, since it is impossible to enclose the original areas with a square of side length only $6$. Note that there are several different possible valid placements for the square of side length $7$, as it could have been shifted vertically a bit.
+\end{problem}
+
+\begin{baitoan}[Đồng cỏ vuông]
+    Nông dân John đã quyết định cải tạo trang trại của mình để đơn giản hóa hình dạng. Trước đây, đàn bò của ông gặm cỏ trên 2 đồng cỏ hình chữ nhật có hàng rào bao quanh. Nông dân John muốn thay thế chúng bằng một đồng cỏ hình vuông có hàng rào bao quanh với kích thước tối thiểu, vẫn bao phủ toàn bộ diện tích trang trại trước đây được bao quanh bởi 2 hàng rào cũ.
+
+    Giúp Nông dân John tính toán diện tích tối thiểu cần thiết để tạo ra đồng cỏ hình vuông mới sao cho nếu ông đặt nó đúng vị trí, nó vẫn có thể bao phủ toàn bộ diện tích trước đây được bao phủ bởi 2 đồng cỏ hình chữ nhật cũ. Đồng cỏ hình vuông phải có các cạnh song song với các trục $x,y$.
+    \item {\sf Input.} Dòng đầu tiên trong tệp đầu vào chỉ định 1 trong các đồng cỏ hình chữ nhật ban đầu với 4 số nguyên cách nhau bởi dấu cách $x_1$ $y_1$ $x_2$ $y_2$, mỗi số nằm trong khoảng $\overline{0,10}$. Góc dưới bên trái của đồng cỏ nằm tại điểm $(x_1,y_1)$, \& góc trên bên phải nằm tại điểm $(x_2,y_2)$, trong đó $x_2 > x_1$ \& $y_2 > y_1$. Dòng đầu vào thứ 2 có cùng định dạng số nguyên $4$ như dòng đầu tiên, \& chỉ định đồng cỏ hình chữ nhật ban đầu thứ 2. Đồng cỏ này sẽ không chồng lên hoặc chạm vào đồng cỏ thứ 1.
+    \item {\sf Đầu ra.} Đầu ra phải bao gồm 1 dòng chứa diện tích tối thiểu cần thiết của một đồng cỏ hình vuông để bao phủ tất cả các vùng ban đầu được bao quanh bởi 2 đồng cỏ hình chữ nhật.
+    \item {\sf Mẫu.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|square_pasture.inp| & \verb|square_pasture.out| \\
+            \hline
+            6 6 8 8 & 49 \\
+            1 8 4 9 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \item {\sf Giải thích.} Trong ví dụ này, hình chữ nhật ban đầu thứ nhất có các góc $(6,6),(8,8)$. Hình chữ nhật thứ hai có các góc tại $(1,8),(4,9)$. Bằng cách vẽ một hàng rào hình vuông có cạnh $7$ với các góc $(1,6),(8,13)$, các diện tích ban đầu vẫn có thể được bao quanh; hơn nữa, đây là cách tốt nhất có thể, vì không thể bao quanh các diện tích ban đầu bằng một hình vuông có cạnh chỉ $6$. Lưu ý rằng có một số vị trí hợp lệ khác nhau cho hình vuông có cạnh $7$, vì nó có thể đã bị dịch chuyển theo chiều dọc một chút.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    We can 1st find the smallest rectangle that covers both pastures. This rectangle will need to cover the smaller of the left sides of both pastures \& the larger of the right sides of both pastures. It will also need to cover the smaller of the bottom sides \& the larger of the top sides of both pastures. The smallest square has a side length equal to the longer side length of the rectangle.
+
+    -- Đầu tiên, chúng ta có thể tìm hình chữ nhật nhỏ nhất bao phủ cả hai đồng cỏ. Hình chữ nhật này sẽ cần bao phủ cạnh nhỏ hơn bên trái của cả hai đồng cỏ \& cạnh lớn hơn bên phải của cả hai đồng cỏ. Nó cũng cần bao phủ cạnh nhỏ hơn bên dưới \& cạnh lớn hơn bên trên của cả hai đồng cỏ. Hình vuông nhỏ nhất có độ dài cạnh bằng độ dài cạnh dài hơn của hình chữ nhật.
+    \item {\sf C++ implementation.}
+    \begin{enumerate}
+        \item NQBH's C++: square pasture:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a1, b1, c1, d1, a2, b2, c2, d2;
+    cin >> a1 >> b1 >> c1 >> d1 >> a2 >> b2 >> c2 >> d2;
+    int l = min(a1, a2), r = max(c1, c2), b = min(b1, b2), t = max(d1, d2);
+    int ans = max(r - l, t - b);
+    cout << ans * ans << '\n';
+}
+        \end{Verbatim}
+        \item USACO Guide's C++: square pasture: Time complexity $O(1)$:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+using namespace std;
+
+int main() {
+    int x1, y1, x2, y2, x3, y3, x4, y4;
+    cin >> x1 >> y1 >> x2 >> y2 >> x3 >> y3 >> x4 >> y4;
+    int left, right, top, bottom;
+    // find the sides of the smallest rectangle covering both pastures
+    left = min(x1, x3);
+    right = max(x2, x4);
+    bottom = min(y1, y3);
+    top = max(y2, y4);
+    /*
+     * the smallest square will need a side length
+     * that is the maximum of the side lengths of the rectangle
+     */
+    int side = max(right - left, top - bottom);
+    cout << side * side << '\n';
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{problem}[blocked billboard II]
+
+\end{problem}
+
+\begin{problem}[D3C -- white sheet]
+
+\end{problem}
+
+\begin{problem}[B. 2 tables]
+
+\end{problem}
 
 %------------------------------------------------------------------------------%
 

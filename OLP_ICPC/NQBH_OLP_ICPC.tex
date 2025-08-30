@@ -3829,8 +3829,8 @@ using namespace std
 int main() {
     int a, b, c;
     cin >> a >> b >> c;
-    // "\n" can be replaced with endl as well
-    cout << "The sum of these three numbers is " << a + b + c << "\n";
+    // '\n' can be replaced with endl as well
+    cout << "The sum of these three numbers is " << a + b + c << '\n';
 }
 \end{Verbatim}
 
@@ -3940,7 +3940,7 @@ int main() {
     int a, b, c;
     cin >> a >> b >> c;
     // cout now prints to the output file instead of standard output
-    cout << "The sum of these three numbers is " << a + b + c << "\n";
+    cout << "The sum of these three numbers is " << a + b + c << '\n';
 }
 \end{Verbatim}
 To test your solution locally without file I{\tt/}O, just comment out the lines with {\tt freopen}. For convenience, we can define a function that will redirect {\tt stdin, stdout} based on the problem name:
@@ -3958,7 +3958,7 @@ int main() {
     setIO("problemname");
     int a, b, c;
     cin >> a >> b >> c;
-    cout << "The sum of these three numbers is " << a + b + c << "\n";
+    cout << "The sum of these three numbers is " << a + b + c << '\n';
 }
 \end{Verbatim}
 
@@ -3975,7 +3975,7 @@ int main() {
     ofstream fout("problemname.out");
     int a, b, c;
     fin >> a >> b >> c;
-    fout << "The sum of these three numbers is " << a + b + c << "\n";
+    fout << "The sum of these three numbers is " << a + b + c << '\n';
 }
 \end{Verbatim}
 
@@ -4074,7 +4074,7 @@ int main() {
 \begin{Verbatim}[numbers=left,xleftmargin=0mm]
 cout << ans;            // OK, no newline
 cout << ans << endl;    // OK, newline
-cout << ans << "\n";    // OK, newline
+cout << ans << '\n';    // OK, newline
 cout << ans << " ";     // NOT OK, extra space
 cout << ans << "\n\n";  // NOT OK, extra newline
 \end{Verbatim}
@@ -8882,6 +8882,414 @@ int main() {
 
 %------------------------------------------------------------------------------%
 
+\section{Binary Search}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item {\sc Darren Yao, Abutalib Namazov, Andrew Wang, Qi Wang, Dustin Miao}. \href{https://usaco.guide/silver/binary-search?lang=cpp}{USACO Guide{\tt/}binary search}.
+
+    {\sf Abstract.} Binary searching on arbitrary monotonic functions.
+
+    -- Tìm kiếm nhị phân trên các hàm đơn điệu tùy ý.
+\end{enumerate}
+When we binary search, we start with a search space of size $n$ which we now the answer lies in. Then each iteration of the binary search cuts the search space in half, so the algorithm tests $O(\log n)$ values. This is efficient \& much better than testing each possible value in the search space.
+
+-- Khi tìm kiếm nhị phân, chúng ta bắt đầu với một không gian tìm kiếm có kích thước $n$ mà chúng ta hiện đang lưu trữ câu trả lời. Sau đó, mỗi lần lặp của tìm kiếm nhị phân sẽ cắt không gian tìm kiếm xuống một nửa, do đó thuật toán sẽ kiểm tra các giá trị $O(\log n)$. Điều này hiệu quả hơn nhiều so với việc kiểm tra từng giá trị khả dĩ trong không gian tìm kiếm.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Binary search on monotonic functions -- Tìm kiếm nhị phân trên các hàm đơn điệu}
+Let's say we have a boolean function $f(x)$. Usually, in such problems, we want to find the maximum or minimum value of $x$ such that $f(x)$ is true. Similarly to how binary search on an array only works on a sorted array, binary search on the answer only works if the answer function is monotonic, i.e., it is always non-decreasing or always non-increasing.
+
+-- Giả sử chúng ta có một hàm boolean $f(x)$. Thông thường, trong những bài toán như vậy, chúng ta muốn tìm giá trị lớn nhất hoặc nhỏ nhất của $x$ sao cho $f(x)$ đúng. Tương tự như cách tìm kiếm nhị phân trên một mảng chỉ hoạt động trên một mảng đã được sắp xếp, tìm kiếm nhị phân trên kết quả chỉ hoạt động nếu hàm kết quả là đơn điệu, tức là nó luôn không giảm hoặc luôn không tăng.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Finding the maximum $x$ such that $f(x) =$ {\tt true} -- Tìm $x$ lớn nhất sao cho $f(x) =$ {\tt true}}
+We want to construct a function {\tt lastTrue} such that {\tt lastTrue(lo, hi, f)} returns the last $x$ in the range $[{\tt lo},{\tt hi}]$ such that $f(x) =$ {\tt true}. If no such $x$ exists, then {\tt lastTrue} should return to {\tt lo - 1}. This can be done with arbitrary search if $f(x)$ satisfies both of the following conditions:
+\begin{itemize}
+    \item If {\tt f(x) = true}, then {\tt f(y) = true} for all $y\le x$.
+    \item If {\tt f(x) = false}, then {\tt f(y) = false} for all $y\ge x$.
+\end{itemize}
+-- Chúng ta muốn xây dựng một hàm {\tt lastTrue} sao cho {\tt lastTrue(lo, hi, f)} trả về $x$ cuối cùng trong khoảng $[{\tt lo},{\tt hi}]$ sao cho $f(x) =$ {\tt true}. Nếu không tồn tại $x$ nào như vậy, thì {\tt lastTrue} sẽ trả về {\tt lo - 1}. Điều này có thể được thực hiện bằng tìm kiếm tùy ý nếu $f(x)$ thỏa mãn cả hai điều kiện sau:
+\begin{itemize}
+    \item Nếu {\tt f(x) = true}, thì {\tt f(y) = true} với mọi $y\le x$.
+    \item Nếu {\tt f(x) = false}, thì {\tt f(y) = false} với mọi $y\ge x$.
+\end{itemize}
+E.g., if $f(x)$ is given by the following function
+\begin{equation*}
+    f(1) = {\tt true},f(2) = {\tt true},f(3) = {\tt true},f(4) = {\tt true},f(5) = {\tt false},f(6) = {\tt false},f(7) = {\tt false},f(8) = {\tt false}.
+\end{equation*}
+Then {\tt lastTrue(1, 8, f) = 5, last(7, 8, f) = 6}.
+
+\noindent{\sf C++ implementation.}
+\begin{enumerate}
+    \item Verify that this implementation does not call $f$ on any values outside of the range $[{\tt lo},{\tt hi}]$.
+
+    -- Xác minh rằng việc triển khai này không gọi $f$ trên bất kỳ giá trị nào nằm ngoài phạm vi $[{\tt lo},{\tt hi}]$.
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <functional>
+#include <iostream>
+using namespace std;
+
+int last_true(int lo, int hi, function<bool(int)> f) {
+    // if none of the values in the range work, return lo - 1
+    --lo;
+    while (lo < hi) {
+        // find the middle of the current range (rounding up)
+        int mid = lo + (hi - lo + 1) / 2;
+        if (f(mid)) lo = mid; // if mid works, then all numbers smaller than mid also work
+        else hi = mid - 1; // if mid does not work, greater values would not work either
+    }
+    return lo;
+}
+
+int main() {
+    // all numbers satisfy the condition (output 10)
+    cout << last_true(2, 10, [](int x) { return true; }) << '\n';
+    cout << last_true(2, 10, [](int x) { return x * x <= 30; }) << '\n'; // output 5
+    // no numbers satisfy the condition (output 1)
+    cout << last_true(2, 10, [](int x) { return false; }) << '\n';
+}
+    \end{Verbatim}
+    \item This approach is based on interval jumping. Essentially, we start from the beginning of the array, make jumps, \& reduce the jump length as we get closer to the target element. We use powers of 2, very similar to binary jumping, see, e.g., \href{https://usaco.guide/plat/bin-jump}{USACO Guide{\tt/}binary jumping}.
+
+    -- Phương pháp này dựa trên kỹ thuật nhảy khoảng. Về cơ bản, chúng ta bắt đầu từ đầu mảng, thực hiện các bước nhảy, \& giảm độ dài bước nhảy khi đến gần phần tử mục tiêu hơn. Chúng ta sử dụng lũy thừa của 2, rất giống với kỹ thuật nhảy nhị phân, xem ví dụ: \href{https://usaco.guide/plat/bin-jump}{USACO Guide{\tt/}nhảy nhị phân}.
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <functional>
+#include <iostream>
+using namespace std;
+
+int last_true_bin_jump(int lo, int hi, function<bool(int)> f) {
+    --lo;
+    for (int dif = hi - lo; dif > 0; dif /= 2)
+    while (lo + dif <= hi && f(lo + dif)) lo += dif;
+    return lo;
+}
+    \end{Verbatim}
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Finding the minimum $x$ such that $f(x) =$ {\tt true} -- Tìm giá trị nhỏ nhất $x$ sao cho $f(x) =$ {\tt true}}
+We want to construct a function {\tt firstTrue} such that {\tt firstTrue(lo, hi, f)} returns the 1st $x$ in the range $[{\tt lo},{\tt hi}]$ such that $f(x) =$ {\tt true}. If no such $x$ exists, then {\tt firstTrue} should return {\tt hi + 1}. Similarly to the previous part, this can be done with binary search if $f(x)$ satisfies both of the following conditions:
+\begin{itemize}
+    \item If $f(x)$ is true, then $f(y)$ is true for all $y\ge x$.
+    \item If $f(x)$ is false, then $f(y)$ is false for all $y\le x$.
+\end{itemize}
+We will need to do the same thing, but when the condition is satisfied, we will cut the right part, \& when it is not, the left part will be cut.
+
+-- Chúng ta muốn xây dựng một hàm {\tt firstTrue} sao cho {\tt firstTrue(lo, hi, f)} trả về phần tử $x$ đầu tiên trong khoảng $[{\tt lo},{\tt hi}]$ sao cho $f(x) =$ {\tt true}. Nếu không tồn tại $x$ nào như vậy, thì {\tt firstTrue} sẽ trả về {\tt hi + 1}. Tương tự như phần trước, điều này có thể được thực hiện bằng tìm kiếm nhị phân nếu $f(x)$ thỏa mãn cả hai điều kiện sau:
+\begin{itemize}
+    \item Nếu $f(x)$ đúng, thì $f(y)$ đúng với mọi $y\ge x$.
+    \item Nếu $f(x)$ sai, thì $f(y)$ sai với mọi $y\le x$.
+\end{itemize}
+Chúng ta cần làm tương tự, nhưng khi điều kiện được thỏa mãn, chúng ta sẽ cắt phần bên phải, \& nếu không, phần bên trái sẽ bị cắt.
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <functional>
+#include <iostream>
+using namespace std;
+
+int first_true(int lo, int hi, function<bool(int)> f) {
+    ++hi;
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (f(mid)) hi = mid;
+        else lo = mid + 1;
+    }
+    return lo;
+}
+
+int main() {
+    cout << first_true(2, 10, [](int x) { return true; }) << '\n'; // output 2
+    cout << first_true(2, 10, [](int x) { return x * x >= 30; }) << '\n'; // output 6
+    cout << first_true(2, 10, [](int x) { return false; }) << '\n';
+}
+\end{Verbatim}
+
+\begin{problem}[\href{https://codeforces.com/contest/1201/problem/C}{CodeForces{\tt/}Codeforces Round 577 (Div. 2){\tt/}C: maximum median}]
+    You are given an array $a$ of $n\in\mathbb{N}^\star$ integers, where $n$ is odd. You can make the following operation with it: Choose 1 of the elements of the array, e.g., $a_i$, \& increase it by $1$, i.e., replace it with $a_i + 1$. You want to make the median of the array the largest possible using at most $k$ operations. The {\tt median} of the odd-sized array is the middle element after the array is sorted in non-decreasing order. E.g., the median of the array $[1,5,2,3,5]$ is $3$.
+    \item {\sf Input.} The 1st line contains 2 integers $n,k$, where $n\in[2\cdot10^5]$, $n$ is odd, $k\in[10^9]$ -- the number of elements in the array \& the largest number of operations you can make. The 2nd line contains $n$ integers $a_1,a_2,\ldots,a_n$, where $a_i\in[10^9]$, $\forall i\in[n]$.
+    \item {\sf Output.} Print a single integer -- the maximum possible median after the operations.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|max_median.inp| & \verb|max_median.out| \\
+            \hline
+            3 2 & 5 \\
+            1 3 5 & \\
+            \hline
+            5 5 & 3 \\
+            1 2 1 1 1 & \\
+            \hline
+            7 7 & 5 \\
+            4 1 2 4 3 4 4 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \item {\sf Explanation.} In the 1st example, you can increase the 2nd element twice. Then the array will be $[1,5,5]$ \& its median is $5$. In the 2nd example, it is optimal to increase the 2nd number \& then increaes 3rd \& 5th. This way the answer is $3$. In the 3rd example, you can make 4 operations: increase 1st, 4th, 6th, 7th element. This way the array will be $[5,1,2,5,3,5,5]$ \& the median will be $5$.
+\end{problem}
+
+\begin{baitoan}[Trung vị tối đa]
+    Bạn được cho một mảng $a$ gồm $n\in\mathbb{N}^\star$ số nguyên, trong đó $n$ là số lẻ. Bạn có thể thực hiện phép toán sau với nó: Chọn 1 phần tử của mảng, ví dụ: $a_i$, \& tăng nó lên $1$, tức là thay thế nó bằng $a_i + 1$. Bạn muốn làm cho trung vị của mảng lớn nhất có thể bằng cách sử dụng tối đa $k$ phép toán. {\tt median} của mảng có kích thước lẻ là phần tử ở giữa sau khi mảng được sắp xếp theo thứ tự không giảm. Ví dụ: trung vị của mảng $[1,5,2,3,5]$ là $3$. \item {\sf Đầu vào.} Dòng đầu tiên chứa 2 số nguyên $n,k$, trong đó $n\in[2\cdot10^5]$, $n$ là số lẻ, $k\in[10^9]$ -- số phần tử trong mảng \& số phép toán lớn nhất bạn có thể thực hiện. Dòng thứ 2 chứa $n$ số nguyên $a_1,a_2,\ldots,a_n$, trong đó $a_i\in[10^9]$, $\forall i\in[n]$.
+    \item {\sf Đầu ra.} In ra một số nguyên duy nhất -- trung vị lớn nhất có thể sau các phép toán.
+    \item {\sf Mẫu.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|max_median.inp| & \verb|max_median.out| \\
+            \hline
+            3 2 & 5 \\
+            1 3 5 & \\
+            \hline
+            5 5 & 3 \\
+            1 2 1 1 1 & \\
+            \hline
+            7 7 & 5 \\
+            4 1 2 4 3 4 4 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \item {\sf Giải thích.} Trong ví dụ 1, bạn có thể tăng phần tử thứ 2 hai lần. Khi đó, mảng sẽ là $[1,5,5]$ \& trung vị của nó là $5$. Trong ví dụ 2, tối ưu nhất là tăng số thứ 2 \& sau đó tăng số thứ 3 \& thứ 5. Theo cách này, đáp án là $3$. Trong ví dụ 3, bạn có thể thực hiện 4 phép toán: tăng phần tử thứ 1, thứ 4, thứ 6, thứ 7. Theo cách này, mảng sẽ là $[5,1,2,5,3,5,5]$ \& trung vị sẽ là $5$.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    To get the current median, we 1st sort the array in ascending order. Now, notice that to increase the current value to a value, say $x$. All values currently $\ge$ the median, must remain $\ge$ the median (an invariance). E.g., say we have the sorted array $[1,1,2,3,4,4,5,5,6,8,8]$. The current median is $4$, so to increase the median to $6$, we have to increase the current median by $2$ \& we also have to increase the 5's to 6.
+
+    -- Để có trung vị hiện tại, trước tiên chúng ta sắp xếp mảng theo thứ tự tăng dần. Lưu ý rằng để tăng giá trị hiện tại lên một giá trị, chẳng hạn $x$. Tất cả các giá trị hiện tại $\ge$ là trung vị, phải giữ nguyên $\ge$ là trung vị (một bất biến). Ví dụ: giả sử chúng ta có mảng đã sắp xếp $[1,1,2,3,4,4,5,5,6,8,8]$. Trung vị hiện tại là $4$, vì vậy để tăng trung vị lên $6$, chúng ta phải tăng trung vị hiện tại thêm $2$ \& chúng ta cũng phải tăng số 5 lên 6.
+
+    Following this idea, to increase the median to $x$, we need to increase all values in the 2nd half of the array to some value $\ge x$. Then, we binary search for the maximum possible median. We know that the number of operations required to raise the median to $x$ increases monotonically as $x$ increases, so we can use binary search. For a given median value $x$, the number of operations required to raise the median to $x$ is
+    \begin{equation*}
+        \sum_{i = \frac{n + 1}{2}}^n \max\{0,x - {\tt arr}[i]\} = \sum_{i = \frac{n + 1}{2}}^n (x - {\tt arr}[i])_+.
+    \end{equation*}
+    If this value is $\le k$, then $x$ can be the median, so our check function returns {\tt true}. Otherwise, $x$ cannot be the median, so our check function returns {\tt false}.
+
+    -- Theo ý tưởng này, để tăng trung vị lên $x$, ta cần tăng tất cả các giá trị trong nửa sau của mảng lên một giá trị $\ge x$ nào đó. Sau đó, ta thực hiện tìm kiếm nhị phân để tìm trung vị lớn nhất có thể. Ta biết rằng số phép toán cần thiết để tăng trung vị lên $x$ tăng đơn điệu khi $x$ tăng, vì vậy ta có thể sử dụng tìm kiếm nhị phân. Với một giá trị trung vị $x$ cho trước, số phép toán cần thiết để tăng trung vị lên $x$ là
+    \begin{equation*}
+        \sum_{i = \frac{n + 1}{2}}^n \max\{0,x - {\tt arr}[i]\} = \sum_{i = \frac{n + 1}{2}}^n (x - {\tt arr}[i])_+.
+    \end{equation*}
+    Nếu giá trị này là $\le k$, thì $x$ có thể là trung vị, do đó hàm kiểm tra của chúng ta trả về {\tt true}. Nếu không, $x$ không thể là trung vị, do đó hàm kiểm tra của chúng ta trả về {\tt false}.
+    {\sf C++ implementation.}
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <algorithm>
+#include <functional>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int last_true(int lo, int hi, function<bool(int)> f) {
+    // if none of the values in the range work, return lo - 1
+    --lo;
+    while (lo < hi) {
+        int mid = lo + (hi - lo + 1) / 2;
+        if (f(mid)) lo = mid;
+        else hi = mid - 1;
+    }
+    return lo;
+}
+
+int main() {
+    int size, max_ops;
+    cin >> size >> max_ops;
+    vector<int> arr(size);
+    for (int &i : arr) cin >> i;
+    sort(arr.begin(), arr.end());
+    cout << last_true(1, 2e9, [&](int x) { // use 2e9 instead of INT32_MAX to avoid overflow
+        // return true if the median can be raised to x
+        long long ops_needed = 0;
+        for (int i = (size - 1) / 2; i < size; ++i) ops_needed += max(0, x - arr[i]);
+        return ops_needed <= max_ops;
+    }) << '\n';
+}
+    \end{Verbatim}
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Common mistake -- Lỗi thường gặp}
+
+\begin{enumerate}
+    \item {\bf Mistake 1: Off by 1 -- Lỗi 1: Sai 1.} Consider the code from \href{https://csacademy.com/lesson/binary_search/}{CSAcademy{\tt/}bineary search on functions}.
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+long long f(int x) { return (long long) x * x; }
+
+int sqrt(int x) {
+    int lo = 0, hi = x;
+    while (lo < hi) {
+        int mid = (lo + hi) / 2;
+        if (f(mid) <= x) lo = mid;
+        else hi = mid - 1;
+    }
+    return lo;
+}
+    \end{Verbatim}
+    This results in an infinite loop if {\tt left = 0} \& {\tt right = 1}. To fix this, set {\tt middle = (left + right + 1) / 2} instead.
+
+    -- Điều này dẫn đến một vòng lặp vô hạn nếu {\tt left = 0} \& {\tt right = 1}. Để khắc phục điều này, hãy đặt {\tt middle = (left + right + 1) / 2}.
+    \item {\bf Mistake 2: Not accounting for negative bounds -- Sai lầm 2: Không tính đến các giới hạn âm.} Consider a slightly modified version of \verb|first_true|:
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <functional>
+using namespace std;
+
+int first_true(int lo, int hi, function<bool(int)> f) {
+    ++hi;
+    while (lo < hi) {
+        int mid = (lo + hi) / 2;
+        if (f(mid)) hi = mid;
+        else lo = mid + 1;
+    }
+    return lo;
+}
+    \end{Verbatim}
+    This code does not necessarily work if {\tt lo} is negative. Consider the following example:
+
+    -- Mã này không nhất thiết hoạt động nếu {\tt lo} là số âm. Hãy xem xét ví dụ sau:
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+int main() {
+    // outputs -8 instead of -9
+    cout << first_true(-10, -10, [](int x) { return false; }) << '\n';
+    // causes an infinite loop
+    cout << first_true(-10, -10, [](int x) { return true; }) << '\n';
+}
+    \end{Verbatim}
+    This is because dividing an odd negative integer by 2 will round it up instead of down.
+
+    -- Nguyên nhân là do việc chia một số nguyên âm lẻ cho 2 sẽ làm tròn số đó lên thay vì làm tròn xuống.
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <functional>
+using namespace std;
+
+int first_true(int lo, int hi, function<bool(int)> f) {
+    ++hi;
+    while (lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (f(mid)) hi = mid;
+        else lo = mid + 1;
+    }
+    return lo;
+}
+    \end{Verbatim}
+    \item {\sf Mistake 3: Integer overflow -- Lỗi 3: Tràn số nguyên.} The 1st version of \verb|first_true| won't work if {\tt hi - lo} initially exceeds \verb|INT_MAX|, while the 2nd version of \verb|first_true| won't work if {\tt lo + hi} exceeds \verb|INT_MAX| at any point during execution. If this is an issue, use {\tt long long}s instead of {\tt int}s.
+
+    -- Phiên bản đầu tiên của \verb|first_true| sẽ không hoạt động nếu {\tt hi - lo} ban đầu vượt quá \verb|INT_MAX|, trong khi phiên bản thứ hai của \verb|first_true| sẽ không hoạt động nếu {\tt lo + hi} vượt quá \verb|INT_MAX| tại bất kỳ thời điểm nào trong quá trình thực thi. Nếu đây là vấn đề, hãy sử dụng {\tt long long} thay vì {\tt int}.
+\end{enumerate}
+
+\begin{problem}[cow dance show]
+
+\end{problem}
+
+\begin{problem}[convention]
+
+\end{problem}
+
+\begin{problem}[angry cows]
+
+\end{problem}
+
+\begin{problem}[social distancing]
+
+\end{problem}
+
+\begin{problem}[bakery]
+
+\end{problem}
+
+\begin{problem}[angry cows]
+
+\end{problem}
+
+\begin{problem}[OohMoo milk]
+
+\end{problem}
+
+\begin{problem}[loan repayment]
+
+\end{problem}
+
+\begin{problem}[cowdependence]
+
+\end{problem}
+
+\begin{problem}[load balancing]
+
+\end{problem}
+
+\begin{problem}[factory machines]
+
+\end{problem}
+
+\begin{problem}[array division]
+
+\end{problem}
+
+\begin{problem}[guess the $k$th zero (easy)]
+
+\end{problem}
+
+\begin{problem}[Mahmoud \& Ehah \& function]
+
+\end{problem}
+
+\begin{problem}[TripTastic]
+
+\end{problem}
+
+\begin{problem}[multiplication table]
+
+\end{problem}
+
+\begin{problem}[educ C: magic ship]
+
+\end{problem}
+
+\begin{problem}[the meeting place cannot be changed]
+
+\end{problem}
+
+\begin{problem}[preparing for merge sort]
+
+\end{problem}
+
+\begin{problem}[minimizing difference]
+
+\end{problem}
+
+\begin{problem}[Ammar-utiful array]
+
+\end{problem}
+
+\begin{problem}[handshake]
+
+\end{problem}
+
+\begin{problem}[max median]
+
+\end{problem}
+
+\begin{problem}[grouped carriages]
+
+\end{problem}
+
+\begin{problem}[packmen]
+
+\end{problem}
+
+\begin{problem}[level generation]
+
+\end{problem}
+
+\begin{problem}[2012 -- mobile]
+
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
+\section{Custom Comparators \& Coordinate Compression -- Bộ So Sánh Tùy Chỉnh \& Nén Tọa Độ}
+
+%------------------------------------------------------------------------------%
+
 \chapter{Recursion \& Backtracking -- Đệ Quy \& Thuật Toán Quay Lui}
 \minitoc
 
@@ -10318,7 +10726,7 @@ void printCollatz(long long n) {
         n = 3 * n + 1;  // le thi * 3 + 1
         cout << " " << n;
     }
-    cout << "\n";
+    cout << '\n';
 }
 
 int main() {
@@ -10366,18 +10774,18 @@ int main() {
 #define Ret return 0;
 #define ret return;
 #define all(x) x.begin(), x.end()
-#define el "\n";
+#define el '\n';
 #define elif else if
 #define ll long long
 #define fi first
 #define se second
 #define pb push_back
 #define pops pop_back
-#define cYES cout << "YES" << "\n";
-#define cNO cout << "NO" << "\n";
-#define cYes cout << "Yes" << "\n";
-#define cNo cout << "No" << "\n";
-#define cel cout << "\n";
+#define cYES cout << "YES" << '\n';
+#define cNO cout << "NO" << '\n';
+#define cYes cout << "Yes" << '\n';
+#define cNo cout << "No" << '\n';
+#define cel cout << '\n';
 #define frs(i, a, b) for(int i = a; i < b; ++i)
 #define fre(i, a, b) for(int i = a; i <= b; ++i)
 #define wh(t) while (t--)
@@ -10602,7 +11010,7 @@ int main() {
             ans = base + k + (k - y);
         }
 
-        cout << ans << "\n";
+        cout << ans << '\n';
     }
     return 0;
 }
@@ -10657,7 +11065,7 @@ int main() {
         ll attack = (ll) 4 * (i - 1) * (i - 2); // = number of 2x3 or 3x2 rectangles in ixi chessboard
         // Cách chọn 2 vị trí không để 2 quân Mã tấn công nhau
         ll res = total - attack;
-        cout << res << "\n";
+        cout << res << '\n';
     }
 
     return 0;
@@ -10753,7 +11161,7 @@ int main() {
     // Với mỗi vị trí có 2 cách chọn các bit (0 hoặc 1)
     for (ll i = 0; i < n; ++i)
     res = (res * 2) % MOD;
-    cout << res << "\n";
+    cout << res << '\n';
     return 0;
 }
         \end{Verbatim}
@@ -11014,18 +11422,18 @@ using namespace std;
 
 void Hanoi(int x, int A, int B, int C) {
     if (x == 1) {
-        cout << A << " " << C << "\n";
+        cout << A << " " << C << '\n';
         return;
     }
     Hanoi(x - 1, A, C, B);
-    cout << A << " " << C << "\n";
+    cout << A << " " << C << '\n';
     Hanoi(x - 1, B, A, C);
 }
 int main() {
     int n;
     cin >> n;
     double x = pow(2, n) - 1;
-    cout << x << "\n";
+    cout << x << '\n';
     Hanoi(n, 1, 2, 3);
     return 0;
 }
@@ -11902,7 +12310,7 @@ int main() {
     long long n, k;
     while (q--) {
         cin >> n >> k;
-        cout << solve(n, k) << "\n";
+        cout << solve(n, k) << '\n';
     }
 }
         \end{Verbatim}
@@ -11915,17 +12323,17 @@ int main() {
 #define Ret return 0;
 #define ret return;
 #define all(x) x.begin(), x.end()
-#define el "\n";
+#define el '\n';
 #define elif else if
 #define ll long long
 #define fi first
 #define se second
 #define pb push_back
 #define pops pop_back
-#define cYES cout << "YES" << "\n";
-#define cNO cout << "NO" << "\n";
-#define cYes cout << "Yes" << "\n";
-#define cNo cout << "No" << "\n";
+#define cYES cout << "YES" << '\n';
+#define cNO cout << "NO" << '\n';
+#define cYes cout << "Yes" << '\n';
+#define cNo cout << "No" << '\n';
 #define frs(i, a, b) for(int i = a; i < b; ++i)
 #define fre(i, a, b) for(int i = a; i <= b; ++i)
 #define wh(t) while (t--)
@@ -11989,7 +12397,7 @@ int main() {
     while (q--) {
         ll n, k;
         cin >> n >> k;
-        cout << fix(n, k) << "\n";
+        cout << fix(n, k) << '\n';
     }
     return 0;
 }
@@ -14648,7 +15056,7 @@ int main(void) {
     while (fgets(str, sizeof(str), stdin)) {
         int n = strlen(str);
         if (n == 0) {
-            printf("\n");
+            printf('\n');
             continue;
         }
         memset(dp, 0, sizeof(dp));
@@ -14670,7 +15078,7 @@ int main(void) {
             }
         }
         oprint(0, n - 2); // output the regular brackets sequence: original oprint(0, n - 1);
-        printf("\n");
+        printf('\n');
     }
     return 0;
 }
@@ -14713,7 +15121,7 @@ int main() {
     while (cin >> s) {
         ll n = s.size();
         if (n == 0) {
-            printf("\n");
+            printf('\n');
             continue;
         }
         s = " " + s; // 0-based indexing --> 1-based indexing
@@ -15600,19 +16008,19 @@ int main() {
 
     for (i = 0; i <= n; ++i)
         cout << fib(i) << " ";
-    cout << "\n";
+    cout << '\n';
 
     for (i = 0; i <= n; ++i)
         cout << fib_recurrence(i) << " ";
-    cout << "\n";
+    cout << '\n';
 
     for (i = 0; i <= n; ++i)
         cout << fib_dynamic(i) << " ";
-    cout << "\n";
+    cout << '\n';
 
     for (i = 0; i <= n; ++i)
         cout << fib_dynamic_improved(i) << " ";
-    cout << "\n";
+    cout << '\n';
 }
 \end{verbatim}
 
@@ -16253,7 +16661,7 @@ void solve_vector(ll n, ll x, vector<ll> coins) {
             dp[i] += dp[i - c];
             dp[i] %= MOD;
         }
-    cout << dp[x] << "\n";
+    cout << dp[x] << '\n';
 }
 
 int main() {
@@ -17789,7 +18197,7 @@ int main() {
         cin >> a >> b;
         int res = bfs(a, b);
         if (res == -1) cout << "Impossible\n";
-        else cout << res << "\n";
+        else cout << res << '\n';
     }
 }
         \end{Verbatim}
@@ -18138,7 +18546,7 @@ public class Main {
     static String var, v;
     static void dfs(int dep, String res) { // dfs(dep, res) used to get topological sorts
         if (dep == n + 1) { // a topological sort is gotten
-            print(res + "\n");
+            print(res + '\n');
             return;
         }
         for (int i = 'a'; i <= 'z'; ++i) // search a vertex whose in-degree is 0
@@ -18166,7 +18574,7 @@ public class Main {
             for (int i = 0; i < v.length(); i += 4) // calculate every vertices' in-degrees
                 ++pre[v.charAt(i + 2)];
             dfs(1, "");
-            print("\n");
+            print('\n');
         }
     }
 }
@@ -20087,7 +20495,7 @@ int main() {
 #define Ret return 0;
 #define ret return;
 #define all(x) x.begin(), x.end()
-#define el "\n";
+#define el '\n';
 #define elif else if
 #define ll long long
 #define fi first
@@ -20097,11 +20505,11 @@ int main() {
 #define popb pop_back
 #define mp make_pair
 #define popf pop_front
-#define cYES cout << "YES" << "\n";
-#define cNO cout << "NO" << "\n";
-#define cYes cout << "Yes" << "\n";
-#define cNo cout << "No" << "\n";
-#define cel cout << "\n";
+#define cYES cout << "YES" << '\n';
+#define cNO cout << "NO" << '\n';
+#define cYes cout << "Yes" << '\n';
+#define cNo cout << "No" << '\n';
+#define cel cout << '\n';
 #define frs(i, a, b) for(int i = a; i < b; ++i)
 #define fre(i, a, b) for(int i = a; i <= b; ++i)
 #define wh(t) while (t--)
@@ -21423,7 +21831,7 @@ int main() {
     long long n, k;
     while (q--) {
         cin >> n >> k;
-        cout << solve(n, k) << "\n";
+        cout << solve(n, k) << '\n';
     }
 }
         \end{Verbatim}
@@ -21436,17 +21844,17 @@ int main() {
 #define Ret return 0;
 #define ret return;
 #define all(x) x.begin(), x.end()
-#define el "\n";
+#define el '\n';
 #define elif else if
 #define ll long long
 #define fi first
 #define se second
 #define pb push_back
 #define pops pop_back
-#define cYES cout << "YES" << "\n";
-#define cNO cout << "NO" << "\n";
-#define cYes cout << "Yes" << "\n";
-#define cNo cout << "No" << "\n";
+#define cYES cout << "YES" << '\n';
+#define cNO cout << "NO" << '\n';
+#define cYes cout << "Yes" << '\n';
+#define cNo cout << "No" << '\n';
 #define frs(i, a, b) for(int i = a; i < b; ++i)
 #define fre(i, a, b) for(int i = a; i <= b; ++i)
 #define wh(t) while (t--)
@@ -21502,7 +21910,7 @@ int main() {
     while (q--) {
         ll n, k;
         cin >> n >> k;
-        cout << fix(n, k) << "\n";
+        cout << fix(n, k) << '\n';
     }
     return 0;
 }
@@ -26072,7 +26480,7 @@ int main() {
         }
         res[c - 'A'] = d;
     }
-    for (int i = 0; i < k; ++i) cout << res[i] << "\n";
+    for (int i = 0; i < k; ++i) cout << res[i] << '\n';
     return 0;
 }
         \end{Verbatim}
@@ -26113,18 +26521,18 @@ int main() {
 #define Ret return 0;
 #define ret return;
 #define all(x) x.begin(), x.end()
-#define el "\n";
+#define el '\n';
 #define elif else if
 #define ll long long
 #define fi first
 #define se second
 #define pb push_back
 #define pops pop_back
-#define cYES cout << "YES" << "\n";
-#define cNO cout << "NO" << "\n";
-#define cYes cout << "Yes" << "\n";
-#define cNo cout << "No" << "\n";
-#define cel cout << "\n";
+#define cYES cout << "YES" << '\n';
+#define cNO cout << "NO" << '\n';
+#define cYes cout << "Yes" << '\n';
+#define cNo cout << "No" << '\n';
+#define cel cout << '\n';
 #define frs(i, a, b) for(int i = a; i < b; ++i)
 #define fre(i, a, b) for(int i = a; i <= b; ++i)
 #define wh(t) while (t--)

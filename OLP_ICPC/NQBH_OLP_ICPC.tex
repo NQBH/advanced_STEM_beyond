@@ -9559,10 +9559,155 @@ When we have values from a large range, but we only care about their relative or
 
 -- Khi chúng ta có các giá trị từ 1 khoảng lớn, nhưng chỉ quan tâm đến thứ tự tương đối của chúng (ví dụ: nếu chúng ta cần biết liệu 1 giá trị có lớn hơn giá trị khác hay không), nén tọa độ là 1 cách đơn giản để hỗ trợ việc triển khai. Ví dụ: nếu chúng ta có 1 tập hợp các số nguyên từ 0 đến $10^9$, chúng ta không thể sử dụng chúng làm chỉ số mảng vì chúng ta sẽ phải tạo 1 mảng có kích thước $10^9$, điều này sẽ dẫn đến 1 phán quyết MLE. Tuy nhiên, nếu chỉ có $n\in[10^6]$ số nguyên như vậy, chúng ta có thể nén tọa độ các giá trị của chúng, điều này đảm bảo rằng tất cả các giá trị sẽ nằm trong khoảng $\overline{0,n - 1}$, có thể được sử dụng làm chỉ số mảng.
 
+\begin{problem}[\href{https://usaco.org/index.php?page=viewproblem2&cpid=1063}{USACO 2020 December Contest, Silver, Problem 2: rectangular pasture}]
+    Farmer John's largest pasture can be regarded as a large 2D grid of square ``cells'' (picture a huge chess board). Currently, there are $n\in[2500]$ cows occupying some of these cells.
+
+    Farmer John wants to build a fence that will enclose a rectangular region of cells; the rectangle must be oriented so its sides are parallel with the $x$ \& $y$ axes, \& it could be as small as a single cell. Help him count the number of distinct subsets of cows that he can enclose in such a region. Note that empty subset should be counted as 1 of these.
+    \item {\sf Input.} The 1st line contains a single integer $n$. Each of the next $n$ lines contains 2 space-separated integers, indicating the $(x,y)$ coordinates of a cow's cell. All $x$ coordinates are distinct from each other, \& all $y$ coordinates are distinct from each other. All $x,y$ values lie in the range $\overline{0,10^9}$.
+    \item {\sf Output.} The number of subsets of cows that FJ can fence off. It can be shown that this quantity fits within a signed 64-bit integer (e.g., a {\tt long long} in {\sf C{\tt/}C++}).
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|rectangular_pasture.inp| & \verb|rectangular_pasture.out| \\
+            \hline
+            4 & 13 \\
+            0 2 & \\
+            1 0 & \\
+            2 3 & \\
+            3 5 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \item {\sf Explanation.} There are $2^4$ subsets in total. FJ cannot create a fence enclosing only cows $1,2,4$ or only cows $2,4$, or only cows $1,4$, so the answer is $2^4 - 3 = 13$.
+    \item {\sf Scoring.} Test cases 2--3 satisfy $n\in[20]$. Test cases 4--6 satisfy $n\in[100]$. Test cases 7--12 satisfy $n\in[500]$. Test cases 13--20 satisfy no additional constraints.
+\end{problem}
+
+\begin{baitoan}[Đồng cỏ hình chữ nhật]
+    Đồng cỏ lớn nhất của nông dân John có thể được coi là một lưới 2 chiều lớn gồm các ``ô'' hình vuông (tưởng tượng một bàn cờ vua khổng lồ). Hiện tại, có $n\in[2500]$ con bò đang chiếm giữ một số ô này.
+
+    Nông dân John muốn xây một hàng rào bao quanh một vùng ô hình chữ nhật; hình chữ nhật phải được định hướng sao cho các cạnh của nó song song với các trục $x$ \& $y$, \& nó có thể nhỏ như một ô duy nhất. Hãy giúp anh ta đếm số lượng các tập hợp con bò riêng biệt mà anh ta có thể bao quanh trong vùng đó. Lưu ý rằng tập hợp con rỗng nên được tính là 1 trong số này.
+    \item {\sf Đầu vào.} Dòng đầu tiên chứa một số nguyên $n$. Mỗi dòng trong số $n$ dòng tiếp theo chứa 2 số nguyên cách nhau bằng dấu cách, biểu thị tọa độ $(x,y)$ của ô của một con bò. Tất cả các tọa độ $x$ đều khác nhau, \& tất cả các tọa độ $y$ cũng khác nhau. Tất cả các giá trị $x,y$ đều nằm trong khoảng $\overline{0,10^9}$.
+    \item {\sf Output.} Số lượng tập hợp con bò mà FJ có thể rào lại. Có thể chứng minh rằng số lượng này nằm trong một số nguyên 64 bit có dấu (ví dụ: {\tt long long} trong {\sf C{\tt/}C++}).
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|rectangular_pasture.inp| & \verb|rectangular_pasture.out| \\
+            \hline
+            4 & 13 \\
+            0 2 & \\
+            1 0 & \\
+            2 3 & \\
+            3 5 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \item {\sf Giải thích.} Tổng cộng có $2^4$ tập con. FJ không thể tạo hàng rào bao quanh chỉ những con bò $1,2,4$ hoặc chỉ những con bò $2,4$, hoặc chỉ những con bò $1,4$, vì vậy đáp án là $2^4 - 3 = 13$.
+    \item {\sf Chấm điểm.} Các trường hợp kiểm tra 2--3 thỏa mãn $n\in[20]$. Các trường hợp kiểm tra 4--6 thỏa mãn $n\in[100]$. Các trường hợp kiểm tra 7--12 thỏa mãn $n\in[500]$. Các trường hợp kiểm tra 13--20 không thỏa mãn thêm ràng buộc nào.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    A good example of coordinate compression in action is in the solution of USACO Rectangular Pasture. Again, we will not delve into the full solutionbut instead discuss how coordinate compression is applied. Since the solution uses 2D-prefix sums, it is helpful if all point coordinates are coordinate-compressed to the range $\overline{0,n - 1} $ so they can be used as array indices. Without coordinate compression, creating a large enough array would result in a {\tt Memory Limit Exceeded} verdict. The following solution of Rectangular Pasture uses coordinate compression at the beginning. Observe how a custom comparator is used to sort the points:
+
+    -- Một ví dụ điển hình về nén tọa độ trong thực tế nằm trong giải pháp USACO Rectangular Pasture. Một lần nữa, chúng ta sẽ không đi sâu vào toàn bộ giải pháp mà thay vào đó sẽ thảo luận về cách áp dụng nén tọa độ. Vì giải pháp sử dụng tổng tiền tố 2 chiều, nên sẽ rất hữu ích nếu tất cả tọa độ điểm được nén tọa độ đến phạm vi $\overline{0,n - 1} $ để chúng có thể được sử dụng làm chỉ số mảng. Nếu không nén tọa độ, việc tạo một mảng đủ lớn sẽ dẫn đến kết quả {\tt Memory Limit Exceeded}. Giải pháp sau đây của Rectangular Pasture sử dụng nén tọa độ ngay từ đầu. Hãy quan sát cách bộ so sánh tùy chỉnh được sử dụng để sắp xếp các điểm:
+    \item {\sf C++ implementation.}
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <algorithm>
+#include <iostream>
+using namespace std;
+
+typedef pair<int, int> Point;
+bool ycomp(Point p, Point q) { return p.second < q.second; }
+const int MAX_N = 2500;
+int pref[MAX_N + 1][MAX_N + 1];
+Point p[MAX_N];
+
+int rsum(int x1, int y1, int x2, int y2) {
+    return pref[x2 + 1][y2 + 1] - pref[x2 + 1][y1] - pref[x1][y2 + 1] + pref[x1][y1];
+}
+
+int main() {
+    int n;
+    cin >> n;
+    for (int i = 0; i < n; ++i) {
+        int x, y;
+        cin >> x >> y;
+        p[i] = make_pair(x, y);
+    }
+    sort(p, p + n);
+    for (int i = 0; i < n; ++i) p[i].first = i + 1;
+    sort(p, p + n, ycomp);
+    for (int i = 0; i < n; ++i) p[i].second = i + 1;
+    for (int i = 0; i < n; ++i) pref[p[i].first][p[i].second] = 1;
+    for (int i = 1; i <= n; ++i)
+        for (int j = 1; j <= n; ++j)
+            pref[i][j] += pref[i - 1][j] + pref[i][j - 1] - pref[i - 1][j - 1];
+    long long ans = 0;
+    for (int i = 0; i < n; ++i)
+        for (int j = i; j < n; ++j) {
+            int x1 = min(p[i].first, p[j].first) - 1, x2 = max(p[i].first, p[j].first) - 1;
+            ans += rsum(0, i, x1, j) * rsum(x2, i, n - 1, j);
+        }
+    cout << ans + 1 << '\n';
+}
+    \end{Verbatim}
+    The solution to Rectangular Pasture directly replaces coordinates with their compressed values, \& forgets the real (actual) values of the coordinates because they are unnecessary. However, there may be problems for which we need to also remember the original values of coordinates that we compress.
+
+    -- Giải pháp cho bài toán Rectangular Pasture thay thế trực tiếp tọa độ bằng giá trị nén của chúng, \& bỏ qua giá trị thực (thực tế) của tọa độ vì chúng không cần thiết. Tuy nhiên, có thể có những bài toán mà chúng ta cần phải nhớ cả giá trị gốc của tọa độ đã nén.
+\end{proof}
+
 \begin{problem}[\href{https://codeforces.com/gym/102951/problem/D}{CodeForces{\tt/}USACO Guide Problem Submission{\tt/}D. static range queries}]
     There is an array $a$ of length $10^9$, initially containing all zeros. 1st perform $n$ updates of the following form: Given integers $l,r,v$, add $v$ to all values $a_l,a_{l+1},\ldots,a_{r-1}$. Then, answer $q$ queries of the following form: Given integers $l,r$, print the sum $\sum_{i=l}^{r-1} a_i = a_l + a_{l+1} + \cdots + a_{r-1}$.
     \item {\sf Input.} Line 1: The 2 space-separated integers $n,q\in[10^5]$. Line $2..n + 1$: Each line contains 3 space-separated integers $l,r,v$, corresponding to an update, $0\le l < r\le10^9,v\le10^4$. Lines $n + 2..n + q + 1$: Each line contains 2 space-separated integers $l,r$, corresponding to a query, $0\le l < r\le10^9$.
     \item {\sf Output.} Print $q$ lines, the answers to the queries in the same order as given in the input.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|static_range_query.inp| & \verb|static_range_query.out| \\
+            \hline
+            5 5 & 23 \\
+            3 7 2 & 34 \\
+            1 10 4 & 31 \\
+            1 6 10 & 106 \\
+            0 4 10 & 47 \\
+            6 7 1 & \\
+            5 7 & \\
+            0 2 & \\
+            5 9 & \\
+            1 6 & \\
+            4 9 & \\
+            \hline
+            5 5 & 28 \\
+            8 9 3 & 73 \\
+            1 6 2 & 22 \\
+            2 5 9 & 31 \\
+            4 8 6 & 73 \\
+            2 7 4 & \\
+            5 8 & \\
+            2 7 & \\
+            5 7 & \\
+            5 10 & \\
+            2 7 & \\
+            \hline
+            5 5 & 39 \\
+            2 9 5 & 50 \\
+            2 10 1 & 90 \\
+            2 9 9 & 0 \\
+            2 5 10 & 113 \\
+            6 8 8 & \\
+            7 10 & \\
+            0 4 & \\
+            2 6 & \\
+            0 1 & \\
+            0 7 & \\
+            \hline
+        \end{tabular}
+    \end{table}
 \end{problem}
 
 \begin{baitoan}[Truy vấn phạm vi tĩnh]
@@ -9571,6 +9716,546 @@ When we have values from a large range, but we only care about their relative or
     \item {\sf Output.} In $q$ dòng, câu trả lời cho các truy vấn theo cùng thứ tự như trong đầu vào.
 \end{baitoan}
 
+\begin{proof}[Solution]
+    This problem will require prefix sums \& coordinate compression. However, the implementation of coordinate compression in this solution will also require remembering values in addition to compressing them (as opposed to just replacing the original values, as in the last problem). If you just want to focus on the implementation of coordinate compression \& how it can switch between compressed indices \& original values, see the contracted code below.  {\tt indices} is a list of values that need to be compressed. After it gets sorted \& has duplicate values removed, it is ready to use. The method \verb|get_compressed_index| takes in an original value, \& binary searches for its position in {\tt indices} to get its corresponding compressed index. To go from a compressed index to an original value, the code can just access that index in {\tt indices}.
+
+    -- Bài toán này sẽ yêu cầu tổng tiền tố \& nén tọa độ. Tuy nhiên, việc triển khai nén tọa độ trong giải pháp này cũng sẽ yêu cầu ghi nhớ các giá trị bên cạnh việc nén chúng (thay vì chỉ thay thế các giá trị gốc, như trong bài toán trước). Nếu bạn chỉ muốn tập trung vào việc triển khai nén tọa độ \& cách nó có thể chuyển đổi giữa các chỉ số nén \& giá trị gốc, hãy xem mã rút gọn bên dưới. {\tt indices} là danh sách các giá trị cần được nén. Sau khi được sắp xếp \& đã loại bỏ các giá trị trùng lặp, danh sách đã sẵn sàng để sử dụng. Phương thức \verb|get_compressed_index| nhận vào một giá trị gốc, \& tìm kiếm nhị phân vị trí của nó trong {\tt indices} để lấy chỉ số nén tương ứng. Để chuyển từ một chỉ số nén sang một giá trị gốc, mã chỉ có thể truy cập chỉ số đó trong {\tt indices}.
+
+    1st of all, let's figure out the value at each index in array $a$. It would be too slow to loop through every index in every update interval as well as every index in a query interval. The complexity would be $O(c(n + q))$, where $c$ is the maximum coordinate given in the input. At the same time, that approach would take $O(c)$ memory, which is also too much. Instead, we make an observation that will make prefix sums paired with coordinate compression a viable option.
+
+    -- Trước hết, hãy tìm giá trị tại mỗi chỉ mục trong mảng $a$. Việc lặp qua mọi chỉ mục trong mỗi khoảng thời gian cập nhật cũng như mọi chỉ mục trong một khoảng thời gian truy vấn sẽ quá chậm. Độ phức tạp sẽ là $O(c(n + q))$, trong đó $c$ là tọa độ lớn nhất được cung cấp trong đầu vào. Đồng thời, cách tiếp cận này sẽ chiếm $O(c)$ bộ nhớ, cũng quá nhiều. Thay vào đó, chúng ta sẽ thực hiện một quan sát cho thấy việc sử dụng tổng tiền tố kết hợp với nén tọa độ là một lựa chọn khả thi.
+
+    Not every index in the whole range $[10^9]$ is used in updates. In fact, there can be large intervals of indices that all have the same value. Call every index that is named in the input is a ``special index''. Now, note that the value at each index in the interval between 2 consecutive special indices is the same. This is because it is impossible for there to be an update that cuts in between 2 consecutive special indices as that would imply the existence of another special index between 2 consecutive special indices, i.e., a contradiction. We will call the interval between 2 consecutive special indices a ``special interval'', \& the ``value of a special interval'' will be the value that each of the elements take on inside it.
+
+    -- Không phải mọi chỉ số trong toàn bộ phạm vi $[10^9]$ đều được sử dụng trong các bản cập nhật. Trên thực tế, có thể có các khoảng chỉ số lớn mà tất cả đều có cùng một giá trị. Gọi mọi chỉ số được đặt tên trong đầu vào là ``chỉ số đặc biệt''. Bây giờ, lưu ý rằng giá trị tại mỗi chỉ số trong khoảng giữa 2 chỉ số đặc biệt liên tiếp là giống nhau. Điều này là do không thể có bản cập nhật cắt vào giữa 2 chỉ số đặc biệt liên tiếp vì điều đó sẽ ngụ ý sự tồn tại của một chỉ số đặc biệt khác giữa 2 chỉ số đặc biệt liên tiếp, tức là một mâu thuẫn. Chúng ta sẽ gọi khoảng giữa 2 chỉ số đặc biệt liên tiếp là ``khoảng đặc biệt'', \& ``giá trị của một khoảng đặc biệt'' sẽ là giá trị mà mỗi phần tử đảm nhận bên trong nó.
+
+    Now, let's see how prefix sums (along with coordinate compression) helps. Temporarily forget about special indices. When an update asks us to add $+v$ to the interval $[l,r)$, we can mark index $l$ with $+v$ \& index $r$ with $-v$ in a ``difference array''. We call it the difference array because it tells us the change in value when we go from 1 index to the next. Taking the prefix sums of the difference array will result in the actual values of the array $a$.
+
+    -- Bây giờ, hãy cùng xem tổng tiền tố (cùng với nén tọa độ) giúp ích như thế nào. Tạm thời quên đi các chỉ số đặc biệt. Khi một bản cập nhật yêu cầu chúng ta thêm $+v$ vào khoảng $[l,r)$, chúng ta có thể đánh dấu chỉ số $l$ bằng $+v$ \& chỉ số $r$ bằng $-v$ trong một ``mảng hiệu số''. Chúng ta gọi nó là mảng hiệu số vì nó cho chúng ta biết sự thay đổi giá trị khi chúng ta chuyển từ chỉ số này sang chỉ số tiếp theo. Việc lấy tổng tiền tố của mảng hiệu số sẽ cho ra các giá trị thực của mảng $a$.
+
+    Since the indices that we have to mark range from $0\ldots10^9$, it would take too much memory for us to use those indices directly. However, only special indices are ever actually used, so we are motivated to change the meaning of the difference array to save on memory (note that there are at most $2(n + q)$ special indices because 2 indices are given for every update \& query). Instead of the difference array representing the change in value from 1 special index to the next, let it represent the change in value from 1 special interval to the next. Now, it only has to have size $2(n + q)$. Taking the prefix sums of this difference array will give the values of all special intervals.
+
+    -- Vì các chỉ số mà chúng ta phải đánh dấu nằm trong khoảng từ $0\ldots10^9$, nên sẽ tốn quá nhiều bộ nhớ để chúng ta sử dụng trực tiếp các chỉ số đó. Tuy nhiên, chỉ có các chỉ số đặc biệt thực sự được sử dụng, vì vậy chúng ta có động lực để thay đổi ý nghĩa của mảng hiệu để tiết kiệm bộ nhớ (lưu ý rằng có nhiều nhất $2(n + q)$ chỉ số đặc biệt vì 2 chỉ số được đưa ra cho mỗi lần cập nhật \& truy vấn). Thay vì mảng hiệu biểu diễn sự thay đổi giá trị từ 1 chỉ số đặc biệt sang chỉ số tiếp theo, hãy để nó biểu diễn sự thay đổi giá trị từ 1 khoảng đặc biệt sang khoảng đặc biệt tiếp theo. Bây giờ, nó chỉ cần có kích thước $2(n + q)$. Lấy tổng tiền tố của mảng hiệu này sẽ đưa ra giá trị của tất cả các khoảng đặc biệt.
+
+    We just have to coordinate compress the special indices so that we can conveniently use them as array indices for the difference array. We perform this coordinate compression by keeping a sorted list of all special indices, \& using each special index's position in that list as its compressed index. To find a special index's position in the sorted list (a.k.a. its compressed index), we can binary search on the list. The next part of the solution will show why it was important for us to store the original indices.
+
+    -- Chúng ta chỉ cần nén tọa độ các chỉ số đặc biệt để có thể sử dụng chúng một cách thuận tiện làm chỉ số mảng cho mảng hiệu. Chúng ta thực hiện nén tọa độ này bằng cách lưu giữ một danh sách đã được sắp xếp của tất cả các chỉ số đặc biệt, \& sử dụng vị trí của mỗi chỉ số đặc biệt trong danh sách đó làm chỉ số nén của nó. Để tìm vị trí của một chỉ số đặc biệt trong danh sách đã được sắp xếp (hay còn gọi là chỉ số nén của nó), chúng ta có thể tìm kiếm nhị phân trên danh sách. Phần tiếp theo của giải pháp sẽ cho thấy tại sao việc lưu trữ các chỉ số ban đầu lại quan trọng đối với chúng ta.
+
+    So, with prefix sums \& coordinate compression, it is possible for us to find the value of each special interval. Now, let's finish the problem.  Let the ``sum of a special interval'' be the sum of every element inside the special interval, i.e., the interval's length times its value. We already know each special interval's value, but we can also get its length because we stored the original indices. The length of an interval is its right index minus its left index, which we can find by accessing the sorted list. As a result, we can also find the sum of each special interval with the information we have. When the problem queries us for the sum between 2 special indices, we add up the sums of the special intervals between those 2 special indices. Thus, if we create another prefix sum array on the sums of the special intervals, we can easily answer these range sum queries in $O(1)$ each.
+
+    -- Vì vậy, với tổng tiền tố \& nén tọa độ, chúng ta có thể tìm thấy giá trị của mỗi khoảng đặc biệt. Bây giờ, hãy hoàn thành bài toán. Giả sử ``tổng của một khoảng đặc biệt'' là tổng của mọi phần tử bên trong khoảng đặc biệt, tức là độ dài của khoảng nhân với giá trị của nó. Chúng ta đã biết giá trị của mỗi khoảng đặc biệt, nhưng chúng ta cũng có thể lấy được độ dài của nó vì chúng ta đã lưu trữ các chỉ số ban đầu. Độ dài của một khoảng bằng chỉ số phải của nó trừ đi chỉ số trái của nó, chúng ta có thể tìm thấy chỉ số này bằng cách truy cập vào danh sách đã sắp xếp. Kết quả là, chúng ta cũng có thể tìm thấy tổng của mỗi khoảng đặc biệt với thông tin chúng ta có. Khi bài toán yêu cầu chúng ta tính tổng giữa 2 chỉ số đặc biệt, chúng ta cộng tổng của các khoảng đặc biệt giữa 2 chỉ số đặc biệt đó. Do đó, nếu chúng ta tạo một mảng tổng tiền tố khác trên tổng của các khoảng đặc biệt, chúng ta có thể dễ dàng trả lời các truy vấn tổng phạm vi này trong $O(1)$ mỗi truy vấn.
+    \item {\sf C++ implementation.}
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <algorithm>
+#include <iostream>
+#include <vector>
+using namespace std;
+typedef long long ll;
+
+ll difference_array[400005]; // difference_array[i] = the difference of the values between special
+    // intervals i - 1 & i
+int widths[400005]; // width[i] = the length of special interval i
+ll interval_value[400005]; // interval_value[i] = the value of special interval i
+// the sum of a special interval is interval_value[i] * width[i]
+ll prefix_sums[400005]; // prefix_sums[i] = prefix sum of the sums of special intervals up to i
+vector<int> indices; // sorted list of special indices
+pair<int, int> queries[100005]; // queries given in the input <l, r>
+pair<pair<int, int>, int> updates[100005]; // updates is given in the input <<l, r>, v>
+
+// EndCodeSnip
+/** @return the compressed index of a special index (it), aka its index in the
+* compressed list */
+int get_compressed_index(int a) {
+    return lower_bound(indices.begin(), indices.end(), a) - indices.begin();
+}
+
+int main() {
+    int n, q;
+    cin >> n >> q;
+    for (int i = 0; i < n; ++i) {
+        int l, r, v;
+        cin >> l >> r >> v;
+        indices.push_back(l);
+        indices.push_back(r);
+        updates[i] = {{l, r}, v};
+    }
+    for (int i = 0; i < q; ++i) {
+        int l, r;
+        cin >> l >> r;
+        indices.push_back(l);
+        indices.push_back(r);
+        queries[i] = {l, r};
+    }
+    // perform coordinate compression by sorting & removing duplicates
+    sort(indices.begin(), indices.end());
+    indices.erase(unique(indices.begin(), indices.end()), indices.end());
+    // we create the difference array, using coordinate compression & binary search to get the compressed
+    // index of each special index Note the 1-based indexing for convenience
+    for (int i = 0; i < n; ++i) {
+        auto a = updates[i];
+        difference_array[get_compressed_index(a.first.first) + 1] += a.second;
+        difference_array[get_compressed_index(a.first.second) + 1] -= a.second;
+    }
+    // by keeping track of the original values of the special indices, we can also figure out the lengths
+    // of each special interval
+    for (int i = 0; i < indices.size() - 1; ++i) widths[i + 1] = indices[i + 1] - indices[i];
+    // we use prefix sums of the difference array to get the values of the intervals
+    for (int i = 1; i < indices.size(); ++i)
+        interval_value[i] = interval_value[i - 1] + difference_array[i];
+    // we use prefix sums over the sums of the special intervals to be able to answer queries quickly
+    for (int i = 1; i < indices.size(); ++i)
+        prefix_sums[i] = prefix_sums[i - 1] + interval_value[i] * widths[i];
+    // classic use of prefix sum array to answer range sum queries
+    for (int i = 0; i < q; ++i)
+        cout << prefix_sums[get_compressed_index(queries[i].second)]
+                - prefix_sums[get_compressed_index(queries[i].first)] << '\n';
+}
+    \end{Verbatim}
+\end{proof}
+
+\begin{problem}[restaurant customers]
+
+\end{problem}
+
+\begin{problem}[covered points count]
+
+\end{problem}
+
+\begin{problem}[lifeguards]
+
+\end{problem}
+
+\begin{problem}[rental service]
+
+\end{problem}
+
+\begin{problem}[mountain view]
+
+\end{problem}
+
+\begin{problem}[stuck in a rut]
+
+\end{problem}
+
+\begin{problem}[splitting the field]
+
+\end{problem}
+
+\begin{problem}[the smallest string concatenation]
+
+\end{problem}
+
+\begin{problem}[Nezzar \& symmetric array]
+
+\end{problem}
+
+\begin{problem}[correct placement]
+
+\end{problem}
+
+\begin{problem}[triangles]
+
+\end{problem}
+
+\begin{problem}[out of sorts]
+
+\end{problem}
+
+\begin{problem}[meetings]
+
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
+\section{Greedy Algorithms with Sorting -- Thuật Toán Tham Lam với Sắp Xếp}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item {\sf Darren Yao}. \href{https://usaco.guide/silver/greedy-sorting?lang=cpp}{USACO Guide{\tt/}greedy algorithms with sorting}.
+
+    {\sf Abstract.} Solving greedy problems by sorting the input.
+
+    -- Giải quyết các vấn đề tham lam bằng cách sắp xếp dữ liệu đầu vào.
+\end{enumerate}
+Usually, when using a greedy algorithm, there is a {\it value function} that determines which choice is considered most optimal. E.g., we often want to minimize or maximize a certain quantity, so we take the largest or smallest possible value in the next step. Here, we will focus on problems where some sorting step is involved.
+
+-- Thông thường, khi sử dụng thuật toán tham lam, sẽ có một {\it value function} xác định lựa chọn nào được coi là tối ưu nhất. Ví dụ, chúng ta thường muốn tối thiểu hóa hoặc tối đa hóa một số lượng nhất định, vì vậy chúng ta sẽ lấy giá trị lớn nhất hoặc nhỏ nhất có thể ở bước tiếp theo. Ở đây, chúng ta sẽ tập trung vào các bài toán có liên quan đến một số bước sắp xếp.
+
+\begin{problem}[\href{https://codeforces.com/gym/102951/problem/B}{CodeForces{\tt/}USACO Guide Problem Submission{\tt/}B. studying algorithms}]
+    Steph wants to improve her knowledge of algorithms over winter break. She has a total of $x\in[10^4]$ minutes to dedicate to learning algorithms. There are $n\in[100]$ algorithms, \& each 1 of them requires $a_i\in[100]$ minutes to learn. Find the maximum number of algorithms she can learn.
+    \item {\sf Input.} 2 space-separated integers $n,x$. Line 2: $n$ space-separated integers $a_1,a_2,\ldots,a_n$.
+    \item {\sf Output.} A single integer, the answer to the problem.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|study_algorithm.inp| & \verb|study_algorithm.out| \\
+            \hline
+            6 15 & 4 \\
+            4 3 8 4 7 3 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{baitoan}[Học thuật toán]
+    Steph muốn cải thiện kiến thức về thuật toán trong kỳ nghỉ đông. Cô ấy có tổng cộng $x\in[10^4]$ phút để dành cho việc học thuật toán. Có $n\in[100]$ thuật toán, \& mỗi thuật toán trong số đó cần $a_i\in[100]$ phút để học. Tìm số thuật toán tối đa mà cô ấy có thể học.
+    \item {\sf Đầu vào.} 2 số nguyên cách nhau bởi dấu cách $n,x$. Dòng 2: $n$ số nguyên cách nhau bởi dấu cách $a_1,a_2,\ldots,a_n$.
+    \item {\sf Đầu ra.} Một số nguyên duy nhất, đáp án của bài toán.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    The first observation we make is that Steph should prioritize learning algorithms from easiest to hardest, i.e., start with learning with algorithm that requires the least amount of time, \& then choose further algorithms in increasing order of time required. E.g., $x = 15,n = 6,a = \{4,3,8,4,7,3\}$. After sorting the array, we have $\{3,3,4,4,7,8\}$. Within the maximum of 15 minutes, Steph can learn 4 algorithms in a total of $3 + 3 + 4 + 4 = 14$ minutes.
+
+    -- Nhận xét đầu tiên chúng ta rút ra là Steph nên ưu tiên học các thuật toán từ dễ đến khó, tức là bắt đầu với thuật toán tốn ít thời gian nhất, sau đó chọn các thuật toán tiếp theo theo thứ tự thời gian cần thiết tăng dần. Ví dụ: $x = 15,n = 6,a = \{4,3,8,4,7,3\}$. Sau khi sắp xếp mảng, ta có $\{3,3,4,4,7,8\}$. Trong vòng tối đa 15 phút, Steph có thể học 4 thuật toán trong tổng cộng $3 + 3 + 4 + 4 = 14$ phút.
+
+    The implementation of this algorithm is very simple. We sort the array, \& then take as many elements as possible while the sum of times of algorithms chosen so far is less than $x$. Sorting the array takes $O(n\log n)$ time, \& iterating through the array takes $O(n)$ time, for a total time complexity of $O(n\log n)$.
+
+    -- Việc triển khai thuật toán này rất đơn giản. Chúng ta sắp xếp mảng, \& sau đó lấy càng nhiều phần tử càng tốt sao cho tổng thời gian của các thuật toán đã chọn cho đến nay nhỏ hơn $x$. Việc sắp xếp mảng mất $O(n\log n)$ thời gian, \& việc lặp qua mảng mất $O(n)$ thời gian, với tổng độ phức tạp là $O(n\log n)$.
+    \item {\sf C++ implementation.}
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <algorithm>
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n, x;
+    cin >> n >> x;
+    int algorithms[n];
+    for (int i = 0; i < n; ++i) cin >> algorithms[i];
+    sort(algorithms, algorithms + n);
+    int i = 0, count = 0; // count = the number of minutes used so far
+    while (i < n && count + algorithms[i] <= x) {
+        // while there is enough time, learn more algorithms
+        count += algorithms[i];
+        ++i;
+    }
+    cout << i << '\n';
+}
+    \end{Verbatim}
+\end{proof}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1629}{CSES Problem Set{\tt/}movie festival}]
+    In a movie festival $n\in\mathbb{N}^\star$ movies will be shown. You know the starting \& ending time of each movie. What is the maximum number of movies you can watch entirely?
+    \item {\sf Input.} The 1st input line has an integer $n,m\in\mathbb{N}^\star$: the number of movies. After this, there are $n$ lines that describe the movies. Each line has $2$ integers $a,b\in\mathbb{N}$: the starting \& ending times of a movie.
+    \item {\sf Output.} Print $1$ integer: the maximum number of movies.
+    \item {\sf Constraints.} $n\in[2\cdot10^5],1\le a < b\le10^9$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|movie_festival.inp| & \verb|movie_festival.out| \\
+            \hline
+            3 & 2 \\
+            3 5 & \\
+            4 9 & \\
+            5 8 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{baitoan}[Liên hoan phim]
+    Trong một liên hoan phim, sẽ có $n\in\mathbb{N}^\star$ phim được trình chiếu. Bạn biết thời gian bắt đầu \& kết thúc của mỗi phim. Hỏi số lượng phim tối đa bạn có thể xem trọn vẹn là bao nhiêu?
+    \item {\sf Đầu vào.} Dòng đầu vào thứ nhất chứa một số nguyên $n,m\in\mathbb{N}^\star$: số lượng phim. Sau đó, có $n$ dòng mô tả các phim. Mỗi dòng chứa $2$ số nguyên $a,b\in\mathbb{N}$: thời gian bắt đầu \& kết thúc của một phim.
+    \item {\sf Đầu ra.} In ra $1$ số nguyên: số lượng phim tối đa.
+    \item {\sf Ràng buộc.} $n\in[2\cdot10^5],1\le a < b\le10^9$.
+\end{baitoan}
+{\it Bad Greedy: Earliest starting next event -- Tham lam xấu: Bắt đầu sự kiện tiếp theo sớm nhất.} 1 possible ordering for a greedy algorithm would always select the next possible event that begins as soon as possible.
+
+-- {\it Bad Greedy -- Sự kiện tiếp theo bắt đầu sớm nhất.} 1 thứ tự có thể có cho một thuật toán tham lam sẽ luôn chọn sự kiện tiếp theo có thể bắt đầu càng sớm càng tốt.
+
+\begin{proof}[Solution: Correct greedy: earliest ending next event -- Tham lam đúng: sự kiện tiếp theo kết thúc sớm nhất]
+    Instead, we can select the event that ends as early as possible. In fact, this algorithm always works. A brief explanation of correctness is as follows. If we have 2 events $E_1,E_2,$ with $E_2$ ending later than $E_1$, then it is always optimal to select $E_1$. This is because selecting $E_1$ gives us more choices for future events. If we can select an event to go after $E_2$, then that event can also go after $E_1$, because $E_1$ ends 1st. Thus, the set of events that can go after $E_2$ is a subset of the events that can go after $E_1$, making $E_1$ the optimal choice.
+
+    -- Thay vào đó, chúng ta có thể chọn sự kiện kết thúc sớm nhất có thể. Trên thực tế, thuật toán này luôn hoạt động. Một lời giải thích ngắn gọn về tính chính xác như sau. Nếu chúng ta có 2 sự kiện $E_1, E_2, $ với $E_2$ kết thúc sau $E_1$, thì luôn luôn tối ưu khi chọn $E_1$. Điều này là do việc chọn $E_1$ cho chúng ta nhiều lựa chọn hơn cho các sự kiện trong tương lai. Nếu chúng ta có thể chọn một sự kiện để đi sau $E_2$, thì sự kiện đó cũng có thể đi sau $E_1$, vì $E_1$ kết thúc thứ 1. Do đó, tập hợp các sự kiện có thể đi sau $E_2$ là một tập hợp con của các sự kiện có thể đi sau $E_1$, khiến $E_1$ trở thành lựa chọn tối ưu.
+
+    For the following code, let's say we have the array {\tt events} of events, which each contain a start \& an end point. We will be using the C++ built in container pair to store each event. Note that since the standard sort in C++ sorts by 1st element, we will store each event as \verb|pair<end, start>|.
+
+    -- Với đoạn mã sau, giả sử chúng ta có mảng {\tt events} chứa các sự kiện, mỗi sự kiện chứa một điểm bắt đầu \& một điểm kết thúc. Chúng ta sẽ sử dụng cặp container tích hợp sẵn trong C++ để lưu trữ từng sự kiện. Lưu ý rằng vì thuật toán sắp xếp chuẩn trong C++ sắp xếp theo phần tử thứ nhất, chúng ta sẽ lưu trữ từng sự kiện dưới dạng \verb|pair<end, start>|.
+    \item {\sf C++ implementation.}
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <algorithm>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    vector<pair<int, int>> events(n);
+    for (int i = 0; i < n; ++i) cin >> events[i].second >> events[i].first;
+    sort(events.begin(), events.end()); // sort by 1st element (ending time)
+    int ans = 0, current_event_end = -1; // end of event currently attending
+    for (int i = 0; i < n; ++i) // process events in order of end time
+        if (events[i].second >= current_event_end) { // if event can be attended, we know that this is
+            // the earliest ending event that we can attend becaues of how the events are sorted
+            current_event_end = events[i].first;
+            ++ans;
+        }
+    cout << ans << '\n';
+}
+    \end{Verbatim}
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsection{When greedy fails -- Khi thuật toán tham lam thất bại}
+We will provide a few common examples of when greedy fails, so that you can avoid falling into obvious traps \& wasting time getting wrong answers in contest.
+
+-- Chúng tôi sẽ cung cấp một số ví dụ phổ biến về trường hợp tham lam thất bại, để bạn có thể tránh rơi vào những cái bẫy rõ ràng \& lãng phí thời gian trả lời sai trong cuộc thi.
+\begin{itemize}
+    \item {\bf Coin change.} This problem gives several coin denominations, \& asks for the minimum number of coins needed to make a certain value. Greedy algorithms can be used to solve this problem only in very specific cases (it can be proven that it works for the American as well as the Euro coin systems). However, it does not work in the general case. E.g., let the coin denominations be $\{1,3,4\}$, \& say the value we want is 6. The optimal solution is $\{3,3\}$, which requires only 2 coins, but the greedy method of taking the highest possible valued coin that fits in the remaining denomination gives the solution $\{4,1,1\}$, which is incorrect.
+
+    -- Bài toán này đưa ra một số mệnh giá tiền xu, \& yêu cầu số lượng tiền xu tối thiểu cần thiết để tạo ra một giá trị nhất định. Thuật toán tham lam chỉ có thể được sử dụng để giải quyết vấn đề này trong những trường hợp rất cụ thể (có thể chứng minh rằng nó hoạt động cho cả hệ thống tiền xu của Mỹ và Euro). Tuy nhiên, nó không hoạt động trong trường hợp chung. Ví dụ: giả sử các mệnh giá tiền xu là $\{1,3,4\}$, \& giả sử giá trị chúng ta muốn là 6. Giải pháp tối ưu là $\{3,3\}$, chỉ cần 2 đồng xu, nhưng phương pháp tham lam lấy đồng xu có giá trị cao nhất có thể phù hợp với mệnh giá còn lại cho ra giải pháp $\{4,1,1\}$, điều này không đúng.
+    \item {\bf Knapsack.} The knapsack problem gives a number of items, each having a weight \& a value, \& we want to choose a subset of these items. We are limited to a certain weight, \& we want to maximize the value of the items that we take. Let's take the following example, where we have a maximum capacity of 4:
+
+    -- {\bf Ba lô.} Bài toán ba lô đưa ra một số vật phẩm, mỗi vật phẩm có một trọng lượng \& một giá trị, \& chúng ta muốn chọn một tập hợp con của những vật phẩm này. Chúng ta bị giới hạn bởi một trọng lượng nhất định, \& chúng ta muốn tối đa hóa giá trị của các vật phẩm mà chúng ta lấy. Hãy xem xét ví dụ sau, với sức chứa tối đa là 4:
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|c|c|c|c|}
+            \hline
+            Item & Weight & Value & Value per weight \\
+            \hline
+            A & 3 & 18 & 6 \\
+            \hline
+            B & 2 & 10 & 5 \\
+            \hline
+            C & 2 & 10 & 5 \\
+            \hline
+        \end{tabular}
+    \end{table}
+    If we use greedy based on highest value 1st, we choose item A \& then we are done, as we do not have remaining weight to fit either of the other 2. Using greedy based on value per weight again selects item A \& then quits. However, the optimal solution is to select items B \& C, as they combined have a higher value than item A alone. In fact, there is no working greedy solution. The solution to this problem uses dynamic programming.
+
+    -- Nếu chúng ta sử dụng tham lam dựa trên giá trị cao nhất trước, chúng ta chọn mục A \& thì xong, vì chúng ta không còn trọng số nào để khớp với bất kỳ mục nào trong 2 mục còn lại. Sử dụng tham lam dựa trên giá trị theo trọng số một lần nữa sẽ chọn mục A \& rồi thoát. Tuy nhiên, giải pháp tối ưu là chọn mục B \& C, vì tổng giá trị của chúng cao hơn giá trị của mục A khi sử dụng riêng lẻ. Thực tế, không có giải pháp tham lam nào khả thi. Giải pháp cho bài toán này sử dụng quy hoạch động.
+\end{itemize}
+
+\begin{problem}[stick lengths]
+
+\end{problem}
+
+\begin{problem}[apartment]
+
+\end{problem}
+
+\begin{problem}[Ferris wheel]
+
+\end{problem}
+
+\begin{problem}[tasks \& deadlines]
+
+\end{problem}
+
+\begin{problem}[USB vs. PS{\tt/}2]
+
+\end{problem}
+
+\begin{problem}[lemonade line]
+
+\end{problem}
+
+\begin{problem}[high car low card]
+
+\end{problem}
+
+\begin{problem}[party \& sweets]
+
+\end{problem}
+
+\begin{problem}[bovine acrobatics]
+
+\end{problem}
+
+\begin{problem}[rest stops]
+
+\end{problem}
+
+\begin{problem}[berry picking]
+
+\end{problem}
+
+\begin{problem}[Ciel \& duel]
+
+\end{problem}
+
+\begin{problem}[yet another tournament]
+
+\end{problem}
+
+\begin{problem}[closest cow wins]
+
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
+
+\section{Priority Queues -- Hàng Đợi Ưu Tiên}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item {\sc Darren Yao, Benjamin Qi, Jeffrey Hu, Shreyas Thumathy, Nathan Gong}. \href{https://usaco.guide/silver/priority-queues?lang=cpp}{USACO Guide{\tt/}priority queues}.
+
+    {\sf Abstract.} A data structure that supports insert, query max, \& pop max.
+
+    -- Cấu trúc dữ liệu hỗ trợ chèn, truy vấn tối đa, \& bật tối đa.
+
+    \item \href{https://csacademy.com/lesson/heaps}{CS Academy{\tt/}priority queue}.
+\end{enumerate}
+A {\it priority queue} (or {\it heap}) supports the following operations: insertion of elements, deletion of the element considered highest priority, \& retrieval of the highest priority element, all in $O(\log n)$ time according to the number of elements in the priority queue. Priority queues are simpler \& faster than sets, so you should use them instead whenever possible.
+
+-- {\it Hàng đợi ưu tiên} (hoặc {\it heap}) hỗ trợ các thao tác sau: chèn phần tử, xóa phần tử được coi là có mức ưu tiên cao nhất, \& truy xuất phần tử có mức ưu tiên cao nhất, tất cả trong thời gian $O(\log n)$ tùy thuộc vào số phần tử trong hàng đợi ưu tiên. Hàng đợi ưu tiên đơn giản hơn \& nhanh hơn tập hợp, vì vậy bạn nên sử dụng chúng bất cứ khi nào có thể.
+
+\nonumber{\sf C++ implementation.}
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+priority_queue<int> pq;
+pq.push(7);                // [7]
+pq.push(2);                // [2, 7]
+pq.push(1);                // [1, 2, 7]
+pq.push(5);                // [1, 2, 5, 7]
+cout << pq.top() << endl;  // 7
+pq.pop();                  // [1, 2, 5]
+pq.pop();                  // [1, 2]
+pq.push(6);                // [1, 2, 6]
+\end{Verbatim}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1164}{CSES Problem Set{\tt/}room allocation}]
+    There is a large hotel, \& $n\in\mathbb{N}^\star$ customers will arrive soon. Each customer wants to have a single room. You know each customer's arrival \& departure day. $2$ customers can stay in the same room if the departure day of the 1st customer is earlier than the arrival day of the 2nd customer. What is the minimum number of rooms that are needed to accommodate all customers? \& how can the rooms be allocated?
+    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the number of of customers. Then there are $n$ lines, each of which describes $1$ customer. Each line has $2$ integers $a,b\in\mathbb{N}^\star$: the arrival \& departure day.
+    \item {\sf Output.} 1st print an integer $k$: the minimum number of rooms required. After that, print a line that contains the room number of each customer in the same order in the input. The rooms are numbered $1,2,\ldots,k$. You can print any valid solution.
+    \item {\sf Constraints.} $n\in[2\cdot10^5],1\le a\le b\le10^9$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|room_allocation.inp| & \verb|room_allocation.out| \\
+            \hline
+            3 & 2 \\
+            1 2 & 1 2 1 \\
+            2 4 & \\
+            4 4 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{baitoan}[Phân bổ phòng]
+    Có một khách sạn lớn, \& $n\in\mathbb{N}^\star$ khách hàng sẽ sớm đến. Mỗi khách hàng muốn có một phòng riêng. Bạn biết ngày đến \& ngày đi của mỗi khách hàng. $2$ khách hàng có thể ở cùng một phòng nếu ngày đi của khách hàng thứ nhất sớm hơn ngày đến của khách hàng thứ hai. Số phòng tối thiểu cần thiết để phục vụ tất cả khách hàng là bao nhiêu? \& làm thế nào để phân bổ các phòng?
+    \item {\sf Đầu vào.} Dòng đầu vào thứ nhất chứa một số nguyên $n\in\mathbb{N}^\star$: số lượng khách hàng. Sau đó, có $n$ dòng, mỗi dòng mô tả $1$ khách hàng. Mỗi dòng chứa $2$ số nguyên $a,b\in\mathbb{N}^\star$: ngày đến \& ngày đi.
+    \item {\sf Đầu ra.} Đầu tiên in ra một số nguyên $k$: số lượng phòng tối thiểu cần có. Sau đó, in ra một dòng chứa số phòng của từng khách hàng theo cùng thứ tự trong dữ liệu đầu vào. Các phòng được đánh số $1,2,\ldots,k$. Bạn có thể in ra bất kỳ lời giải hợp lệ nào.
+    \item {\sf Constraints.} $n\in[2\cdot10^5],1\le a\le b\le10^9$.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    In this problem, we are asked the minimum number of rooms needed to accommodate $n$ customers, who arrive \& leave on set days. Let's sort each customer by their start time so that we do not have a customer arriving at say, time 3, occupying a room before a customer that arrives at time 2.
+
+    -- Trong bài toán này, chúng ta được yêu cầu tính số phòng tối thiểu cần thiết để phục vụ $n$ khách hàng đến và rời đi vào những ngày nhất định. Hãy sắp xếp từng khách hàng theo thời gian bắt đầu của họ sao cho không có khách hàng nào đến vào thời điểm 3, chiếm phòng trước khách hàng đến vào thời điểm 2.
+
+    Now, we can iterate through the customers while maintaining a minimum priority queue that stores the departure times of customers we are already processed. For each customer, we check to see if the minimum element in the priority queue is less than the arrival time of the new customer.
+    \begin{itemize}
+        \item If this is true, i.e., a room previously occupied has opened up, so we remove the minimum element from the priority queue \& replace it with the new customer's departure time. The new customer will be allocated to the same room as the customer who departed.
+        \item Otherwise, all the rooms are full, so we need to allocate another room for the customer \& add it to the priority queue.
+    \end{itemize}
+    We can determine $k$ by finding the maximum size the priority queue reaches as we iterate through the customers.
+
+    -- Bây giờ, chúng ta có thể lặp lại các khách hàng trong khi vẫn duy trì một hàng đợi ưu tiên tối thiểu lưu trữ thời gian khởi hành của những khách hàng mà chúng ta đã xử lý. Đối với mỗi khách hàng, chúng ta kiểm tra xem phần tử tối thiểu trong hàng đợi ưu tiên có nhỏ hơn thời gian đến của khách hàng mới hay không.
+    \begin{itemize}
+        \item Nếu điều này đúng, tức là một phòng đã có người ở trước đó đã được mở, chúng ta sẽ xóa phần tử tối thiểu khỏi hàng đợi ưu tiên \& thay thế nó bằng thời gian khởi hành của khách hàng mới. Khách hàng mới sẽ được phân bổ vào cùng phòng với khách hàng đã rời đi.
+        \item Nếu không, tất cả các phòng đều đã kín, vì vậy chúng ta cần phân bổ một phòng khác cho khách hàng \& thêm phòng đó vào hàng đợi ưu tiên.
+    \end{itemize}
+    Chúng ta có thể xác định $k$ bằng cách tìm kích thước tối đa mà hàng đợi ưu tiên đạt được khi chúng ta lặp lại các khách hàng.
+    \item {\sf C++ implementation.} USACO Guide's C++: room allocation: Time complexity $O(n\log n)$. Similarly to what was done in the previous section {\it Greedy Algorithms with Sorting}, we can use {\tt greater<>()} to create a min-heap instead of a max-heap.
+
+    -- Tương tự như những gì đã thực hiện trong phần trước {\tt Thuật toán tham lam với sắp xếp}, chúng ta có thể sử dụng {\tt greater<>()} để tạo min-heap thay vì max-heap.
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <algorithm>
+#include <iostream>
+#include <queue>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    vector<int> ans(n);
+    vector<pair<pair<int, int>, int>> v(n);
+    for (int i = 0; i < n; ++i) {
+        cin >> v[i].first.first >> v[i].first.second;
+        v[i].second = i; // store the original index
+    }
+    sort(v.begin(), v.end());
+    int last_room = 0;
+    using room = pair<int, int>;
+    priority_queue<room, vector<room>, greater<room>> pq;
+    for (int i = 0; i < n; ++i)
+        if (pq.empty() || pq.top().first >= v[i].first.first) {
+            ++last_room;
+            pq.push(make_pair(v[i].first.second, last_room));
+            ans[v[i].second] = last_room;
+        } else { // accessing the minimum departure time
+            room minimum = pq.top();
+            pq.pop();
+            pq.push(make_pair(v[i].first.second, minimum.second));
+            ans[v[i].second] = minimum.second;
+        }
+    cout << last_room << '\n';
+    for (int i = 0; i < n; ++i) cout << ans[i] << " ";
+}
+    \end{Verbatim}
+\end{proof}
+
+\begin{remark}[Sorted sets -- Các tập hợp được sắp xếp]
+    Sorted sets, see, e.g., \href{https://usaco.guide/gold/intro-sorted-sets}{USACO Guide{\tt/}more operations on sorted sets}, support all the operations of priority queues \& more; however, their constant factor is worse, \& we do not have any examples of USACO Silver problems that require the use of sorted sets.
+
+    -- Các tập hợp được sắp xếp, xem ví dụ: \href{https://usaco.guide/gold/intro-sorted-sets}{USACO Guide{\tt/}nhiều thao tác hơn trên các tập hợp được sắp xếp}, hỗ trợ tất cả các thao tác của hàng đợi ưu tiên \& nhiều hơn nữa; tuy nhiên, hệ số hằng số của chúng kém hơn, \& chúng tôi không có bất kỳ ví dụ nào về các bài toán USACO Silver yêu cầu sử dụng các tập hợp được sắp xếp.
+\end{remark}
+
+\begin{problem}[convention II]
+
+\end{problem}
+
+\begin{problem}[William \& robot]
+
+\end{problem}
+
+\begin{problem}[packing under range regulations]
+
+\end{problem}
+
+\begin{problem}[why did the cow cross the road]
+
+\end{problem}
+
+\begin{problem}[IPO]
+
+\end{problem}
+
+\begin{problem}[milk restaurant]
+
+\end{problem}
+
+\begin{problem}[bubble sort rounds II]
+
+\end{problem}
+
+\begin{problem}[deforestation]
+
+\end{problem}
+
+\begin{problem}[job completion]
+
+\end{problem}
+
+\begin{problem}[stick division]
+
+\end{problem}
+
+\begin{problem}[survival of the weakest (easy version)]
+
+\end{problem}
+
+\begin{problem}[serval \& Kaitenzushi buffet]
+
+\end{problem}
 
 %------------------------------------------------------------------------------%
 
@@ -12335,6 +13020,13 @@ signed main() {
     \end{table}
 \end{problem}
 
+\begin{baitoan}[Liên hoan phim]
+    Trong một liên hoan phim, sẽ có $n\in\mathbb{N}^\star$ phim được trình chiếu. Bạn biết thời gian bắt đầu \& kết thúc của mỗi phim. Hỏi số lượng phim tối đa bạn có thể xem trọn vẹn là bao nhiêu?
+    \item {\sf Đầu vào.} Dòng đầu vào thứ nhất chứa một số nguyên $n,m\in\mathbb{N}^\star$: số lượng phim. Sau đó, có $n$ dòng mô tả các phim. Mỗi dòng chứa $2$ số nguyên $a,b\in\mathbb{N}$: thời gian bắt đầu \& kết thúc của một phim.
+    \item {\sf Đầu ra.} In ra $1$ số nguyên: số lượng phim tối đa.
+    \item {\sf Ràng buộc.} $n\in[2\cdot10^5],1\le a < b\le10^9$.
+\end{baitoan}
+
 \begin{problem}[\href{https://cses.fi/problemset/task/1640}{CSES Problem Set{\tt/}sum of 2 values}]
     You are given an array of $n\in\mathbb{N}^\star$ integers. Find $2$ values (at distinct positions) whose sum is $x$.
     \item {\sf Input.} The 1st input line has $2$ integers $n,x\in\mathbb{N}^\star$: the array size \& the target sum. The 2nd line has $n$ integers $a_1,a_2,\ldots,a_n$: the array values.
@@ -12778,6 +13470,13 @@ Mở rộng bài toán trên từ $2$ thành $k\in\mathbb{N}^\star$:
         \end{tabular}
     \end{table}
 \end{problem}
+
+\begin{baitoan}[Phân bổ phòng]
+    Có một khách sạn lớn, \& $n\in\mathbb{N}^\star$ khách hàng sẽ sớm đến. Mỗi khách hàng muốn có một phòng riêng. Bạn biết ngày đến \& ngày đi của mỗi khách hàng. $2$ khách hàng có thể ở cùng một phòng nếu ngày đi của khách hàng thứ nhất sớm hơn ngày đến của khách hàng thứ hai. Số phòng tối thiểu cần thiết để phục vụ tất cả khách hàng là bao nhiêu? \& làm thế nào để phân bổ các phòng?
+    \item {\sf Đầu vào.} Dòng đầu vào thứ nhất chứa một số nguyên $n\in\mathbb{N}^\star$: số lượng khách hàng. Sau đó, có $n$ dòng, mỗi dòng mô tả $1$ khách hàng. Mỗi dòng chứa $2$ số nguyên $a,b\in\mathbb{N}^\star$: ngày đến \& ngày đi.
+    \item {\sf Đầu ra.} Đầu tiên in ra một số nguyên $k$: số lượng phòng tối thiểu cần có. Sau đó, in ra một dòng chứa số phòng của từng khách hàng theo cùng thứ tự trong dữ liệu đầu vào. Các phòng được đánh số $1,2,\ldots,k$. Bạn có thể in ra bất kỳ lời giải hợp lệ nào.
+    \item {\sf Constraints.} $n\in[2\cdot10^5],1\le a\le b\le10^9$.
+\end{baitoan}
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1620}{CSES Problem Set{\tt/}factory machines}]
     A factory has $n\in\mathbb{N}^\star$ machines which can be used to make products. Make a total of $t\in\mathbb{N}^\star$ products. For each machine, you know the number of seconds it needs to make a single product. The machines can work simultaneously, \& you can freely decide their schedule. What is the shortest time needed to make $t$ products?

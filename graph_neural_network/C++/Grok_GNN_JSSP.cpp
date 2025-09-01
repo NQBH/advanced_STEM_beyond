@@ -1,4 +1,4 @@
-// C++ code for graph neural network for job shop scheduling problem
+// prompt for Grok: C++ code for graph neural network for job shop scheduling problem
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -143,3 +143,7 @@ int main() {
 
     return 0;
 }
+/*
+This C++ code implements a basic graph neural network layer applied to a disjunctive graph representation of a small job shop scheduling problem (2 jobs, 2 machines). The graph nodes represent operations, with features including processing time, job ID, and machine ID. The GNN performs simple message passing (average aggregation from neighbors and self) followed by a linear transformation and ReLU activation.
+Note: This is a simplified example for illustration. In practice, GNNs for JSSP often involve multiple layers, reinforcement learning for training, and more sophisticated aggregation (e.g., using attention). Training would require a loss function (e.g., based on makespan) and backpropagation, which are not included here for brevity. For production use, consider libraries like TensorFlow's C++ API or custom frameworks.
+*/

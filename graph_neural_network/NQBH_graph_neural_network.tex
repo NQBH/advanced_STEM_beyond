@@ -2974,12 +2974,149 @@ from sklearn.metrics import accuracy_score
         -- Mục tiêu của học biểu diễn đồ thị: học  1 mô hình bằng cách lấy dữ liệu có cấu trúc đồ thị làm đầu vào \& sau đó ánh xạ nó sao cho các mục tiêu dự đoán nhất định được khớp. Các bài toán học biểu diễn đồ thị khác nhau có thể áp dụng cho số lượng nút khác nhau trong đồ thị. Ví dụ: đối với phân loại nút,  1 dự đoán được đưa ra cho mỗi nút, cho mỗi dự đoán quan hệ liên kết trên  1 cặp nút, \& cho mỗi phân loại đồ thị hoặc dự đoán thuộc tính đồ thị trên toàn bộ tập nút $V$. Có thể thống nhất tất cả các bài toán này thành học biểu diễn đồ thị.
 
         \begin{definition}[Graph representation learning GRL]
-
+            Feature space is defined as $X\coloneqq\Gamma\times P$, where $\Gamma$: space of graph-structured data \& $P$ includes all node subsets of interest, given a graph $G\in\Gamma$. Then, a point in $X$ can be denoted as $(G,S)$, where $S$ is a subset of nodes that are in $G$. Later, call $(G,S)$ as a graph representation learning (GRL) example. Each GRL example $(G,S)\in X$ is associated with a target $y$ in target space $Y$. Suppose ground-truth association function between features \& targets is denoted by $f^*:X\to Y$, $f^*(G,S) = y$. Given a set of training examples $\Xi = \{(G^{(i)},S^{(i)},y^{(i)})\}_{i=1}^k$ \& a set of testing examples $\Psi = \{(\tilde{G}^{(i)},\tilde{S}^{(i)},\tilde{y}^{(i)})\}_{i=1}^k$, a {\rm graph representation learning} problem is to learn a function $f$ based on $\Xi$ s.t. $f$ is close to $f^*$ to $\Psi$.
         \end{definition}
-        p. 68+++
+
+        \begin{dinhnghia}
+            Không gian đặc trưng được định nghĩa là $X\coloneqq\Gamma\times P$, trong đó $\Gamma$: không gian dữ liệu có cấu trúc đồ thị \& $P$ bao gồm tất cả các tập con nút quan tâm, cho trước một đồ thị $G\in\Gamma$. Khi đó, một điểm trong $X$ có thể được ký hiệu là $(G,S)$, trong đó $S$ là một tập con của các nút nằm trong $G$. Sau đó, hãy gọi $(G,S)$ là một ví dụ học biểu diễn đồ thị (GRL). Mỗi ví dụ GRL $(G,S)\in X$ được liên kết với một mục tiêu $y$ trong không gian mục tiêu $Y$. Giả sử hàm liên kết thực tế giữa các đặc trưng \& mục tiêu được ký hiệu là $f^*:X\to Y$, $f^*(G,S) = y$. Với một tập hợp các ví dụ đào tạo $\Xi = \{(G^{(i)},S^{(i)},y^{(i)})\}_{i=1}^k$ \& một tập hợp các ví dụ kiểm tra $\Psi = \{(\tilde{G}^{(i)},\tilde{S}^{(i)},\tilde{y}^{(i)})\}_{i=1}^k$, một bài toán {\rm biểu diễn đồ thị} là học một hàm $f$ dựa trên $\Xi$ s. $f$ gần với $f^*$ của $\Psi$.
+        \end{dinhnghia}
+        Above definition is general in sense that in a GRL example $(G,S)\in X$, $G$ provides both raw \& structural features on which some prediction for a node subset $S$ of interest is to be made. Below, further list a few frequently-investigated learning problems that may be formulated as graph representation learning problems.
+
+        -- Định nghĩa trên mang tính tổng quát theo nghĩa là trong ví dụ GRL $(G,S)\in X$, $G$ cung cấp cả các đặc điểm thô \& cấu trúc mà dựa vào đó có thể đưa ra dự đoán cho tập con nút $S$ cần quan tâm. Dưới đây, chúng tôi xin liệt kê thêm một số bài toán học tập thường được nghiên cứu, có thể được xây dựng dưới dạng các bài toán học tập biểu diễn đồ thị.
+
+        \begin{remark}[Graph classification problem{\tt/}Graph-level prediction -- Bài toán phân loại đồ thị{\tt/}Dự đoán cấp độ đồ thị]
+            Node set $S$ of interest is entire node set $V[G]$ by default. Space of graph-structured data $\Gamma$ typically contains multiple graphs. Target space $Y$ contains labels of different graphs. Later, for graph-level prediction, use $G$ to denote a GRL example instead of $(G,S)$ for notational simplicity.
+
+            -- Tập nút $S$ được quan tâm mặc định là toàn bộ tập nút $V[G]$. Không gian dữ liệu có cấu trúc đồ thị $\Gamma$ thường chứa nhiều đồ thị. Không gian mục tiêu $Y$ chứa nhãn của các đồ thị khác nhau. Sau này, để dự đoán ở cấp độ đồ thị, hãy sử dụng $G$ để biểu thị một ví dụ GRL thay vì $(G,S)$ để đơn giản hóa ký hiệu.
+        \end{remark}
+
+        \begin{remark}[Node classification problem{\tt/}Node-level prediction -- Vấn đề phân loại nút{\tt/}Dự đoán cấp độ nút]
+            In a GRL example $(G,S)$, $S$ corresponds to 1 single node of interest. Corresponding $G$ can be defined in different ways. On 1 hand, only nodes close to $S$ provide effective features. In this case, $G$ may be set as induced local subgraph around $S$. Different $G$'s for different $S$'s may come from a single graph. On other hand, 2 nodes that are far apart on 1 graph still hold mutual impact \& can be used as a feature to make a prediction on another graph. In that case, $G$ needs to include a large portion of a graph or even entire graph.
+
+            -- Trong ví dụ GRL $(G,S)$, $S$ tương ứng với 1 nút đơn cần quan tâm. $G$ tương ứng có thể được định nghĩa theo nhiều cách khác nhau. Một mặt, chỉ những nút gần $S$ mới cung cấp các đặc trưng hiệu quả. Trong trường hợp này, $G$ có thể được đặt là đồ thị con cục bộ cảm ứng xung quanh $S$. Các $G$ khác nhau cho các $S$ khác nhau có thể đến từ một đồ thị duy nhất. Mặt khác, 2 nút cách xa nhau trên cùng một đồ thị vẫn có tác động lẫn nhau \& có thể được sử dụng làm đặc trưng để đưa ra dự đoán trên một đồ thị khác. Trong trường hợp đó, $G$ cần bao gồm một phần lớn đồ thị hoặc thậm chí toàn bộ đồ thị.
+        \end{remark}
+
+        \begin{remark}[Link prediction problem{\tt/}Node-pair-level prediction -- Vấn đề dự đoán liên kết{\tt/}Dự đoán cấp độ cặp nút]
+            In a GRL example $(G,S)$, $S$ corresponds to a pair of nodes of interest. Similar to node classification problem, $G$ for each example may be an induced subgraph around $S$ or entire graph. Target space $Y$ contains 0-1 labels that indicate whether there is a probable link between 2 nodes. $Y$ may also be generalized to include labels that reflect types of links to be predicted.
+
+            -- Trong ví dụ GRL $(G,S)$, $S$ tương ứng với một cặp nút cần quan tâm. Tương tự như bài toán phân loại nút, $G$ cho mỗi ví dụ có thể là một đồ thị con cảm ứng xung quanh $S$ hoặc toàn bộ đồ thị. Không gian mục tiêu $Y$ chứa các nhãn 0-1 cho biết liệu có tồn tại liên kết khả dĩ giữa 2 nút hay không. $Y$ cũng có thể được khái quát hóa để bao gồm các nhãn phản ánh loại liên kết cần dự đoán.
+        \end{remark}
+        Introduce fundamental assumption used in most graph representation learning problems.
+
+        -- Giới thiệu giả định cơ bản được sử dụng trong hầu hết các bài toán học biểu diễn đồ thị.
+
+        \begin{definition}[Isomorphism]
+            Consider 2 GRL examples $(G^{(1)},S^{(1)}),(G^{(2)},S^{(2)})\in X$. Suppose $G^{(1)} = (A^{(1)},X^{(1)}),G^{(2)} = (A^{(2)},X^{(2)})$. If there exists a bibjective mapping $\pi:V[G^{(1)}]\to V[G^{(2)}]$, $i\in[2]$, s.t. $A_{uv}^{(1)} = A_{\pi(u)\pi(v)}^{(2)},X_u^{(1)} = X_{\pi(u)}^{(2)}$ \& $\pi$ also gives a bijective mapping between $S^{(1)},S^{(2)}$, call $(G^{(1)},S^{(1)}),(G^{(2)},S^{(2)})$ are isomorphic, denoted as $(G^{(1)},S^{(1)})\cong(G^{(2)},S^{(2)})$. When particular bijective mapping $\pi$ should be highlighted, use notation $(G^{(1)},S^{(1)})\overset{\pi}{\cong}(G^{(2)},S^{(2)})$. If there is no such a $\pi$, call they are non-isomorphic, denoted as $(G^{(1)},S^{(1)})\not\cong(G^{(2)},S^{(2)})$.
+
+            -- Xét 2 ví dụ GRL $(G^{(1)},S^{(1)}),(G^{(2)},S^{(2)})\in X$. Giả sử $G^{(1)} = (A^{(1)},X^{(1)}),G^{(2)} = (A^{(2)},X^{(2)})$. Nếu tồn tại một ánh xạ nhị phân $\pi:V[G^{(1)}]\to V[G^{(2)}]$, $i\in[2]$, s.t. $A_{uv}^{(1)} = A_{\pi(u)\pi(v)}^{(2)},X_u^{(1)} = X_{\pi(u)}^{(2)}$ \& $\pi$ cũng đưa ra một ánh xạ song ánh giữa $S^{(1)},S^{(2)}$, gọi $(G^{(1)},S^{(1)}),(G^{(2)},S^{(2)})$ là đồng cấu, ký hiệu là $(G^{(1)},S^{(1)})\cong(G^{(2)},S^{(2)})$. Khi cần làm nổi bật một ánh xạ song ánh cụ thể $\pi$, hãy sử dụng ký hiệu $(G^{(1)},S^{(1)})\overset{\pi}{\cong}(G^{(2)},S^{(2)})$. Nếu không có $\pi$ nào như vậy, hãy gọi chúng là không đẳng cấu, được ký hiệu là $(G^{(1)},S^{(1)})\not\cong(G^{(2)},S^{(2)})$.
+        \end{definition}
+
+        \begin{assumption}[Fundamental assumption in graph representation learning -- Giả định cơ bản trong học biểu diễn đồ thị]
+            Consider a graph representation learning problem with a feature space $X$ \& its corresponding target space $Y$. Pick any 2 GRL examples $(G^{(1)},S^{(1)}),(G^{(2)},S^{(2)})\in X$. Fundamental assumption says that if $(G^{(1)},S^{(1)})\cong(G^{(2)},S^{(2)})$, their corresponding targets in $Y$ are same.
+
+            -- Xét một bài toán học biểu diễn đồ thị với không gian đặc trưng $X$ \& không gian đích tương ứng $Y$. Chọn bất kỳ 2 ví dụ GRL $(G^{(1)},S^{(1)}),(G^{(2)},S^{(2)})\in X$. Giả định cơ bản nói rằng nếu $(G^{(1)},S^{(1)})\cong(G^{(2)},S^{(2)})$, thì các đích tương ứng của chúng trong $Y$ là giống nhau.
+        \end{assumption}
+        Due to this fundamental assumption, natural to introduce corresponding {\it permutation invariance} as inductive bias that all models of graph representation learning should satisfy.
+
+        -- Do giả định cơ bản này, việc đưa ra {\it bất biến hoán vị} tương ứng như độ lệch quy nạp mà tất cả các mô hình học biểu diễn đồ thị phải đáp ứng là điều tự nhiên.
+
+        \begin{definition}[Permutation invariance]
+            A model $f$ satisfies permutation invariance if for any $(G^{(1)},S^{(1)})\cong(G^{(2)},S^{(2)})$, $f(G^{(1)},S^{(1)}) = f(G^{(2)},S^{(2)})$.
+
+            -- Mô hình $f$ thỏa mãn tính bất biến hoán vị nếu với bất kỳ $(G^{(1)},S^{(1)})\cong(G^{(2)},S^{(2)})$, $f(G^{(1)},S^{(1)}) = f(G^{(2)},S^{(2)})$.
+        \end{definition}
+        Now may define expressive power of a model for graph representation learning problems.
+
+        -- Bây giờ có thể xác định sức mạnh biểu đạt của mô hình cho các vấn đề học tập về biểu diễn đồ thị.
+
+        \begin{definition}[Expressive power -- Sức mạnh biểu đạt]
+            Consider a feature space $X$ of a graph representation learning problem \& a model $f$ defined on $X$. Define another space $X(f)$ as a subspace of quotient space $X/\cong$ s.t. for 2 GRL examples $(G^{(1)},S^{(1)}),(G^{(2)},S^{(2)})\in X(f)$, $f(G^{(1)},S^{(1)})\ne f(G^{(2)},S^{(2)})$. Then, size of $X(f)$ characterizes expressive power of $f$. For 2 models, $f^{(1)},f^{(2)}$, if $X(f^{(1)})\supset X(f^{(2)})$, say that $f^{(1)}$ is more expressive than $f^{(2)}$.
+
+            -- Xét một không gian đặc trưng $X$ của một bài toán học biểu diễn đồ thị \& một mô hình $f$ được xác định trên $X$. Định nghĩa một không gian $X(f)$ khác là một không gian con của không gian thương $X/\cong$ s.t. cho 2 ví dụ GRL $(G^{(1)},S^{(1)}),(G^{(2)},S^{(2)})\in X(f)$, $f(G^{(1)},S^{(1)})\ne f(G^{(2)},S^{(2)})$. Khi đó, kích thước của $X(f)$ đặc trưng cho sức mạnh biểu đạt của $f$. Với 2 mô hình, $f^{(1)},f^{(2)}$, nếu $X(f^{(1)})\supset X(f^{(2)})$, hãy nói rằng $f^{(1)}$ biểu đạt hơn $f^{(2)}$.
+        \end{definition}
+
+        \begin{remark}
+            Note expressive power in Def. 5.5, characterized by how a model can distinguish non-isomorphic GRL examples, does not exactly match traditional expressive power used for NNs in sense of functional approximation. Actually, Def. 5.5 is strictly weaker because distinguishing any non-isomorphic GRL examples does not necessarily indicate that we can approximate any function $f^*$ defined over $X$. However, if a model $f$ cannot distinguish 2 non-isomorphic features, $f$ is definitely unable to approximate function $f^*$ that maps these 2 examples to 2 different targets. Some recent studies have been able to prove some equivalence between distinguishing non-isomorphic features \& permutation invariant function approximations under weak assumptions \& applying involved techniques (Chen et al, 2019f; Azizian and Lelarge, 2020).
+
+            -- Lưu ý sức mạnh biểu đạt trong Định nghĩa 5.5, được đặc trưng bởi cách một mô hình có thể phân biệt các ví dụ GRL không đẳng cấu, không hoàn toàn khớp với sức mạnh biểu đạt truyền thống được sử dụng cho các mạng nơ-ron nhân tạo theo nghĩa xấp xỉ hàm. Trên thực tế, Định nghĩa 5.5 yếu hơn nhiều vì việc phân biệt bất kỳ ví dụ GRL không đẳng cấu nào không nhất thiết chỉ ra rằng chúng ta có thể xấp xỉ bất kỳ hàm $f^*$ nào được xác định trên $X$. Tuy nhiên, nếu một mô hình $f$ không thể phân biệt 2 đặc điểm không đẳng cấu, thì $f$ chắc chắn không thể xấp xỉ hàm $f^*$ ánh xạ 2 ví dụ này tới 2 mục tiêu khác nhau. Một số nghiên cứu gần đây đã có thể chứng minh một số tính tương đương giữa việc phân biệt các đặc điểm không đẳng cấu \& xấp xỉ hàm bất biến hoán vị theo các giả định yếu \& áp dụng các kỹ thuật liên quan (Chen et al, 2019f; Azizian và Lelarge, 2020).
+        \end{remark}
+        Trivial to provide expressive power of a model $f$ for graph representation learning if $f$ does not satisfy permutation invariance. Without such a constraint, NNs can approximate all continuous functions (Cybenko, 1989), which include continuous functions that distinguish any non-isomorphic GRL examples. Therefore, key question discussed in this chap: ``How to build most expressive permutation invariant models, GNNs in particular, for graph representation learning problems?''
+
+        -- Việc cung cấp sức mạnh biểu đạt của mô hình $f$ cho việc học biểu diễn đồ thị là không cần thiết nếu $f$ không thỏa mãn tính bất biến hoán vị. Nếu không có ràng buộc này, mạng nơ-ron nhân tạo (NN) có thể xấp xỉ tất cả các hàm liên tục (Cybenko, 1989), bao gồm các hàm liên tục phân biệt bất kỳ ví dụ GRL nào không đẳng cấu. Do đó, câu hỏi chính được thảo luận trong chương này: ``Làm thế nào để xây dựng các mô hình bất biến hoán vị biểu đạt nhất, đặc biệt là GNN, cho các bài toán học biểu diễn đồ thị?''
         \item {\sf5.3. Power of Message Passing GNNs.}
         \begin{itemize}
-            \item {\sf5.3.1. Preliminaries: Neural Networks for Sets.}
+            \item {\sf5.3.1. Preliminaries: Neural Networks for Sets.} Start by reviewing NNs with sets (multisets) as their input, since a set can be viewed as a simplified-version of a graph where all edges are removed. By definition, order of elements of a set does not impact output; models that encode sets naturally provide an important building block for encoding graphs. Term this approach invariant pooling.
+
+            -- {\sf Sơ bộ: Mạng nơ-ron cho tập hợp.} Hãy bắt đầu bằng việc xem xét các mạng nơ-ron nhân tạo với tập hợp (đa tập hợp) làm đầu vào, vì một tập hợp có thể được xem như một phiên bản đơn giản hóa của một đồ thị trong đó tất cả các cạnh đều bị loại bỏ. Theo định nghĩa, thứ tự các phần tử của một tập hợp không ảnh hưởng đến đầu ra; các mô hình mã hóa tập hợp tự nhiên cung cấp một nền tảng quan trọng cho việc mã hóa đồ thị. Hãy gọi cách tiếp cận này là gộp bất biến.
+
+            \begin{definition}[Multiset]
+                A {\rm multiset} is a set where its elements can be repetitive, i.e., they are present multiple times. In this chap, assume by default that all sets are multisets \& thus allow repetitive elements. In situations where this is not case, will indicate otherwise.
+
+                -- Một {\rm  đa tập} là một tập hợp mà các phần tử của nó có thể lặp lại, tức là chúng xuất hiện nhiều lần. Trong chương này, mặc định giả định rằng tất cả các tập hợp đều là đa tập \& do đó cho phép các phần tử lặp lại. Trong trường hợp không phải vậy, sẽ chỉ ra trường hợp ngược lại.
+            \end{definition}
+
+            \begin{definition}[Invariant pooling -- Gộp bất biến]
+                Given a multiset of vectors $S = \{{\bf a}_1,\ldots,{\bf a}_k\}$ where ${\bf a}_i\in\mathbb{R}^F$ \& $F$ is an arbitrary constant, an invariant pooling refers to a mapping, denoted as $q(S)$, that is invariant to order of elements in $S$.
+
+                -- Với một tập hợp đa vectơ $S = \{{\bf a}_1,\ldots,{\bf a}_k\}$ trong đó ${\bf a}_i\in\mathbb{R}^F$ \& $F$ là hằng số tùy ý, một nhóm bất biến đề cập đến một ánh xạ, được ký hiệu là $q(S)$, bất biến theo thứ tự các phần tử trong $S$.
+            \end{definition}
+            Some widely-used invariant pooling operations include: sum pooling $q(S) = \sum_{i=1}^k {\bf a}_i$, mean pooling $q(S) = \frac{1}{k}\sum_{i=1}^k {\bf a}_i$, \& max pooling $[q(S)]_j = \max_{i\in[F]} a_{ij}$, $\forall j\in[F]$. Zaheer et al (2017) show: any invariant poolings of a set $S$ can be approximated by $q(S) = \phi\left(\sum_{i=1}^k \psi({\bf a}_i)\right)$, where $\phi,\psi$ are functions that may be approximated by fully connected NNs, provided that ${\bf a}_i$, $i\in[k]$ comes from a countable universe.This statement can be generalized to the case where $S$ is a multiset (Xu et al, 2019d).
+
+            -- Một số phép toán gộp bất biến được sử dụng rộng rãi bao gồm: gộp tổng $q(S) = \sum_{i=1}^k {\bf a}_i$, gộp trung bình $q(S) = \frac{1}{k}\sum_{i=1}^k {\bf a}_i$, \& gộp tối đa $[q(S)]_j = \max_{i\in[F]} a_{ij}$, $\forall j\in[F]$. Zaheer et al (2017) chỉ ra: bất kỳ nhóm bất biến nào của một tập hợp $S$ đều có thể được xấp xỉ bằng $q(S) = \phi\left(\sum_{i=1}^k \psi({\bf a}_i)\right)$, trong đó $\phi,\psi$ là các hàm có thể được xấp xỉ bằng các mạng nơron kết nối đầy đủ, với điều kiện là ${\bf a}_i$, $i\in[k]$ xuất phát từ một vũ trụ đếm được. Tuyên bố này có thể được khái quát hóa cho trường hợp $S$ là một tập hợp đa (Xu et al, 2019d).
+            \item {\sf5.3.2. Message Passing GNNs.} Message passing is most widely-used framework to build GNNs (Gilmer et al, 2017). Given a graph $G = (V,E,X)$, message passing framework encodes each node $v\in V$ with a vector representation ${\bf h}_v$ \& keeps updating this node representation by iteratively collecting representations of its neighbors \& applying neural network layers to perform a nonlinear transformation of those collections:
+            \begin{enumerate}
+                \item Initialize node vector representations as node attributes: ${\bf h}_v^{(0)}\leftarrow X_v$, $\forall v\in V$.
+                \item Update each node representation based on message passing over graph structure. In $l$th layer, $l\in[L]$, perform following steps:
+                \begin{itemize}
+                    \item Message: ${\bf m}_{vu}^{(1)}\leftarrow{\rm MSG}({\bf h}_v^{(l-1)},{\bf h}_u^{(l-1)})$, $\forall(u,v)\in E$
+                    \item Aggregation: ${\bf a}_v^{(l)}\leftarrow{\rm AGG}(\{{\bf m}_{vu}^{(l)}|u\in{\cal N}_v\})$, $\forall v\in V$.
+                    \item Update: ${\bf h}_v^{(l)}\leftarrow{\rm UPT}({\bf h}_v^{(l-1)},{\bf a}_v^{(l)})$, $\forall v\in V$.
+                \end{itemize}
+                where ${\cal N}_v$ is set of neighbors of $v$.
+            \end{enumerate}
+            -- {\sf5.3.2. Truyền thông điệp GNN.} Truyền thông điệp là khuôn khổ được sử dụng rộng rãi nhất để xây dựng GNN (Gilmer và cộng sự, 2017). Với đồ thị $G = (V,E,X)$, khuôn khổ truyền thông điệp mã hóa mỗi nút $v\in V$ bằng một biểu diễn vectơ ${\bf h}_v$ \& tiếp tục cập nhật biểu diễn nút này bằng cách thu thập lặp lại các biểu diễn của các nút lân cận \& áp dụng các lớp mạng nơ-ron để thực hiện phép biến đổi phi tuyến tính của các tập hợp đó:
+            \begin{enumerate}
+                \item Khởi tạo các biểu diễn vectơ của nút dưới dạng các thuộc tính của nút: ${\bf h}_v^{(0)}\leftarrow X_v$, $\forall v\in V$.
+                \item Cập nhật từng biểu diễn nút dựa trên việc truyền thông điệp qua cấu trúc đồ thị. Ở lớp $l$th, $l\in[L]$, thực hiện các bước sau:
+                \begin{itemize}
+                    \item Message: ${\bf m}_{vu}^{(1)}\leftarrow{\rm MSG}({\bf h}_v^{(l-1)},{\bf h}_u^{(l-1)})$, $\forall(u,v)\in E$
+                    \item Aggregation: ${\bf a}_v^{(l)}\leftarrow{\rm AGG}(\{{\bf m}_{vu}^{(l)}|u\in{\cal N}_v\})$, $\forall v\in V$.
+                    \item Cập nhật: ${\bf h}_v^{(l)}\leftarrow{\rm UPT}({\bf h}_v^{(l-1)},{\bf a}_v^{(l)})$, $\forall v\in V$.
+                \end{itemize}
+                trong đó ${\cal N}_v$ là tập hợp các lân cận của $v$.
+            \end{enumerate}
+            Operations MSG, AGG, \& UPT can be implemented via neural networks. Typically, MSG is implemented by a feedforward NN, e.g., ${\rm MSG}(p,q) = \sigma(pW_1 + qW_2)$, where $W_1,W_2$ are learnable weights, \& $\sigma(\cdot)$ is an elementwise nonlinear activation. UPT can be chosen in a similar way as MSG. AGG differs as its input is a multiset of vectors \& thus order of these vectors should not affect output. AGG is typically implemented as an invariant pooling. Each layer $k$ can have different parameters from other layers. Denote GNNs that follow this message passing framework as MP-GNN.
+
+            -- Các phép toán MSG, AGG, \& UPT có thể được triển khai thông qua mạng nơ-ron. Thông thường, MSG được triển khai bởi một mạng nơ-ron truyền thẳng, ví dụ: ${\rm MSG}(p,q) = \sigma(pW_1 + qW_2)$, trong đó $W_1,W_2$ là các trọng số có thể học được, \& $\sigma(\cdot)$ là một phép kích hoạt phi tuyến tính từng phần tử. UPT có thể được chọn tương tự như MSG. AGG khác ở chỗ đầu vào của nó là một tập hợp đa vectơ \& do đó thứ tự của các vectơ này không ảnh hưởng đến đầu ra. AGG thường được triển khai dưới dạng một phép gộp bất biến. Mỗi lớp $k$ có thể có các tham số khác nhau so với các lớp khác. Ký hiệu các GNN tuân theo khuôn khổ truyền thông điệp này là MP-GNN.
+
+            MP-GNN produces representations of all nodes $\{{\bf h}_v^{(L)}|v\in V\}$. Each node representation is essentially determined by a subtree rooted at this node {\sf Fig. 5.7: Computing flow of MP-GNN to obtain a node representation.} Given a specific graph representation learning problem, e.g., classifying a set of nodes $S\subseteq V$, may use representations of relevant nodes in $S$ to make prediction: (5.4)
+            \begin{equation*}
+                \hat{y}_S = {\rm READOUT}(\{{\bf h}_v^{(L)}|v\in S\}),
+            \end{equation*}
+            where READOUT operation is often implemented via another invariant pooling when $|S| > 1$ plus a feedforward NN to predict target. Combining (11.45) ${\bf m}_{ij} = f_{\rm msg}({\bf h}_i - {\bf h}_j)$, $\forall(i,j)\in\tilde{\cal E}^t$ \& (5.4), MP-GNN builds a GNN model for graph representation learning: (5.5)
+            \begin{equation*}
+                \hat{y}_S = f_{MPGNN}(G,S).
+            \end{equation*}
+            -- MP-GNN tạo ra biểu diễn của tất cả các nút $\{{\bf h}_v^{(L)}|v\in V\}$. Mỗi biểu diễn nút về cơ bản được xác định bởi một cây con có gốc tại nút này {\sf Hình 5.7: Luồng tính toán của MP-GNN để thu được biểu diễn nút.} Với một bài toán học biểu diễn đồ thị cụ thể, ví dụ, phân loại một tập hợp các nút $S\subseteq V$, có thể sử dụng biểu diễn của các nút liên quan trong $S$ để đưa ra dự đoán: (5.4)
+            \begin{equation*}
+                \hat{y}_S = {\rm READOUT}(\{{\bf h}_v^{(L)}|v\in S\}),
+            \end{equation*}
+            trong đó thao tác READOUT thường được triển khai thông qua một nhóm bất biến khác khi $|S| > 1$ cộng với một mạng nơ-ron truyền thẳng để dự đoán mục tiêu. Kết hợp (11.45) ${\bf m}_{ij} = f_{\rm msg}({\bf h}_i - {\bf h}_j)$, $\forall(i,j)\in\tilde{\cal E}^t$ \& (5.4), MP-GNN xây dựng một mô hình GNN để học biểu diễn đồ thị: (5.5)
+            \begin{equation*}
+                \hat{y}_S = f_{MPGNN}(G,S).
+            \end{equation*}
+            Can show permutation invariance of MP-GNN by induction over iteration index $l$.
+
+            -- Có thể thể hiện tính bất biến hoán vị của MP-GNN bằng phép quy nạp trên chỉ số lặp $l$.
+
+            \begin{theorem}[Invariance of MP-GNN]
+                $f_{\rm MPGNN}(\cdot,\cdot)$ satisfies permutation invariant as long as AGG \& READOUT operations are invariant pooling operations.
+
+                -- $f_{\rm MPGNN}(\cdot,\cdot)$ thỏa mãn bất biến hoán vị miễn là các hoạt động AGG \& READOUT là các hoạt động gộp bất biến.
+            \end{theorem}
+            This can be proved trivially by induction.
+
+            \item {\sf5.3.3. Expressive Power of MP-GNN.}
         \end{itemize}
     \end{itemize}
     \item {\sf6. GNNs: Scalability.}
@@ -3009,6 +3146,11 @@ from sklearn.metrics import accuracy_score
     \item {\sf26. GNNs in Anomaly Detection.}
     \item {\sf27. GNNs in Urban Intelligence.}
 \end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Geeks4Geeks{\tt/}what are GNNs?}
+
 
 %------------------------------------------------------------------------------%
 

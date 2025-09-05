@@ -3329,8 +3329,197 @@ def accuracy(y_pred, y_true):
 
 %------------------------------------------------------------------------------%
 
-\subsection{Geeks4Geeks{\tt/}what are GNNs?}
+\subsection{\href{https://www.datacamp.com/tutorial/comprehensive-introduction-graph-neural-networks-gnns-tutorial}{DataCamp{\tt/}a comprehensive introduction to GNNs}. Jul 21, 2022}
+Learn everything about Graph Neural Networks, including what GNNs are, the different types of graph neural networks, and what they're used for. Plus, learn how to build a Graph Neural Network with Pytorch.
 
+%------------------------------------------------------------------------------%
+
+\subsubsection{What is a graph}
+A graph is the type of data structure that contains nodes \& edges. A node can be a person, place, or thing, \& edges define relationship between nodes. Edges can be directed \& undirected based on directional dependencies. Learn about the complex Graph dataset: \href{https://datarepository.wolframcloud.com/resources/Jazz-Musicians-Network}{Jazz Musicians Network}. It contains 198 nodes \& 2742 edges. In community graph plot below, different colors of nodes represent various communities of Jazz musicians \& edges connecting them. There is a web of collaboration where a single musician has relationships within \& outside community. {\sf Fig. Community Graph Plot by Jazz Musicians Network}.
+
+-- Đồ thị là loại cấu trúc dữ liệu chứa các nút \& cạnh. Một nút có thể là một người, địa điểm hoặc vật, \& cạnh xác định mối quan hệ giữa các nút. Các cạnh có thể có hướng \& vô hướng dựa trên các phụ thuộc hướng. Tìm hiểu về tập dữ liệu Đồ thị phức tạp: \href{https://datarepository.wolframcloud.com/resources/Jazz-Musicians-Network}{Jazz Musicians Network}. Tập dữ liệu này chứa 198 nút \& 2742 cạnh. Trong biểu đồ cộng đồng bên dưới, các màu khác nhau của các nút đại diện cho các cộng đồng nhạc sĩ Jazz khác nhau \& cạnh kết nối họ. Có một mạng lưới cộng tác, trong đó một nhạc sĩ có các mối quan hệ bên trong \& bên ngoài cộng đồng. {\sf Hình. Biểu đồ Cộng đồng của Jazz Musicians Network}.
+
+Graphs are excellent in dealing with complex problems with relationships \& interactions. They are used in pattern recognition, social networks analysis, recommendation systems, \& semantic analysis. Creating graph-based solutions is a whole new field that offers rich insights into complex \& interlinked datasets.
+
+-- Biểu đồ rất hữu ích trong việc giải quyết các vấn đề phức tạp liên quan đến mối quan hệ \& tương tác. Chúng được sử dụng trong nhận dạng mẫu, phân tích mạng xã hội, hệ thống đề xuất và phân tích ngữ nghĩa. Việc tạo ra các giải pháp dựa trên biểu đồ là một lĩnh vực hoàn toàn mới, cung cấp những hiểu biết sâu sắc về các tập dữ liệu phức tạp \& liên kết với nhau.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Graphs with NetworkX}
+Learn to create a graph using \href{https://networkx.org/}{NetworkX}. Code below is influenced by Daniel Holmberg's blog on Graph Neural Networks in Python.
+\begin{enumerate}
+    \item Create networkx's {\tt DiGraph} object {\tt H}.
+    \item Add nodes that contain different labels, colors, \& size.
+    \item Add edges to create a relationship between 2 nodes. E.g., $(0,1)$ means 0 has a directional dependency on 1. Will create bidirectional relationships by adding $(1,0)$.
+    \item Extract colors \& sizes in form of lists.
+    \item Plot graph using networkx's {\tt draw} function.
+\end{enumerate}
+In next step, convert data structure from directional to an undirected graph using \verb|to_undirected()| function.
+\begin{verbatim}
+#converting to undirected graph
+G = H.to_undirected()
+nx.draw(G, with_labels=True, node_color=colors, node_size=sizes)
+\end{verbatim}
+-- Học cách tạo đồ thị bằng \href{https://networkx.org/}{NetworkX}. Mã bên dưới được lấy cảm hứng từ blog của Daniel Holmberg về Mạng Nơ-ron Đồ thị trong Python.
+\begin{enumerate}
+    \item Tạo đối tượng {\tt DiGraph} {\tt H} của networkx.
+    \item Thêm các nút chứa các nhãn, màu sắc, \& kích thước khác nhau.
+    \item Thêm các cạnh để tạo mối quan hệ giữa 2 nút. Ví dụ: $(0,1)$ nghĩa là 0 có phụ thuộc hướng vào 1. Sẽ tạo mối quan hệ hai chiều bằng cách thêm $(1,0)$.
+    \item Trích xuất màu sắc \& kích thước dưới dạng danh sách.
+    \item Vẽ đồ thị bằng hàm {\tt draw} của networkx.
+\end{enumerate}
+Trong bước tiếp theo, chuyển đổi cấu trúc dữ liệu từ đồ thị có hướng sang đồ thị vô hướng bằng hàm \verb|to_undirected()|.
+\begin{verbatim}
+#chuyển đổi sang đồ thị vô hướng
+G = H.to_undirected()
+nx.draw(G, with_labels=True, node_color=colors, node_size=sizes)
+\end{verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Why is it hard to analyze a graph?}
+Graph-based data structures have drawbacks, \& data scientists must understand them before developing graph-based solutions.
+\begin{enumerate}
+    \item A graph exists in non-euclidean space. It does not exist in 2D or 3D space, which makes it harder to interpret data. To visualize structure in 2D space, must use various dimensionality reduction tools.
+    \item Graphs are dynamic; they do not have a fixed form. There can be 2 visually different graphs, but they might have similar adjacency matrix representations. It makes it difficult for us to analyze data using traditional statistical tools.
+    \item Large size \& dimensionality will increase graph's complexity for human interpretations. Dense structure with multiple nodes \& thousands of edges is harder to understand \& extract insights.
+\end{enumerate}
+-- Cấu trúc dữ liệu dạng đồ thị có những nhược điểm, \& các nhà khoa học dữ liệu phải hiểu rõ chúng trước khi phát triển các giải pháp dựa trên đồ thị.
+\begin{enumerate}
+    \item Đồ thị tồn tại trong không gian phi Euclid. Nó không tồn tại trong không gian 2D hoặc 3D, điều này khiến việc diễn giải dữ liệu trở nên khó khăn hơn. Để trực quan hóa cấu trúc trong không gian 2D, cần sử dụng nhiều công cụ giảm chiều khác nhau.
+    \item Đồ thị là động; chúng không có dạng cố định. Có thể có 2 đồ thị khác nhau về mặt trực quan, nhưng chúng có thể có biểu diễn ma trận kề tương tự nhau. Điều này khiến chúng ta khó phân tích dữ liệu bằng các công cụ thống kê truyền thống.
+    \item Kích thước \& chiều lớn sẽ làm tăng độ phức tạp của đồ thị đối với việc diễn giải của con người. Cấu trúc dày đặc với nhiều nút \& hàng nghìn cạnh sẽ khó hiểu \& rút ra thông tin chi tiết.
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{What is a GNN?}
+GNNs are special types of neural networks capable of working with a graph data structure. They are highly influenced by Convolutional Neural Networks (CNNs) \& graph embedding. GNNs are used in predicting nodes, edges, \& graph-based tasks.
+\begin{itemize}
+    \item CNNs are used for image classification. Similarly, GNNs are applied for graph structure (grid of pixels) to predict a class.
+    \item RNNs are used in text classification. Similarly, GNNs are applied to graph structures where every word is a node in a sentence.
+\end{itemize}
+GNNs were introduced when Convolutional Neural Networks failed to achieve optimal results due to arbitrary size of graph \& complex structure.
+
+-- GNN là một loại mạng nơ-ron đặc biệt có khả năng làm việc với cấu trúc dữ liệu đồ thị. Chúng chịu ảnh hưởng rất lớn từ Mạng Nơ-ron Tích chập (CNN) \& nhúng đồ thị. GNN được sử dụng để dự đoán các nút, cạnh \& các tác vụ dựa trên đồ thị.
+\begin{itemize}
+    \item CNN được sử dụng để phân loại hình ảnh. Tương tự, GNN được áp dụng cho cấu trúc đồ thị (lưới pixel) để dự đoán một lớp.
+    \item RNN được sử dụng trong phân loại văn bản. Tương tự, GNN được áp dụng cho các cấu trúc đồ thị mà mỗi từ là một nút trong câu.
+\end{itemize}
+GNN được giới thiệu khi Mạng Nơ-ron Tích chập không đạt được kết quả tối ưu do kích thước đồ thị tùy ý \& cấu trúc phức tạp.
+
+Input graph is passed through a series of neural networks. Input graph structure is converted into graph embedding, allowing us to maintain information on nodes, edges, \& global context. Then feature vector of nodes A, C is passed through neural network layer. It aggregates these features \& passes them to next layer. \url{https://neptune.ai/blog/graph-neural-network-and-some-of-gnn-applications}.
+
+-- Đồ thị đầu vào được truyền qua một chuỗi mạng nơ-ron. Cấu trúc đồ thị đầu vào được chuyển đổi thành dạng nhúng đồ thị, cho phép chúng ta duy trì thông tin về các nút, cạnh và ngữ cảnh toàn cục. Sau đó, vectơ đặc trưng của các nút A và C được truyền qua lớp mạng nơ-ron. Nó tổng hợp các đặc trưng này và truyền chúng sang lớp tiếp theo. \url{https://neptune.ai/blog/graph-neural-network-and-some-of-gnn-applications}.
+
+%------------------------------------------------------------------------------%
+
+\paragraph{Types of GNNs.} There are several types of neural networks, \& most of them have some variation of CNNs. In this sect, will be learning about most popular GNNs.
+\begin{itemize}
+    \item {\bf Graph Convolutional Networks (GCNs)} are similar to traditional CNNs. It learns features by inspecting neighboring nodes. GNNs aggregate node vectors, pass result to dense layer, \& apply nonlinearity using activation function. In short, it consists of Graph convolution, linear layer, \& non-learner activation function. There are 2 major types of GCNs: Spatial Convolutional Networks \& Spectral Convolutional Networks.
+    \item {\bf Graph Auto-Encoder Networks} learn graph representation using an encoder \& attempt to reconstruct input graphs using a decoder. Encoder \& decoders are joined by a bottle layer. They are commonly used in link prediction as Auto-Encoders are good at dealing with class balance.
+    \item {\bf Recurrent Graph Neural Networks (RGNNs)} learn best diffusion pattern, \& they can handle multi-relational graphs where a single node has multiple relations. This type of GNN uses regularizers to boost smoothness \& eliminate over-parameterization. RGNNs use less computation power to produce better results. They are used in generating text, machine translation, speech recognition, generating image descriptions, video tagging, \& text summarization.
+    \item {\bf Gated Graph Neural Networks (GGNNs)} are better than RGNNs in performing tasks with long-term dependencies. Gated Graph Neural Networks improve Recurrent Graph Neural Networks by adding a node, edge, \& time gates on long-term dependencies. Similar to Gated Recurrent Units (GRUs), gates are used to remember \& forget information in different states.
+\end{itemize}
+-- Có một số loại mạng nơ-ron, \& hầu hết đều có một số biến thể của CNN. Trong phần này, chúng ta sẽ tìm hiểu về các GNN phổ biến nhất.
+\begin{itemize}
+    \item {\bf Mạng Tích chập Đồ thị (GCN)} tương tự như CNN truyền thống. Nó học các đặc trưng bằng cách kiểm tra các nút lân cận. GNN tổng hợp các vectơ nút, truyền kết quả đến lớp dày đặc, \& áp dụng tính phi tuyến tính bằng hàm kích hoạt. Tóm lại, nó bao gồm tích chập Đồ thị, lớp tuyến tính, \& hàm kích hoạt không học. Có 2 loại GCN chính: Mạng Tích chập Không gian \& Mạng Tích chập Phổ.
+    \item {\bf Mạng Tự động Mã hóa Đồ thị} học biểu diễn đồ thị bằng bộ mã hóa \& cố gắng tái tạo đồ thị đầu vào bằng bộ giải mã. Bộ mã hóa \& bộ giải mã được nối với nhau bằng một lớp chai. Chúng thường được sử dụng trong dự đoán liên kết vì Bộ tự động Mã hóa rất hiệu quả trong việc xử lý cân bằng lớp.
+
+    \item {\bf Mạng Nơ-ron Đồ thị Hồi quy (RGNN)} học mẫu khuếch tán tốt nhất, \& chúng có thể xử lý đồ thị đa quan hệ, trong đó một nút có nhiều quan hệ. Loại GNN này sử dụng các bộ điều chỉnh để tăng độ mượt \& loại bỏ tham số hóa quá mức. RGNN sử dụng ít năng lực tính toán hơn để tạo ra kết quả tốt hơn. Chúng được sử dụng trong việc tạo văn bản, dịch máy, nhận dạng giọng nói, tạo mô tả hình ảnh, gắn thẻ video, \& tóm tắt văn bản.
+    \item {\bf Mạng Nơ-ron Đồ thị Có Cổng (GGNN)} tốt hơn RGNN trong việc thực hiện các tác vụ có phụ thuộc dài hạn. Mạng Nơ-ron Đồ thị Có Cổng cải thiện Mạng Nơ-ron Đồ thị Hồi quy bằng cách thêm một nút, cạnh, \& cổng thời gian vào các phụ thuộc dài hạn. Tương tự như Đơn vị Hồi quy Có Cổng (GRU), cổng được sử dụng để ghi nhớ \& quên thông tin ở các trạng thái khác nhau.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\paragraph{Types of GNNs tasks.} Outline some of types of GNN tasks with examples:
+\begin{itemize}
+    \item {\bf Graph Classification.} Use this to classify graphs into various categories. Its applications are social network analysis \& text classification.
+    \item {\bf Node Classification.} This task uses neighboring node labels to predict missing node labels in a graph.
+    \item {\bf Link Prediction.} predicts link between a pair of nodes in a graph with an incomplete adjacency matrix. It is commonly used for social networks.
+    \item {\bf Community Detection.} divides nodes into various clusters based on edge structure. It learns from edge weights, \& distance \& graph objects similarly.
+    \item {\bf Graph Embedding} maps graphs into vectors, preserving relevant information on nodes, edges, \& structure.
+    \item {\bf Graph Generation.} learns from sample graph distribution to generate a new but similar graph structure.
+\end{itemize}
+-- Phác thảo một số loại tác vụ GNN kèm ví dụ:
+\begin{itemize}
+    \item {\bf Phân loại đồ thị.} Sử dụng tác vụ này để phân loại đồ thị thành nhiều loại khác nhau. Ứng dụng của nó là phân tích mạng xã hội \& phân loại văn bản.
+    \item {\bf Phân loại nút.} Tác vụ này sử dụng nhãn nút lân cận để dự đoán nhãn nút bị thiếu trong đồ thị.
+    \item {\bf Dự đoán liên kết.} dự đoán liên kết giữa một cặp nút trong đồ thị có ma trận kề không đầy đủ. Nó thường được sử dụng cho mạng xã hội.
+    \item {\bf Phát hiện cộng đồng.} chia các nút thành các cụm khác nhau dựa trên cấu trúc cạnh. Nó học từ trọng số cạnh, \& khoảng cách \& các đối tượng đồ thị một cách tương tự.
+    \item {\bf Nhúng đồ thị} ánh xạ đồ thị thành các vectơ, bảo toàn thông tin liên quan về các nút, cạnh, \& cấu trúc.
+    \item {\bf Tạo đồ thị.} học từ phân phối đồ thị mẫu để tạo ra một cấu trúc đồ thị mới nhưng tương tự.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+
+\paragraph{Disadvantages of GNNs.} There are a few drawbacks to using GNNs. Understanding them will help us determine when to use GNNs \& how to optimize performance of our ML models.
+\begin{enumerate}
+    \item Most neural networks can go deep to obtain better performance, whereas {\it GNNs are shallow networks} mostly with 3 layers. It limits us from achieving state-of-art performance on large datasets.
+    \item {\it Graph structures are constantly changing}, making it harder to train a model on it.
+    \item Deploying model to production faces {\it scalability issues} as these networks are computationally expensive. If have a large \& complex graph structure, it will be hard for you to scale GNNs in production.
+\end{enumerate}
+-- Có một vài nhược điểm khi sử dụng GNN. Hiểu rõ những nhược điểm này sẽ giúp chúng ta xác định thời điểm sử dụng GNN \& cách tối ưu hóa hiệu suất của các mô hình ML.
+\begin{enumerate}
+    \item Hầu hết các mạng nơ-ron đều có thể đi sâu để đạt được hiệu suất tốt hơn, trong khi {\it GNN là mạng nông} chủ yếu có 3 lớp. Điều này hạn chế chúng ta đạt được hiệu suất tiên tiến trên các tập dữ liệu lớn.
+    \item {\it Cấu trúc đồ thị liên tục thay đổi}, khiến việc huấn luyện mô hình trên đó trở nên khó khăn hơn.
+    \item Việc triển khai mô hình lên môi trường sản xuất gặp phải {\it vấn đề về khả năng mở rộng} vì các mạng này tốn kém về mặt tính toán. Nếu có cấu trúc đồ thị lớn \& phức tạp, bạn sẽ khó có thể mở rộng GNN trong môi trường sản xuất.
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{What is a Graph Convolutional Network (GCN)?}
+Majority of GNNs are Graph Convolutional Networks, \& important to learn about them before jumping into a node classification tutorial. {\it Convolution} in GCN is same as a convolution in CNNs. It multiplies neurons with weights (filters) to learn from data features. It acts as sliding windows on whole images to learn features from neighboring cells. Filter uses weight sharing to learn various facial features in image recognition systems.
+
+-- Phần lớn GNN là Mạng Tích chập Đồ thị, \& điều quan trọng là phải tìm hiểu về chúng trước khi bắt đầu hướng dẫn phân loại nút. Tích chập trong GCN tương tự như tích chập trong CNN. Nó nhân các nơ-ron với trọng số (bộ lọc) để học từ các đặc điểm dữ liệu. Nó hoạt động như các cửa sổ trượt trên toàn bộ hình ảnh để học các đặc điểm từ các ô lân cận. Bộ lọc sử dụng chia sẻ trọng số để học các đặc điểm khuôn mặt khác nhau trong các hệ thống nhận dạng hình ảnh.
+
+Now transfer same functionality to GCNs where a model learns features from neighboring nodes. Major difference between GCN \& GNN: it is developed to work on non-euclidean data structures where order of nodes \& edges can vary.
+
+-- Bây giờ hãy chuyển chức năng tương tự sang GCN, nơi mô hình học các đặc điểm từ các nút lân cận. Sự khác biệt chính giữa GCN \& GNN: nó được phát triển để hoạt động trên các cấu trúc dữ liệu phi Euclid, trong đó thứ tự các nút \& cạnh có thể thay đổi.
+
+There are 2 types of GCNs:
+\begin{itemize}
+    \item {\bf Spatial Graph Convolutional Networks} use spatial features to learn from graphs that are located in spatial space.
+    \item {\bf Spectral Graph Convolutional Networks} use Eigen-decomposition of graph Laplacian matrix for information propagation along nodes. These networks were inspired by wave propagation in signals \& systems.
+\end{itemize}
+-- Có 2 loại GCN:
+\begin{itemize}
+    \item {\bf Mạng tích chập đồ thị không gian} sử dụng các đặc trưng không gian để học từ các đồ thị nằm trong không gian không gian.
+    \item {\bf Mạng tích chập đồ thị phổ} sử dụng phép phân tích riêng của ma trận Laplacian đồ thị để truyền thông tin dọc theo các nút. Các mạng này được lấy cảm hứng từ sự truyền sóng trong tín hiệu \& hệ thống.
+\end{itemize}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{How do GNNs work? Build a GNN with PyTorch}
+Build \& train Spectral Graph Convolution for a node classification model. Source code is available at \href{https://www.datacamp.com/datalab/w/4bb43f79-421f-4a6e-ba51-f972ea996db8}{DataLab workbook} to experience \& run 1st graph-based ML model. Coding examples are influenced by \href{https://pytorch-geometric.readthedocs.io/en/latest/notes/colabs.html}{PyTorch Geometric} documentation. Install PyTorch \url{https://www.datacamp.com/courses/introduction-to-deep-learning-with-pytorch} package as \verb|pytorch_geometric| is built upon it.
+\begin{verbatim}
+!pip install -q torch
+\end{verbatim}
+Then use torch version to install {\tt torch-scatter, torch-sparse}. After that, install \verb|pytorch_geometric|'s \url{https://pytorch-geometric.readthedocs.io/en/latest/notes/colabs.html} latest release from GitHub.
+\begin{verbatim}
+%%capture
+import os
+import torch
+os.environ['TORCH'] = torch.__version__
+os.environ['PYTHONWARNINGS'] = "ignore"
+!pip install torch-scatter -f https://data.pyg.org/whl/torch-${TORCH}.html
+!pip install torch-sparse -f https://data.pyg.org/whl/torch-${TORCH}.html
+!pip install git+https://github.com/pyg-team/pytorch_geometric.git
+\end{verbatim}
+
+\paragraph{Planetoid Cora Dataset.} Planetoid is a citation network dataset from Cora, CiteSeer, \& PubMed. Nodes are documented with 1433-dimensional bag-of-words feature vectors, \& edges are citation links between research papers. There are 7 classes, \& will train model to predict missing labels. Will ingest Planetoid Cora dataset, \& {\it row normalize} bag of words input feature. After that, analyze dataset \& 1st graph object.
+
+-- Planetoid là một tập dữ liệu mạng trích dẫn từ Cora, CiteSeer, \& PubMed. Các nút được ghi lại bằng các vectơ đặc trưng túi từ 1433 chiều, \& các cạnh là các liên kết trích dẫn giữa các bài báo nghiên cứu. Có 7 lớp, \& sẽ huấn luyện mô hình để dự đoán các nhãn bị thiếu. Sẽ nhập tập dữ liệu Planetoid Cora, \& tính năng đầu vào túi từ {\it row normalize}. Sau đó, phân tích tập dữ liệu \& đối tượng đồ thị đầu tiên.
+
+
+
+
+
+
+%------------------------------------------------------------------------------%
+
+\subsection{Geeks4Geeks{\tt/}what are GNNs?}
 
 %------------------------------------------------------------------------------%
 

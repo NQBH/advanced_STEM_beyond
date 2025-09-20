@@ -23602,6 +23602,13 @@ int main() {
     \end{table}
 \end{problem}
 
+\begin{baitoan}[Lũy thừa]
+    Tính toán hiệu quả các giá trị $a^b\mbox{ mod } 10^9 + 7$. Giả sử $0^0 = 1$.
+    \item {\sf Đầu vào.} Dòng đầu vào thứ nhất chứa số nguyên $n\in\mathbb{N}^\star$: số phép tính. Sau đó, có $n$ dòng, mỗi dòng chứa $2$ số nguyên $a,b\in\mathbb{N}^\star$.
+    \item {\sf Đầu ra.} In ra từng giá trị $a^b\mbox{ mod } 10^9 + 7$.
+    \item {\sf Ràng buộc.} $n\in[2\cdot10^5],a,b\in\overline{0,10^9}$.
+\end{baitoan}
+
 \begin{problem}[\href{https://cses.fi/problemset/task/1712}{CSES Problem Set{\tt/}exponentiation II}]
     Efficiently calculate values $a^{b^c}\mbox{ mod } 10^9 + 7$. Assume $0^0 = 1$.
     \item {\sf Input.} The 1st input line contains an integer $n\in\mathbb{N}^\star$: the number of calculations. After this, there are $n$ lines, each containing $3$ integers $a,b,c\in\mathbb{N}^\star$.
@@ -25573,7 +25580,7 @@ Ngoài ra, 2 hàm này có tính kết hợp, nghĩa là nếu chúng ta muốn 
 
 %------------------------------------------------------------------------------%
 
-\section{Euler's totient function -- Phi hàm Euler}
+\subsection{Euler's totient function -- Phi hàm Euler}
 {\it Euler's totient function}, written using phi $\phi(n)$, counts the number of positive integers in the interval $[1,n]$ which are coprime to $n$. 2 numbers $a,b$ are coprime if their gcd is equal to 1, i.e., $\gcd(a,b) = 1$. The totient function is {\it multiplicative}, i.e.:
 \begin{equation*}
     \phi(mn) = \phi(m)\phi(n),\ \forall m,n\in\mathbb{N},\ \gcd(m,n) = 1.
@@ -25585,6 +25592,183 @@ E.g., $\phi(15) = \phi(3\cdot5) = \phi(3)\phi(5) = 2\cdot4 = 8$.
     \phi(mn) = \phi(m)\phi(n),\ \forall m,n\in\mathbb{N},\ \gcd(m,n) = 1.
 \end{equation*}
 Ví dụ: $\phi(15) = \phi(3\cdot5) = \phi(3)\phi(5) = 2\cdot4 = 8$.
+
+Let's take a look at some edge cases for $\phi(n)$:
+\begin{itemize}
+    \item If $n$ is a prime number then $\phi(n) = n - 1$ because $\gcd(n,x) = 1$, $\forall 1\le x < n$.
+    \item If $n$ is a power of a prime number, $n = p^q$ where $p$ is a prime number \& $1\le q$ then there are exactly $p^{q - 1}$ numbers divisible by $p$, so $\phi(p^q) = p^q - p^{q - 1} = p^{q - 1}(p - 1)$.
+\end{itemize}
+Using the multiplicative property \& the last edge case we can compute the value of $\phi(n)$ from the factorization of number $n$. Let the factorization be $n = \prod_{i=1}^k p_i^{q_i} = p_1^{q_1}p_2^{q_2}\cdots p_k^{q_k}$ where $p_i$ is a prime factor of $n$, then
+\begin{equation*}
+    \phi(n) = \prod_{i=1}^k \phi(p_i^{q_i}) = \phi(p_1^{a_1})\phi(p_2^{q_2})\cdots\phi(p_k^{q_k}) = \prod_{i=1}^k p_i^{q_i - 1}(p_i - 1) = p_1^{q_1 - 1}(p_1 - 1)p_2^{q_2 - 1}(p_2 - 1)\cdots p_k^{q_k - 1}(q_k - 1).
+\end{equation*}
+-- Hãy cùng xem xét 1 số trường hợp ngoại lệ của $\phi(n)$:
+\begin{itemize}
+    \item Nếu $n$ là số nguyên tố thì $\phi(n) = n - 1$ vì $\gcd(n,x) = 1$, $\forall 1\le x < n$.
+    \item Nếu $n$ là lũy thừa của 1 số nguyên tố, $n = p^q$ với $p$ là số nguyên tố \& $1\le q$ thì có đúng $p^{q - 1}$ số chia hết cho $p$, do đó $\phi(p^q) = p^q - p^{q - 1} = p^{q - 1}(p - 1)$.
+\end{itemize}
+Sử dụng tính chất nhân \& trường hợp ngoại lệ cuối cùng, ta có thể tính giá trị của $\phi(n)$ từ phép phân tích số $n$ thành nhân tử. Giả sử phép phân tích là $n = \prod_{i=1}^k p_i^{q_i} = p_1^{q_1}p_2^{q_2}\cdots p_k^{q_k}$ trong đó $p_i$ là ước nguyên tố của $n$, thì
+\begin{equation*}
+    \phi(n) = \prod_{i=1}^k \phi(p_i^{q_i}) = \phi(p_1^{a_1})\phi(p_2^{q_2})\cdots\phi(p_k^{q_k}) = \prod_{i=1}^k p_i^{q_i - 1}(p_i - 1) = p_1^{q_1 - 1}(p_1 - 1)p_2^{q_2 - 1}(p_2 - 1)\cdots p_k^{q_k - 1}(q_k - 1).
+\end{equation*}
+Below is an implementation for factorization in $O(\sqrt{n})$. It can be a little bit tricky to understand why we subtract $\frac{\rm ans}{p}$ from ans. E.g., ${\rm ans} = p^qx$, where $p$ is a prime factor \& $x$ is the rest of the prime factorization. By subtracting $\frac{\rm ans}{p} = p^{q - 1}x$ we end up with: $p^qx - p^{q - 1}x = p^{q - 1}x(p - 1)$ which is exactly the form of $\phi(n)$ described a few lines above.
+
+-- Dưới đây là 1 ví dụ thực hiện phân tích thừa số trong $O(\sqrt{n})$. Có thể hơi khó hiểu tại sao chúng ta trừ $\frac{\rm ans}{p}$ khỏi ans. Ví dụ: ${\rm ans} = p^qx$, trong đó $p$ là 1 thừa số nguyên tố \& $x$ là phần còn lại của phép phân tích thừa số nguyên tố. Bằng cách trừ $\frac{\rm ans}{p} = p^{q - 1}x$, ta thu được: $p^qx - p^{q - 1}x = p^{q - 1}x(p - 1)$, chính xác là dạng của $\phi(n)$ đã được mô tả ở vài dòng trên.
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+int phi(int n) {
+    int ans = n;
+    for (int p = 2; p * p <= n; ++p)
+        if (n % p == 0) {
+            while (n % p == 0) n /= p;
+            ans -= ans / p;
+        }
+    if (n > 1) ans -= ans / n;
+    return ans;
+}
+\end{Verbatim}
+Usually in problems we need to precompute the totient of all numbers between 1 \& $n$, then factorizing is not efficient. The idea is the same as the Sieve of Eratosthenes. Since it's almost the same with the Sieve of Eratosthenes the time complexity will be $n\log n\log n$.
+
+-- Thông thường, trong các bài toán, ta cần tính trước tổng của tất cả các số nằm giữa 1 \& $n$, khi đó việc phân tích thành nhân tử sẽ không hiệu quả. Ý tưởng này giống với sàng Eratosthenes. Vì nó gần giống với sàng Eratosthenes nên độ phức tạp thời gian sẽ là $n\log n\log n$.
+
+\begin{problem}[\href{https://www.spoj.com/problems/GCDEX/}{SPOJ{\tt/}GCDEX - GCD extreme}]
+    Given the value of $n$, you will have to find the value of $g$. The meaning of $g$ is given in the following code
+    \begin{verbatim}
+g = 0;
+for (i = 1; i < n; ++i)
+    for (j = i + 1; j <= n; ++j) g += gcd(i, j);
+    \end{verbatim}
+    Here $\gcd()$ is a function that finds the greatest common divisor of the 2 input numbers.
+    \item {\sf Input.} The input file contains at most 20000 lines of inputs. Each line contains an integer $n\in\overline{2,10^6}$. The meaning of $n$ is given in the problem statement. Input is terminated by a line containing a single zero.
+    \item {\sf Output.} For each line of input produce 1 line of output. This line contains the value of $g$ for the corresponding $n$. The value of $g$ will fit in a 64-bit signed integer.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|gcd_extreme.inp| & \verb|gcd_extreme.out| \\
+            \hline
+            10 & 67 \\
+            100 & 13015 \\
+            200000 & 143295493160 \\
+            0 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{baitoan}[gcd cực đại]
+    Với giá trị $n$, bạn sẽ phải tìm giá trị $g$. Ý nghĩa của $g$ được đưa ra trong đoạn mã sau
+    \begin{verbatim}
+g = 0;
+for (i = 1; i < n; ++i)
+    for (j = i + 1; j <= n; ++j) g += gcd(i, j);
+    \end{verbatim}
+    Ở đây $\gcd()$ là 1 hàm tìm ước chung lớn nhất của 2 số đầu vào.
+    \item {\sf Input.} Tệp đầu vào chứa tối đa 20000 dòng dữ liệu đầu vào. Mỗi dòng chứa 1 số nguyên $n\in\overline{2,10^6}$. Ý nghĩa của $n$ được đưa ra trong đề bài. Dữ liệu đầu vào được kết thúc bằng 1 dòng chứa 1 số không duy nhất.
+    \item {\sf Output.} Với mỗi dòng dữ liệu đầu vào, tạo ra 1 dòng dữ liệu đầu ra. Dòng này chứa giá trị $g$ của $n$ tương ứng. Giá trị của $g$ sẽ phù hợp với số nguyên có dấu 64 bit.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    The queries ask us for the sum of the greatest common divisor between all the numbers small than $n$. Let's start by defining a function $f(n,d)$ as how many pairs of numbers $\le n$ have the greatest common divisor equal to $d$, i.e., $\gcd(a,b) = d$. Defining the function this way gives us the following equation: $f(n,d) = f(\frac{n}{d},1)$. The reason why is simple: By choosing 2 coprime numbers $a,b$ such thaht $a,b\le\frac{n}{d}$, we can make sure $ad,bd\le n$ \& $\gcd(ad,bd) = d$, thus contributing to the global answer.
+
+    -- Các truy vấn yêu cầu chúng ta tính tổng ước chung lớn nhất của tất cả các số nhỏ hơn $n$. Hãy bắt đầu bằng cách định nghĩa 1 hàm $f(n,d)$ là có bao nhiêu cặp số $\le n$ có ước chung lớn nhất bằng $d$, tức là $\gcd(a,b) = d$. Định nghĩa hàm theo cách này cho chúng ta phương trình sau: $f(n,d) = f(\frac{n}{d},1)$. Lý do rất đơn giản: Bằng cách chọn 2 số nguyên tố cùng nhau $a,b$ sao cho $a,b\le \frac{n}{d}$, ta có thể đảm bảo $ad,bd\le n$ \& $\gcd(ad,bd) = d$, do đó đóng góp vào đáp án toàn cục.
+
+    Shifting away to our new function $f(\frac{n}{d},1)$ allows us to compute $f(n,d)$ more easily using a slightly modified phi function preprocessing. To find the sum we multiply $f(n,d)$ with $d$. This way the answer for a query is
+    \begin{equation*}
+        \sum_{d=1}^n df(n,d) = \sum_{d=1}^n df\left(\frac{n}{d},1\right).
+    \end{equation*}
+    -- Việc chuyển sang hàm mới $f(\frac{n}{d},1)$ cho phép chúng ta tính $f(n,d)$ dễ dàng hơn bằng cách sử dụng tiền xử lý hàm phi đã được sửa đổi 1 chút. Để tìm tổng, chúng ta nhân $f(n,d)$ với $d$. Theo cách này, câu trả lời cho truy vấn là
+    \begin{equation*}
+        \sum_{d=1}^n df(n,d) = \sum_{d=1}^n df\left(\frac{n}{d},1\right).
+    \end{equation*}
+    \item {\sf C++ implementation.}
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <cmath>
+#include <iostream>
+#include <unordered_map>
+using namespace std;
+
+const int MAX_N = 1e6;
+long long phi[MAX_N + 10]; // phi[i] = how many pairs of numbers <= i are coprime
+unordered_map<int, long long> memo;
+
+long long solve(long long n) {
+    if (n <= MAX_N) return phi[n];
+    if (memo.count(n)) return memo[n];
+    long long d = sqrt(n);
+    long long ans = 1LL * n * (n + 1) / 2;
+    for (int i = 2; n / i > d; ++i) ans -= solve(n / i);
+    for (int i = d; i >= 1; --i) ans -= 1LL * (n / i - n / (i + 1)) * solve(i);
+    memo[n] = ans;
+    return ans;
+}
+
+int main() {
+    // precompute values of phi as previously shown
+    for (int i = 1; i <= MAX_N; ++i) phi[i] = i;
+    for (int i = 2; i <= MAX_N; ++i)
+        // if i is prime
+        if (phi[i] == i) {
+            --phi[i];
+            for (int j = i + i; j <= MAX_N; j += i) phi[j] = phi[j] / i * (i - 1);
+        }
+    // prefix sums of phi
+    for (int i = 2; i <= MAX_N; ++i) phi[i] += phi[i - 1];
+    int n;
+    while (cin >> n) {
+        if (n == 0) break;
+        long long ans = 0;
+        for (int d = 1; d <= n; ++d) ans += d * (solve(n / d) - 1);
+        cout << ans << '\n';
+    }
+}
+    \end{Verbatim}
+    Verdict: TLE on SPOJ.
+\end{proof}
+
+\begin{problem}[div game]
+
+\end{problem}
+
+\begin{problem}[product 1 modulo $n$]
+
+\end{problem}
+
+\begin{problem}[power products]
+
+\end{problem}
+
+\begin{problem}[Diluc \& Kaeya]
+
+\end{problem}
+
+\begin{problem}[permutation rounds]
+
+\end{problem}
+
+\begin{problem}[common divisors]
+
+\end{problem}
+
+\begin{problem}[Orac \& LCM]
+
+\end{problem}
+
+\begin{problem}[maximum of GCDs]
+
+\end{problem}
+
+\begin{problem}[sum of divisors]
+
+\end{problem}
+
+\begin{problem}[number of pairs]
+
+\end{problem}
+
+\begin{problem}[$\sqrt{n^2 + n + x}$]
+
+\end{problem}
 
 %------------------------------------------------------------------------------%
 
@@ -25661,10 +25845,7 @@ int main() {
         \begin{remark}
             Dù code này không cần dùng tới 2 biến phụ {\tt num, divisor} như code của DPAK, nhưng sẽ tính nhiều lần hơn do đoạn code {\tt(4 * i * i - 1) * (4 * i * i - 1)} lặp lại phép tính {\tt(4 * i * i - 1)} 2 lần (unnecessary duplication).
         \end{remark}
-
-
     \end{enumerate}
-
 \end{proof}
 
 \begin{problem}[IMO2008P3]
@@ -25682,9 +25863,7 @@ int main() {
 \end{baitoan}
 
 \begin{proof}[Solution]
-
-
-    C++ implementation:
+    \item {\sf C++ implementation.}
     \begin{enumerate}
         \item DPAK's C++: IMO2008P3:
         \begin{Verbatim}[numbers=left,xleftmargin=0mm]
@@ -25716,7 +25895,6 @@ int main() {
     cout << cnt;
 }
         \end{Verbatim}
-
         \item DNDK's C++: IMO2008P3:
         \begin{Verbatim}[numbers=left,xleftmargin=0mm]
 #include <iostream>
@@ -25758,6 +25936,111 @@ int main() {
 \begin{baitoan}
     Viết thuật toán \& chương trình {\sf C{\tt/}C++, Pascal, Python} để minh hoạ IMO2011P1.
 \end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\section{Modular Arithmetic -- Đồng Dư Số Học}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item {\sc Darren Yao, Michael Cao, Andi Qu, Benjamin Qi, Andrew Wang, Kevin Sheng, Mihnea Brebenel}. \href{https://usaco.guide/gold/modular?lang=cpp}{USACO Guide{\tt/}modular arithmetic}.
+
+    {\sf Abstract.} Working with remainders from division. -- Làm việc với số dư của phép chia.
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Introduction to modular arithmetic}
+In {\it modular arithmetic}, instead of working with integers themselves, we work with their remainders when divided by $m$. We call this taking modulo $m$. E.g., if we take $m = 23$, then instead of working with $x = 247$, we use $x\mod23 = 17$. Usually, $m$ will be a large prime, given in the problem; the 2 most common values are $10^9 + 7$ \& $998244353 = 119\cdot2^{23} + 1$. Modular arithmetic is used to avoid dealing with numbers that overflow built-in data types, because we can take remainders, according to the following formulas:
+
+-- Trong {\it số học mô-đun}, thay vì làm việc với bản thân các số nguyên, chúng ta làm việc với phần dư của chúng khi chia cho $m$. Chúng ta gọi đây là phép lấy modulo $m$. Ví dụ, nếu chúng ta lấy $m = 23$, thì thay vì làm việc với $x = 247$, chúng ta sử dụng $x\mod23 = 17$. Thông thường, $m$ sẽ là 1 số nguyên tố lớn, được cho trong bài toán; 2 giá trị phổ biến nhất là $10^9 + 7$ \& $998244353 = 119\cdot2^{23} + 1$. Số học mô-đun được sử dụng để tránh xử lý các số vượt quá các kiểu dữ liệu tích hợp, vì chúng ta có thể lấy phần dư theo các công thức sau:
+\begin{align*}
+    (a + b)\mod m &= (a\mod m + b\mod m)\mod m,\\
+    (a - b)\mod m &= (a\mod m - b\mod m)\mod m,\\
+    (ab)\mod m &= ((a\mod m)(b\mod m))\mod m,\\
+    a^b\mod m &= (a\mod m)^b\mod m.
+\end{align*}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Modular exponentiation -- Đồng dư lũy thừa}
+{\it Binary exponentiation} can be used to efficiently compute $x^n\mod m$. To do so, let's break down $x^n$ into binary components. E.g., $5^{10} = 5^{1010_2} = 5^85^2$. Then, if we know $x^y$ for all $y$ which are powers of 2 ($x^1,x^2,x^4,\ldots,x^{2^{\lfloor\log_2n\rfloor}}$, we can compute $x^n$ in $O(\log n)$). To deal with $m$, observe that module does not affect multiplications, so we can directly implement the above ``binary exponentiation'' algorithm while adding a line to take results $(\mod m)$.
+
+-- {\it Phép lũy thừa nhị phân} có thể được sử dụng để tính $x^n\mod m$ 1 cách hiệu quả. Để làm như vậy, hãy phân tích $x^n$ thành các thành phần nhị phân. Ví dụ: $5^{10} = 5^{1010_2} = 5^85^2$. Khi đó, nếu ta biết $x^y$ với mọi $y$ là lũy thừa của 2 ($x^1,x^2,x^4,\ldots,x^{2^{\lfloor\log_2n\rfloor}}$, ta có thể tính $x^n$ trong $O(\log n)$). Để xử lý $m$, hãy lưu ý rằng môđun không ảnh hưởng đến phép nhân, do đó ta có thể trực tiếp triển khai thuật toán ``lũy thừa nhị phân'' ở trên trong khi thêm 1 dòng để lấy kết quả $(\mod m)$.
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1095}{CSES Problem Set{\tt/}exponentiation}]
+    Efficiently calculate values $a^b\mbox{ mod } 10^9 + 7$. Assume $0^0 = 1$.
+    \item {\sf Input.} The 1st input line contains an integer $n\in\mathbb{N}^\star$: the number of calculations. After this, there are $n$ lines, each containing $2$ integers $a,b\in\mathbb{N}^\star$.
+    \item {\sf Output.} Print each value $a^b\mbox{ mod } 10^9 + 7$.
+    \item {\sf Constraints.} $n\in[2\cdot10^5],a,b\in\overline{0,10^9}$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|exponentiation.inp| & \verb|exponentiation.out| \\
+            \hline
+            3 & 81 \\
+            3 4 & 256 \\
+            2 8 & \\
+            123 123 & 921450052 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{baitoan}[Lũy thừa]
+    Tính toán hiệu quả các giá trị $a^b\mbox{ mod } 10^9 + 7$. Giả sử $0^0 = 1$.
+    \item {\sf Đầu vào.} Dòng đầu vào thứ nhất chứa số nguyên $n\in\mathbb{N}^\star$: số phép tính. Sau đó, có $n$ dòng, mỗi dòng chứa $2$ số nguyên $a,b\in\mathbb{N}^\star$.
+    \item {\sf Đầu ra.} In ra từng giá trị $a^b\mbox{ mod } 10^9 + 7$.
+    \item {\sf Ràng buộc.} $n\in[2\cdot10^5],a,b\in\overline{0,10^9}$.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    \item {\sf C++ implementation.}
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+#include <cassert>
+using namespace std;
+using ll = long long;
+
+ll exp(ll x, ll n, ll m) {
+    assert(n >= 0);
+    x %= m; // note: m * m must be < 2^63 to avoid ll overflow
+    ll res = 1;
+    while (n > 0) {
+        if (n % 2 == 1) res = res * x % m;
+        x = x * x % m;
+        n /= 2;
+    }
+    return res;
+}
+
+int main() {
+    int t;
+    cin >> t;
+    for (int i = 0; i < t; ++i) {
+        int a, b;
+        cin >> a >> b;
+        cout << exp(a, b, 1e9 + 7) << '\n';
+    }
+}
+    \end{Verbatim}
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Modular inverse -- Nghịch đảo đồng dư}
+The {\it modular inverse} is the equivalent of the reciprocal in real-number arithmetic; to divide $a$ by $b$, multiply $a$ by the modular inverse of $b$. We will only consider prime moduli $p$ here. E.g., the inverse of 2 module $p = 10^9 + 7$ is $i = \frac{p + 1}{2} = 5\cdot10^8 + 4$, i.e.,
+\begin{equation*}
+    (2x)i\equiv x(2i)\equiv x(\mod10^9 + 7).
+\end{equation*}
+E.g., $10i\equiv5(\mod10^9 + 7)$.
+
+-- Nghịch đảo môđun {\it} tương đương với nghịch đảo trong số học số thực; để chia $a$ cho $b$, hãy nhân $a$ với nghịch đảo môđun của $b$. Ở đây, chúng ta chỉ xét các môđun nguyên tố $p$. Ví dụ, nghịch đảo của 2 môđun $p = 10^9 + 7$ là $i = \frac{p + 1}{2} = 5\cdot10^8 + 4$, tức là,
+\begin{equation*}
+    (2x)i\equiv x(2i)\equiv x(\mod10^9 + 7).
+\end{equation*}
+Ví dụ: $10i\equiv5(\mod10^9 + 7)$.
 
 %------------------------------------------------------------------------------%
 

@@ -624,9 +624,116 @@
             Combination of all possible values these variables can take is {\it observation space}. Know that state \& observation are terms used interchangeably in RL community. This is because often agents are allowed to see internal state of environment, but this isn't always case. In this book, use state \& observation interchangeably as well. But need to know: there might be a difference between states \& observations, even though RL community often uses terms interchangeably.
 
             -- Tổ hợp tất cả các giá trị khả dĩ mà các biến này có thể nhận được là {\it không gian quan sát}. Cần lưu ý rằng trạng thái \& quan sát là các thuật ngữ được sử dụng thay thế cho nhau trong cộng đồng RL. Điều này là do các tác nhân thường được phép nhìn thấy trạng thái bên trong của môi trường, nhưng điều này không phải lúc nào cũng đúng. Trong cuốn sách này, chúng tôi cũng sử dụng trạng thái \& quan sát thay thế cho nhau. Tuy nhiên, cần lưu ý: có thể có sự khác biệt giữa trạng thái \& quan sát, mặc dù cộng đồng RL thường sử dụng các thuật ngữ này thay thế cho nhau.
+
+            At every state, environment makes available a set of actions agent can choose from. Often set of actions is same for all states, but this isn't required. Set of all actions in all states is referred to as {\it action space}.
+
+            -- Ở mỗi trạng thái, môi trường sẽ cung cấp 1 tập hợp các hành động mà tác nhân có thể lựa chọn. Thông thường, tập hợp các hành động này giống nhau cho tất cả các trạng thái, nhưng điều này không bắt buộc. Tập hợp tất cả các hành động trong tất cả các trạng thái được gọi là không gian hành động.
+
+            Agent attempts to influence environment through these actions. Environment may change states as a response to agent's action. Function that is responsible for this transition is called {\it transition function}.
+
+            -- Tác nhân cố gắng tác động đến môi trường thông qua những hành động này. Môi trường có thể thay đổi trạng thái để đáp lại hành động của tác nhân. Hàm chịu trách nhiệm cho quá trình chuyển đổi này được gọi là hàm chuyển tiếp.
+
+            After a transition, environment emits a new observation. Environment may also provide a reward signal as a response. Function responsible for this mapping is called {\it reward function}. Set of transition \& reward function is referred to as {\it model} of environment.
+
+            -- Sau 1 quá trình chuyển đổi, môi trường phát ra 1 quan sát mới. Môi trường cũng có thể cung cấp tín hiệu thưởng như 1 phản hồi. Hàm chịu trách nhiệm cho việc ánh xạ này được gọi là {\it hàm thưởng}. Tập hợp các quá trình chuyển đổi \& hàm thưởng được gọi là {\it mô hình} của môi trường.
+
+            \begin{example}[A concrete example: bandit walk environment]
+                Make these concepts concrete with our 1st RL environment. I created this very simple environment for this book; called bandit walk (BW). BW is a simple {\rm grid-world} (GW) environment. GWs are a common type of environment for studying RL algorithms that are grids of any size. GWs can have any model (transition \& reward functions) you can think of \& can make any kind of actions available.
+
+                -- Cụ thể hóa những khái niệm này bằng môi trường RL đầu tiên của chúng ta. Tôi đã tạo ra 1 môi trường rất đơn giản cho cuốn sách này; được gọi là bandit walk (BW). BW là 1 môi trường {\rm grid-world} (GW) đơn giản. GW là 1 loại môi trường phổ biến để nghiên cứu các thuật toán RL là các lưới có kích thước bất kỳ. GW có thể có bất kỳ mô hình nào (hàm chuyển tiếp \& phần thưởng) mà bạn có thể nghĩ đến \& có thể thực hiện bất kỳ loại hành động nào.
+
+                But, they all commonly make move actions available to agent: Left, Down, Right, Up (or West, South, East, North, which is more precise because agent has no heading \& usually has no visibility of full grid, but cardinal directions can also be more confusing). \&, of course, each action corresponds with its logical transition: Left goes left, \& Right goes right. Also, they all tend to have a fully observable discrete state \& observation spaces (i.e., state equals observation) with integers representing cell id location of agent. A ``walk'' is a special case of grid-world environments with a single row. In reality, what I call a ``walk' is more commonly referred to as a ``Corridor''. But, in this book, use term ``walk'' for all grid-world environments with a single row.
+
+                -- Tuy nhiên, tất cả chúng đều thường cung cấp các hành động di chuyển cho tác nhân: Trái, Xuống, Phải, Lên (hoặc Tây, Nam, Đông, Bắc, chính xác hơn vì tác nhân không có tiêu đề \& thường không hiển thị toàn bộ lưới, nhưng các hướng chính cũng có thể gây nhầm lẫn hơn). \&, tất nhiên, mỗi hành động tương ứng với quá trình chuyển đổi hợp lý của nó: Trái sang trái, \& Phải sang phải. Ngoài ra, tất cả chúng đều có xu hướng có trạng thái rời rạc có thể quan sát đầy đủ \& không gian quan sát (tức là trạng thái bằng quan sát) với các số nguyên biểu thị vị trí id ô của tác nhân. ``Đi bộ'' là trường hợp đặc biệt của môi trường thế giới lưới có 1 hàng. Trên thực tế, cái mà tôi gọi là ``đi bộ'' thường được gọi là ``Hành lang''. Tuy nhiên, trong cuốn sách này, hãy sử dụng thuật ngữ ``đi bộ'' cho tất cả các môi trường thế giới lưới có 1 hàng.
+
+                Bandit walk (BW) is a walk with 3 states, but only 1 non-terminal state. Environments that have a single non-terminal state are called ``bandit'' environments. ``Bandit'' here is an analogy to slot machines, which are also known as ``1-armed bandits''; they have 1 arm \&, if you like gambling, can empty your pockets, same way a bandit would.
+
+                -- Bandit walk (BW) là 1 kiểu đi bộ có 3 trạng thái, nhưng chỉ có 1 trạng thái không kết thúc. Môi trường chỉ có 1 trạng thái không kết thúc được gọi là môi trường ``bandit''. ``Bandit'' ở đây là 1 phép so sánh với máy đánh bạc, còn được gọi là ``máy đánh bạc 1 tay''; chúng chỉ có 1 tay \&, nếu bạn thích đánh bạc, chúng có thể làm rỗng túi bạn, giống như cách 1 máy đánh bạc làm.
+
+                BW environment has just 2 actions available: a Left (action 0) \& a Right (action 1) action. BW has a deterministic transition function: a Left action always moves agent to Left, \& a Right action always moves agent to right. Reward signal is $a + 1$ when landing on rightmost cell, $0$ otherwise. Agent starts in middle cell.
+
+                -- Môi trường BW chỉ có 2 hành động khả dụng: hành động Trái (hành động 0) \& hành động Phải (hành động 1). BW có hàm chuyển tiếp xác định: hành động Trái luôn di chuyển tác nhân sang Trái, \& hành động Phải luôn di chuyển tác nhân sang Phải. Tín hiệu thưởng là $a + 1$ khi hạ cánh ở ô ngoài cùng bên phải, $0$ nếu không. Tác nhân bắt đầu ở ô giữa.
+
+                {\sf Bandit walk (BW) environment.} 1. Agent starts in middle of walk. 2. Leftmost state is a hole. 3. Rightmost state is goal, \& provides a $+1$ reward.
+            \end{example}
+            A graphical representation of the BW environment would look like the following.
+
+            {\sf Bandit walk graph.} 1. State 1 is a starting state. 2. Reward signal. 3. State 2 is a goal terminal state. 4. Transition of Right action is deterministic. 5. Action 1, Right. 6. Action 0, Left. 7. Transition of Left action is deterministic. 8. State 0 is a hole, a bad terminal state.
+
+            -- {\sf Đồ thị di chuyển của Bandit.} 1. Trạng thái 1 là trạng thái bắt đầu. 2. Tín hiệu thưởng. 3. Trạng thái 2 là trạng thái kết thúc mục tiêu. 4. Chuyển đổi của hành động sang Phải là xác định. 5. Hành động 1, Phải. 6. Hành động 0, Trái. 7. Chuyển đổi của hành động sang Trái là xác định. 8. Trạng thái 0 là 1 lỗ hổng, trạng thái kết thúc xấu.
+
+            Hope this raises several questions, but will find answers throughout this chap. E.g., why do terminal states have actions that transition to themselves: seems wasteful, doesn't? Any other questions? Like, what if environment is stochastic? What exactly is an environment that is ``stochastic''?! Keep reading. Can also represent this environment in a table form. State|Action|Next state|Transition probability|Reward signal.
+
+            -- Hy vọng điều này sẽ gợi ra 1 số câu hỏi, nhưng sẽ tìm thấy câu trả lời trong suốt chương này. Ví dụ, tại sao các trạng thái cuối cùng lại có các hành động chuyển tiếp sang chính nó: có vẻ lãng phí, phải không? Còn câu hỏi nào khác không? Ví dụ, nếu môi trường là ngẫu nhiên thì sao? Chính xác thì môi trường ``ngẫu nhiên'' là gì?! Đọc tiếp. Cũng có thể biểu diễn môi trường này dưới dạng bảng. Trạng thái | Hành động | Trạng thái tiếp theo | Xác suất chuyển tiếp | Tín hiệu phần thưởng.
+
+            \begin{example}[A concrete example: bandit slippery walk environment]
+                So how about we make this environment stochastic? Say surface of walk is slippery \& each action has a 20\% chance of sending agent backwards. I call this environment bandit slipper walk (BSW). BSW is still a 1-row-grid world, a walk, a corridor, with only Left \& Right actions available. Again, 3 states \& 2 actions. Reward is same as before, $+1$ when landing at rightmost state (except when coming from rightmost state -- from itself), \& $0$ otherwise.
+
+                -- Vậy thì chúng ta làm sao để biến môi trường này thành ngẫu nhiên? Giả sử bề mặt đường đi trơn trượt \& mỗi hành động có 20\% khả năng khiến tác nhân bị lùi lại. Tôi gọi môi trường này là "đi bộ kiểu bandit slipper walk" (BSW). BSW vẫn là 1 thế giới lưới 1 hàng, 1 đường đi, 1 hành lang, chỉ có các hành động Trái \& Phải khả dụng. Một lần nữa, 3 trạng thái \& 2 hành động. Phần thưởng vẫn như trước, $+1$ khi hạ cánh ở trạng thái ngoài cùng bên phải (trừ khi đến từ trạng thái ngoài cùng bên phải -- từ chính nó), \& $0$ nếu không.
+
+                However, transition function is different: 80\% of time agent moves to intended cell, \& 20\% of time in opposite direction. A depiction of this environment would look as follows.
+
+                -- Tuy nhiên, hàm chuyển tiếp lại khác: 80\% thời gian, tác nhân di chuyển đến ô mong muốn \& 20\% thời gian theo hướng ngược lại. Mô tả môi trường này sẽ như sau.
+
+                {\sf Bandit slippery walk (BSW) environment.} 1. Agent starts in middle of walk. 2. Rightmost state is goal, \& provides a $+1$ reward. 3. Leftmost state is a hole. Identical to BW environment.
+
+                -- {\sf Môi trường Bandit Slipper Walk (BSW).} 1. Đặc vụ bắt đầu ở giữa chặng đường. 2. Trạng thái ngoài cùng bên phải là mục tiêu, \& cung cấp phần thưởng $+1$. 3. Trạng thái ngoài cùng bên trái là 1 cái hố. Giống hệt với môi trường BW.
+
+                How do we know: action effects are stochastic? How do we represent ``slippery'' part of this problem? Graphical \& table representations can help us with that. A graphical representation of the BSW environment would look like the following.
+
+                -- Làm sao chúng ta biết: các hiệu ứng hành động là ngẫu nhiên? Làm thế nào để biểu diễn phần ``trơn trượt'' của bài toán này? Biểu diễn đồ họa \& bảng có thể giúp chúng ta làm điều đó. Biểu diễn đồ họa của môi trường BSW sẽ trông như sau.
+
+                {\sf Bandit slippery walk graph.} 1. Same as before: a hole, starting, \& goal states. 2. But transition function is different! With an 80\% chance, we move forward, \& with a 20\% chance, we move backward! See how transition function is different now? BSW environment has a stochastic transition function. Represent this environment in a table form as well.
+
+                -- {\sf Đồ thị bước đi trơn trượt Bandit.} 1. Giống như trước: 1 lỗ, trạng thái bắt đầu, \& mục tiêu. 2. Nhưng hàm chuyển đổi thì khác! Với xác suất 80\%, chúng ta tiến về phía trước, \& với xác suất 20\%, chúng ta lùi về phía sau! Bây giờ bạn đã thấy hàm chuyển đổi khác biệt như thế nào chưa? Môi trường BSW có 1 hàm chuyển đổi ngẫu nhiên. Hãy biểu diễn môi trường này dưới dạng bảng.
+            \end{example}
+            \& we don't have to limit ourselves to thinking about environments with discrete state \& action spaces or even walks (corridors) or bandits (which we discuss in-depth in next chap) or grid worlds. Representing environments as MDPs is a surprisingly powerful \& straightforward approach to modeling complex sequential decision-making problems under uncertainty.
+
+            -- \& chúng ta không cần phải giới hạn bản thân trong việc suy nghĩ về các môi trường với không gian hành động \& trạng thái rời rạc, hay thậm chí là các hành lang (hành lang) hay các khối (mà chúng ta sẽ thảo luận sâu hơn trong chương tiếp theo) hay các thế giới lưới. Việc biểu diễn môi trường dưới dạng MDP là 1 cách tiếp cận \& trực quan đáng ngạc nhiên để mô hình hóa các vấn đề ra quyết định tuần tự phức tạp trong điều kiện không chắc chắn.
+
+            Here are a few more examples of environments that are powered by underlying MDPs.
+            \begin{enumerate}
+                \item {\bf Hotter, colder.} Guess a randomly selected number using hints.
+                \item {\bf Cart pole.} Balance a pole in a cart.
+                \item {\bf Lunar lander.} Navigate a lander to its landing pad.
+                \item {\bf Pong.} Bounce ball past opponent, \& avoid letting ball pass you.
+                \item {\bf Humanoid.} Make robot run as fast as possible \& not fall.
+            \end{enumerate}
+            Notice I didn't add transition function to this table. That's because, while you can look at code implementing dynamics for certain environments, other implementations are not easily accessible. E.g., transition function of cart pole environment is a small Python file defining mass of cart \& pole \& implementing basic physics equations, while dynamics of Atari games, e.g. Pong, are hidden inside an Atari emulator \& corresponding game-specific ROM file.
+
+            -- Dưới đây là 1 vài ví dụ khác về các môi trường được hỗ trợ bởi các MDP cơ bản.
+            \begin{enumerate}
+                \item {\bf Nóng hơn, lạnh hơn.} Đoán 1 số được chọn ngẫu nhiên bằng cách sử dụng gợi ý.
+                \item {\bf Cột xe đẩy.} Giữ thăng bằng 1 cột trong xe đẩy.
+                \item {\bf Tàu đổ bộ Mặt Trăng.} Điều hướng tàu đổ bộ đến bệ hạ cánh.
+                \item {\bf Pong.} Ném bóng qua đối thủ, \& tránh để bóng vượt qua bạn.
+                \item {\bf Hình người.} Làm cho robot chạy nhanh nhất có thể \& không bị ngã.
+            \end{enumerate}
+            Lưu ý rằng tôi đã không thêm hàm chuyển đổi vào bảng này. Đó là bởi vì, mặc dù bạn có thể xem mã triển khai động lực học cho 1 số môi trường nhất định, nhưng các triển khai khác không dễ truy cập. Ví dụ: hàm chuyển đổi của môi trường cột xe đẩy là 1 tệp Python nhỏ xác định khối lượng của xe đẩy \& cột \& triển khai các phương trình vật lý cơ bản, trong khi động lực học của các trò chơi Atari, ví dụ: Pong được ẩn bên trong trình giả lập Atari \& tệp ROM tương ứng dành riêng cho trò chơi.
+
+            Notice: what we are trying to represent here is fact: environment ``reacts'' to agent's actions in some way, perhaps even by ignoring agent's actions. But at end of day, there is an internal process that is uncertain (except in this \& next chap). To represent ability to interact with an environment in an MDP, need states, observations, actions, a transition, \& a reward function.
+
+            -- Lưu ý: điều chúng ta đang cố gắng thể hiện ở đây là sự thật: môi trường ``phản ứng'' với hành động của tác nhân theo 1 cách nào đó, thậm chí có thể bằng cách bỏ qua hành động của tác nhân. Nhưng cuối cùng, có 1 quy trình nội tại chưa chắc chắn (trừ chương này \& chương tiếp theo). Để thể hiện khả năng tương tác với môi trường trong MDP, cần có các trạng thái, quan sát, hành động, quá trình chuyển đổi, \& hàm thưởng.
+
+            {\sf Process environment goes through as a consequence of agent's actions.} 1. Environment receives action selected by agent. 2. Depending on current environment state, \& agent's chosen action. 3. Environment will transition to a new internal state. 4. New state \& reward are passed through a filter: some problem don''t let true state of environment be perceived by agent! 5. Finally, reaction is passed back to agent.
+
+            -- {\sf Môi trường tiến trình được xử lý như 1 hệ quả từ hành động của tác nhân.} 1. Môi trường nhận hành động do tác nhân lựa chọn. 2. Tùy thuộc vào trạng thái môi trường hiện tại, \& hành động do tác nhân lựa chọn. 3. Môi trường sẽ chuyển sang trạng thái nội bộ mới. 4. Trạng thái \& phần thưởng mới được chuyển qua bộ lọc: 1 số vấn đề không cho phép tác nhân nhận biết trạng thái thực sự của môi trường! 5. Cuối cùng, phản ứng được chuyển lại cho tác nhân.
+            \item {\sf Agent-environment interaction cycle.} Environment commonly has a well-defined task. Goal of this task is defined through reward signal. Reward signal can be dense, sparse, or anything in between. When design environments, reward signals are way to train your agent way you want. More dense, more supervision agent will have, \& faster agent will learn, but more bias you will inject into your agent, \& less likely agent will come up with unexpected behaviors. More sparse, less supervision, \& therefore, higher chance of new, emerging behaviors, but the longer it will take agent to learn.
+
+            -- {\sf Chu kỳ tương tác giữa tác nhân \& môi trường.} Môi trường thường có 1 nhiệm vụ được xác định rõ ràng. Mục tiêu của nhiệm vụ này được xác định thông qua tín hiệu thưởng. Tín hiệu thưởng có thể dày đặc, thưa thớt, hoặc bất kỳ mức độ nào ở giữa. Khi thiết kế môi trường, tín hiệu thưởng là cách để huấn luyện tác nhân theo cách bạn muốn. Càng dày đặc, tác nhân sẽ càng được giám sát nhiều hơn, \& tác nhân sẽ học nhanh hơn, nhưng bạn sẽ tiêm nhiễm nhiều thiên kiến hơn vào tác nhân, \& tác nhân ít có khả năng nảy sinh các hành vi bất ngờ. Càng thưa thớt, càng ít giám sát, \& do đó, khả năng xuất hiện các hành vi mới, xuất hiện cao hơn, nhưng thời gian học của tác nhân sẽ lâu hơn.
+
+            Interactions between agent \& environment go on for several cycles. Each cycle is called a {\it time step}. A time step is a unit of time, which can be a millisecond, a second, 1.2563 seconds, a minute, a day, or any other period of time.
+
+            -- Tương tác giữa tác nhân \& môi trường diễn ra trong nhiều chu kỳ. Mỗi chu kỳ được gọi là 1 {\it bước thời gian}. Một bước thời gian là 1 đơn vị thời gian, có thể là 1 mili giây, 1 giây, 1,2563 giây, 1 phút, 1 ngày hoặc bất kỳ khoảng thời gian nào khác.
+
+            At each time step, agent observes environment, takes action, \& receives a new observation \& reward. Notice: even though rewards can be negative values, they are still called rewards in RL world. Set of observation (or state), action, reward, \& new observation (or new state) is called an {\it experience tuple}.
+
+            -- Tại mỗi bước thời gian, tác nhân quan sát môi trường, thực hiện hành động, \& nhận được 1 quan sát mới \& phần thưởng. Lưu ý: mặc dù phần thưởng có thể là giá trị âm, chúng vẫn được gọi là phần thưởng trong thế giới thực. Tập hợp quan sát (hoặc trạng thái), hành động, phần thưởng, \& quan sát mới (hoặc trạng thái mới) được gọi là {\it bộ kinh nghiệm}.
+
+            Task agent is trying to solve may or may not have a natural ending. Tasks that have a natural ending, e.g. a game, are called {\it episodic tasks}. Tasks that don't, e.g. learning forward motion, are called {\it continuing tasks}. Sequence of time steps from beginning to end of an episode task is called an {\it episode}. Agents may make several time steps \& episodes to learn to solve a task. Sum of rewards collected in a single episode is called a {\it return}. Agents are often designed to maximize return. A time step limit is often added to continuing tasks, so they become episodic tasks, \& agents can maximize return.
+
+            -- Nhiệm vụ mà tác nhân đang cố gắng giải quyết có thể có hoặc không có kết thúc tự nhiên. Các nhiệm vụ có kết thúc tự nhiên, ví dụ: trò chơi, được gọi là {\it nhiệm vụ theo từng tập}. Các nhiệm vụ không có, ví dụ: học chuyển động về phía trước, được gọi là {\it nhiệm vụ liên tục}. Chuỗi các bước thời gian từ đầu đến cuối của 1 nhiệm vụ theo từng tập được gọi là {\it tập}. Các tác nhân có thể thực hiện nhiều bước thời gian \& tập để học cách giải quyết 1 nhiệm vụ. Tổng phần thưởng thu thập được trong 1 tập duy nhất được gọi là {\it lợi nhuận}. Các tác nhân thường được thiết kế để tối đa hóa lợi nhuận. Giới hạn bước thời gian thường được thêm vào các nhiệm vụ liên tục, vì vậy chúng trở thành nhiệm vụ theo từng tập, \& các tác nhân có thể tối đa hóa lợi nhuận.
         \end{itemize}
-
-
         \item {\sf2.2. MDPs: Engine of Environment.}
     \end{itemize}
     \item {\sf3. Balancing immediate \& long-term goals.}

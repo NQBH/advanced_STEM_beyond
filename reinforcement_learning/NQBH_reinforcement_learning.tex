@@ -1107,6 +1107,24 @@ P = gym.make('FrozenLake-v0').env.P
         {\sf Slippery Walk Five environment.} 1. This environment is stochastic, \& even if agent selects Right action, there is a chance it goes left. 2. 50\% action is success. 3. 33.33\% stays in place. 4. 16.66\% goes backward. Agent starts in S, H is a hole, G is goal \& provides a +1 reward.
 
         -- {\sf Môi trường Slippery Walk Five.} 1. Môi trường này là ngẫu nhiên, \& ngay cả khi đặc vụ chọn hành động Phải, vẫn có khả năng nó sẽ đi sang trái. 2. 50\% hành động thành công. 3. 33,33\% giữ nguyên vị trí. 4. 16,66\% đi ngược lại. Đặc vụ bắt đầu ở S, H là 1 cái hố, G là mục tiêu \& cung cấp phần thưởng +1.
+
+        {\bf Return $G$.} 1. Return is sum of rewards encounter from step $t$, until final step $T$. $G_t = \sum_{i=t+1}^T R_i = R_{t+1} + R_{t+2} + \cdots + R_T$. 2. Can combine return \& time using discount factor, gamma. This is then discounted return, which prioritizes early rewards. $G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2R_{t+3} + \cdots + \gamma^{T-1}R_T$ [NQBH: wrong index]. 3. Can simplify equation \& have a more general equation, e.g. this one: $G_t = \sum_{k=0}^\infty \gamma^kR_{t + k + 1}$. 4. Start at this recursive definition of $G$ for a while. $G_t = R_{t+1} + \gamma G_{t+1}$.
+
+        -- {\bf Trả về $G$.} 1. Trả về là tổng phần thưởng gặp phải từ bước $t$, cho đến bước cuối cùng $T$. $G_t = \sum_{i=t+1}^T R_i = R_{t+1} + R_{t+2} + \cdots + R_T$. 2. Có thể kết hợp thời gian trả về \& bằng cách sử dụng hệ số chiết khấu, gamma. Sau đó, đây là lợi nhuận chiết khấu, ưu tiên các phần thưởng sớm. $G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2R_{t+3} + \cdots + \gamma^{T-1}R_T$ [NQBH: chỉ số sai]. 3. Có thể đơn giản hóa phương trình \& có một phương trình tổng quát hơn, ví dụ như phương trình này: $G_t = \sum_{k=0}^\infty \gamma^kR_{t + k + 1}$. 4. Bắt đầu với định nghĩa đệ quy này của $G$ trong một thời gian. $G_t = R_{t+1} + \gamma G_{t+1}$.
+
+        Can think of returns as backward looking -- ``how much you got'' from a past time step; but another way to look at it is as a ``reward-to-go'' -- basically, forward looking. E..g, imagine an episode in SWF environment went this way: State 3 (0 reward), state 4 (0 reward), state 5 (0 reward), state 4 (0 reward), state 5 (0 reward), state 6 (+1 reward). Can shorten it: 3/0, 4/0, 5/0, 4/0, 5/0, 6/1. What’s the return of this trajectory/episode? If use discounting math would work out this way.
+
+        -- Có thể coi lợi nhuận như một phép tính ngược -- ``bạn đã nhận được bao nhiêu'' từ một bước thời gian trong quá khứ; nhưng một cách khác để xem xét nó là ``phần thưởng để tiếp tục'' -- về cơ bản là hướng tới tương lai. Ví dụ, hãy tưởng tượng một tập phim trong môi trường SWF diễn ra như sau: Trạng thái 3 (0 phần thưởng), trạng thái 4 (0 phần thưởng), trạng thái 5 (0 phần thưởng), trạng thái 4 (0 phần thưởng), trạng thái 5 (0 phần thưởng), trạng thái 6 (0 phần thưởng), có thể rút gọn thành: 3/0, 4/0, 5/0, 4/0, 5/0, 6/1. Lợi nhuận của quỹ đạo/tập phim này là bao nhiêu? Nếu sử dụng phép tính chiết khấu, ta sẽ tính được như sau.
+
+        {\bf Discounted return in slippery walk 5 environment.} If don't use discounting, well, return would be 1 for this trajectory \& all trajectories that end in right-most cell, state 6, \& 0 for all trajectories that terminate in left-most cell, state 0.
+
+        -- {\bf Lợi nhuận chiết khấu trong môi trường đi bộ trơn trượt 5.} Nếu không sử dụng chiết khấu, lợi nhuận sẽ là 1 cho quỹ đạo này \& tất cả các quỹ đạo kết thúc ở ô ngoài cùng bên phải, trạng thái 6, \& 0 cho tất cả các quỹ đạo kết thúc ở ô ngoài cùng bên trái, trạng thái 0.
+
+        In SWF environment, evident: going right is best thing to do. It may seem, therefore, all agent must find is something called a {\it plan} -- i.e., a sequence of actions from START state to GOAL state. But this doesn't always work.
+
+        -- Trong môi trường SWF, điều hiển nhiên là: đi đúng hướng là điều tốt nhất nên làm. Do đó, có vẻ như tất cả những gì tác nhân phải tìm là một thứ gọi là {\it plan} -- tức là một chuỗi hành động từ trạng thái BẮT ĐẦU đến trạng thái MỤC TIÊU. Nhưng điều này không phải lúc nào cũng hiệu quả.
+
+
         \item {\sf3.2. Planning optimal sequences of actions.}
     \end{itemize}
     \item {\sf4. Balancing gathering \& use of information.}

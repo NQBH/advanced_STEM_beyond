@@ -202,7 +202,7 @@
 
             {\bf Synergy between similar fields.} 1. All of these fields (\& many more) study complex sequential decision-making under uncertainty. 2. As a result, there's a synergy between these fields. E.g., RL \& optimal control both contribute to research of model-based methods. 3. Or RL \& operations research both contribute to study of problems with large action spaces. 4. Downside is an inconsistency in notation, definitions, \& so on, that makes it hard for newcomers to find their way around.
 
-            -- {\bf Sự tương tác giữa các lĩnh vực tương tự.} 1. Tất cả các lĩnh vực này (và nhiều lĩnh vực khác nữa) đều nghiên cứu quá trình ra quyết định tuần tự phức tạp trong điều kiện không chắc chắn. 2. Do đó, có sự tương tác giữa các lĩnh vực này. Ví dụ, RL \& điều khiển tối ưu đều góp phần vào việc nghiên cứu các phương pháp dựa trên mô hình. 3. Hoặc RL \& nghiên cứu hoạt động đều góp phần vào việc nghiên cứu các bài toán có không gian hành động lớn. 4. Nhược điểm là sự thiếu nhất quán trong ký hiệu, định nghĩa, v.v., khiến người mới khó nắm bắt.
+            -- {\bf Sự tương tác giữa các lĩnh vực tương tự.} 1. Tất cả các lĩnh vực này (\& nhiều lĩnh vực khác nữa) đều nghiên cứu quá trình ra quyết định tuần tự phức tạp trong điều kiện không chắc chắn. 2. Do đó, có sự tương tác giữa các lĩnh vực này. Ví dụ, RL \& điều khiển tối ưu đều góp phần vào việc nghiên cứu các phương pháp dựa trên mô hình. 3. Hoặc RL \& nghiên cứu hoạt động đều góp phần vào việc nghiên cứu các bài toán có không gian hành động lớn. 4. Nhược điểm là sự thiếu nhất quán trong ký hiệu, định nghĩa, v.v., khiến người mới khó nắm bắt.
 
             Bottom line: you have come to a field that's influenced by a variety of others. Although this is a good thing, it also brings inconsistencies in terminologies, notations, \& so on. My take is CS approach to this problem, so this book is about building computer programs that solve complex decision-making problems under uncertainty, \& as such, you can find code examples throughout book.
 
@@ -895,10 +895,218 @@
         Also important to highlight: while reward function can be represented as $R(s,a,s')$, which is explicit, could also use $R(s,a)$, or even $R(s)$, depending on our needs. Sometimes rewarding agent based on state is what we need; sometime it makes more sense to use action \& state. However, most explicit way to represent reward function: use a state, action, \& next state triplet. With that, can compute marginalization over next states in $R(s,a,s')$ to obtain $R(s,a)$, \& marginalization over actions in $R(s,a)$ to get $R(s)$. But, once we are in $R(s)$ we can't recover $R(s,a)$ or $R(s,a,s')$, \& once we are in $R(s,a)$ we can't recover $R(s,a,s')$.
 
         -- Cũng quan trọng cần nhấn mạnh: trong khi hàm phần thưởng có thể được biểu diễn là $R(s,a,s')$, là rõ ràng, cũng có thể sử dụng $R(s,a)$, hoặc thậm chí $R(s)$, tùy thuộc vào nhu cầu của chúng ta. Đôi khi, tác nhân thưởng dựa trên trạng thái là những gì chúng ta cần; đôi khi, sử dụng hành động \& trạng thái hợp lý hơn. Tuy nhiên, cách rõ ràng nhất để biểu diễn hàm phần thưởng: sử dụng bộ ba trạng thái, hành động, \& trạng thái tiếp theo. Với điều đó, có thể tính toán biên độ trên các trạng thái tiếp theo trong $R(s,a,s')$ để thu được $R(s,a)$, \& biên độ trên các hành động trong $R(s,a)$ để thu được $R(s)$. Nhưng, 1 khi chúng ta ở trong $R(s)$, chúng ta không thể khôi phục $R(s,a)$ hoặc $R(s,a,s')$, \& 1 khi chúng ta ở trong $R(s,a)$, chúng ta không thể khôi phục $R(s,a,s')$.
+
+        {\bf Reward function.} 1. Reward function can be defined as follows. $r(s,a) = \mathbb{E}[R_t|S_{t-1} = s,A_{t-1} = a]$. 2. It can be defined as a function that takes in a state-action pair. 3. It is expectation of reward at time step $t$, given state-action pair in previous time step. 4. But it can also be defined as a function that takes a full transition tuple $s,a,s'$:
+        \begin{equation*}
+            r(s,a,s') = \mathbb{E}[R_t|S_{t-1} = s,A_{t-1} = a,S_t = s'].
+        \end{equation*}
+        5.  \& it is also defined as expectation, but now given that transition tuple. 6. Reward at time step $t$ comes from a set of all rewards ${\cal R}$, which is a subset of all real numbers: $R_t\in{\cal R}\subset\mathbb{R}$.
+
+        -- {\bf Hàm thưởng.} 1. Hàm thưởng có thể được định nghĩa như sau. $r(s,a) = \mathbb{E}[R_t|S_{t-1} = s,A_{t-1} = a]$. 2. Nó có thể được định nghĩa là 1 hàm nhận vào 1 cặp trạng thái-hành động. 3. Nó là kỳ vọng về phần thưởng tại bước thời gian $t$, cho cặp trạng thái-hành động ở bước thời gian trước đó. 4. Nhưng nó cũng có thể được định nghĩa là 1 hàm nhận vào 1 bộ chuyển tiếp đầy đủ $s,a,s'$:
+        \begin{equation*}
+            r(s,a,s') = \mathbb{E}[R_t|S_{t-1} = s,A_{t-1} = a,S_t = s'].
+        \end{equation*}
+        5. \& nó cũng được định nghĩa là kỳ vọng, nhưng bây giờ với bộ chuyển tiếp đó. 6. Phần thưởng tại bước thời gian $t$ đến từ 1 tập hợp tất cả các phần thưởng ${\cal R}$, là 1 tập hợp con của tất cả các số thực: $R_t\in{\cal R}\subset\mathbb{R}$.
+
+        In FL environment, reward function is +1 for landing in state 15, 0 otherwise. Again, for clarity to following image, have only added reward signal to transitions that give a nonzero reward, landing on final state (state 15).
+
+        -- Trong môi trường FL, hàm thưởng là +1 khi hạ cánh ở trạng thái 15, ngược lại là 0. Một lần nữa, để hình ảnh sau rõ ràng hơn, chúng tôi chỉ thêm tín hiệu thưởng vào các chuyển đổi mang lại phần thưởng khác không, hạ cánh ở trạng thái cuối cùng (trạng thái 15).
+
+        There are only 3 ways to land on 15.
+        \begin{enumerate}
+            \item Selecting Right action in state 14 will transition agent with 33.3\% chance there (33.3\% to state 10 \& 0.33\% back to 14). But
+            \item Selecting Up \&
+            \item Down action from state 14 will unintentionally also transition agent there with 33.3\% probability for each action.
+        \end{enumerate}
+        See difference between actions \& transitions? Interesting to see how stochasticity complicates things, right? {\sf Reward signal for states with nonzero reward transitions.}
+
+        -- Chỉ có 3 cách để hạ cánh ở trạng thái 15.
+        \begin{enumerate}
+            \item Chọn hành động Đúng ở trạng thái 14 sẽ chuyển tác nhân với xác suất 33,3\% ở đó (33,3\% sang trạng thái 10 \& 0,33\% trở lại trạng thái 14). Nhưng
+            \item Chọn hành động Lên \&
+            \item Xuống từ trạng thái 14 cũng vô tình chuyển tác nhân ở đó với xác suất 33,3\% cho mỗi hành động.
+        \end{enumerate}
+        Bạn thấy sự khác biệt giữa hành động \& chuyển tiếp chứ? Thật thú vị khi thấy tính ngẫu nhiên làm mọi thứ phức tạp như thế nào, phải không? {\sf Tín hiệu thưởng cho các trạng thái có chuyển tiếp thưởng khác không.}
+
+        Expanding transition \& reward functions innto a table form is also useful. Following is format I recommend for most problems. Notice: being explicit, \& several of these transitions could be grouped \& refactored (e.g., corner cells).
+
+        -- Việc mở rộng các hàm chuyển tiếp \& thành dạng bảng cũng hữu ích. Sau đây là định dạng tôi khuyên dùng cho hầu hết các bài toán. Lưu ý: vì rõ ràng, \& 1 số chuyển tiếp này có thể được nhóm lại \& cấu trúc lại (ví dụ: ô góc).
+        \item {\sf Horizon: Time changes what's optimal.} Can represent time in MDPs as well. A {\it time step}, also referred to as epoch, cycle, iteration, or even interaction, is a global clock syncing all parties \& discretizing time. Having a clock gives rise to a couple of possible types of tasks. An {\it episodic} task is a task in which there is a finite number of time steps, either because clock stops or because agent reaches a terminal state. There are also continuing tasks, which are tasks that go on forever; there are no terminal states, so there is an infinite number of time steps. In this type of task, agent must be stopped manually.
+
+        -- {\sf Horizon: Thời gian thay đổi những gì tối ưu.} Cũng có thể biểu diễn thời gian trong MDP. Một {\it bước thời gian}, còn được gọi là kỷ nguyên, chu kỳ, lặp lại, hoặc thậm chí tương tác, là 1 đồng hồ toàn cục đồng bộ hóa tất cả các bên \& rời rạc hóa thời gian. Việc có 1 đồng hồ sẽ tạo ra 1 vài loại tác vụ khả thi. Một tác vụ {\it theo từng giai đoạn} là 1 tác vụ trong đó có 1 số bước thời gian hữu hạn, hoặc do đồng hồ dừng hoặc do tác nhân đạt đến trạng thái kết thúc. Cũng có các tác vụ liên tục, là các tác vụ diễn ra mãi mãi; không có trạng thái kết thúc, vì vậy có vô số bước thời gian. Trong loại tác vụ này, tác nhân phải được dừng thủ công.
+
+        Episodic \& continuing tasks can also be defined from agent's perspective. Call it {\it planning horizon}. On 1 hand, a {\it finite horizon} is a planning horizon in which agent knows task will terminate in a finite number of time steps: if forced agent to complete frozen lake environment in 15 steps, e.g. A special case of this kind of planning horizon is called a {\it greedy horizon}, of which planning horizon is one. BW \& BSW have both a greedy planning horizon: episode terminates immediately after 1 interaction. In fact, all bandit environments have greedy horizons.
+
+        -- Các tác vụ theo từng tập \& liên tục cũng có thể được định nghĩa từ góc nhìn của tác nhân. Gọi nó là {\it planning horizon}. Mặt khác, {\it finite horizon} là 1 chân trời lập kế hoạch mà tác nhân biết rằng tác vụ sẽ kết thúc sau 1 số bước thời gian hữu hạn: nếu tác nhân bị buộc phải hoàn thành môi trường hồ đóng băng trong 15 bước, ví dụ: nếu 1 tác nhân bị ép phải hoàn thành môi trường hồ đóng băng trong 15 bước, ví dụ: nếu 1 tác nhân bị ép phải hoàn thành môi trường hồ đóng băng trong 15 bước, thì chân trời lập kế hoạch là 1 trong số đó. BW \& BSW đều có chân trời lập kế hoạch tham lam: tập kết thúc ngay sau 1 tương tác. Trên thực tế, tất cả các môi trường bandit đều có chân trời tham lam.
+
+        On other hand, an {\it infinite horizon} when agent doesn't have a predetermined time step limit, so agent plans for an infinite number of time steps. Such a task may still be episodic \& therefore terminate, but from perspective of agent, its planning horizon is infinite. Refer to this type of infinite planning horizon tasks as an {\it indefinite horizon} task. Agent plans for infinite, but interactions may be stopped at any time by environment.
+
+        -- Mặt khác, 1 {\it infinite horizon} khi tác nhân không có giới hạn bước thời gian định trước, do đó tác nhân lập kế hoạch cho 1 số bước thời gian vô hạn. Một tác vụ như vậy vẫn có thể là từng đợt \& do đó kết thúc, nhưng từ góc nhìn của tác nhân, tầm nhìn lập kế hoạch của nó là vô hạn. Hãy gọi loại tác vụ tầm nhìn lập kế hoạch vô hạn này là 1 tác vụ {\it indefinite horizon}. Tác nhân lập kế hoạch cho vô hạn, nhưng tương tác có thể bị dừng bất cứ lúc nào bởi môi trường.
+
+        For tasks in which there's a high chance agent gets stuck in a loop \& never terminates, it is common practice to add an artificial terminal state based on time step: a hard time step limit using transition function. These cases require special handling of time step limit terminal state. Environment for Chaps. 8--10, cart pole environment, has this kind of artificial terminal step, \& will learn to handle these special cases in those chaps.
+
+        -- Đối với các tác vụ có khả năng cao tác nhân bị kẹt trong vòng lặp \& không bao giờ kết thúc, thông lệ thường thấy là thêm trạng thái kết thúc nhân tạo dựa trên bước thời gian: giới hạn bước thời gian khó bằng hàm chuyển tiếp. Những trường hợp này yêu cầu xử lý đặc biệt trạng thái kết thúc giới hạn bước thời gian. Môi trường cho Chương 8-10, môi trường cột xe đẩy, có loại bước kết thúc nhân tạo này, \& sẽ học cách xử lý các trường hợp đặc biệt này trong các chương đó.
+
+        BW, BSW, \& FL environments are episodic tasks, because there are terminal states; there are a clear goal \& failure states. FL is an indefinite planning horizon; agent plans for infinite number of steps, but interactions may stop at any time. Won't add a time step limit to FL environment because there's a high chance agent will terminate naturally; environment is highly stochastic. This kind of task is most common in RL.
+
+        -- Môi trường BW, BSW, \& FL là các tác vụ theo từng giai đoạn, vì có các trạng thái kết thúc; có mục tiêu rõ ràng \& trạng thái thất bại. FL là 1 đường chân trời lập kế hoạch không xác định; tác nhân lập kế hoạch cho vô số bước, nhưng các tương tác có thể dừng lại bất cứ lúc nào. Sẽ không thêm giới hạn bước thời gian vào môi trường FL vì khả năng tác nhân tự động kết thúc là rất cao; môi trường có tính ngẫu nhiên cao. Loại tác vụ này phổ biến nhất trong RL.
+
+        Refer to sequence of consecutive time steps from beginning to end of an episodic task as an {\it episode, trial, period}, or {\it stage}. In indefinite planning horizons, an episode is a collection containing all interactions between an initial \& a terminal state.
+
+        -- Tham khảo chuỗi các bước thời gian liên tiếp từ đầu đến cuối của 1 nhiệm vụ theo từng giai đoạn như 1 {\it episode, trial, period} hoặc {\it stage}. Trong các chân trời lập kế hoạch không xác định, 1 giai đoạn là 1 tập hợp chứa tất cả các tương tác giữa trạng thái ban đầu \& trạng thái kết thúc.
+        \item {\sf Discount: future is uncertain, value it less.} Because of possibility of infinite sequences of time steps in infinite horizon tasks, need a way to discount value of rewards over time; i.e., need a way to tell agent that getting +1's is better sooner than later. Commonly use a positive real value $< 1$ to exponentially discount value of future rewards. Further into future we receive rewards, less valuable it is in present.
+
+        -- {\sf Giảm giá: tương lai không chắc chắn, hãy giảm giá trị của nó.} Do khả năng có vô số chuỗi bước thời gian trong các nhiệm vụ có chân trời vô hạn, cần 1 cách để giảm giá trị của phần thưởng theo thời gian; tức là, cần 1 cách để cho tác nhân biết rằng nhận được +1 sớm hơn sẽ tốt hơn muộn. Thông thường, sử dụng giá trị thực dương $<1$ để giảm giá trị theo cấp số nhân của phần thưởng trong tương lai. Càng về sau, chúng ta càng nhận được phần thưởng, nhưng giá trị của nó ở hiện tại lại kém hơn.
+
+        This number is called {\it discount factor}, or {\it gamma}. Discount factor adjusts importance of rewards over time. The later we receive rewards, the less attractive they are to present calculations. Another important reason why discount factor is commonly used: reduce variance of return estimates. Given: future is uncertain, \& further we look into future, more stochasticity we accumulate \& more variance our value estimates will have, discount factor helps reduce degree to which future rewards affect our value function estimates, which stabilizes learning for most agents.
+
+        -- Con số này được gọi là {\it hệ số chiết khấu}, hay {\it gamma}. Hệ số chiết khấu điều chỉnh tầm quan trọng của phần thưởng theo thời gian. Phần thưởng càng nhận được muộn thì chúng càng kém hấp dẫn khi trình bày các phép tính. Một lý do quan trọng khác khiến hệ số chiết khấu được sử dụng phổ biến: giảm phương sai của ước tính lợi nhuận. Giả sử: tương lai không chắc chắn, \& khi chúng ta càng nhìn vào tương lai, chúng ta càng tích lũy nhiều ngẫu nhiên \& ước tính giá trị của chúng ta sẽ có nhiều phương sai hơn, hệ số chiết khấu giúp giảm mức độ ảnh hưởng của phần thưởng trong tương lai đến ước tính hàm giá trị của chúng ta, giúp ổn định quá trình học tập cho hầu hết các tác nhân.
+
+        {\sf Effect of discount factor \& time on value of rewards.} 1. Discount factor will exponentially decay value of later rewards. 2. Value of a +1 reward at time step 0 isn't same as value of a +1 reward at time step 1000.
+
+        -- {\sf Ảnh hưởng của hệ số chiết khấu \& thời gian lên giá trị phần thưởng.} 1. Hệ số chiết khấu sẽ làm giảm giá trị của phần thưởng sau theo cấp số nhân. 2. Giá trị của phần thưởng +1 tại bước thời gian 0 không giống với giá trị của phần thưởng +1 tại bước thời gian 1000.
+
+        Interestingly, gamma is part of MDP definition: problem, \& not agent. However, often you will find no guidance for proper value of gamma to use for a given environment. Again, this is because gamma is also used as a hyperparameter for reducing variance, \& therefore left for agent to tune.
+
+        -- Điều thú vị là gamma là 1 phần của định nghĩa MDP: vấn đề, \& chứ không phải tác nhân. Tuy nhiên, thường bạn sẽ không tìm thấy hướng dẫn nào về giá trị gamma phù hợp để sử dụng cho 1 môi trường nhất định. Một lần nữa, điều này là do gamma cũng được sử dụng như 1 siêu tham số để giảm phương sai, \& do đó được để lại cho tác nhân điều chỉnh.
+
+        Can also use gamma as a way to give sense of ``urgency'' to agent. To wrap your head around that, imagine: I tell you I will give you \$1000 once you finish reading this book, but I will discount (gamma) that reward by 0.5 daily, i.e., every day I cut value that I pay in half. You will probably finish reading this book today. If I say gamma is 1, then it doesn't matter when you finish it, you still get full amount.
+
+        -- Cũng có thể sử dụng gamma như 1 cách để tạo cảm giác ``khẩn cấp'' cho người đại diện. Để hiểu rõ hơn, hãy tưởng tượng: Tôi nói với bạn rằng tôi sẽ thưởng cho bạn 1000 đô la sau khi bạn đọc xong cuốn sách này, nhưng tôi sẽ giảm (gamma) phần thưởng đó 0,5 đô la mỗi ngày, tức là mỗi ngày tôi sẽ giảm 1 nửa giá trị mà tôi trả. Có lẽ bạn sẽ đọc xong cuốn sách này trong hôm nay. Nếu tôi nói gamma là 1, thì dù bạn đọc xong khi nào cũng không quan trọng, bạn vẫn nhận được toàn bộ số tiền.
+
+        For BW \& BSW environments, a gamma of 1 is appropriate; for FL environment, however, we will use a gamma of 0.99, a commonly used value.
+
+        -- Đối với môi trường BW \& BSW, gamma bằng 1 là phù hợp; tuy nhiên, đối với môi trường FL, chúng ta sẽ sử dụng gamma bằng 0,99, 1 giá trị thường được sử dụng.
+
+        {\bf Discount factor (gamma).} 1. Sum of all rewards obtained during course of an episode is referred to as return $G_t = \sum_{i=t+1}^T R_i = R_{t+1} + R_{t+2} + \cdots + R_T$. 2. But we can also use discount factor this way \& obtain discounted return. Discounted return will downweight rewards that occur later during episode.
+        \begin{equation*}
+            G = R_{t+1} + \gamma R_{t+2} + \gamma^2R_{t+3} + \cdots + \gamma^{T - t - 1}R_T.
+        \end{equation*}
+        3. Can simplify equation \& have a more general equation, e.g. this one. $G_t = \sum_{k=0}^\infty \gamma^kR_{t + k + 1}$. 4. Finally, take a look at this interesting recursive definition. $G_t = R_{t+1} + \gamma G_{t+1}$. In next chap, spend time exploiting this form.
+
+        -- {\bf Hệ số chiết khấu (gamma).} 1. Tổng tất cả các phần thưởng nhận được trong suốt 1 tập phim được gọi là lợi nhuận $G_t = \sum_{i=t+1}^T R_i = R_{t+1} + R_{t+2} + \cdots + R_T$. 2. Nhưng chúng ta cũng có thể sử dụng hệ số chiết khấu theo cách này \& thu được lợi nhuận chiết khấu. Lợi nhuận chiết khấu sẽ giảm trọng số phần thưởng xuất hiện sau đó trong tập phim.
+        \begin{equation*}
+            G = R_{t+1} + \gamma R_{t+2} + \gamma^2R_{t+3} + \cdots + \gamma^{T - t - 1}R_T.
+        \end{equation*}
+        3. Có thể đơn giản hóa phương trình \& có 1 phương trình tổng quát hơn, ví dụ như phương trình này. $G_t = \sum_{k=0}^\infty \gamma^kR_{t + k + 1}$. 4. Cuối cùng, hãy xem định nghĩa đệ quy thú vị này. $G_t = R_{t+1} + \gamma G_{t+1}$. Trong chương tiếp theo, hãy dành thời gian khai thác dạng này.
+        \item {\sf Extensions to MDPs.} There are many extensions to MDP framework. They allow us to target slightly different types of RL problems. Following list isn't comprehensive, but it should give you an idea of how large field is. Know that acronym MDPs is often used to refer to all types of MDPs. Currently looking only at tip of iceberg:
+        \begin{itemize}
+            \item Partially observable Markov decision process (POMDP): When agent cannot fully observe environment state
+            \item Factored Markov decision process (FMDP): Allows representation of transition \& reward function more compactly so that we can represent large MDPs
+            \item Continuous [Time|Action|State] Markov decision process: When either time, action, state or any combination of them are continuous
+            \item Relational Markov decision process (RMDP): Allows combination of probabilistic \& relational knowledge
+            \item Semi-Markov decision process (SMDP): Allows inclusion of abstract actions that can take multiple time steps to complete
+            \item Multi-agent Markov decision process (MMDP): Allows inclusion of multiple agents in same environment
+            \item Decentralized Markov decision process (Dec-MDP): Allows for multiple agents to collaborate \& maximize a common reward
+        \end{itemize}
+        -- {\sf Mở rộng cho MDP.} Có rất nhiều phần mở rộng cho khung MDP. Chúng cho phép chúng ta nhắm đến các loại bài toán RL khác nhau đôi chút. Danh sách sau đây không đầy đủ, nhưng cũng đủ để bạn hình dung được trường dữ liệu lớn như thế nào. Cần lưu ý rằng từ viết tắt MDP thường được dùng để chỉ tất cả các loại MDP. Hiện tại chỉ nhìn vào phần nổi của tảng băng chìm:
+        \begin{itemize}
+            \item Quy trình quyết định Markov quan sát 1 phần (POMDP): Khi tác nhân không thể quan sát đầy đủ trạng thái môi trường
+            \item Quy trình quyết định Markov phân tích nhân tử (FMDP): Cho phép biểu diễn hàm chuyển tiếp \& phần thưởng 1 cách cô đọng hơn để có thể biểu diễn các MDP lớn
+            \item Quy trình quyết định Markov liên tục [Thời gian | Hành động | Trạng thái]: Khi thời gian, hành động, trạng thái hoặc bất kỳ sự kết hợp nào của chúng là liên tục
+            \item Quy trình quyết định Markov quan hệ (RMDP): Cho phép kết hợp kiến thức xác suất \& quan hệ
+            \item Quy trình quyết định bán Markov (SMDP): Cho phép bao gồm các hành động trừu tượng có thể mất nhiều bước thời gian để hoàn thành
+            \item Quy trình quyết định Markov đa tác nhân (MMDP): Cho phép bao gồm nhiều tác nhân trong cùng 1 môi trường
+            \item Quy trình quyết định Markov phi tập trung (Dec-MDP): Cho phép nhiều tác nhân cộng tác \& tối đa hóa phần thưởng chung
+        \end{itemize}
+        {\sf Bandit walk (BW) MDP.} 1. Outer dictionary keys are states. 2. Inner dictionary keys are actions. 3 Value of inner dictionary is a list with all positive transitions for that state-action pair. 4. Transition tuples have 4 values: probability of that transition, next state, reward, \& a flag indicating whether next state is terminal. 5. Can also load MDP this way.
+
+        -- {\sf Bandit walk (BW) MDP.} 1. Khóa từ điển bên ngoài là các trạng thái. 2. Khóa từ điển bên trong là các hành động. 3. Giá trị của từ điển bên trong là 1 danh sách chứa tất cả các chuyển đổi tích cực cho cặp trạng thái-hành động đó. 4. Các bộ chuyển đổi có 4 giá trị: xác suất của chuyển đổi đó, trạng thái tiếp theo, phần thưởng, \& 1 cờ cho biết trạng thái tiếp theo có phải là kết thúc hay không. 5. Cũng có thể tải MDP theo cách này.
+        \begin{verbatim}
+import gym, gym_walk
+P = gym.make('BanditWalk-v0').env.P
+        \end{verbatim}
+        {\sf Bandit slippery walk (BSW) MDP.} 1. Look at terminal states. State 0 \& 2 are terminal. 2. This is how you build stochastic transitions. This is state 1, action 0. 3. These are transitions after taking action 1 in state 1. 4. This is how you can load Bandit Slippery walk in Notebook:
+        \begin{verbatim}
+import gym, gym_walk
+P = gym.make('BanditSlipperyWalk-v0').env.P
+        \end{verbatim}
+        {\sf Frozen lake (FL) MDP.} 1. Probability of landing in state 0 when selecting action 0 in state 0. 2. Probability of landing in state 4 when selecting action 0 in state 0. 3. Can group probabilities, e.g. in this line. 4. Or be explicit, e.g. in these 2 lines. It works fine either way. 6. Go to Notebook for complete FL MDP. 7. State 4 is only state that provides a nonzero reward. 3 out of 4 actions have a single transition that leads to state 15. Landing on state 15 provides a +1 reward. 8. State 15 is a terminal state. 9. Can load MDP like so.
+
+        -- {\sf Hồ đóng băng (FL) MDP.} 1. Xác suất hạ cánh ở trạng thái 0 khi chọn hành động 0 ở trạng thái 0. 2. Xác suất hạ cánh ở trạng thái 4 khi chọn hành động 0 ở trạng thái 0. 3. Có thể nhóm các xác suất, ví dụ: trong dòng này. 4. Hoặc rõ ràng, ví dụ: trong 2 dòng này. Cả hai cách đều ổn. 6. Vào Notebook để xem FL MDP đầy đủ. 7. Trạng thái 4 là trạng thái duy nhất cung cấp phần thưởng khác không. 3 trong số 4 hành động có 1 lần chuyển đổi duy nhất dẫn đến trạng thái 15. Hạ cánh ở trạng thái 15 cung cấp phần thưởng +1. 8. Trạng thái 15 là trạng thái cuối cùng. 9. Có thể tải MDP như vậy.
+        \begin{verbatim}
+import gym
+P = gym.make('FrozenLake-v0').env.P
+        \end{verbatim}
+        \item {\sf Putting it all together.} Unfortunately, when go out to real world, find many different ways that MDPs are defined. Moreover, certain sources describe POMDPs \& refer to them as MDPs without full disclosure. All of this creates confusion to newcomers, so have a few points to clarify. 1st, what you saw previously as Python code isn't a complete MDP, but instead only transition functions \& reward signals. From these, can easily infer state \& action spaces. These code snippets come from a few packages containing several environments I developed for this book, \& FL environment is part of OpenAI Gym package mentioned in 1st chap. Several of additional components of an MDP that are missing from dictionaries above, e.g. initial state distribution $S_\theta$ that comes from set of initial state $S^i$, are handled internally by Gym framework \& not shown here. Further, other components, e.g. discount factor $\gamma$ \& horizon $H$, are not shown in previous dictionary, \& OpenAI Gym framework doesn't provide them to you. Discount factors are commonly considered hyperparameters, for better or worse. \& horizon is often assumed to be infinity.
+
+        -- {\sf Tổng hợp lại.} Thật không may, khi bước ra thế giới thực, bạn sẽ thấy nhiều cách định nghĩa MDP khác nhau. Hơn nữa, 1 số nguồn mô tả POMDP \& gọi chúng là MDP mà không tiết lộ đầy đủ. Tất cả những điều này gây nhầm lẫn cho người mới bắt đầu, vì vậy, có 1 vài điểm cần làm rõ. Thứ nhất, những gì bạn thấy trước đây là mã Python không phải là MDP hoàn chỉnh, mà thay vào đó chỉ là các hàm chuyển tiếp \& tín hiệu phần thưởng. Từ những điều này, có thể dễ dàng suy ra trạng thái \& không gian hành động. Các đoạn mã này đến từ 1 vài gói chứa 1 số môi trường mà tôi đã phát triển cho cuốn sách này, \& môi trường FL là 1 phần của gói OpenAI Gym được đề cập trong chương 1. Một số thành phần bổ sung của MDP bị thiếu trong các từ điển ở trên, ví dụ: phân phối trạng thái ban đầu $S_\theta$ xuất phát từ tập hợp trạng thái ban đầu $S^i$, được xử lý nội bộ bởi khung Gym \& không được hiển thị ở đây. Ngoài ra, các thành phần khác, ví dụ: Hệ số chiết khấu $\gamma$ \& horizon $H$ không được hiển thị trong từ điển trước, \& OpenAI Gym framework không cung cấp chúng cho bạn. Hệ số chiết khấu thường được coi là siêu tham số, dù tốt hay xấu. \& horizon thường được coi là vô cực.
+
+        1st, to calculate optimal policies for MDPs presented in this chap (which we will do in next chap), only need dictionary shown previously containing transition function \& reward signal; from these, can infer state \& action spaces, \& I will provide you with discount factors. Will assume horizons of infinity, \& won't need initial state distribution. Additionally, most crucial part of this chap: give you an awareness of components of MDPs \& POMDPs. Won't have to do much more buildings of MDPs than what you have done in this chap. Nevertheless, define MDPs \& POMDPs so we are in sync.
+
+        -- 1st, để tính toán các chính sách tối ưu cho các MDP được trình bày trong chương này (chúng ta sẽ làm điều này trong chương tiếp theo), chỉ cần từ điển đã hiển thị trước đó chứa hàm chuyển tiếp \& tín hiệu phần thưởng; từ đó, có thể suy ra trạng thái \& không gian hành động, \& Tôi sẽ cung cấp cho bạn các hệ số chiết khấu. Sẽ giả định chân trời vô cực, \& không cần phân phối trạng thái ban đầu. Ngoài ra, phần quan trọng nhất của chương này: cung cấp cho bạn nhận thức về các thành phần của MDP \& POMDP. Sẽ không phải xây dựng nhiều MDP hơn những gì bạn đã làm trong chương này. Tuy nhiên, hãy định nghĩa MDP \& POMDP để chúng ta đồng bộ.
+
+        {\bf MDPs vs. POMDPs.} $MDP(S,A,T,R,S_\theta,\gamma,H)$. 1. MDPs have state space ${\cal S}$, action space ${\cal A}$, transition function $T$, reward signal ${\cal R}$. They also has a set of initial states distribution $S_\theta$, discount factor $\gamma$, \& horizon $H$. 2. To define a POMDP, add observation space $O$ \& an emission probability ${\cal E}$ that defines probability of showing an observation $o_t$ given a state $s_t$. Very simple. $POMDP(S,A,T,R,S_\theta,\gamma,H,O,E)$.
+
+        -- {\bf MDP so với POMDP.} $MDP(S,A,T,R,S_\theta,\gamma,H)$. 1. MDP có không gian trạng thái ${\cal S}$, không gian hành động ${\cal A}$, hàm chuyển tiếp $T$, tín hiệu thưởng ${\cal R}$. Chúng cũng có 1 tập hợp phân phối trạng thái ban đầu $S_\theta$, hệ số chiết khấu $\gamma$, \& chân trời $H$. 2. Để định nghĩa 1 POMDP, hãy thêm không gian quan sát $O$ \& 1 xác suất phát xạ ${\cal E}$ định nghĩa xác suất hiển thị 1 quan sát $o_t$ cho 1 trạng thái $s_t$. Rất đơn giản. $POMDP(S,A,T,R,S_\theta,\gamma,H,O,E)$.
+        \item {\sf Summary.} This chap is heavy on new terms, but that is its intent. Best summary for this chap is MDP so với POMDP. At highest level, a RL problem is about interactions between an agent \& environment in which agent exists. A large variety of issues can be modeled under this setting. Markov decision process is a mathematical framework for representing complex decision-making problems under uncertainty.
+
+        -- Chương này tập trung vào các thuật ngữ mới, nhưng đó chính là mục đích của nó. Tóm tắt tốt nhất cho chương này là MDP so với POMDP. Ở cấp độ cao nhất, 1 bài toán RL là về tương tác giữa 1 tác nhân \& môi trường mà tác nhân tồn tại. Rất nhiều vấn đề có thể được mô hình hóa trong bối cảnh này. Quy trình quyết định Markov là 1 khuôn khổ toán học để biểu diễn các vấn đề ra quyết định phức tạp trong điều kiện không chắc chắn.
+
+        Markov decision processes (MDPs) are composed of a set of system states, a set of per-state actions, a transition function, a reward signal a horizon, a discount factor, \& an initial state distribution. States describe configuration of environment. Actions allow agents to interact with environment. Transition function tells how environment evolves \& reacts to agent's actions. Reward signal encodes goal to be achieved by agent. Horizon \& discount factor add a notion of time to interactions.
+
+        -- Quy trình quyết định Markov (MDP) bao gồm 1 tập hợp các trạng thái hệ thống, 1 tập hợp các hành động trên mỗi trạng thái, 1 hàm chuyển tiếp, 1 tín hiệu thưởng, 1 đường chân trời, 1 hệ số chiết khấu \& 1 phân phối trạng thái ban đầu. Các trạng thái mô tả cấu hình của môi trường. Các hành động cho phép các tác nhân tương tác với môi trường. Hàm chuyển tiếp cho biết môi trường phát triển như thế nào \& phản ứng với các hành động của tác nhân. Tín hiệu thưởng mã hóa mục tiêu mà tác nhân cần đạt được. Đường chân trời \& hệ số chiết khấu bổ sung khái niệm về thời gian cho các tương tác.
+
+        State space, set of all possible states, can be infinite or finite. Number of variables that make up a single state, however, must be finite. States can be fully observable, but in a more general case of MDPs, a POMDP, states are partially observable. I.e., agent can't observe full state of system, but can observe a noisy state instead, called an observation.
+
+        -- Không gian trạng thái, tập hợp tất cả các trạng thái khả dĩ, có thể vô hạn hoặc hữu hạn. Tuy nhiên, số lượng biến tạo nên 1 trạng thái duy nhất phải hữu hạn. Các trạng thái có thể quan sát được hoàn toàn, nhưng trong 1 trường hợp tổng quát hơn của MDP, tức POMDP, các trạng thái chỉ quan sát được 1 phần. Tức là, tác nhân không thể quan sát toàn bộ trạng thái của hệ thống, mà thay vào đó có thể quan sát 1 trạng thái nhiễu, được gọi là 1 quan sát.
+
+        Action space is a set of actions that can vary from state to state. However, convention is to use same set for all states. Actions can be composed with $> 1$ variable, just like states. Action variables may be discrete or continuous.
+
+        -- Không gian hành động là 1 tập hợp các hành động có thể thay đổi tùy theo trạng thái. Tuy nhiên, quy ước là sử dụng cùng 1 tập hợp cho tất cả các trạng thái. Các hành động có thể được cấu thành từ $> 1$ biến, giống như trạng thái. Biến hành động có thể là rời rạc hoặc liên tục.
+
+        Transition function links a state (a next state) to a state-action pair, \& it defines probability of reaching that future state given state-action pair. Reward signal, in its more general form, maps a transition tuple $s,a,s'$ to scalar, \& it indicates goodness of transition. Both transition function \& reward signal define model of environment \& are assumed to be stationary, meaning probabilities stay same throughout.
+
+        -- Hàm chuyển tiếp liên kết 1 trạng thái (trạng thái tiếp theo) với 1 cặp trạng thái-hành động, \& nó xác định xác suất đạt đến trạng thái tương lai đó dựa trên cặp trạng thái-hành động. Tín hiệu phần thưởng, ở dạng tổng quát hơn, ánh xạ 1 bộ chuyển tiếp $s,a,s'$ thành số vô hướng, \& nó biểu thị độ tốt của chuyển tiếp. Cả hàm chuyển tiếp \& tín hiệu phần thưởng đều xác định mô hình môi trường \& được giả định là dừng, nghĩa là xác suất luôn giữ nguyên trong suốt quá trình.
+
+        By now:
+        \begin{itemize}
+            \item Understand components of a RL problem \& how they interact with each other
+            \item Recognize Markov decision processes \& know what they are composed from \& how they work
+            \item Can represent sequential decision-making problems as MDPs
+        \end{itemize}
+        -- Đến thời điểm hiện tại:
+        \begin{itemize}
+            \item Hiểu các thành phần của bài toán RL \& cách chúng tương tác với nhau
+            \item Nhận biết các quy trình quyết định Markov \& biết chúng được cấu thành từ những gì \& cách chúng hoạt động
+            \item Có thể biểu diễn các bài toán ra quyết định tuần tự dưới dạng MDP
+        \end{itemize}
     \end{itemize}
-    \item {\sf3. Balancing immediate \& long-term goals.}
+    \item {\sf3. Balancing immediate \& long-term goals.} In this chap: learn about challenges of learning from sequential feedback \& how to properly balance immediate \& long-term goals. Develop algorithms that can find best policies of behavior in sequential decision-making problems modeled with MDPs. Find optimal policies for all environments for which you built MDPs in prev chap.
+
+    -- {\sf Cân bằng mục tiêu trước mắt \& dài hạn.} Trong chương này: tìm hiểu về những thách thức của việc học từ phản hồi tuần tự \& cách cân bằng đúng đắn các mục tiêu trước mắt \& dài hạn. Phát triển các thuật toán có thể tìm ra các chính sách hành vi tốt nhất trong các bài toán ra quyết định tuần tự được mô hình hóa bằng MDP. Tìm các chính sách tối ưu cho tất cả các môi trường mà bạn đã xây dựng MDP trong chương trước.
+
+    In last chap, built an MDP for BW, BSW, \& FL environments. MDPs are motors moving RL environments. They define problem: they describe how agent interacts with environment through state \& action spaces, agent's goal through reward function, how environment reacts from agent's actions through transition function, \& how time should impact behavior through discount factor.
+
+    -- Trong chương trước, tôi đã xây dựng 1 MDP cho các môi trường BW, BSW, \& FL. MDP là động cơ di chuyển môi trường RL. Chúng định nghĩa vấn đề: chúng mô tả cách tác nhân tương tác với môi trường thông qua không gian trạng thái \& hành động, mục tiêu của tác nhân thông qua hàm thưởng, cách môi trường phản ứng với hành động của tác nhân thông qua hàm chuyển tiếp, \& cách thời gian tác động đến hành vi thông qua hệ số chiết khấu.
+
+    In this chap, learn about algorithms for solving MDPs. 1st discuss objective of an agent \& why simple plans are not sufficient to solve MDPs. Then talk about 2 fundamental algorithms for solving MDPs under a technique called {\it dynamic programming: value iteration} (VI) \& {\it policy iteration} (PI).
+
+    -- Trong chương này, chúng ta sẽ tìm hiểu về các thuật toán giải bài toán MDP. Trước tiên, hãy thảo luận về mục tiêu của 1 tác nhân \& tại sao các kế hoạch đơn giản không đủ để giải bài toán MDP. Sau đó, hãy thảo luận về hai thuật toán cơ bản để giải bài toán MDP bằng 1 kỹ thuật gọi là {\it dynamic programming: value iteration} (VI) \& {\it policy iteration} (PI).
+
+    Soon notice these methods in a way ``cheat'': they require full access to MDP, \& they depend on knowing dynamics of environment, which is something we can't always obtain. However, fundamentals you will learn are still useful for learning about more advanced algorithms. In end, VI \& PI are foundations from which virtually every other RL (\& DRL) algorithm originates.
+
+    -- Bạn sẽ sớm nhận ra những phương pháp này có phần ``gian lận'': chúng yêu cầu quyền truy cập đầy đủ vào MDP, \& chúng phụ thuộc vào việc hiểu biết về động lực học của môi trường, điều mà chúng ta không phải lúc nào cũng có được. Tuy nhiên, những kiến thức cơ bản bạn sẽ học vẫn hữu ích cho việc tìm hiểu các thuật toán nâng cao hơn. Cuối cùng, VI \& PI là nền tảng mà hầu như mọi thuật toán RL (\& DRL) khác đều bắt nguồn từ đó.
+
+    Also notice: when an agent has full access to an MDP, there is no uncertainty because you can look at dynamics \& rewards \& calculate expectations directly. Calculating expectations directly means: there is no need for exploration, i.e., there is no need to balance exploration \& exploitation. There is no need for interaction, so there is no need for trial-\&-error learning. All of this is because feedback we are using for learning in this chap isn't evaluative but supervised instead.
+
+    -- Cũng cần lưu ý: khi 1 tác nhân có toàn quyền truy cập vào MDP, sẽ không có sự bất định nào vì bạn có thể xem xét động lực \& phần thưởng \& tính toán kỳ vọng trực tiếp. Tính toán kỳ vọng trực tiếp có nghĩa là: không cần khám phá, tức là không cần cân bằng giữa khám phá \& khai thác. Không cần tương tác, nên không cần học thử \& sai. Tất cả những điều này là do phản hồi mà chúng ta sử dụng cho việc học trong chương này không mang tính đánh giá mà thay vào đó là có giám sát.
+
+    Remember, in DRL, agents learn from feedback that is simultaneously sequential (as opposed to 1 shot), evaluative (as opposed to supervised), \& sampled (as opposed to exhaustive). What I am doing in this chap is eliminating complexity that comes with learning from evaluative \& sampled feedback, \& studying sequential feedback in isolation. In this chap, learn from feedback that is sequential, supervised, \& exhaustive.
+
+    -- Nhớ rằng, trong DRL, các tác nhân học hỏi từ phản hồi vừa tuần tự (khác với 1 lần), vừa đánh giá (khác với giám sát), vừa lấy mẫu (khác với toàn diện). Điều tôi đang làm trong chương này là loại bỏ sự phức tạp đi kèm với việc học từ phản hồi đánh giá \& lấy mẫu, vừa nghiên cứu phản hồi tuần tự 1 cách riêng biệt. Trong chương này, hãy học hỏi từ phản hồi tuần tự, vừa giám sát, vừa toàn diện.
     \begin{itemize}
-        \item {\sf3.1. Objective of a decision-making agent.}
+        \item {\sf3.1. Objective of a decision-making agent.} At 1st, it seems agent's goal: find a sequence of actions that will maximize return: sum of rewards (discounted or undiscounted -- depending on value of gamma) during an episode or entire life of agent, depending on task. Introduce a new environment to explain these concepts more concretely.
+
+        -- {\sf Mục tiêu của tác nhân ra quyết định.} Đầu tiên, mục tiêu của tác nhân dường như là: tìm 1 chuỗi hành động giúp tối đa hóa lợi nhuận: tổng phần thưởng (đã chiết khấu hoặc chưa chiết khấu -- tùy thuộc vào giá trị gamma) trong 1 giai đoạn hoặc toàn bộ vòng đời của tác nhân, tùy thuộc vào nhiệm vụ. Giới thiệu 1 môi trường mới để giải thích các khái niệm này 1 cách cụ thể hơn.
+
+        {\bf Slippery Walk Five (SWF) environment.} Slippery Walk Five (SWF) is a 1-row grid-world environment (a walk), that is stochastic, similar to Frozen Lake, \& it has only 5 non-terminal states (7 total if count 2 terminal).
+
+        -- {\bf Môi trường Slippery Walk Five (SWF).} Slippery Walk Five (SWF) là môi trường thế giới lưới 1 hàng (một cuộc đi bộ), ngẫu nhiên, tương tự như Frozen Lake, \& chỉ có 5 trạng thái không kết thúc (tổng cộng 7 nếu đếm 2 kết thúc).
+
+        {\sf Slippery Walk Five environment.} 1. This environment is stochastic, \& even if agent selects Right action, there is a chance it goes left. 2. 50\% action is success. 3. 33.33\% stays in place. 4. 16.66\% goes backward. Agent starts in S, H is a hole, G is goal \& provides a +1 reward.
+
+        -- {\sf Môi trường Slippery Walk Five.} 1. Môi trường này là ngẫu nhiên, \& ngay cả khi đặc vụ chọn hành động Phải, vẫn có khả năng nó sẽ đi sang trái. 2. 50\% hành động thành công. 3. 33,33\% giữ nguyên vị trí. 4. 16,66\% đi ngược lại. Đặc vụ bắt đầu ở S, H là 1 cái hố, G là mục tiêu \& cung cấp phần thưởng +1.
         \item {\sf3.2. Planning optimal sequences of actions.}
     \end{itemize}
     \item {\sf4. Balancing gathering \& use of information.}

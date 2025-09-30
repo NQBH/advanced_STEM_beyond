@@ -73,6 +73,9 @@ long long choose(long long n, long long r, long long p) {
 int main() {
 	int n, k;
 	cin >> n >> k;
-	cout << choose(n, k, p) << " " << binomial(n, k, p) << " " << binomial_DP(n, k, p) << '\n';
+	cout << binomial(n, k, p) << '\n';
+	cout << binomial_DP(n, k, p) << '\n';
+	factorial(p);
+	inverses(p);
+	cout << choose(n, k, p) << '\n';
 }
-// wrong choose function

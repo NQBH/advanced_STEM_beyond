@@ -43,5 +43,7 @@ long long choose(long long n, long long r, long long p) {
 int main() {
 	int n, r;
 	cin >> n >> r;
+	factorial(p);
+	inverses(p);
 	cout << choose(n, r, p);
 }

@@ -23804,6 +23804,13 @@ int main() {
     \end{table}
 \end{problem}
 
+\begin{baitoan}[Hệ số nhị thức]
+    Tính hệ số nhị thức $n\in\mathbb{N}^\star$ theo modulo $10^9 + 7$. Hệ số nhị thức $\binom{a}{b}$ có thể được tính bằng công thức $\frac{a!}{b!(b - a)!}$. Giả sử $a,b\in\mathbb{N},0\le b\le a$.
+    \item {\sf Input.} Dòng đầu tiên chứa số nguyên $n\in\mathbb{N}^\star$: số phép tính. Tiếp theo, có $n$ dòng, mỗi dòng chứa 2 số nguyên $a,b\in\mathbb{N}$.
+    \item {\sf Output.} In ra từng hệ số nhị thức theo modulo $10^9 + 7$.
+    \item {\sf Ràng buộc.} $n\in[10^5],0\le b\le a\le10^6$.
+\end{baitoan}
+
 \begin{problem}[\href{https://cses.fi/problemset/task/1715}{CSES Problem Set{\tt/}create strings II}]
     Given a string, calculate the number of different strings that can be created using its characters.
     \item {\sf Input.} The only input line has a string of length $n,m\in\mathbb{N}^\star$. Each character is between {\tt a--z} .
@@ -28933,6 +28940,8 @@ int main() {
 
 \noindent\textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
+    \item {\sc Jesse Choe, Aadit Ambadkar, Dustin Miao, Mihnea Brebenel, Peng Bai}. \href{https://usaco.guide/gold/combo?lang=cpp}{USACO Guide{\tt/}combinatorics}.
+
     \item {\sc Nguyễn Quản Bá Hồng}. {\it Lecture Note: Combinatorics \& Graph Theory -- Bài Giảng: Tổ Hợp \& Lý Thuyết Đồ Thị}.
 
     PDF: {\sc url}: \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/combinatorics/lecture/NQBH_combinatorics_graph_theory_lecture.pdf}.
@@ -28951,9 +28960,9 @@ int main() {
 \begin{enumerate}
     \item \href{https://cp-algorithms.com/combinatorics/binomial-coefficients.html}{Algorithms for Competitive Programming{\tt/}binomial coefficients}.
 \end{enumerate}
-Binomial coefficients $\binom{n}{k}$ are the number of ways to select a set of $k$ elements from $n$ different elements without taking into account the order of arrangement of these elements (i.e., the number of unordered sets).
+Binomial coefficients $\binom{n}{k}$ (pronounced as ``$n$ choose $k$'' or sometimes written a $_nC_k$) are the number of ways to select a set of $k$ elements from $n$ different elements without taking into account the order of arrangement of these elements (i.e., the number of unordered sets).
 
--- Hệ số nhị thức $\binom{n}{k}$ là số cách chọn 1 tập hợp $k$ phần tử từ $n$ phần tử khác nhau mà không tính đến thứ tự sắp xếp của các phần tử này (i.e., số tập hợp không có thứ tự).
+-- Hệ số nhị thức $\binom{n}{k}$ (phát âm là ``$n$ chọn $k$'' hoặc đôi khi được viết là $_nC_k$) là số cách chọn một tập hợp $k$ phần tử từ $n$ phần tử khác nhau mà không tính đến thứ tự sắp xếp của các phần tử này (tức là số tập hợp không có thứ tự).
 
 Binomial coefficients are also the coefficients in the expansion of $(a + b)^n$ (so-called {\it binomial theorem}):
 \begin{equation*}
@@ -28963,8 +28972,10 @@ Binomial coefficients are also the coefficients in the expansion of $(a + b)^n$ 
 %------------------------------------------------------------------------------%
 
 \subsection{Calculation of binomial coefficients}
+There are some ways to calculate binomial coefficients:
 
-\paragraph*{Straightforward calculation using analytical formula -- Tính toán đơn giản bằng công thức phân tích.} The 1st, straightforward formula is very easy to code, but this method is likely to overflow even for relatively small values of $n,k$ (even if the answer completely fit into some datatype, the calculation of the intermediate factorials can lead to overflow). Therefore, this method often can only be used with \href{https://cp-algorithms.com/algebra/big-integer.html}{long arithmetic}:
+\subsubsection{Straightforward calculation using analytical formula -- Tính toán đơn giản bằng công thức phân tích}
+The 1st, straightforward formula is very easy to code, but this method is likely to overflow even for relatively small values of $n,k$ (even if the answer completely fit into some datatype, the calculation of the intermediate factorials can lead to overflow). Therefore, this method often can only be used with \href{https://cp-algorithms.com/algebra/big-integer.html}{long arithmetic}:
 
 -- Công thức đầu tiên, đơn giản rất dễ mã hóa, nhưng phương pháp này có khả năng tràn ngay cả đối với các giá trị tương đối nhỏ của $n,k$ (ngay cả khi câu trả lời hoàn toàn phù hợp với 1 số kiểu dữ liệu, thì việc tính toán các giai thừa trung gian có thể dẫn đến tràn). Do đó, phương pháp này thường chỉ có thể được sử dụng với số học dài:
 \begin{Verbatim}[numbers=left,xleftmargin=0mm]
@@ -28976,11 +28987,12 @@ int C(int n, int k) {
 }
 \end{Verbatim}
 
-\paragraph*{Improved implementation -- Cải thiện việc thực hiện.} Note that in the above implementation the numerator \& denominator have the same number of factors $k$, each of which is $\ge1$. Therefore, we can replace our fraction with a product $k$ fractions, each of which is real-valued. However, on each step after multiplying current answer by each of the next fractions the answer will still be integer (this follows from the property of factoring in).
+\subsubsection{Improved implementation -- Cải thiện việc thực hiện}
+Note that in the above implementation the numerator \& denominator have the same number of factors $k$, each of which is $\ge1$. Therefore, we can replace our fraction with a product $k$ fractions, each of which is real-valued. However, on each step after multiplying current answer by each of the next fractions the answer will still be integer (this follows from the property of factoring in).
 
 -- Lưu ý rằng trong triển khai trên, tử số \& mẫu số có cùng số lượng ước số $k$, mỗi ước số là $\ge1$. Do đó, chúng ta có thể thay phân số của mình bằng tích $k$ phân số, mỗi phân số đều có giá trị thực. Tuy nhiên, ở mỗi bước sau khi nhân câu trả lời hiện tại với mỗi phân số tiếp theo, câu trả lời vẫn sẽ là số nguyên (điều này tuân theo tính chất của việc phân tích thành thừa số).
 
-C++ implementation:
+{\sf C++ implementation.}
 \begin{Verbatim}[numbers=left,xleftmargin=0mm]
 int C(int n, int k) {
     double res = 1;
@@ -28992,9 +29004,90 @@ Here we carefully cast the floating point number to an integer, taking into acco
 
 -- Ở đây, chúng ta cẩn thận chuyển đổi số dấu phẩy động sang số nguyên, lưu ý rằng do các lỗi tích lũy, giá trị này có thể nhỏ hơn 1 chút so với giá trị thực (e.g.: $2.99999$ thay vì 3).
 
+\begin{problem}[\href{https://cses.fi/problemset/task/1079}{CSES Problem Set{\tt/}binomial coefficients}]
+    Calculate $n\in\mathbb{N}^\star$ binomial coefficients modulo $10^9 + 7$. A binomial coefficient $\binom{a}{b}$ can be calculated using the formula $\frac{a!}{b!(b - a)!}$. We assume that $a,b\in\mathbb{N},0\le b\le a$.
+    \item {\sf Input.} The 1st input line has an integer $n\in\mathbb{N}^\star$: the number of calculations. After this, there are $n$ lines, each of which contains 2 integers $a,b\in\mathbb{N}$.
+    \item {\sf Output.} Print each binomial coefficient modulo $10^9 + 7$.
+    \item {\sf Constraints.} $n\in[10^5],0\le b\le a\le10^6$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|binomial_coefficient.inp| & \verb|binomial_coefficient.out| \\
+            \hline
+            3 & 10 \\
+            5 3 & 8 \\
+            8 1 & \\
+            9 5 & 126 \\
+            \hline
+        \end{tabular}
+    \end{table}
+\end{problem}
+
+\begin{baitoan}[Hệ số nhị thức]
+    Tính $n\in\mathbb{N}^\star$ hệ số nhị thức theo modulo $10^9 + 7$. Hệ số nhị thức $\binom{a}{b}$ có thể được tính bằng công thức $\frac{a!}{b!(b - a)!}$. Giả sử $a,b\in\mathbb{N},0\le b\le a$.
+    \item {\sf Input.} Dòng đầu tiên chứa số nguyên $n\in\mathbb{N}^\star$: số phép tính. Tiếp theo, có $n$ dòng, mỗi dòng chứa 2 số nguyên $a,b\in\mathbb{N}$.
+    \item {\sf Output.} In ra từng hệ số nhị thức theo modulo $10^9 + 7$.
+    \item {\sf Ràng buộc.} $n\in[10^5],0\le b\le a\le10^6$.
+\end{baitoan}
+
+\begin{proof}[Solution]
+    The 1st method for calculating binomial factorials is too slow for this problem since the constraints on $a,b$ are $1\le b\le a\le10^6$ (recall that the 1st implementation runs in $O(n^2)$ time complexity). However, we can use the 2nd method to answer each of the $n$ queries in constant time by precomputing factorials \& their modular inverses.
+
+    -- Phương pháp thứ nhất để tính giai thừa nhị thức quá chậm đối với bài toán này vì các ràng buộc trên $a,b$ là $1\le b\le a\le10^6$ (hãy nhớ rằng cách triển khai thứ nhất chạy trong độ phức tạp thời gian $O(n^2)$). Tuy nhiên, chúng ta có thể sử dụng phương pháp thứ hai để trả lời mỗi truy vấn $n$ trong thời gian hằng số bằng cách tính trước giai thừa \& nghịch đảo mô-đun của chúng.
+    \item {\sf C++ implementation.}
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+using namespace std;
+using ll = long long;
+
+const int MAXN = 1e6;
+const int MOD = 1e9 + 7;
+ll fac[MAXN + 1], inv[MAXN + 1];
+
+ll exp(ll x, ll n, ll m) {
+    x %= m;
+    ll res = 1;
+    while (n > 0) {
+        if (n % 2 == 1) res = res * x % m;
+        x = x * x % m;
+        n /= 2;
+    }
+    return res;
+}
+
+void factorial() {
+    fac[0] = 1;
+    for (int i = 1; i <= MAXN; ++i) fac[i] = fac[i - 1] * i % MOD;
+}
+
+void inverses() {
+    inv[MAXN] = exp(fac[MAXN], MOD - 2, MOD);
+    for (int i = MAXN; i >= 1; --i) inv[i - 1] = inv[i] * i % MOD;
+}
+
+ll choose(int n, int r) {
+    return fac[n] * inv[r] % MOD * inv[n - r] % MOD;
+}
+
+int main() {
+    factorial();
+    inverses();
+    int n;
+    cin >> n;
+    for (int i = 0; i < n; ++i) {
+        int a, b;
+        cin >> a >> b;
+        cout << choose(a, b) << '\n';
+    }
+}
+    \end{Verbatim}
+\end{proof}
+
 %------------------------------------------------------------------------------%
 
-\subsection{Pascal's triangle -- Tam giác Pascal}
+\subsection{Pascal's triangle (dynamic programming) $O(n^2)$ -- Tam giác Pascal (quy hoạch động) $O(n^2)$}
 By using the recurrence relation we can construct a table of binomial coefficients (Pascal's triangle) \& take the result from it. The advantage of this method is that intermediate results never exceed the answer \& calculating each new table element requires only 1 addition. The flaw is slow execution for large $n,k$ if you just need a single value \& not the whole table (because in order to calculate $\binom{n}{k}$ you will need to build a table of all $\binom{i}{j}$, $\forall i,j\in[n]$, or at least to $j\in[\min\{i,2k\}]$). The time complexity can be considered to be $O(n^2)$.
 
 -- Bằng cách sử dụng quan hệ đệ quy, chúng ta có thể xây dựng 1 bảng các hệ số nhị thức (tam giác Pascal) \& lấy kết quả từ đó. Ưu điểm của phương pháp này là các kết quả trung gian không bao giờ vượt quá câu trả lời \& tính toán mỗi phần tử bảng mới chỉ cần 1 phép cộng. Nhược điểm là thực thi chậm đối với $n,k$ lớn nếu bạn chỉ cần 1 giá trị duy nhất \& không phải toàn bộ bảng (vì để tính $\binom{n}{k}$, bạn sẽ cần xây dựng 1 bảng gồm tất cả $\binom{i}{j}$, $\forall i,j\in[n]$, hoặc ít nhất là $j\in[\min\{i,2k\}]$). Độ phức tạp thời gian có thể được coi là $O(n^2)$.
@@ -29017,6 +29110,54 @@ If the entire table of values is not necessary, storing only 2 last rows of it i
 
 -- Trong 1 số trường hợp, việc tính toán trước tất cả các giai thừa là có lợi để tạo ra bất kỳ hệ số nhị thức cần thiết nào chỉ sau 2 lần chia. Điều này có thể có lợi khi sử dụng số học dài, khi bộ nhớ không cho phép tính toán trước toàn bộ tam giác Pascal.
 
+Binomial coefficients can be recursively calculated as follows:
+\begin{equation*}
+    \binom{n}{k} = \binom{n - 1}{k - 1} + \binom{n - 1}{k},\ \forall n,k\in\mathbb{N}^\star.
+\end{equation*}
+The intuition behind this is to fix an element $x$ in the set \& choose $k - 1$ elements from $n - 1$ elements if $x$ is included in the set or choose $k$ elements from $n - 1$ elements, otherwise. The base cases for the recursion are: $\binom{n}{0} = \binom{n}{n} = 1$ because there is always exactly 1 way to construct an empty subset \& a subset that contains all the elements. This recursive formula is commonly known as Pascal's triangle. A naive implementation of this would use a recursive formula, like below:
+
+-- Hệ số nhị thức có thể được tính đệ quy như sau:
+\begin{equation*}
+    \binom{n}{k} = \binom{n - 1}{k - 1} + \binom{n - 1}{k}, \ \forall n,k\in\mathbb{N}^\star.
+\end{equation*}
+Trực giác đằng sau điều này là cố định một phần tử $x$ trong tập hợp \& chọn $k - 1$ phần tử từ $n - 1$ phần tử nếu $x$ có trong tập hợp hoặc chọn $k$ phần tử từ $n - 1$ phần tử, nếu không thì chọn $n$ phần tử từ $n - 1$ phần tử. Các trường hợp cơ sở của phép đệ quy là: $\binom{n}{0} = \binom{n}{n} = 1$ vì luôn có đúng 1 cách để xây dựng một tập hợp con rỗng \& một tập hợp con chứa tất cả các phần tử. Công thức đệ quy này thường được gọi là tam giác Pascal. Một cách triển khai đơn giản của công thức này sẽ sử dụng một công thức đệ quy, như sau:
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+/** @return nCk mod p using naive recursion */
+int binomial(int n, int k, int p) {
+    if (k == 0 || k == n) return 1;
+    return (binomial(n - 1, k - 1, p) + binomial(n - 1, k, p)) % p;
+}
+\end{Verbatim}
+Additionally, we can optimize this from $O(2^n)$ to $O(n^2)$ using dynamic programming (DP) by caching the values of smaller binomials to prevent recalculating the same values over \& over again. The code below shows a bottom-up implementation of this.
+
+-- Ngoài ra, chúng ta có thể tối ưu hóa điều này từ $O(2^n)$ thành $O(n^2)$ bằng cách sử dụng lập trình động (DP) bằng cách lưu trữ đệm các giá trị của các nhị thức nhỏ hơn để tránh việc tính toán lại cùng một giá trị nhiều lần. Đoạn mã dưới đây minh họa cách triển khai từ dưới lên của phương pháp này.
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+/** @return nCk mod p using dynamic programming */
+int binomial_DP(int n, int k, int p) {
+    vector<vector<int>> dp(n + 1, vector<int>(k + 1, 0)); // dp[i][j] stores iCj
+    // base cases
+    for (int i = 0; i <= n; ++i) {
+        /*
+         * i choose 0 is always 1 since there is exactly one way
+         * to choose 0 elements from a set of i elements
+         * (don't choose anything)
+         */
+        dp[i][0] = 1;
+        /*
+         * i choose i is always 1 since there is exactly one way
+         * to choose i elements from a set of i elements
+         * (choose every element in the set)
+         */
+        if (i <= k) dp[i][i] = 1;
+    }
+    for (int i = 0; i <= n; ++i)
+        for (int j = 1; j <= min(i, k); ++j)
+            if (i != j) // skips over the base cases
+                dp[i][j] = (dp[i - 1][j - 1] + dp[i - 1][j]) % p; // uses the recurrence relation
+    return dp[n][k]; // returns nCk modulo p
+}
+\end{Verbatim}
+
 %------------------------------------------------------------------------------%
 
 \subsection{Computing binomial coefficients modulo $m$ -- Tính hệ số nhị thức modulo $m$}
@@ -29026,7 +29167,7 @@ Quite often you come across the problem of computing binomial coefficients modul
 
 \paragraph*{Binomial coefficient for small $n$ -- Hệ số nhị thức cho $n$ nhỏ.} The previously discussed approach of Pascal's triangle can be used to calculate all values of $\binom{n}{k}\mbox{ mod }  m$ for reasonably small $n$, since it requires time complexity $O(n^2)$. This approach can handle any modulo, since only addition operations are used.
 
--- Phương pháp tiếp cận tam giác Pascal đã thảo luận trước đó có thể được sử dụng để tính toán tất cả các giá trị của $\binom{n}{k}\mbox{ mod }  m$ cho $n$ khá nhỏ, vì nó đòi hỏi độ phức tạp thời gian $O(n^2)$. Phương pháp tiếp cận này có thể xử lý bất kỳ modulo nào, vì chỉ sử dụng các phép toán cộng.
+-- Phương pháp tiếp cận tam giác Pascal đã thảo luận trước đó có thể được sử dụng để tính toán tất cả các giá trị của $\binom{n}{k}\mbox{ mod } m$ cho $n$ khá nhỏ, vì nó đòi hỏi độ phức tạp thời gian $O(n^2)$. Phương pháp tiếp cận này có thể xử lý bất kỳ modulo nào, vì chỉ sử dụng các phép toán cộng.
 
 \paragraph*{Binomial coefficient module large prime -- Hệ số nhị thức modulo nguyên tố lớn.} The formula for the binomial coefficients is $\binom{n}{k} = \dfrac{n!}{k!(n - k)!}$, so if we want to compute it module some prime $m > n$ we get
 \begin{equation*}

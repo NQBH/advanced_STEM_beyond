@@ -28,3 +28,4 @@ int main() {
 	}
 	cout << S.size();
 }
+// AC 20/35 VNOJ. TLE test 21.

@@ -8,7 +8,6 @@ int main() {
 	cin >> n >> k;
 	vector<int> a(n + 1);
 	for (int i = 1; i <= n; ++i) cin >> a[i];
-	/*
 	// naive approach
 	for (int i = 1; i <= n; ++i)
 		for (int j = 1; j <= n; ++j)
@@ -21,10 +20,10 @@ int main() {
 					}
 				}
 	cout << -1;
-	*/
+	/*
 	// bitmask
 	for (int mask = 0; mask < (1 << n); mask++) {
 		
 	}
-
+	*/
 }

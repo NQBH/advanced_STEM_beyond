@@ -1608,628 +1608,6 @@ print(is_natural(n))
 
 %------------------------------------------------------------------------------%
 
-\chapter{Dynamic Programming Techniques -- Kỹ Thuật Quy Hoạch Động}
-\minitoc
-
-%------------------------------------------------------------------------------%
-
-\section{Introduction to Dynamic Programming -- Nhập Môn Quy Hoạch Động}
-\textbf{\textsf{Resources -- Tài nguyên.}}
-\begin{enumerate}
-    \item \href{https://cp-algorithms.com/dynamic_programming/intro-to-dp.html}{Algorithms for Competitive Programming{\tt/}introduction to dynamic programming}.
-\end{enumerate}
-The essence of dynamic programming is to avoid repeated calculation. Often, dynamic programming problems are naturally solvable by recursion. In such cases, it's easiest to write the recursive solution, then save repeated states in a lookup table. This process is known as top-down dynamic programming with memoization. That's read ``memoization'' (like we are writing in a memo pad) not memorization.
-
--- Bản chất của quy hoạch động là tránh tính toán lặp lại. Thông thường, các vấn đề quy hoạch động có thể giải quyết được bằng đệ quy. Trong những trường hợp như vậy, cách dễ nhất là viết giải pháp đệ quy, sau đó lưu các trạng thái lặp lại trong bảng tra cứu. Quá trình này được gọi là quy hoạch động từ trên xuống với ghi nhớ. Đọc là ``ghi nhớ'' (giống như chúng ta đang viết trong 1 tập ghi nhớ) chứ không phải ghi nhớ.
-
-1 of the most basic, classic examples of this process is the Fibonacci sequence. Its recursive formulation is
-\begin{equation*}
-    \left\{\begin{split}
-        f(0) &= 0,\ f(1) = 1,\\
-        f(n) &= f(n - 1) + f(n - 2)
-    \end{split}\right.
-\end{equation*}
-In C++, this would be expressed as:
-\begin{Verbatim}[numbers=left,xleftmargin=0mm]
-int f(int n) {
-    if (n == 0) return 0;
-    if (n == 1) return 1;
-    return f(n - 1) + f(n - 2);
-}
-\end{Verbatim}
-The runtime of this recursive function is exponential -- approximately $O(2^n)$ since 1 function call $f(n)$ results in 2 similarly sized function calls $f(n - 1),f(n - 2)$.
-
--- Thời gian chạy của hàm đệ quy này là hàm mũ -- xấp xỉ $O(2^n)$ vì 1 lệnh gọi hàm $f(n)$ dẫn đến 2 lệnh gọi hàm có kích thước tương tự $f(n - 1),f(n - 2)$.
-
-\begin{remark}
-    The subroutine for Fibonacci sequence can be extended easily for the sequence $\{a_n\}_{n=0}^\infty$ defined by
-    \begin{equation*}
-        \left\{\begin{split}
-            a_0 &= \alpha,\ a_1 = \beta,\\
-            a_n &= aa_{n - 1} + ba_{n - 2},
-        \end{split}\right.\mbox{ where } \alpha,\beta\in\mathbb{C},\ a,b\in\mathbb{R}.
-    \end{equation*}
-    The above subroutine can be adapted as
-\end{remark}
-
-\begin{Verbatim}[numbers=left,xleftmargin=0mm]
-int a(int n) {
-    if (n == 0) return <\alpha>;
-    if (n == 1) return <\beta>;
-    return a * f(n - 1) + b * f(n - 2);
-}
-\end{Verbatim}
-
-%------------------------------------------------------------------------------%
-
-\subsection{Speeding up Fibonacci with dynamic programming (memoization)}
-Our recursive function currently solves Fibonacci in exponential time, i.e., we can only handle small input values before the problem becomes too difficult, e.g., $f(29)$ results in $> 10^9$ function calls.
-
--- Hàm đệ quy của chúng ta hiện giải Fibonacci theo thời gian mũ, i.e., chúng ta chỉ có thể xử lý các giá trị đầu vào nhỏ trước khi vấn đề trở nên quá khó, e.g., $f(29)$ dẫn đến $> 10^9$ lệnh gọi hàm.
-
-To increase the speed, we recognize that the number of subproblem is only $O(n)$, i.e., in order to calculate $f(n)$ we only need to know $f(n - 1),f(n - 2),\ldots,f(0)$. Therefore, instead of recalculating these subproblems, we solve them once \& then save the result in a lookup table. Subsequent calls will use this lookup table \& immediately return a result, thus eliminating exponential work.
-
--- Để tăng tốc độ, chúng ta nhận ra rằng số lượng bài toán con chỉ là $O(n)$, i.e., để tính $f(n)$ chúng ta chỉ cần biết $f(n - 1),f(n - 2),\ldots,f(0)$. Do đó, thay vì tính toán lại các bài toán con này, chúng ta giải chúng 1 lần \& sau đó lưu kết quả vào bảng tra cứu. Các lệnh gọi tiếp theo sẽ sử dụng bảng tra cứu này \& trả về kết quả ngay lập tức, do đó loại bỏ công việc theo cấp số nhân.
-
-Each recursive call will check against a lookup table to see if the value has been calculated. This is done in $O(1)$ time. If we have previously calculated it, return the result, otherwise, we calculate the function normally. The overall runtime is $O(n)$. This is an enormous improvement over the previous exponential time algorithm.
-
--- Mỗi lệnh gọi đệ quy sẽ kiểm tra bảng tra cứu để xem giá trị đã được tính toán hay chưa. Việc này được thực hiện trong thời gian $O(1)$. Nếu chúng ta đã tính toán trước đó, hãy trả về kết quả, nếu không, chúng ta sẽ tính toán hàm bình thường. Thời gian chạy tổng thể là $O(n)$. Đây là 1 cải tiến rất lớn so với thuật toán thời gian mũ trước đó.
-\begin{Verbatim}[numbers=left,xleftmargin=0mm]
-const int MAXN = 100;
-bool found[MAXN];
-int memo[MAXN];
-
-int f(int n) {
-    if (found[n]) return memo[n];
-    if (n == 0) return 0;
-    if (n == 1) return 1;
-    found[n] = true;
-    return memo[n] = f(n - 1) + f(n - 2);
-}
-\end{Verbatim}
-With our new memoized recursive function, $f(29)$, which used to result in $> 10^9$ calls, now results in only $57$ calls, nearly 20000 times fewer function calls. Ironically, we are now limited by our data type. $f(46)$ is the last Fibonacci number that can fit into a signed 32-bit integer.
-
--- Với hàm đệ quy ghi nhớ mới của chúng ta, $f(29)$, trước đây tạo ra $> 10^9$ lệnh gọi, giờ chỉ tạo ra $57$ lệnh gọi, ít hơn gần 20000 lần lệnh gọi hàm. Trớ trêu thay, giờ chúng ta bị giới hạn bởi kiểu dữ liệu của mình. $f(46)$ là số Fibonacci cuối cùng có thể vừa với số nguyên 32 bit có dấu.
-
-Typically, we try to save states in arrays, if possible, since the lookup time is $O(1)$ with minimal overhead. However, more generically, we can save states any way we like. Other examples include binary search trees ({\tt map} in C++) or hash tables (\verb|unordered_map| in C++), e.g.:
-
--- Thông thường, chúng ta cố gắng lưu trạng thái trong mảng, nếu có thể, vì thời gian tra cứu là $O(1)$ với chi phí tối thiểu. Tuy nhiên, nói chung hơn, chúng ta có thể lưu trạng thái theo bất kỳ cách nào chúng ta thích. Các e.g. khác bao gồm cây tìm kiếm nhị phân ({\tt map} trong C++) hoặc bảng băm (\verb|unordered_map| trong C++), e.g.:
-\begin{Verbatim}[numbers=left,xleftmargin=0mm]
-unordered_map<int, int> memo;
-int f(int n) {
-    if (memo.count(n)) return memo[n];
-    if (n == 0) return 0;
-    if (n == 1) return 1;
-
-    return memo[n] = f(n - 1) + f(n - 2);
-}
-\end{Verbatim}
-Or analogously: -- Hoặc tương tự như sau:
-\begin{Verbatim}[numbers=left,xleftmargin=0mm]
-map<int, int> memo;
-int f(int n) {
-    if (memo.count(n)) return memo[n];
-    if (n == 0) return 0;
-    if (n == 1) return 1;
-
-    return memo[n] = f(n - 1) + f(n - 2);
-}
-\end{Verbatim}
-Both of these will almost always be slower than the array-based version for a generic memoized recursive function. These alternative ways of saving state are primarily useful when saving vectors or strings as part of the state space.
-
--- Cả 2 cách này hầu như luôn chậm hơn phiên bản dựa trên mảng cho hàm đệ quy ghi nhớ chung. Những cách thay thế này để lưu trạng thái chủ yếu hữu ích khi lưu vectơ hoặc chuỗi như 1 phần của không gian trạng thái.
-
-The layman's way of analyzing the runtime of a memoized recursive function is work per subproblem * number of subproblems.
-
--- Cách phân tích thời gian chạy của 1 hàm đệ quy ghi nhớ thông thường là công trên mỗi bài toán con * số bài toán con.
-
-Using a binary search tree ({\tt map} in C++) to save states will technically result in $O(n\log n)$ as each lookup \& insertion will take $O(\log n)$ work \& with $O(n)$ unique subproblem we have $O(n\log n)$ time.
-
--- Sử dụng cây tìm kiếm nhị phân ({\tt map} trong C++) để lưu trạng thái về mặt kỹ thuật sẽ dẫn đến $O(n\log n)$ vì mỗi lần tra cứu \& chèn sẽ mất $O(\log n)$ công việc \& với $O(n)$ bài toán con duy nhất, chúng ta có $O(n\log n)$ thời gian.
-
-This approached is called {\it top-down}, as we can call the function with a query value \& the calculation starts going from the top (queried value) down to the bottom (base cases of the recursion), \& makes shortcuts via memoization on the way.
-
--- Cách tiếp cận này được gọi là từ trên xuống, vì chúng ta có thể gọi hàm với giá trị truy vấn \& phép tính bắt đầu từ trên cùng (giá trị được truy vấn) xuống dưới cùng (trường hợp cơ sở của đệ quy), \& thực hiện các phím tắt thông qua ghi nhớ trong quá trình thực hiện.
-
-%------------------------------------------------------------------------------%
-
-\subsection{Bottom-up Dynamic Programming}
-Until now we have only seen top-down dynamic programming with memoization. However, we can also solve problems with bottom-up dynamic programming. Bottom-up is exactly the opposite of top-down, you start at the bottom (base cases of the recursion), \& extend it to more \& more values.
-
--- Cho đến nay chúng ta chỉ thấy quy hoạch động từ trên xuống với ghi nhớ. Tuy nhiên, chúng ta cũng có thể giải quyết vấn đề bằng quy hoạch động từ dưới lên. Từ dưới lên hoàn toàn ngược lại với từ trên xuống, bạn bắt đầu từ dưới lên (trường hợp cơ bản của đệ quy), \& mở rộng nó thành nhiều \& giá trị hơn.
-
-To create a bottom-up approach for Fibonacci numbers, we initialize the base cases in an array. Then, we simply use the recursive definition on array:
-\begin{Verbatim}[numbers=left,xleftmargin=0mm]
-const int MAXN = 100;
-int fib[MAXN];
-
-int f(int n) {
-    fib[0] = 0;
-    fib[1] = 1;
-    for (int i = 2; i <= n; ++i) fib[i] = fib[i - 1] + fib[i - 2];
-    return fib[n];
-}
-\end{Verbatim}
-This is a bit silly for 2 reasons: 1stly, we do repeated work if we call the function more than once. Secondly, we only need to use the 2 previous values to calculate the current element. Therefore, we can reduce our memory from $O(n)$ to $O(1)$.
-
--- Điều này hơi ngớ ngẩn vì 2 lý do: 1. Chúng ta thực hiện công việc lặp lại nếu chúng ta gọi hàm nhiều hơn 1 lần. Thứ hai, chúng ta chỉ cần sử dụng 2 giá trị trước đó để tính toán phần tử hiện tại. Do đó, chúng ta có thể giảm bộ nhớ của mình từ $O(n)$ xuống $O(1)$.
-
-Am example of a bottom-up dynamic programming solution for Fibonacci which uses $O(1)$ memory might be:
-\begin{Verbatim}[numbers=left,xleftmargin=0mm]
-const int MAX_SAVE = 3;
-int fib[MAX_SAVE];
-
-int f(int n) {
-    fib[0] = 0;
-    fib[1] = 1;
-    for (int i = 2; i <= n; ++i)
-        fib[i % MAX_SAVE] = fib[(i - 1) % MAX_SAVE] + fib[(i - 2) % MAX_SAVE];
-    return fib[n % MAX_SAVE];
-\end{Verbatim}
-We have changed the constant from {\tt MAXN} to \verb|MAX_SAVE|. This is because the total number of elements we need to access is only 3. It no longer scales with the size of input \& is, by definition, $O(1)$ memory. Additionally, we use a common trick (using the modulo operator) only maintaining the values we need. That's the basic of dynamic programming: Don't repeat the work you have done before.
-
--- Chúng ta đã thay đổi hằng số từ {\tt MAXN} thành \verb|MAX_SAVE|. Điều này là do tổng số phần tử chúng ta cần truy cập chỉ là 3. Nó không còn tỷ lệ với kích thước đầu vào nữa \& theo định nghĩa là bộ nhớ $O(1)$. Ngoài ra, chúng ta sử dụng 1 thủ thuật phổ biến (sử dụng toán tử modulo) chỉ duy trì các giá trị chúng ta cần. Đó là cơ bản của quy hoạch động: Không lặp lại công việc bạn đã làm trước đó.
-
-%------------------------------------------------------------------------------%
-
-\subsection{Classic dynamic programming problems -- Các bài toán quy hoạch động cổ điển}
-
-\begin{problem}[0-1 knapsack -- xếp balo 0-1]
-    Given $w,n$, \& $n\in\mathbb{N}^\star$ items with weights $w_i\in\mathbb{N}^\star$ \& values $v_i\in\mathbb{N}^\star$, $\forall i\in[n]$, what is the maximum $\sum_{i=1}^k v_i$ for each subset of items of size $k\in[N]$ while ensuring $\sum_{i=1}^k w_i\le w$?
-
-    -- Với $w,n$, \& $n\in\mathbb{N}^\star$ mục có trọng số $w_i\in\mathbb{N}^\star$ \& giá trị $v_i\in\mathbb{N}^\star$, $\forall i\in[n]$, $\sum_{i=1}^k v_i$ tối đa là bao nhiêu cho mỗi tập con các mục có kích thước $k\in[N]$ trong khi đảm bảo $\sum_{i=1}^k w_i\le w$?
-\end{problem}
-
-\begin{problem}
-    Given $n\in\mathbb{N}^\star$ integers \& $t\in\mathbb{N}^\star$, determine whether there exists a subset of the given set whose elements sum up to the $t$.
-
-    -- Cho $n\in\mathbb{N}^\star$ số nguyên \& $t\in\mathbb{N}^\star$, hãy xác định xem có tồn tại tập hợp con nào của tập hợp đã cho có tổng các phần tử bằng $t$ hay không.
-\end{problem}
-
-\begin{problem}[Longest increasing subsequence (LIS) -- Dãy con tăng dài nhất]
-    Given an array containing $n\in\mathbb{N}^\star$ integers, determine the LIS in the array, i.e., a subsequence where every element is larger than the previous one.
-
-    -- Cho 1 mảng chứa $n\in\mathbb{N}^\star$ số nguyên, hãy xác định LIS trong mảng, i.e., 1 dãy con trong đó mọi phần tử đều lớn hơn phần tử trước đó.
-\end{problem}
-
-\begin{problem}[Counting paths in a 2D array -- Đếm đường dẫn trong mảng 2 chiều]
-    Given $m,n\in\mathbb{N}^\star$, count all possible distinct paths from $(1,1)$ to $(m,n)$, where each step is either from $(i,j)$ to $(i + 1,j)$ or $(i,j + 1)$.
-
-    -- Cho $m,n\in\mathbb{N}^\star$, hãy đếm tất cả các đường đi riêng biệt có thể có từ $(1,1)$ đến $(m,n)$, trong đó mỗi bước là từ $(i,j)$ đến $(i + 1,j)$ hoặc $(i,j + 1)$.
-\end{problem}
-
-\begin{problem}[Longest common subsequence -- Dãy con chung dài nhất]
-    Given strings $s,t$. Find the length of the longest string that is a subsequence of both $s$ \& $t$.
-
-    -- Cho chuỗi $s,t$. Tìm độ dài của chuỗi dài nhất là chuỗi con của cả $s$ \& $t$.
-\end{problem}
-
-\begin{problem}[Longest path in a directed acyclic graph (DAG) -- Đường đi dài nhất trong đồ thị có hướng không có chu trình]
-    Finding the longest path in Directed Acyclic Graph (DAG).
-
-    -- Tìm đường đi dài nhất trong Đồ thị có hướng phi chu trình (DAG).
-\end{problem}
-
-\begin{problem}[Longest palindromic subsequence -- Dãy con palindromic dài nhất]
-    Finding the Longest Palindromic Subsequence (LPS) of a given string.
-
-    -- Tìm chuỗi con Palindromic dài nhất (LPS) của 1 chuỗi cho trước.
-\end{problem}
-
-\begin{problem}[Rod cutting -- Cắt thanh]
-    Given a rod of length $n\in\mathbb{N}^\star$ units, given an integer array cuts where ${\rm cuts}[i]$ denotes a position you should perform a cut at. The cost of 1 cut is the length of the rod to be cut. What is the minimum total cost of the cuts.
-
-    -- Cho 1 thanh có độ dài $n\in\mathbb{N}^\star$ đơn vị, cho 1 mảng số nguyên cắt trong đó ${\rm cuts}[i]$ biểu thị vị trí bạn nên thực hiện 1 lần cắt. Chi phí của 1 lần cắt là độ dài của thanh cần cắt. Tổng chi phí tối thiểu của các lần cắt là bao nhiêu.
-\end{problem}
-
-\begin{problem}[Edit distance -- khoảng cách chỉnh sửa]
-    The edit distance between 2 strings is the minimum number of operations required to transform 1 string into the other. Operations are: add, remove, replace{\tt/}substitution.
-
-    -- Khoảng cách chỉnh sửa giữa 2 chuỗi là số thao tác tối thiểu cần thiết để chuyển đổi 1 chuỗi thành chuỗi kia. Các thao tác là: thêm, xóa, thay thế.
-\end{problem}
-
-%------------------------------------------------------------------------------%
-
-\section{Knapsack Problem -- Bài Toán Xếp Balo 0-1}
-\textbf{\textsf{Resources -- Tài nguyên.}}
-\begin{enumerate}
-    \item \href{https://cp-algorithms.com/dynamic_programming/knapsack.html}{Algorithms for Competitive Programming{\tt/}knapsack problem}.
-\end{enumerate}
-
-%------------------------------------------------------------------------------%
-
-\subsection{0-1 knapsack problem -- Bài toán xếp balo 0-1}
-
-\begin{problem}[USACO07 Dec, charm bracelet -- vòng tay quyến rũ]
-    There are $n\in\mathbb{N}^\star$ distinct items \& a knapsack of capacity $w\in[0,\infty)$. The $i$th item has $2$ attributes, weights $w_i\in\mathbb{N}$ \& value $v_i\in[0,\infty)$, $\forall i\in[n]$. You have to select a subset of items to put into the knapsack such that the total weight does not exceed the capacity $w$ \& the total value is maximized.
-
-    -- Có $n\in\mathbb{N}^\star$ vật phẩm riêng biệt \& 1 balo có sức chứa $w\in[0,\infty)$. Vật phẩm thứ $i$ có $2$ thuộc tính, trọng số $w_i\in\mathbb{N}$ \& giá trị $v_i\in[0,\infty)$, $\forall i\in[n]$. Bạn phải chọn 1 tập hợp con các vật phẩm để cho vào balo với điều kiện tổng trọng lượng không vượt quá sức chứa $w$ \& tổng giá trị được tối đa hóa.
-\end{problem}
-In this problem, each object has only 2 possible states: taken or not taken, corresponding to binary 0 \& 1. Thus, this type of problem is called ``0-1 knapsack problem''.
-
--- Trong bài toán này, mỗi vật chỉ có 2 trạng thái có thể xảy ra: được lấy hoặc không được lấy, tương ứng với số nhị phân 0 \& 1. Do đó, loại bài toán này được gọi là ``bài toán balo 0-1''.
-
-\begin{proof}[Explanation of $0$-$1$ knapsack]
-    The input to the problem is the following: the weight of $i$th item $w_i$, the value of $i$th item $v_i$, \& the total capacity of the knapsack $w$. Let $f_{i,j}$ be the dynamic programming state holding the maximum total value the knapsack can carry with capacity $j$, when only the 1st $i$ items are considered, $\forall i,j\in\mathbb{N}$.
-
-    -- Đầu vào của bài toán như sau: trọng lượng của vật phẩm thứ $i$ $w_i$, giá trị của vật phẩm thứ $i$ $v_i$, \& tổng sức chứa của balo $w$. Giả sử $f_{i,j}$ là trạng thái quy hoạch động giữ giá trị tổng lớn nhất mà balo có thể mang theo với sức chứa $j$, khi chỉ xét đến $i$ vật phẩm đầu tiên, $\forall i,j\in\mathbb{N}$.
-
-    Assuming that all states of the 1st $i - 1$ items have been processed, what are the options for the $i$th item?
-    \begin{itemize}
-        \item When it is not put into the knapsack, the remaining capacity remains unchanged \& total value does not change. Therefore, the maximum value in this case is $f_{i-1,j}$.
-        \item When it is put into the knapsack, the remaining capacity decreases by $w_i$ \& the total value increased by $v_i$, so the maximum value in this case is $f_{i - 1,j - w_i} + v_i$.
-    \end{itemize}
-    -- Giả sử rằng tất cả các trạng thái của $i - 1$ mục đầu tiên đã được xử lý, thì các tùy chọn cho vật thứ $i$ là gì?
-    \begin{itemize}
-        \item Khi không cho vào balo, sức chứa còn lại vẫn không đổi \& tổng giá trị không thay đổi. Do đó, giá trị tối đa trong trường hợp này là $f_{i-1,j}$.
-        \item Khi cho vào balo, sức chứa còn lại giảm $w_i$ \& tổng giá trị tăng $v_i$, do đó giá trị tối đa trong trường hợp này là $f_{i - 1,j - w_i} + v_i$.
-    \end{itemize}
-    From this we can derive the dp transition equation -- Từ đó ta có thể suy ra phương trình chuyển đổi dp:
-    \begin{equation*}
-        f_{i,j} = \max\{f_{i-1,j},f_{i-1,j - w_i}\},\ \forall i\in[n],\ \forall j\in\left\{\sum_{i\in I} w_i;I\subset[n]\right\} = \left\{\sum_{i=1}^n x_iw_i;x_i\in\{0,1\},\ \forall i\in[n]\right\}.
-    \end{equation*}
-    Most of the transitions for knapsack problems are derived in a similar way.
-
-    -- Hầu hết các chuyển đổi cho bài toán balo đều được suy ra theo cách tương tự.
-\end{proof}
-
-\begin{problem}
-    Prove that if $f_i$ is only dependent on $f_{i-1}$, we can remove the 1st dimension. We obtain the transition rule $f_j\leftarrow\max\{f_j,f_{j - w_i} + v_i\}$ that should be executed in the {\rm decreasing} order of $j$ so that $f_{j - w_i}$ implicitly corresponds to $f_{i - 1,j - w_i}$ \& not $f_{i,j - w_i}$).
-
-    -- Chứng minh rằng nếu $f_i$ chỉ phụ thuộc vào $f_{i-1}$, ta có thể loại bỏ chiều thứ nhất. Ta thu được quy tắc chuyển tiếp $f_j\leftarrow\max\{f_j,f_{j - w_i} + v_i\}$ cần được thực hiện theo thứ tự {\rm giảm dần} của $j$ sao cho $f_{j - w_i}$ ngầm tương ứng với $f_{i - 1,j - w_i}$ \& không phải $f_{i,j - w_i}$).
-\end{problem}
-
-\begin{proof}[Implementation]
-    The algorithm described can be implemented in $O(nw)$ as
-    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
-for (int i = 1; i <= n; ++i)
-    for (int j = w; j >= w[i]; --j)
-        f[j] = max(f[j], f[j - w[i]] + v[i]);
-    \end{Verbatim}
-    Note the order of execution. It should be strictly followed to ensure the following invariant: right before the pair $(i,j)$ is processed, $f_k$ corresponds to $f_{i,k}$ for $k > j$, but to $f_{i-1,k}$ for $k < j$. This ensures that $f_{j - w_i}$ is taken from the $(i - 1)$th step, rather than from the $i$th one.
-
-    -- Lưu ý thứ tự thực hiện. Cần tuân thủ nghiêm ngặt để đảm bảo bất biến sau: ngay trước khi cặp $(i,j)$ được xử lý, $f_k$ tương ứng với $f_{i,k}$ đối với $k > j$, nhưng tương ứng với $f_{i-1,k}$ đối với $k < j$. Điều này đảm bảo rằng $f_{j - w_i}$ được lấy từ bước $(i - 1)$th, chứ không phải từ bước $i$th.
-\end{proof}
-
-%------------------------------------------------------------------------------%
-
-\subsection{Complete knapsack problem -- Bài toán xếp balo hoàn chỉnh}
-The complete knapsack model is similar to the 0-1 knapsack, the only difference from the 0-1 knapsack is that an item can be selected an unlimited number of times instead of only once.
-
--- Mẫu balo hoàn chỉnh tương tự như balo 0-1, điểm khác biệt duy nhất so với balo 0-1 là 1 vật phẩm có thể được chọn không giới hạn số lần thay vì chỉ 1 lần.
-
-We can refer to the idea of 0-1 knapsack to define the state: $f_{i,j}$, the maximum value the knapsack can obtain using the 1st $i$ items with maximum capacity $j$. Although the state definition is similar to that of a 0-1 knapsack, its transition rule is different from that of a 0-1 knapsack.
-
--- Ta có thể tham khảo ý tưởng về balo 0-1 để định nghĩa trạng thái: $f_{i,j}$, giá trị lớn nhất mà balo có thể đạt được bằng cách sử dụng $i$ vật phẩm đầu tiên có sức chứa tối đa $j$. Mặc dù định nghĩa trạng thái tương tự như balo 0-1, nhưng quy tắc chuyển tiếp của nó lại khác với balo 0-1.
-
-\begin{proof}[Explanation of complete knapsack]
-    The trivial approach is, for the 1st $i$ items, enumerate how many times each item is to be taken. The time complexity of this is $O(n^2w)$. This yields the following transition equation:
-    \begin{equation*}
-        f_{i,j} = \max_{k=0}^\infty f_{i - 1,j - kw_i} + kv_i.
-    \end{equation*}
-    At the same time, it simplifies into a ``flat'' equation $f_{i,j} = \max \{f_{i - 1,j},f_{i,j - w_i} + v_i\}$. The reason this works is that $f_{i,j - w_i}$ has already been updated by $f_{i,j - 2w_i}$ \& so on. Similar to the 0-1 knapsack, we can remove the 1st dimension to optimize the space complexity. This gives us the same transition rule as 0-1 knapsack: $f_j\leftarrow\max\{f_j,f_{j - w_i} + v_i\}$.
-
-    -- Cách tiếp cận tầm thường là, đối với $i$ mục đầu tiên, hãy liệt kê số lần cần lấy mỗi mục. Độ phức tạp thời gian của cách này là $O(n^2w)$. Cách này tạo ra phương trình chuyển đổi sau:
-    \begin{equation*}
-        f_{i,j} = \max_{k=0}^\infty f_{i - 1,j - kw_i} + kv_i.
-    \end{equation*}
-    Đồng thời, nó được đơn giản hóa thành phương trình ``phẳng'' $f_{i,j} = \max \{f_{i - 1,j},f_{i,j - w_i} + v_i\}$. Lý do cách này hiệu quả là $f_{i,j - w_i}$ đã được cập nhật bởi $f_{i,j - 2w_i}$ \& etc. Tương tự như balo 0-1, chúng ta có thể loại bỏ chiều thứ nhất để tối ưu hóa độ phức tạp của không gian. Điều này cung cấp cho chúng ta cùng 1 quy tắc chuyển tiếp như balo 0-1: $f_j\leftarrow\max\{f_j,f_{j - w_i} + v_i\}$.
-\end{proof}
-
-\begin{proof}[Implementation]
-    The algorithm described can be implemented in $O(nw)$ as
-    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
-for (int i = 1; i <= n; i++)
-    for (int j = w[i]; j <= W; j++)
-        f[j] = max(f[j], f[j - w[i]] + v[i]);
-    \end{Verbatim}
-    Despite having the same transition rule, the code above is incorrect for 0-1 knapsack. Observing the code carefully, we see that for the currently processed item $i$ \& the current state $f_{i,j}$, when $j\ge w_i,f_{i,j}$ will be affected by $f_{i,j - w_i}$. This is equivalent to being able to put item $i$ into the backpack multiples times, which is consistent with the complete knapsack problem \& not the 0-1 knapsack problem.
-
-    -- Mặc dù có cùng quy tắc chuyển tiếp, đoạn mã trên không đúng đối với ba lô 0-1. Quan sát kỹ đoạn mã, chúng ta thấy rằng đối với mục $i$ đang được xử lý \& trạng thái hiện tại $f_{i,j}$, khi $j\ge w_i,f_{i,j}$ sẽ bị ảnh hưởng bởi $f_{i,j - w_i}$. Điều này tương đương với việc có thể đặt mục $i$ vào ba lô nhiều lần, phù hợp với bài toán ba lô hoàn chỉnh \& không phải là bài toán ba lô 0-1.
-\end{proof}
-
-%------------------------------------------------------------------------------%
-
-\subsection{Multiple knapsack problem -- Bài toán xếp balo bội}
-Multiple knapsack is also a variant of 0-1 knapsack. The main difference is that there are $k_i$ of each item instead of just 1.
-
--- Ba lô nhiều món cũng là 1 biến thể của ba lô 0-1. Sự khác biệt chính là có $k_i$ của mỗi món thay vì chỉ có 1.
-
-\begin{proof}[Explanation of multiple knapsack problem]
-    A very simple idea is: ``choose each item $k_i$ times'' $\Leftrightarrow$ ``$k_i$ of the same item is selected 1 by 1''. Thus converting it to a 0-1 knapsack model, which can be described by the transition function:
-    \begin{equation*}
-        f_{i,j} = \max_{k=0}^{k_i} f_{i - 1,j - kw_i} + kv_i.
-    \end{equation*}
-    The time complexity of this process is $O\left(w\sum_{i=1}^n k_i\right)$.
-
-    -- 1 ý tưởng rất đơn giản là: ``chọn từng mục $k_i$ lần'' $\Leftrightarrow$ ``$k_i$ của cùng 1 mục được chọn 1 x 1''. Do đó, chuyển đổi nó thành mô hình ba lô 0-1, có thể được mô tả bằng hàm chuyển đổi:
-    \begin{equation*}
-        f_{i,j} = \max_{k=0}^{k_i} f_{i - 1,j - kw_i} + kv_i.
-    \end{equation*}
-    Độ phức tạp thời gian của quá trình này là $O\left(w\sum_{i=1}^n k_i\right)$.
-\end{proof}
-
-%------------------------------------------------------------------------------%
-
-\subsubsection{Binary grouping optimization -- Tối ưu hóa nhóm nhị phân}
-We still consider converting the multiple knapsack model into a o-1 knapsack model for optimization. The time complexity $O(wn)$ cannot be further optimized with the approach above, so we focus on $O(\sum k_i)$ component.
-
--- Chúng ta vẫn cân nhắc việc chuyển đổi mô hình ba lô nhiều thành mô hình ba lô o-1 để tối ưu hóa. Độ phức tạp thời gian $O(wn)$ không thể được tối ưu hóa thêm nữa bằng cách tiếp cận trên, vì vậy chúng ta tập trung vào thành phần $O(\sum k_i)$.
-
-Let $A_{i,j}$ denote the $j$th item split from the $i$th item. In the trivial approach discussed above, $A_{i,j}$ represents the same item $\forall j\le k_i$. The main reason for our low efficiency is that we are doing a lot of repetitive work. E.g., consider selecting $\{A_{i,1},A_{i,2}\}$, \& selecting $\{A_{i,2},A_{i,3}\}$. These 2 situations are completely equivalent. Thus optimizing the splitting method will greatly reduce the time complexity.
-
--- Giả sử $A_{i,j}$ biểu thị phần tử $j$th được tách ra từ phần tử $i$th. Trong cách tiếp cận tầm thường được thảo luận ở trên, $A_{i,j}$ biểu thị cùng 1 phần tử $\forall j\le k_i$. Lý do chính khiến hiệu suất thấp của chúng ta là chúng ta đang thực hiện rất nhiều công việc lặp đi lặp lại. Ví dụ, hãy xem xét việc chọn $\{A_{i,1},A_{i,2}\}$, \& chọn $\{A_{i,2},A_{i,3}\}$. 2 tình huống này hoàn toàn tương đương nhau. Do đó, việc tối ưu hóa phương pháp tách sẽ làm giảm đáng kể độ phức tạp về thời gian.
-
-The grouping is made more efficient by using binary grouping. Specifically, $A_{i,j}$ holds $2^j$ individual terms $j\in\overline{0,\lfloor\log_2(k_i + 1)\rfloor - 1}$. If $k_i + 1$ is not an integer power of 2, another bundle of size $k_i - (2^{\lfloor\log_2(k_i + 1)\rfloor} - 1)$ is used to make up for it.
-
--- Việc nhóm được thực hiện hiệu quả hơn bằng cách sử dụng nhóm nhị phân. Cụ thể, $A_{i,j}$ chứa $2^j$ các số hạng riêng lẻ $j\in\overline{0,\lfloor\log_2(k_i + 1)\rfloor - 1}$. Nếu $k_i + 1$ không phải là lũy thừa nguyên của 2, 1 bó khác có kích thước $k_i - (2^{\lfloor\log_2(k_i + 1)\rfloor} - 1)$ được sử dụng để bù đắp cho nó.
-
-Through the above splitting method, it is possible to obtain any sum of $\le k_i$ items by selecting a few $A_{i,j}$'s. After splitting each item in the described way, it is sufficient to use 0-1 knapsack method to solve the new formulation of the problem. This optimization gives us a time complexity of $O\left(w\sum_{i=1}^n \log k_i\right)$.
-
--- Thông qua phương pháp phân chia trên, có thể thu được bất kỳ tổng nào của $\le k_i$ phần tử bằng cách chọn 1 vài $A_{i,j}$. Sau khi phân chia từng phần tử theo cách đã mô tả, chỉ cần sử dụng phương pháp 0-1 knapsack để giải quyết công thức mới của bài toán. Tối ưu hóa này cung cấp cho chúng ta độ phức tạp thời gian là $O\left(w\sum_{i=1}^n \log k_i\right)$.
-
-Implementation:
-\begin{Verbatim}[numbers=left,xleftmargin=0mm]
-index = 0;
-for (int i = 1; i <= n; ++i) {
-    int c = 1, p, h, k;
-    cin >> p >> h >> k;
-    while (k > c) {
-        k -= c;
-        list[++index].w = c * p;
-        list[index].v = c * h;
-        c *= 2;
-    }
-    list[++index].w = p * k;
-    list[index].v = h * k;
-}
-\end{Verbatim}
-
-%------------------------------------------------------------------------------%
-
-\subsubsection{Monotone queue optimization -- Tối ưu hóa hàng đợi đơn điệu}
-In this optimization, we aim to convert the knapsack problem into a maximum queue one. For convenience of description, let $g_{x,y} = f_{i,xw_i + y},g_{x,y}' = f_{i - 1,xw_i + y}$. Then the transition rule can be written as
-\begin{equation*}
-    g_{x,y} = \max_{k=0}^{k_i} g_{x - k,y}' + v_ik.
-\end{equation*}
-Further, let $G_{x,y} = g_{x,y}' - v_ix$. Then the transition rule can be expressed as:
-\begin{equation*}
-    g_{x,y}\leftarrow v_ix + \max_{k=0}^{k_i} G_{x - k,y}.
-\end{equation*}
-This transforms into a classic monotone queue optimization form. $G_{x,y}$ can be calculated in $O(1)$, so for a fixed $y$, we can calculate $g_{x,t}$ in $O\left(\lfloor\frac{w}{w_i}\rfloor\right)$ time. Therefore, the complexity of finding all $g_{x,y}$ is $O\left(\lfloor\frac{w}{w_i}\rfloor\right)\times O(w_i) = O(w)$. In this way, the total complexity of the algorithm is reduced to $O(nw)$.
-
--- Trong quá trình tối ưu hóa này, chúng ta hướng đến việc chuyển đổi bài toán ba lô thành bài toán hàng đợi tối đa. Để thuận tiện cho việc mô tả, hãy cho $g_{x,y} = f_{i,xw_i + y},g_{x,y}' = f_{i - 1,xw_i + y}$. Khi đó, quy tắc chuyển đổi có thể được viết thành
-\begin{equation*}
-    g_{x,y} = \max_{k=0}^{k_i} g_{x - k,y}' + v_ik.
-\end{equation*}
-Ngoài ra, hãy cho $G_{x,y} = g_{x,y}' - v_ix$. Khi đó, quy tắc chuyển đổi có thể được biểu thị thành:
-\begin{equation*}
-    g_{x,y}\leftarrow v_ix + \max_{k=0}^{k_i} G_{x - k,y}.
-\end{equation*}
-Điều này chuyển thành dạng tối ưu hóa hàng đợi đơn điệu cổ điển. $G_{x,y}$ có thể được tính trong $O(1)$, vì vậy đối với $y$ cố định, chúng ta có thể tính $g_{x,t}$ trong thời gian $O\left(\lfloor\frac{w}{w_i}\rfloor\right)$. Do đó, độ phức tạp của việc tìm tất cả $g_{x,y}$ là $O\left(\lfloor\frac{w}{w_i}\rfloor\right)\times O(w_i) = O(w)$. Theo cách này, độ phức tạp tổng thể của thuật toán được giảm xuống còn $O(nw)$.
-
-%------------------------------------------------------------------------------%
-
-\subsection{Mixed knapsack problem -- Bài toán xếp balo hỗn hợp}
-The mixed knapsack problem involves a combination of the 3 problems described above, i.e., some items can only be taken once, some can be taken infinitely, \& some can be taken at most $k$ times. The pseudo code for the solution is as:
-\begin{Verbatim}[numbers=left,xleftmargin=0mm]
-for (each item) {
-    if (0-1 knapsack)
-        apply 0-1 knapsack code;
-    else if (complete knapsack)
-        apply complete knapsack code;
-    else if (multiple knapsack)
-        apply multiple knapsack code;
-}
-\end{Verbatim}
-
-%------------------------------------------------------------------------------%
-
-\subsection{Extensions \& generalizations of knapsack problem -- Mở rộng \& tổng quát hóa của bài toán xếp balo}
-
-
-\begin{problem}[Extend or generalize knapsack problem]
-    Generalize the knapsack problem from $2$ attributes to $m\in\mathbb{N}^\star$ attributes.
-
-    -- Tổng quát hóa bài toán balo từ $2$ thuộc tính thành $m\in\mathbb{N}^\star$ thuộc tính.
-\end{problem}
-
-%------------------------------------------------------------------------------%
-
-\section{Divide \& Conquer Dynamic Programming -- Chia \& Trị Quy Hoạch Động}
-Divide \& Conquer is a dynamic programming optimization. -- Chia \& Trị là 1 phương pháp tối ưu hóa quy hoạch động.
-
-%------------------------------------------------------------------------------%
-
-\subsection{Preconditions -- Điều kiện tiên quyết}
-Some dynamic programming problems have a recurrence of this form:
-\begin{equation}
-    \label{dp: recurrence}
-    {\rm dp}(i,j) = 0,\ \forall j < 0,\ {\rm dp}(i,j) = \min_{0\le k\le j} {\rm dp}(i - 1,k - 1) + C(k,j),
-\end{equation}
-where $C(k,j)$ is a cost function. If $0\le i < m,0\le j < n$, \& evaluating $C$ takes $O(1)$ time. Then the straightforward evaluation of \eqref{dp: recurrence} is $O(mn^2)$. There are $mn$ states, \& $n$ transitions for each state.
-
--- 1 số bài toán quy hoạch động có dạng tái diễn như sau:
-\begin{equation*}
-    dp(i,j) = 0,\ \forall j < 0,\ dp(i,j) = \min_{0\le k\le j} dp(i - 1,k - 1) + C(k,j),
-\end{equation*}
-trong đó $C(k,j)$ là hàm chi phí. Nếu $0\le i < m,0\le j < n$, \& đánh giá $C$ mất $O(1)$ thời gian. Khi đó, đánh giá trực tiếp của \eqref{dp: recurrence} là $O(mn^2)$. Có $mn$ trạng thái, \& $n$ chuyển đổi cho mỗi trạng thái.
-
-Let ${\rm opt}(i,j)$ be the value of $k$ that minimizes the above expression. Assuming that the cost function satisfies the quadrangle inequality, we can show that ${\rm opt}(i,j)\le{\rm opt}(i,j + 1)$, $\forall i,j$. This is known as the {\it monotonicity condition}. Then, we can apply divide \& conquer DP. The optimal ``splitting point'' for a fixed $i$ increases as $j$ increases.
-
--- Giả sử ${\rm opt}(i,j)$ là giá trị của $k$ làm tối thiểu hóa biểu thức trên. Giả sử rằng hàm chi phí thỏa mãn bất đẳng thức tứ giác, ta có thể chứng minh rằng ${\rm opt}(i,j)\le{\rm opt}(i,j + 1)$, $\forall i,j$. Điều này được gọi là {\it điều kiện đơn điệu}. Sau đó, ta có thể áp dụng chia \& chinh phục DP. ``Điểm chia tách'' tối ưu cho $i$ cố định tăng khi $j$ tăng.
-
-This lets us solve for all states more efficiently. Say we compute ${\rm opt}(i,j)$ for some fixed $i,j$. Then for any $j' < j$ we know that ${\rm opt}(i,j')\le{\rm opt}(i,j)$, i.e., when computing ${\rm opt}(i,j')$, we do not have to consider as many splitting points.
-
--- Điều này cho phép chúng ta giải quyết cho tất cả các trạng thái hiệu quả hơn. Giả sử chúng ta tính ${\rm opt}(i,j)$ cho 1 số $i,j$ cố định. Sau đó, đối với bất kỳ $j' < j$ nào, chúng ta biết rằng ${\rm opt}(i,j')\le{\rm opt}(i,j)$, i.e., khi tính ${\rm opt}(i,j')$, chúng ta không phải xem xét nhiều điểm phân tách.
-
-To minimize the runtime, we apply the idea behind divide \& conquer. 1st, compute ${\rm opt}\left(i,\lfloor\frac{n}{2}\rfloor\right)$, then, compute ${\rm opt}\left(i,\lfloor\frac{n}{4}\rfloor\right)$, knowing that it is $\le\left(i,\lfloor\rfloor\frac{n}{2}\rfloor\right)$ \& ${\rm opt}\left(i,\lfloor\frac{3n}{4}\rfloor\right)$ knowing that it is $\ge{\rm opt}\left(i,\lfloor\frac{n}{2}\rfloor\right)$. By recursively keeping track of the lower \& upper bound on ${\rm opt}$, we reach a $O(mn\log n)$ runtime. Each possible value of ${\rm opt}(i,j)$ only appears in $\log n$ different nodes.
-
--- Để giảm thiểu thời gian chạy, chúng ta áp dụng ý tưởng đằng sau phương pháp chia để trị. Đầu tiên, tính ${\rm opt}\left(i,\lfloor\frac{n}{2}\rfloor\right)$, sau đó, tính ${\rm opt}\left(i,\lfloor\frac{n}{4}\rfloor\right)$, biết rằng đó là $\le\left(i,\lfloor\frac{n}{2}\rfloor\right)$ \& ${\rm opt}\left(i,\lfloor\frac{3n}{4}\rfloor\right)$ biết rằng đó là $\ge{\rm opt}\left(i,\lfloor\frac{n}{2}\rfloor\right)$. Bằng cách theo dõi đệ quy giới hạn dưới \& trên của ${\rm opt}$, chúng ta đạt được thời gian chạy $O(mn\log n)$. Mỗi giá trị có thể của ${\rm opt}(i,j)$ chỉ xuất hiện ở $\log n$ nút khác nhau.
-
-It doesn't matter how ``balanced'' ${\rm opt}(i,j)$ is. Across a fixed level, each value of $k$ is used at most twice, \& there are at most $\log n$ levels.
-
--- Không quan trọng ${\rm opt}(i,j)$ ``cân bằng'' như thế nào. Trên 1 mức cố định, mỗi giá trị của $k$ được sử dụng nhiều nhất 2 lần, \& có nhiều nhất $\log n$ mức.
-
-%------------------------------------------------------------------------------%
-
-\subsection{Generic implementation -- Thực thi chung}
-Even though implementation varies based on problem, here's a fairly generic template. The function {\tt compute} computes 1 row $i$ of states \verb|dp_cur|, given the previous row $i - 1$ of state \verb|dp_before|. It has to be called with {\tt compute(0, n - 1, 0, n - 1)}. The function {\tt solve} computes {\tt m} rows \& returns the result.
-
--- Mặc dù việc triển khai thay đổi tùy theo vấn đề, đây là 1 mẫu khá chung chung. Hàm {\tt compute} tính toán 1 hàng $i$ của các trạng thái \verb|dp_cur|, cho hàng trước đó $i - 1$ của trạng thái \verb|dp_before|. Nó phải được gọi với {\tt compute(0, n - 1, 0, n - 1)}. Hàm {\tt solve} tính toán {\tt m} hàng \& trả về kết quả.
-\begin{Verbatim}[numbers=left,xleftmargin=0mm]
-int m, n;
-vector<long long> dp_before, dp_cur;
-
-long long C(int i, int j);
-
-// compute dp_cur[l], ... dp_cur[r] (inclusive)
-void compute(int l, int r, int optl, int optr) {
-    if (l > r) return;
-    int mid = (l + r) >> 1;
-    pair<long long, int> best = {LLONG_MAX, -1};
-
-    for (int k = optl; k <= min(mid, optr); ++k)
-        best = min(best, {(k ? dp_before[k - 1] : 0) + C(k, mid), k});
-    dp_cur[mid] = best.first;
-    int opt = best.second;
-
-    compute(l, mid - 1, optl, opt);
-    compute(mid + 1, r, opt, optr);
-}
-
-long long solve() {
-    dp_before.assign(n, 0);
-    dp_cur.assign(n, 0);
-
-    for (int i = 0; i < n; ++i) dp_before[i] = C(0, i);
-    for (int i = 1; i < m; ++i) {
-        compute(0, n - 1, 0, n - 1);
-        dp_before = dp_cur;
-    }
-    return dp_before[n - 1];
-}
-\end{Verbatim}
-The greatest difficulty with Divide \& Conquer DP problems is proving the monotonicity of ${\rm opt}$. 1 special case where this is true is when the cost function satisfies the quadrangle inequality, i.e.,
-\begin{equation}
-    \label{quadrangle inequality}
-    C(a,c) + C(b,d)\le C(a,d) + C(b,c),\ \forall a\le b\le c\le d.
-\end{equation}
-Many Divide \& Conquer DP problems can also be solved with the Convex Hull trick or vice-versa.
-
---  Khó khăn lớn nhất với các bài toán Chia \& Chinh phục DP là chứng minh tính đơn điệu của ${\rm opt}$. 1 trường hợp đặc biệt mà điều này đúng là khi hàm chi phí thỏa mãn bất đẳng thức tứ giác, i.e., $C(a,c) + C(b,d)\le C(a,d) + C(b,c)$, $\forall a\le b\le c\le d$. Nhiều bài toán Chia \& Chinh phục DP cũng có thể được giải bằng thủ thuật Convex Hull hoặc ngược lại.
-
-%------------------------------------------------------------------------------%
-
-\section{Knuth's Optimization -- Tối Ưu của {\sc Knuth}}
-\textbf{\textsf{Resources -- Tài nguyên.}}
-\begin{enumerate}
-    \item \href{https://cp-algorithms.com/dynamic_programming/knuth-optimization.html}{Algorithms for Competitive Programming{\tt/}Knuth's optimization}.
-\end{enumerate}
-{\it Knuth's optimization}, also known as the {\it Knuth-Yao Speedup}, is a special case of dynamic programming on ranges, that can optimize the time complexity of solutions by a linear factor, from $O(n^3)$ for standard range DP to $O(n^2)$.
-
--- {\it Tối ưu hóa Knuth}, còn được gọi là {\it Tăng tốc Knuth-Yao}, là 1 trường hợp đặc biệt của quy hoạch động trên phạm vi, có thể tối ưu hóa độ phức tạp thời gian của các giải pháp theo hệ số tuyến tính, từ $O(n^3)$ cho phạm vi chuẩn DP đến $O(n^2)$.
-
-%------------------------------------------------------------------------------%
-
-\subsection{Conditions}
-The Speedup is applied for transitions of the form
-\begin{equation*}
-    {\rm dp}(i,j) = \min_{i\le k < j} [{\rm dp}(i,k) + {\rm dp}(k + 1,j) + C(i,j)] = \min_{i\le k < j} [{\rm dp}(i,k) + {\rm dp}(k + 1,j)] + C(i,j).
-\end{equation*}
-Similar to divide \& conquer DP, let ${\rm opt}(i,j)$ be the value of $k$ that minimizes the expression in the transition (opt is referred to as the ``optimal splitting point'' further in this article). The optimization requires that the following holds:
-\begin{equation*}
-    {\rm opt}(i,j - 1)\le{\rm opt}(i,j)\le{\rm opt}(i + 1,j).
-\end{equation*}
-We can show that it is true when the cost function $C$ satisfies the following conditions for $a\le b\le c\le d$:
-\begin{enumerate}
-    \item $C(b,c)\le C(a,d)$
-    \item $C(a,c) + C(b,d)\le C(a,d) + C(b,c)$ (the quadrangle inequality [QI]).
-\end{enumerate}
-
-%------------------------------------------------------------------------------%
-
-\subsection{Algorithm of Knuth's optimization -- Thuật toán của tối ưu của Knuth}
-We process the dp states in such a way that we calculate ${\rm dp}(i,j - 1),{\rm dp}(i + 1,j)$ before ${\rm dp}(i,j)$, \& in doing so we also calculate ${\rm opt}(i,j - 1),{\rm opt}(i + 1,j)$. Then for calculating ${\rm opt}(i,j)$, instead of testing values of $k$ from $i$ to $j - 1$, we only need to test from ${\rm opt}(i,j - 1)$ to ${\rm opt}(i + 1,j)$. To process $(i,j)$ pairs in this order it is sufficient to use nested for loops in which $i$ goes from the maximum value to the minimum one \& $j$ goes from $i + 1$ to the maximum value.
-
--- Chúng ta xử lý các trạng thái dp theo cách mà chúng ta tính toán ${\rm dp}(i,j - 1),{\rm dp}(i + 1,j)$ trước ${\rm dp}(i,j)$, \& khi làm như vậy, chúng ta cũng tính toán ${\rm opt}(i,j - 1),{\rm opt}(i + 1,j)$. Sau đó, để tính toán ${\rm opt}(i,j)$, thay vì kiểm tra các giá trị của $k$ từ $i$ đến $j - 1$, chúng ta chỉ cần kiểm tra từ ${\rm opt}(i,j - 1)$ đến ${\rm opt}(i + 1,j)$. Để xử lý các cặp $(i,j)$ theo thứ tự này, chỉ cần sử dụng các vòng lặp lồng nhau trong đó $i$ đi từ giá trị lớn nhất đến giá trị nhỏ nhất \& $j$ đi từ $i + 1$ đến giá trị lớn nhất.
-
-\paragraph*{Generic implementation.} Though implementation varies, here's a fairly generic example. The structure of the code is almost identical to that of Range DP.
-
--- Mặc dù cách triển khai khác nhau, đây là 1 e.g. khá chung chung. Cấu trúc của mã gần giống với cấu trúc của Range DP.
-\begin{Verbatim}[numbers=left,xleftmargin=0mm]
-int solve() {
-    int n;
-    ... // read n & input
-    int dp[N][N], opt[N][N];
-
-    auto C = [&](int i, int j) {
-        ... // implement cost function C
-    };
-
-    for (int i = 0; i < N; ++i) {
-        opt[i][j] = i;
-        ... // initialize dp[i][j] according to the problem
-    }
-
-    for (int i = N - 2; i >= 0; --i) {
-        for (int j = i + 1; j < N; ++j) {
-            int mn = INT_MAX;
-            int cost = C(i, j);
-            for (int k = opt[i][j - 1]; k <= min(j - 1, opt[i + 1][j]); ++k) {
-                if (mn >= dp[i][k] + dp[k + 1][j] + cost) {
-                    opt[i][j] = k;
-                    mn = dp[i][k] + dp[k + 1][j] + cost;
-                }
-            }
-            dp[i][j] = mn;
-        }
-    }
-    return dp[0][N - 1];
-}
-\end{Verbatim}
-
-\paragraph*{Complexity.} A complexity of the algorithm can be estimated as the following sum:
-\begin{equation*}
-    \sum_{i=1}^N\sum_{j=i+1}^N {\rm opt}(i + 1,j) - {\rm opt}(i,j - 1) = \sum_{i=1}^N\sum_{j=i}^{N-1} {\rm opt}(i + 1,j + 1) - {\rm opt}(i,j).
-\end{equation*}
-Most of the terms in this expression cancel each other out, except for positive terms with $j = N - 1$ \& negative terms with $i = 1$. Thus, Thus, the whole sum can be estimated as
-\begin{equation*}
-    \sum_{i=1}^N {\rm opt}(i,N) - {\rm opt}(1,i) = O(n^2),
-\end{equation*}
-rather than $O(n^3)$ as it would be if we were using a regular range DP.
-
--- Độ phức tạp của thuật toán có thể được ước tính như tổng sau:
-\begin{equation*}
-    \sum_{i=1}^N\sum_{j=i+1}^N {\rm opt}(i + 1,j) - {\rm opt}(i,j - 1) = \sum_{i=1}^N\sum_{j=i}^{N-1} {\rm opt}(i + 1,j + 1) - {\rm opt}(i,j).
-\end{equation*}
-Hầu hết các số hạng trong biểu thức này triệt tiêu lẫn nhau, ngoại trừ các số hạng dương với $j = N - 1$ \& các số hạng âm với $i = 1$. Do đó, tổng thể có thể được ước tính là
-\begin{equation*}
-    \sum_{i=1}^N {\rm opt}(i,N) - {\rm opt}(1,i) = O(n^2),
-\end{equation*}
-thay vì $O(n^3)$ như khi chúng ta sử dụng phạm vi DP thông thường.
-
-\paragraph*{On practice.} The most common application of Knuth's optimization is the Range DP, with the given transition. The only difficulty is in proving that the cost function satisfies the given conditions. The simplest case is when the cost function $C(i,j)$ is simply the sum of the elements of the subarray $S[i,i + 1,\ldots,j]$ for some array (depending on the question). However, they can be more complicated at times.
-
--- Ứng dụng phổ biến nhất của tối ưu hóa Knuth là Range DP, với phép chuyển đổi đã cho. Khó khăn duy nhất là chứng minh rằng hàm chi phí thỏa mãn các điều kiện đã cho. Trường hợp đơn giản nhất là khi hàm chi phí $C(i,j)$ chỉ đơn giản là tổng các phần tử của mảng con $S[i,i + 1,\ldots,j]$ đối với 1 số mảng (tùy thuộc vào câu hỏi). Tuy nhiên, đôi khi chúng có thể phức tạp hơn.
-
-More than the conditions on the dp transition \& the cost function, the key to this optimization is the inequality on the optimum splitting point. In some problems, e.g. the optimal binary search tree problem (which is, incidentally, the original problem for which this optimization was developed), the transitions \& cost function will be less obvious, however, one can still prove that ${\rm opt}(i,j - 1)\le{\rm opt}(i,j)\le{\rm opt}(i + 1,j)$, \& thus, use this optimization.
-
--- Hơn cả các điều kiện trên chuyển đổi dp \& hàm chi phí, chìa khóa cho quá trình tối ưu hóa này là bất đẳng thức trên điểm chia tách tối ưu. Trong 1 số bài toán, e.g. như bài toán cây tìm kiếm nhị phân tối ưu (tình cờ là bài toán ban đầu mà quá trình tối ưu hóa này được phát triển), hàm chi phí chuyển đổi \& sẽ ít rõ ràng hơn, tuy nhiên, người ta vẫn có thể chứng minh rằng ${\rm opt}(i,j - 1)\le{\rm opt}(i,j)\le{\rm opt}(i + 1,j)$, \& do đó, hãy sử dụng quá trình tối ưu hóa này.
-
-\begin{proof}[Proof of correctness]
-    To prove the correctness of this algorithm in terms of $C(i,j)$ conditions, it suffices to prove that ${\rm opt}(i,j - 1)\le{\rm opt}(i,j)\le{\rm opt}(i + 1,j)$ assuming the given conditions are satisfied.
-
-    -- Để chứng minh tính đúng đắn của thuật toán này theo các điều kiện $C(i,j)$, chỉ cần chứng minh rằng ${\rm opt}(i,j - 1)\le{\rm opt}(i,j)\le{\rm opt}(i + 1,j)$ giả sử các điều kiện đã cho được thỏa mãn.
-
-    \begin{lemma}
-        ${\rm dp}(i,j)$ also satisfies the quadrangle inequality, given the conditions of the problem are satisfied.
-    \end{lemma}
-    ***
-\end{proof}
-
-%------------------------------------------------------------------------------%
-
 \chapter{Function Pointers \& Variable Sourcecodes -- Con Trỏ Hàm \& Mã Nguồn Tùy Biến}
 \minitoc
 
@@ -15876,6 +15254,623 @@ Difference equations are used in a variety of contexts, e.g. in \href{https://en
 
 \chapter{Dynamic Programming -- Quy Hoạch Động}
 \minitoc
+
+%------------------------------------------------------------------------------%
+
+\section{Introduction to Dynamic Programming -- Nhập Môn Quy Hoạch Động}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://cp-algorithms.com/dynamic_programming/intro-to-dp.html}{Algorithms for Competitive Programming{\tt/}introduction to dynamic programming}.
+\end{enumerate}
+The essence of dynamic programming is to avoid repeated calculation. Often, dynamic programming problems are naturally solvable by recursion. In such cases, it's easiest to write the recursive solution, then save repeated states in a lookup table. This process is known as top-down dynamic programming with memoization. That's read ``memoization'' (like we are writing in a memo pad) not memorization.
+
+-- Bản chất của quy hoạch động là tránh tính toán lặp lại. Thông thường, các vấn đề quy hoạch động có thể giải quyết được bằng đệ quy. Trong những trường hợp như vậy, cách dễ nhất là viết giải pháp đệ quy, sau đó lưu các trạng thái lặp lại trong bảng tra cứu. Quá trình này được gọi là quy hoạch động từ trên xuống với ghi nhớ. Đọc là ``ghi nhớ'' (giống như chúng ta đang viết trong 1 tập ghi nhớ) chứ không phải ghi nhớ.
+
+1 of the most basic, classic examples of this process is the Fibonacci sequence. Its recursive formulation is
+\begin{equation*}
+    \left\{\begin{split}
+        f(0) &= 0,\ f(1) = 1,\\
+        f(n) &= f(n - 1) + f(n - 2)
+    \end{split}\right.
+\end{equation*}
+In C++, this would be expressed as:
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+    int f(int n) {
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+        return f(n - 1) + f(n - 2);
+    }
+\end{Verbatim}
+The runtime of this recursive function is exponential -- approximately $O(2^n)$ since 1 function call $f(n)$ results in 2 similarly sized function calls $f(n - 1),f(n - 2)$.
+
+-- Thời gian chạy của hàm đệ quy này là hàm mũ -- xấp xỉ $O(2^n)$ vì 1 lệnh gọi hàm $f(n)$ dẫn đến 2 lệnh gọi hàm có kích thước tương tự $f(n - 1),f(n - 2)$.
+
+\begin{remark}
+    The subroutine for Fibonacci sequence can be extended easily for the sequence $\{a_n\}_{n=0}^\infty$ defined by
+    \begin{equation*}
+        \left\{\begin{split}
+            a_0 &= \alpha,\ a_1 = \beta,\\
+            a_n &= aa_{n - 1} + ba_{n - 2},
+        \end{split}\right.\mbox{ where } \alpha,\beta\in\mathbb{C},\ a,b\in\mathbb{R}.
+    \end{equation*}
+    The above subroutine can be adapted as
+\end{remark}
+
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+    int a(int n) {
+        if (n == 0) return <\alpha>;
+        if (n == 1) return <\beta>;
+        return a * f(n - 1) + b * f(n - 2);
+    }
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Speeding up Fibonacci with dynamic programming (memoization)}
+Our recursive function currently solves Fibonacci in exponential time, i.e., we can only handle small input values before the problem becomes too difficult, e.g., $f(29)$ results in $> 10^9$ function calls.
+
+-- Hàm đệ quy của chúng ta hiện giải Fibonacci theo thời gian mũ, i.e., chúng ta chỉ có thể xử lý các giá trị đầu vào nhỏ trước khi vấn đề trở nên quá khó, e.g., $f(29)$ dẫn đến $> 10^9$ lệnh gọi hàm.
+
+To increase the speed, we recognize that the number of subproblem is only $O(n)$, i.e., in order to calculate $f(n)$ we only need to know $f(n - 1),f(n - 2),\ldots,f(0)$. Therefore, instead of recalculating these subproblems, we solve them once \& then save the result in a lookup table. Subsequent calls will use this lookup table \& immediately return a result, thus eliminating exponential work.
+
+-- Để tăng tốc độ, chúng ta nhận ra rằng số lượng bài toán con chỉ là $O(n)$, i.e., để tính $f(n)$ chúng ta chỉ cần biết $f(n - 1),f(n - 2),\ldots,f(0)$. Do đó, thay vì tính toán lại các bài toán con này, chúng ta giải chúng 1 lần \& sau đó lưu kết quả vào bảng tra cứu. Các lệnh gọi tiếp theo sẽ sử dụng bảng tra cứu này \& trả về kết quả ngay lập tức, do đó loại bỏ công việc theo cấp số nhân.
+
+Each recursive call will check against a lookup table to see if the value has been calculated. This is done in $O(1)$ time. If we have previously calculated it, return the result, otherwise, we calculate the function normally. The overall runtime is $O(n)$. This is an enormous improvement over the previous exponential time algorithm.
+
+-- Mỗi lệnh gọi đệ quy sẽ kiểm tra bảng tra cứu để xem giá trị đã được tính toán hay chưa. Việc này được thực hiện trong thời gian $O(1)$. Nếu chúng ta đã tính toán trước đó, hãy trả về kết quả, nếu không, chúng ta sẽ tính toán hàm bình thường. Thời gian chạy tổng thể là $O(n)$. Đây là 1 cải tiến rất lớn so với thuật toán thời gian mũ trước đó.
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+    const int MAXN = 100;
+    bool found[MAXN];
+    int memo[MAXN];
+
+    int f(int n) {
+        if (found[n]) return memo[n];
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+        found[n] = true;
+        return memo[n] = f(n - 1) + f(n - 2);
+    }
+\end{Verbatim}
+With our new memoized recursive function, $f(29)$, which used to result in $> 10^9$ calls, now results in only $57$ calls, nearly 20000 times fewer function calls. Ironically, we are now limited by our data type. $f(46)$ is the last Fibonacci number that can fit into a signed 32-bit integer.
+
+-- Với hàm đệ quy ghi nhớ mới của chúng ta, $f(29)$, trước đây tạo ra $> 10^9$ lệnh gọi, giờ chỉ tạo ra $57$ lệnh gọi, ít hơn gần 20000 lần lệnh gọi hàm. Trớ trêu thay, giờ chúng ta bị giới hạn bởi kiểu dữ liệu của mình. $f(46)$ là số Fibonacci cuối cùng có thể vừa với số nguyên 32 bit có dấu.
+
+Typically, we try to save states in arrays, if possible, since the lookup time is $O(1)$ with minimal overhead. However, more generically, we can save states any way we like. Other examples include binary search trees ({\tt map} in C++) or hash tables (\verb|unordered_map| in C++), e.g.:
+
+-- Thông thường, chúng ta cố gắng lưu trạng thái trong mảng, nếu có thể, vì thời gian tra cứu là $O(1)$ với chi phí tối thiểu. Tuy nhiên, nói chung hơn, chúng ta có thể lưu trạng thái theo bất kỳ cách nào chúng ta thích. Các e.g. khác bao gồm cây tìm kiếm nhị phân ({\tt map} trong C++) hoặc bảng băm (\verb|unordered_map| trong C++), e.g.:
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+    unordered_map<int, int> memo;
+    int f(int n) {
+        if (memo.count(n)) return memo[n];
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+
+        return memo[n] = f(n - 1) + f(n - 2);
+    }
+\end{Verbatim}
+Or analogously: -- Hoặc tương tự như sau:
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+    map<int, int> memo;
+    int f(int n) {
+        if (memo.count(n)) return memo[n];
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+
+        return memo[n] = f(n - 1) + f(n - 2);
+    }
+\end{Verbatim}
+Both of these will almost always be slower than the array-based version for a generic memoized recursive function. These alternative ways of saving state are primarily useful when saving vectors or strings as part of the state space.
+
+-- Cả 2 cách này hầu như luôn chậm hơn phiên bản dựa trên mảng cho hàm đệ quy ghi nhớ chung. Những cách thay thế này để lưu trạng thái chủ yếu hữu ích khi lưu vectơ hoặc chuỗi như 1 phần của không gian trạng thái.
+
+The layman's way of analyzing the runtime of a memoized recursive function is work per subproblem * number of subproblems.
+
+-- Cách phân tích thời gian chạy của 1 hàm đệ quy ghi nhớ thông thường là công trên mỗi bài toán con * số bài toán con.
+
+Using a binary search tree ({\tt map} in C++) to save states will technically result in $O(n\log n)$ as each lookup \& insertion will take $O(\log n)$ work \& with $O(n)$ unique subproblem we have $O(n\log n)$ time.
+
+-- Sử dụng cây tìm kiếm nhị phân ({\tt map} trong C++) để lưu trạng thái về mặt kỹ thuật sẽ dẫn đến $O(n\log n)$ vì mỗi lần tra cứu \& chèn sẽ mất $O(\log n)$ công việc \& với $O(n)$ bài toán con duy nhất, chúng ta có $O(n\log n)$ thời gian.
+
+This approached is called {\it top-down}, as we can call the function with a query value \& the calculation starts going from the top (queried value) down to the bottom (base cases of the recursion), \& makes shortcuts via memoization on the way.
+
+-- Cách tiếp cận này được gọi là từ trên xuống, vì chúng ta có thể gọi hàm với giá trị truy vấn \& phép tính bắt đầu từ trên cùng (giá trị được truy vấn) xuống dưới cùng (trường hợp cơ sở của đệ quy), \& thực hiện các phím tắt thông qua ghi nhớ trong quá trình thực hiện.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Bottom-up Dynamic Programming}
+Until now we have only seen top-down dynamic programming with memoization. However, we can also solve problems with bottom-up dynamic programming. Bottom-up is exactly the opposite of top-down, you start at the bottom (base cases of the recursion), \& extend it to more \& more values.
+
+-- Cho đến nay chúng ta chỉ thấy quy hoạch động từ trên xuống với ghi nhớ. Tuy nhiên, chúng ta cũng có thể giải quyết vấn đề bằng quy hoạch động từ dưới lên. Từ dưới lên hoàn toàn ngược lại với từ trên xuống, bạn bắt đầu từ dưới lên (trường hợp cơ bản của đệ quy), \& mở rộng nó thành nhiều \& giá trị hơn.
+
+To create a bottom-up approach for Fibonacci numbers, we initialize the base cases in an array. Then, we simply use the recursive definition on array:
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+    const int MAXN = 100;
+    int fib[MAXN];
+
+    int f(int n) {
+        fib[0] = 0;
+        fib[1] = 1;
+        for (int i = 2; i <= n; ++i) fib[i] = fib[i - 1] + fib[i - 2];
+        return fib[n];
+    }
+\end{Verbatim}
+This is a bit silly for 2 reasons: 1stly, we do repeated work if we call the function more than once. Secondly, we only need to use the 2 previous values to calculate the current element. Therefore, we can reduce our memory from $O(n)$ to $O(1)$.
+
+-- Điều này hơi ngớ ngẩn vì 2 lý do: 1. Chúng ta thực hiện công việc lặp lại nếu chúng ta gọi hàm nhiều hơn 1 lần. Thứ hai, chúng ta chỉ cần sử dụng 2 giá trị trước đó để tính toán phần tử hiện tại. Do đó, chúng ta có thể giảm bộ nhớ của mình từ $O(n)$ xuống $O(1)$.
+
+Am example of a bottom-up dynamic programming solution for Fibonacci which uses $O(1)$ memory might be:
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+    const int MAX_SAVE = 3;
+    int fib[MAX_SAVE];
+
+    int f(int n) {
+        fib[0] = 0;
+        fib[1] = 1;
+        for (int i = 2; i <= n; ++i)
+        fib[i % MAX_SAVE] = fib[(i - 1) % MAX_SAVE] + fib[(i - 2) % MAX_SAVE];
+        return fib[n % MAX_SAVE];
+\end{Verbatim}
+We have changed the constant from {\tt MAXN} to \verb|MAX_SAVE|. This is because the total number of elements we need to access is only 3. It no longer scales with the size of input \& is, by definition, $O(1)$ memory. Additionally, we use a common trick (using the modulo operator) only maintaining the values we need. That's the basic of dynamic programming: Don't repeat the work you have done before.
+
+-- Chúng ta đã thay đổi hằng số từ {\tt MAXN} thành \verb|MAX_SAVE|. Điều này là do tổng số phần tử chúng ta cần truy cập chỉ là 3. Nó không còn tỷ lệ với kích thước đầu vào nữa \& theo định nghĩa là bộ nhớ $O(1)$. Ngoài ra, chúng ta sử dụng 1 thủ thuật phổ biến (sử dụng toán tử modulo) chỉ duy trì các giá trị chúng ta cần. Đó là cơ bản của quy hoạch động: Không lặp lại công việc bạn đã làm trước đó.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Classic dynamic programming problems -- Các bài toán quy hoạch động cổ điển}
+
+\begin{problem}[0-1 knapsack -- xếp balo 0-1]
+    Given $w,n$, \& $n\in\mathbb{N}^\star$ items with weights $w_i\in\mathbb{N}^\star$ \& values $v_i\in\mathbb{N}^\star$, $\forall i\in[n]$, what is the maximum $\sum_{i=1}^k v_i$ for each subset of items of size $k\in[N]$ while ensuring $\sum_{i=1}^k w_i\le w$?
+
+    -- Với $w,n$, \& $n\in\mathbb{N}^\star$ mục có trọng số $w_i\in\mathbb{N}^\star$ \& giá trị $v_i\in\mathbb{N}^\star$, $\forall i\in[n]$, $\sum_{i=1}^k v_i$ tối đa là bao nhiêu cho mỗi tập con các mục có kích thước $k\in[N]$ trong khi đảm bảo $\sum_{i=1}^k w_i\le w$?
+\end{problem}
+
+\begin{problem}
+    Given $n\in\mathbb{N}^\star$ integers \& $t\in\mathbb{N}^\star$, determine whether there exists a subset of the given set whose elements sum up to the $t$.
+
+    -- Cho $n\in\mathbb{N}^\star$ số nguyên \& $t\in\mathbb{N}^\star$, hãy xác định xem có tồn tại tập hợp con nào của tập hợp đã cho có tổng các phần tử bằng $t$ hay không.
+\end{problem}
+
+\begin{problem}[Longest increasing subsequence (LIS) -- Dãy con tăng dài nhất]
+    Given an array containing $n\in\mathbb{N}^\star$ integers, determine the LIS in the array, i.e., a subsequence where every element is larger than the previous one.
+
+    -- Cho 1 mảng chứa $n\in\mathbb{N}^\star$ số nguyên, hãy xác định LIS trong mảng, i.e., 1 dãy con trong đó mọi phần tử đều lớn hơn phần tử trước đó.
+\end{problem}
+
+\begin{problem}[Counting paths in a 2D array -- Đếm đường dẫn trong mảng 2 chiều]
+    Given $m,n\in\mathbb{N}^\star$, count all possible distinct paths from $(1,1)$ to $(m,n)$, where each step is either from $(i,j)$ to $(i + 1,j)$ or $(i,j + 1)$.
+
+    -- Cho $m,n\in\mathbb{N}^\star$, hãy đếm tất cả các đường đi riêng biệt có thể có từ $(1,1)$ đến $(m,n)$, trong đó mỗi bước là từ $(i,j)$ đến $(i + 1,j)$ hoặc $(i,j + 1)$.
+\end{problem}
+
+\begin{problem}[Longest common subsequence -- Dãy con chung dài nhất]
+    Given strings $s,t$. Find the length of the longest string that is a subsequence of both $s$ \& $t$.
+
+    -- Cho chuỗi $s,t$. Tìm độ dài của chuỗi dài nhất là chuỗi con của cả $s$ \& $t$.
+\end{problem}
+
+\begin{problem}[Longest path in a directed acyclic graph (DAG) -- Đường đi dài nhất trong đồ thị có hướng không có chu trình]
+    Finding the longest path in Directed Acyclic Graph (DAG).
+
+    -- Tìm đường đi dài nhất trong Đồ thị có hướng phi chu trình (DAG).
+\end{problem}
+
+\begin{problem}[Longest palindromic subsequence -- Dãy con palindromic dài nhất]
+    Finding the Longest Palindromic Subsequence (LPS) of a given string.
+
+    -- Tìm chuỗi con Palindromic dài nhất (LPS) của 1 chuỗi cho trước.
+\end{problem}
+
+\begin{problem}[Rod cutting -- Cắt thanh]
+    Given a rod of length $n\in\mathbb{N}^\star$ units, given an integer array cuts where ${\rm cuts}[i]$ denotes a position you should perform a cut at. The cost of 1 cut is the length of the rod to be cut. What is the minimum total cost of the cuts.
+
+    -- Cho 1 thanh có độ dài $n\in\mathbb{N}^\star$ đơn vị, cho 1 mảng số nguyên cắt trong đó ${\rm cuts}[i]$ biểu thị vị trí bạn nên thực hiện 1 lần cắt. Chi phí của 1 lần cắt là độ dài của thanh cần cắt. Tổng chi phí tối thiểu của các lần cắt là bao nhiêu.
+\end{problem}
+
+\begin{problem}[Edit distance -- khoảng cách chỉnh sửa]
+    The edit distance between 2 strings is the minimum number of operations required to transform 1 string into the other. Operations are: add, remove, replace{\tt/}substitution.
+
+    -- Khoảng cách chỉnh sửa giữa 2 chuỗi là số thao tác tối thiểu cần thiết để chuyển đổi 1 chuỗi thành chuỗi kia. Các thao tác là: thêm, xóa, thay thế.
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
+\section{Knapsack Problem -- Bài Toán Xếp Balo 0-1}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://cp-algorithms.com/dynamic_programming/knapsack.html}{Algorithms for Competitive Programming{\tt/}knapsack problem}.
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsection{0-1 knapsack problem -- Bài toán xếp balo 0-1}
+
+\begin{problem}[USACO07 Dec, charm bracelet -- vòng tay quyến rũ]
+    There are $n\in\mathbb{N}^\star$ distinct items \& a knapsack of capacity $w\in[0,\infty)$. The $i$th item has $2$ attributes, weights $w_i\in\mathbb{N}$ \& value $v_i\in[0,\infty)$, $\forall i\in[n]$. You have to select a subset of items to put into the knapsack such that the total weight does not exceed the capacity $w$ \& the total value is maximized.
+
+    -- Có $n\in\mathbb{N}^\star$ vật phẩm riêng biệt \& 1 balo có sức chứa $w\in[0,\infty)$. Vật phẩm thứ $i$ có $2$ thuộc tính, trọng số $w_i\in\mathbb{N}$ \& giá trị $v_i\in[0,\infty)$, $\forall i\in[n]$. Bạn phải chọn 1 tập hợp con các vật phẩm để cho vào balo với điều kiện tổng trọng lượng không vượt quá sức chứa $w$ \& tổng giá trị được tối đa hóa.
+\end{problem}
+In this problem, each object has only 2 possible states: taken or not taken, corresponding to binary 0 \& 1. Thus, this type of problem is called ``0-1 knapsack problem''.
+
+-- Trong bài toán này, mỗi vật chỉ có 2 trạng thái có thể xảy ra: được lấy hoặc không được lấy, tương ứng với số nhị phân 0 \& 1. Do đó, loại bài toán này được gọi là ``bài toán balo 0-1''.
+
+\begin{proof}[Explanation of $0$-$1$ knapsack]
+    The input to the problem is the following: the weight of $i$th item $w_i$, the value of $i$th item $v_i$, \& the total capacity of the knapsack $w$. Let $f_{i,j}$ be the dynamic programming state holding the maximum total value the knapsack can carry with capacity $j$, when only the 1st $i$ items are considered, $\forall i,j\in\mathbb{N}$.
+
+    -- Đầu vào của bài toán như sau: trọng lượng của vật phẩm thứ $i$ $w_i$, giá trị của vật phẩm thứ $i$ $v_i$, \& tổng sức chứa của balo $w$. Giả sử $f_{i,j}$ là trạng thái quy hoạch động giữ giá trị tổng lớn nhất mà balo có thể mang theo với sức chứa $j$, khi chỉ xét đến $i$ vật phẩm đầu tiên, $\forall i,j\in\mathbb{N}$.
+
+    Assuming that all states of the 1st $i - 1$ items have been processed, what are the options for the $i$th item?
+    \begin{itemize}
+        \item When it is not put into the knapsack, the remaining capacity remains unchanged \& total value does not change. Therefore, the maximum value in this case is $f_{i-1,j}$.
+        \item When it is put into the knapsack, the remaining capacity decreases by $w_i$ \& the total value increased by $v_i$, so the maximum value in this case is $f_{i - 1,j - w_i} + v_i$.
+    \end{itemize}
+    -- Giả sử rằng tất cả các trạng thái của $i - 1$ mục đầu tiên đã được xử lý, thì các tùy chọn cho vật thứ $i$ là gì?
+    \begin{itemize}
+        \item Khi không cho vào balo, sức chứa còn lại vẫn không đổi \& tổng giá trị không thay đổi. Do đó, giá trị tối đa trong trường hợp này là $f_{i-1,j}$.
+        \item Khi cho vào balo, sức chứa còn lại giảm $w_i$ \& tổng giá trị tăng $v_i$, do đó giá trị tối đa trong trường hợp này là $f_{i - 1,j - w_i} + v_i$.
+    \end{itemize}
+    From this we can derive the dp transition equation -- Từ đó ta có thể suy ra phương trình chuyển đổi dp:
+    \begin{equation*}
+        f_{i,j} = \max\{f_{i-1,j},f_{i-1,j - w_i}\},\ \forall i\in[n],\ \forall j\in\left\{\sum_{i\in I} w_i;I\subset[n]\right\} = \left\{\sum_{i=1}^n x_iw_i;x_i\in\{0,1\},\ \forall i\in[n]\right\}.
+    \end{equation*}
+    Most of the transitions for knapsack problems are derived in a similar way.
+
+    -- Hầu hết các chuyển đổi cho bài toán balo đều được suy ra theo cách tương tự.
+\end{proof}
+
+\begin{problem}
+    Prove that if $f_i$ is only dependent on $f_{i-1}$, we can remove the 1st dimension. We obtain the transition rule $f_j\leftarrow\max\{f_j,f_{j - w_i} + v_i\}$ that should be executed in the {\rm decreasing} order of $j$ so that $f_{j - w_i}$ implicitly corresponds to $f_{i - 1,j - w_i}$ \& not $f_{i,j - w_i}$).
+
+    -- Chứng minh rằng nếu $f_i$ chỉ phụ thuộc vào $f_{i-1}$, ta có thể loại bỏ chiều thứ nhất. Ta thu được quy tắc chuyển tiếp $f_j\leftarrow\max\{f_j,f_{j - w_i} + v_i\}$ cần được thực hiện theo thứ tự {\rm giảm dần} của $j$ sao cho $f_{j - w_i}$ ngầm tương ứng với $f_{i - 1,j - w_i}$ \& không phải $f_{i,j - w_i}$).
+\end{problem}
+
+\begin{proof}[Implementation]
+    The algorithm described can be implemented in $O(nw)$ as
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+        for (int i = 1; i <= n; ++i)
+        for (int j = w; j >= w[i]; --j)
+        f[j] = max(f[j], f[j - w[i]] + v[i]);
+    \end{Verbatim}
+    Note the order of execution. It should be strictly followed to ensure the following invariant: right before the pair $(i,j)$ is processed, $f_k$ corresponds to $f_{i,k}$ for $k > j$, but to $f_{i-1,k}$ for $k < j$. This ensures that $f_{j - w_i}$ is taken from the $(i - 1)$th step, rather than from the $i$th one.
+
+    -- Lưu ý thứ tự thực hiện. Cần tuân thủ nghiêm ngặt để đảm bảo bất biến sau: ngay trước khi cặp $(i,j)$ được xử lý, $f_k$ tương ứng với $f_{i,k}$ đối với $k > j$, nhưng tương ứng với $f_{i-1,k}$ đối với $k < j$. Điều này đảm bảo rằng $f_{j - w_i}$ được lấy từ bước $(i - 1)$th, chứ không phải từ bước $i$th.
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Complete knapsack problem -- Bài toán xếp balo hoàn chỉnh}
+The complete knapsack model is similar to the 0-1 knapsack, the only difference from the 0-1 knapsack is that an item can be selected an unlimited number of times instead of only once.
+
+-- Mẫu balo hoàn chỉnh tương tự như balo 0-1, điểm khác biệt duy nhất so với balo 0-1 là 1 vật phẩm có thể được chọn không giới hạn số lần thay vì chỉ 1 lần.
+
+We can refer to the idea of 0-1 knapsack to define the state: $f_{i,j}$, the maximum value the knapsack can obtain using the 1st $i$ items with maximum capacity $j$. Although the state definition is similar to that of a 0-1 knapsack, its transition rule is different from that of a 0-1 knapsack.
+
+-- Ta có thể tham khảo ý tưởng về balo 0-1 để định nghĩa trạng thái: $f_{i,j}$, giá trị lớn nhất mà balo có thể đạt được bằng cách sử dụng $i$ vật phẩm đầu tiên có sức chứa tối đa $j$. Mặc dù định nghĩa trạng thái tương tự như balo 0-1, nhưng quy tắc chuyển tiếp của nó lại khác với balo 0-1.
+
+\begin{proof}[Explanation of complete knapsack]
+    The trivial approach is, for the 1st $i$ items, enumerate how many times each item is to be taken. The time complexity of this is $O(n^2w)$. This yields the following transition equation:
+    \begin{equation*}
+        f_{i,j} = \max_{k=0}^\infty f_{i - 1,j - kw_i} + kv_i.
+    \end{equation*}
+    At the same time, it simplifies into a ``flat'' equation $f_{i,j} = \max \{f_{i - 1,j},f_{i,j - w_i} + v_i\}$. The reason this works is that $f_{i,j - w_i}$ has already been updated by $f_{i,j - 2w_i}$ \& so on. Similar to the 0-1 knapsack, we can remove the 1st dimension to optimize the space complexity. This gives us the same transition rule as 0-1 knapsack: $f_j\leftarrow\max\{f_j,f_{j - w_i} + v_i\}$.
+
+    -- Cách tiếp cận tầm thường là, đối với $i$ mục đầu tiên, hãy liệt kê số lần cần lấy mỗi mục. Độ phức tạp thời gian của cách này là $O(n^2w)$. Cách này tạo ra phương trình chuyển đổi sau:
+    \begin{equation*}
+        f_{i,j} = \max_{k=0}^\infty f_{i - 1,j - kw_i} + kv_i.
+    \end{equation*}
+    Đồng thời, nó được đơn giản hóa thành phương trình ``phẳng'' $f_{i,j} = \max \{f_{i - 1,j},f_{i,j - w_i} + v_i\}$. Lý do cách này hiệu quả là $f_{i,j - w_i}$ đã được cập nhật bởi $f_{i,j - 2w_i}$ \& etc. Tương tự như balo 0-1, chúng ta có thể loại bỏ chiều thứ nhất để tối ưu hóa độ phức tạp của không gian. Điều này cung cấp cho chúng ta cùng 1 quy tắc chuyển tiếp như balo 0-1: $f_j\leftarrow\max\{f_j,f_{j - w_i} + v_i\}$.
+\end{proof}
+
+\begin{proof}[Implementation]
+    The algorithm described can be implemented in $O(nw)$ as
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+        for (int i = 1; i <= n; i++)
+        for (int j = w[i]; j <= W; j++)
+        f[j] = max(f[j], f[j - w[i]] + v[i]);
+    \end{Verbatim}
+    Despite having the same transition rule, the code above is incorrect for 0-1 knapsack. Observing the code carefully, we see that for the currently processed item $i$ \& the current state $f_{i,j}$, when $j\ge w_i,f_{i,j}$ will be affected by $f_{i,j - w_i}$. This is equivalent to being able to put item $i$ into the backpack multiples times, which is consistent with the complete knapsack problem \& not the 0-1 knapsack problem.
+
+    -- Mặc dù có cùng quy tắc chuyển tiếp, đoạn mã trên không đúng đối với ba lô 0-1. Quan sát kỹ đoạn mã, chúng ta thấy rằng đối với mục $i$ đang được xử lý \& trạng thái hiện tại $f_{i,j}$, khi $j\ge w_i,f_{i,j}$ sẽ bị ảnh hưởng bởi $f_{i,j - w_i}$. Điều này tương đương với việc có thể đặt mục $i$ vào ba lô nhiều lần, phù hợp với bài toán ba lô hoàn chỉnh \& không phải là bài toán ba lô 0-1.
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Multiple knapsack problem -- Bài toán xếp balo bội}
+Multiple knapsack is also a variant of 0-1 knapsack. The main difference is that there are $k_i$ of each item instead of just 1.
+
+-- Ba lô nhiều món cũng là 1 biến thể của ba lô 0-1. Sự khác biệt chính là có $k_i$ của mỗi món thay vì chỉ có 1.
+
+\begin{proof}[Explanation of multiple knapsack problem]
+    A very simple idea is: ``choose each item $k_i$ times'' $\Leftrightarrow$ ``$k_i$ of the same item is selected 1 by 1''. Thus converting it to a 0-1 knapsack model, which can be described by the transition function:
+    \begin{equation*}
+        f_{i,j} = \max_{k=0}^{k_i} f_{i - 1,j - kw_i} + kv_i.
+    \end{equation*}
+    The time complexity of this process is $O\left(w\sum_{i=1}^n k_i\right)$.
+
+    -- 1 ý tưởng rất đơn giản là: ``chọn từng mục $k_i$ lần'' $\Leftrightarrow$ ``$k_i$ của cùng 1 mục được chọn 1 x 1''. Do đó, chuyển đổi nó thành mô hình ba lô 0-1, có thể được mô tả bằng hàm chuyển đổi:
+    \begin{equation*}
+        f_{i,j} = \max_{k=0}^{k_i} f_{i - 1,j - kw_i} + kv_i.
+    \end{equation*}
+    Độ phức tạp thời gian của quá trình này là $O\left(w\sum_{i=1}^n k_i\right)$.
+\end{proof}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Binary grouping optimization -- Tối ưu hóa nhóm nhị phân}
+We still consider converting the multiple knapsack model into a o-1 knapsack model for optimization. The time complexity $O(wn)$ cannot be further optimized with the approach above, so we focus on $O(\sum k_i)$ component.
+
+-- Chúng ta vẫn cân nhắc việc chuyển đổi mô hình ba lô nhiều thành mô hình ba lô o-1 để tối ưu hóa. Độ phức tạp thời gian $O(wn)$ không thể được tối ưu hóa thêm nữa bằng cách tiếp cận trên, vì vậy chúng ta tập trung vào thành phần $O(\sum k_i)$.
+
+Let $A_{i,j}$ denote the $j$th item split from the $i$th item. In the trivial approach discussed above, $A_{i,j}$ represents the same item $\forall j\le k_i$. The main reason for our low efficiency is that we are doing a lot of repetitive work. E.g., consider selecting $\{A_{i,1},A_{i,2}\}$, \& selecting $\{A_{i,2},A_{i,3}\}$. These 2 situations are completely equivalent. Thus optimizing the splitting method will greatly reduce the time complexity.
+
+-- Giả sử $A_{i,j}$ biểu thị phần tử $j$th được tách ra từ phần tử $i$th. Trong cách tiếp cận tầm thường được thảo luận ở trên, $A_{i,j}$ biểu thị cùng 1 phần tử $\forall j\le k_i$. Lý do chính khiến hiệu suất thấp của chúng ta là chúng ta đang thực hiện rất nhiều công việc lặp đi lặp lại. Ví dụ, hãy xem xét việc chọn $\{A_{i,1},A_{i,2}\}$, \& chọn $\{A_{i,2},A_{i,3}\}$. 2 tình huống này hoàn toàn tương đương nhau. Do đó, việc tối ưu hóa phương pháp tách sẽ làm giảm đáng kể độ phức tạp về thời gian.
+
+The grouping is made more efficient by using binary grouping. Specifically, $A_{i,j}$ holds $2^j$ individual terms $j\in\overline{0,\lfloor\log_2(k_i + 1)\rfloor - 1}$. If $k_i + 1$ is not an integer power of 2, another bundle of size $k_i - (2^{\lfloor\log_2(k_i + 1)\rfloor} - 1)$ is used to make up for it.
+
+-- Việc nhóm được thực hiện hiệu quả hơn bằng cách sử dụng nhóm nhị phân. Cụ thể, $A_{i,j}$ chứa $2^j$ các số hạng riêng lẻ $j\in\overline{0,\lfloor\log_2(k_i + 1)\rfloor - 1}$. Nếu $k_i + 1$ không phải là lũy thừa nguyên của 2, 1 bó khác có kích thước $k_i - (2^{\lfloor\log_2(k_i + 1)\rfloor} - 1)$ được sử dụng để bù đắp cho nó.
+
+Through the above splitting method, it is possible to obtain any sum of $\le k_i$ items by selecting a few $A_{i,j}$'s. After splitting each item in the described way, it is sufficient to use 0-1 knapsack method to solve the new formulation of the problem. This optimization gives us a time complexity of $O\left(w\sum_{i=1}^n \log k_i\right)$.
+
+-- Thông qua phương pháp phân chia trên, có thể thu được bất kỳ tổng nào của $\le k_i$ phần tử bằng cách chọn 1 vài $A_{i,j}$. Sau khi phân chia từng phần tử theo cách đã mô tả, chỉ cần sử dụng phương pháp 0-1 knapsack để giải quyết công thức mới của bài toán. Tối ưu hóa này cung cấp cho chúng ta độ phức tạp thời gian là $O\left(w\sum_{i=1}^n \log k_i\right)$.
+
+Implementation:
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+    index = 0;
+    for (int i = 1; i <= n; ++i) {
+        int c = 1, p, h, k;
+        cin >> p >> h >> k;
+        while (k > c) {
+            k -= c;
+            list[++index].w = c * p;
+            list[index].v = c * h;
+            c *= 2;
+        }
+        list[++index].w = p * k;
+        list[index].v = h * k;
+    }
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Monotone queue optimization -- Tối ưu hóa hàng đợi đơn điệu}
+In this optimization, we aim to convert the knapsack problem into a maximum queue one. For convenience of description, let $g_{x,y} = f_{i,xw_i + y},g_{x,y}' = f_{i - 1,xw_i + y}$. Then the transition rule can be written as
+\begin{equation*}
+    g_{x,y} = \max_{k=0}^{k_i} g_{x - k,y}' + v_ik.
+\end{equation*}
+Further, let $G_{x,y} = g_{x,y}' - v_ix$. Then the transition rule can be expressed as:
+\begin{equation*}
+    g_{x,y}\leftarrow v_ix + \max_{k=0}^{k_i} G_{x - k,y}.
+\end{equation*}
+This transforms into a classic monotone queue optimization form. $G_{x,y}$ can be calculated in $O(1)$, so for a fixed $y$, we can calculate $g_{x,t}$ in $O\left(\lfloor\frac{w}{w_i}\rfloor\right)$ time. Therefore, the complexity of finding all $g_{x,y}$ is $O\left(\lfloor\frac{w}{w_i}\rfloor\right)\times O(w_i) = O(w)$. In this way, the total complexity of the algorithm is reduced to $O(nw)$.
+
+-- Trong quá trình tối ưu hóa này, chúng ta hướng đến việc chuyển đổi bài toán ba lô thành bài toán hàng đợi tối đa. Để thuận tiện cho việc mô tả, hãy cho $g_{x,y} = f_{i,xw_i + y},g_{x,y}' = f_{i - 1,xw_i + y}$. Khi đó, quy tắc chuyển đổi có thể được viết thành
+\begin{equation*}
+    g_{x,y} = \max_{k=0}^{k_i} g_{x - k,y}' + v_ik.
+\end{equation*}
+Ngoài ra, hãy cho $G_{x,y} = g_{x,y}' - v_ix$. Khi đó, quy tắc chuyển đổi có thể được biểu thị thành:
+\begin{equation*}
+    g_{x,y}\leftarrow v_ix + \max_{k=0}^{k_i} G_{x - k,y}.
+\end{equation*}
+Điều này chuyển thành dạng tối ưu hóa hàng đợi đơn điệu cổ điển. $G_{x,y}$ có thể được tính trong $O(1)$, vì vậy đối với $y$ cố định, chúng ta có thể tính $g_{x,t}$ trong thời gian $O\left(\lfloor\frac{w}{w_i}\rfloor\right)$. Do đó, độ phức tạp của việc tìm tất cả $g_{x,y}$ là $O\left(\lfloor\frac{w}{w_i}\rfloor\right)\times O(w_i) = O(w)$. Theo cách này, độ phức tạp tổng thể của thuật toán được giảm xuống còn $O(nw)$.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Mixed knapsack problem -- Bài toán xếp balo hỗn hợp}
+The mixed knapsack problem involves a combination of the 3 problems described above, i.e., some items can only be taken once, some can be taken infinitely, \& some can be taken at most $k$ times. The pseudo code for the solution is as:
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+    for (each item) {
+        if (0-1 knapsack)
+        apply 0-1 knapsack code;
+        else if (complete knapsack)
+        apply complete knapsack code;
+        else if (multiple knapsack)
+        apply multiple knapsack code;
+    }
+\end{Verbatim}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Extensions \& generalizations of knapsack problem -- Mở rộng \& tổng quát hóa của bài toán xếp balo}
+
+
+\begin{problem}[Extend or generalize knapsack problem]
+    Generalize the knapsack problem from $2$ attributes to $m\in\mathbb{N}^\star$ attributes.
+
+    -- Tổng quát hóa bài toán balo từ $2$ thuộc tính thành $m\in\mathbb{N}^\star$ thuộc tính.
+\end{problem}
+
+%------------------------------------------------------------------------------%
+
+\section{Divide \& Conquer Dynamic Programming -- Chia \& Trị Quy Hoạch Động}
+Divide \& Conquer is a dynamic programming optimization. -- Chia \& Trị là 1 phương pháp tối ưu hóa quy hoạch động.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Preconditions -- Điều kiện tiên quyết}
+Some dynamic programming problems have a recurrence of this form:
+\begin{equation}
+    \label{dp: recurrence}
+    {\rm dp}(i,j) = 0,\ \forall j < 0,\ {\rm dp}(i,j) = \min_{0\le k\le j} {\rm dp}(i - 1,k - 1) + C(k,j),
+\end{equation}
+where $C(k,j)$ is a cost function. If $0\le i < m,0\le j < n$, \& evaluating $C$ takes $O(1)$ time. Then the straightforward evaluation of \eqref{dp: recurrence} is $O(mn^2)$. There are $mn$ states, \& $n$ transitions for each state.
+
+-- 1 số bài toán quy hoạch động có dạng tái diễn như sau:
+\begin{equation*}
+    dp(i,j) = 0,\ \forall j < 0,\ dp(i,j) = \min_{0\le k\le j} dp(i - 1,k - 1) + C(k,j),
+\end{equation*}
+trong đó $C(k,j)$ là hàm chi phí. Nếu $0\le i < m,0\le j < n$, \& đánh giá $C$ mất $O(1)$ thời gian. Khi đó, đánh giá trực tiếp của \eqref{dp: recurrence} là $O(mn^2)$. Có $mn$ trạng thái, \& $n$ chuyển đổi cho mỗi trạng thái.
+
+Let ${\rm opt}(i,j)$ be the value of $k$ that minimizes the above expression. Assuming that the cost function satisfies the quadrangle inequality, we can show that ${\rm opt}(i,j)\le{\rm opt}(i,j + 1)$, $\forall i,j$. This is known as the {\it monotonicity condition}. Then, we can apply divide \& conquer DP. The optimal ``splitting point'' for a fixed $i$ increases as $j$ increases.
+
+-- Giả sử ${\rm opt}(i,j)$ là giá trị của $k$ làm tối thiểu hóa biểu thức trên. Giả sử rằng hàm chi phí thỏa mãn bất đẳng thức tứ giác, ta có thể chứng minh rằng ${\rm opt}(i,j)\le{\rm opt}(i,j + 1)$, $\forall i,j$. Điều này được gọi là {\it điều kiện đơn điệu}. Sau đó, ta có thể áp dụng chia \& chinh phục DP. ``Điểm chia tách'' tối ưu cho $i$ cố định tăng khi $j$ tăng.
+
+This lets us solve for all states more efficiently. Say we compute ${\rm opt}(i,j)$ for some fixed $i,j$. Then for any $j' < j$ we know that ${\rm opt}(i,j')\le{\rm opt}(i,j)$, i.e., when computing ${\rm opt}(i,j')$, we do not have to consider as many splitting points.
+
+-- Điều này cho phép chúng ta giải quyết cho tất cả các trạng thái hiệu quả hơn. Giả sử chúng ta tính ${\rm opt}(i,j)$ cho 1 số $i,j$ cố định. Sau đó, đối với bất kỳ $j' < j$ nào, chúng ta biết rằng ${\rm opt}(i,j')\le{\rm opt}(i,j)$, i.e., khi tính ${\rm opt}(i,j')$, chúng ta không phải xem xét nhiều điểm phân tách.
+
+To minimize the runtime, we apply the idea behind divide \& conquer. 1st, compute ${\rm opt}\left(i,\lfloor\frac{n}{2}\rfloor\right)$, then, compute ${\rm opt}\left(i,\lfloor\frac{n}{4}\rfloor\right)$, knowing that it is $\le\left(i,\lfloor\rfloor\frac{n}{2}\rfloor\right)$ \& ${\rm opt}\left(i,\lfloor\frac{3n}{4}\rfloor\right)$ knowing that it is $\ge{\rm opt}\left(i,\lfloor\frac{n}{2}\rfloor\right)$. By recursively keeping track of the lower \& upper bound on ${\rm opt}$, we reach a $O(mn\log n)$ runtime. Each possible value of ${\rm opt}(i,j)$ only appears in $\log n$ different nodes.
+
+-- Để giảm thiểu thời gian chạy, chúng ta áp dụng ý tưởng đằng sau phương pháp chia để trị. Đầu tiên, tính ${\rm opt}\left(i,\lfloor\frac{n}{2}\rfloor\right)$, sau đó, tính ${\rm opt}\left(i,\lfloor\frac{n}{4}\rfloor\right)$, biết rằng đó là $\le\left(i,\lfloor\frac{n}{2}\rfloor\right)$ \& ${\rm opt}\left(i,\lfloor\frac{3n}{4}\rfloor\right)$ biết rằng đó là $\ge{\rm opt}\left(i,\lfloor\frac{n}{2}\rfloor\right)$. Bằng cách theo dõi đệ quy giới hạn dưới \& trên của ${\rm opt}$, chúng ta đạt được thời gian chạy $O(mn\log n)$. Mỗi giá trị có thể của ${\rm opt}(i,j)$ chỉ xuất hiện ở $\log n$ nút khác nhau.
+
+It doesn't matter how ``balanced'' ${\rm opt}(i,j)$ is. Across a fixed level, each value of $k$ is used at most twice, \& there are at most $\log n$ levels.
+
+-- Không quan trọng ${\rm opt}(i,j)$ ``cân bằng'' như thế nào. Trên 1 mức cố định, mỗi giá trị của $k$ được sử dụng nhiều nhất 2 lần, \& có nhiều nhất $\log n$ mức.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Generic implementation -- Thực thi chung}
+Even though implementation varies based on problem, here's a fairly generic template. The function {\tt compute} computes 1 row $i$ of states \verb|dp_cur|, given the previous row $i - 1$ of state \verb|dp_before|. It has to be called with {\tt compute(0, n - 1, 0, n - 1)}. The function {\tt solve} computes {\tt m} rows \& returns the result.
+
+-- Mặc dù việc triển khai thay đổi tùy theo vấn đề, đây là 1 mẫu khá chung chung. Hàm {\tt compute} tính toán 1 hàng $i$ của các trạng thái \verb|dp_cur|, cho hàng trước đó $i - 1$ của trạng thái \verb|dp_before|. Nó phải được gọi với {\tt compute(0, n - 1, 0, n - 1)}. Hàm {\tt solve} tính toán {\tt m} hàng \& trả về kết quả.
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+    int m, n;
+    vector<long long> dp_before, dp_cur;
+
+    long long C(int i, int j);
+
+    // compute dp_cur[l], ... dp_cur[r] (inclusive)
+    void compute(int l, int r, int optl, int optr) {
+        if (l > r) return;
+        int mid = (l + r) >> 1;
+        pair<long long, int> best = {LLONG_MAX, -1};
+
+        for (int k = optl; k <= min(mid, optr); ++k)
+        best = min(best, {(k ? dp_before[k - 1] : 0) + C(k, mid), k});
+        dp_cur[mid] = best.first;
+        int opt = best.second;
+
+        compute(l, mid - 1, optl, opt);
+        compute(mid + 1, r, opt, optr);
+    }
+
+    long long solve() {
+        dp_before.assign(n, 0);
+        dp_cur.assign(n, 0);
+
+        for (int i = 0; i < n; ++i) dp_before[i] = C(0, i);
+        for (int i = 1; i < m; ++i) {
+            compute(0, n - 1, 0, n - 1);
+            dp_before = dp_cur;
+        }
+        return dp_before[n - 1];
+    }
+\end{Verbatim}
+The greatest difficulty with Divide \& Conquer DP problems is proving the monotonicity of ${\rm opt}$. 1 special case where this is true is when the cost function satisfies the quadrangle inequality, i.e.,
+\begin{equation}
+    \label{quadrangle inequality}
+    C(a,c) + C(b,d)\le C(a,d) + C(b,c),\ \forall a\le b\le c\le d.
+\end{equation}
+Many Divide \& Conquer DP problems can also be solved with the Convex Hull trick or vice-versa.
+
+--  Khó khăn lớn nhất với các bài toán Chia \& Chinh phục DP là chứng minh tính đơn điệu của ${\rm opt}$. 1 trường hợp đặc biệt mà điều này đúng là khi hàm chi phí thỏa mãn bất đẳng thức tứ giác, i.e., $C(a,c) + C(b,d)\le C(a,d) + C(b,c)$, $\forall a\le b\le c\le d$. Nhiều bài toán Chia \& Chinh phục DP cũng có thể được giải bằng thủ thuật Convex Hull hoặc ngược lại.
+
+%------------------------------------------------------------------------------%
+
+\section{Knuth's Optimization -- Tối Ưu của {\sc Knuth}}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \href{https://cp-algorithms.com/dynamic_programming/knuth-optimization.html}{Algorithms for Competitive Programming{\tt/}Knuth's optimization}.
+\end{enumerate}
+{\it Knuth's optimization}, also known as the {\it Knuth-Yao Speedup}, is a special case of dynamic programming on ranges, that can optimize the time complexity of solutions by a linear factor, from $O(n^3)$ for standard range DP to $O(n^2)$.
+
+-- {\it Tối ưu hóa Knuth}, còn được gọi là {\it Tăng tốc Knuth-Yao}, là 1 trường hợp đặc biệt của quy hoạch động trên phạm vi, có thể tối ưu hóa độ phức tạp thời gian của các giải pháp theo hệ số tuyến tính, từ $O(n^3)$ cho phạm vi chuẩn DP đến $O(n^2)$.
+
+%------------------------------------------------------------------------------%
+
+\subsection{Conditions}
+The Speedup is applied for transitions of the form
+\begin{equation*}
+    {\rm dp}(i,j) = \min_{i\le k < j} [{\rm dp}(i,k) + {\rm dp}(k + 1,j) + C(i,j)] = \min_{i\le k < j} [{\rm dp}(i,k) + {\rm dp}(k + 1,j)] + C(i,j).
+\end{equation*}
+Similar to divide \& conquer DP, let ${\rm opt}(i,j)$ be the value of $k$ that minimizes the expression in the transition (opt is referred to as the ``optimal splitting point'' further in this article). The optimization requires that the following holds:
+\begin{equation*}
+    {\rm opt}(i,j - 1)\le{\rm opt}(i,j)\le{\rm opt}(i + 1,j).
+\end{equation*}
+We can show that it is true when the cost function $C$ satisfies the following conditions for $a\le b\le c\le d$:
+\begin{enumerate}
+    \item $C(b,c)\le C(a,d)$
+    \item $C(a,c) + C(b,d)\le C(a,d) + C(b,c)$ (the quadrangle inequality [QI]).
+\end{enumerate}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Algorithm of Knuth's optimization -- Thuật toán của tối ưu của Knuth}
+We process the dp states in such a way that we calculate ${\rm dp}(i,j - 1),{\rm dp}(i + 1,j)$ before ${\rm dp}(i,j)$, \& in doing so we also calculate ${\rm opt}(i,j - 1),{\rm opt}(i + 1,j)$. Then for calculating ${\rm opt}(i,j)$, instead of testing values of $k$ from $i$ to $j - 1$, we only need to test from ${\rm opt}(i,j - 1)$ to ${\rm opt}(i + 1,j)$. To process $(i,j)$ pairs in this order it is sufficient to use nested for loops in which $i$ goes from the maximum value to the minimum one \& $j$ goes from $i + 1$ to the maximum value.
+
+-- Chúng ta xử lý các trạng thái dp theo cách mà chúng ta tính toán ${\rm dp}(i,j - 1),{\rm dp}(i + 1,j)$ trước ${\rm dp}(i,j)$, \& khi làm như vậy, chúng ta cũng tính toán ${\rm opt}(i,j - 1),{\rm opt}(i + 1,j)$. Sau đó, để tính toán ${\rm opt}(i,j)$, thay vì kiểm tra các giá trị của $k$ từ $i$ đến $j - 1$, chúng ta chỉ cần kiểm tra từ ${\rm opt}(i,j - 1)$ đến ${\rm opt}(i + 1,j)$. Để xử lý các cặp $(i,j)$ theo thứ tự này, chỉ cần sử dụng các vòng lặp lồng nhau trong đó $i$ đi từ giá trị lớn nhất đến giá trị nhỏ nhất \& $j$ đi từ $i + 1$ đến giá trị lớn nhất.
+
+\paragraph*{Generic implementation.} Though implementation varies, here's a fairly generic example. The structure of the code is almost identical to that of Range DP.
+
+-- Mặc dù cách triển khai khác nhau, đây là 1 e.g. khá chung chung. Cấu trúc của mã gần giống với cấu trúc của Range DP.
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+    int solve() {
+        int n;
+        ... // read n & input
+        int dp[N][N], opt[N][N];
+
+        auto C = [&](int i, int j) {
+            ... // implement cost function C
+        };
+
+        for (int i = 0; i < N; ++i) {
+            opt[i][j] = i;
+            ... // initialize dp[i][j] according to the problem
+        }
+
+        for (int i = N - 2; i >= 0; --i) {
+            for (int j = i + 1; j < N; ++j) {
+                int mn = INT_MAX;
+                int cost = C(i, j);
+                for (int k = opt[i][j - 1]; k <= min(j - 1, opt[i + 1][j]); ++k) {
+                    if (mn >= dp[i][k] + dp[k + 1][j] + cost) {
+                        opt[i][j] = k;
+                        mn = dp[i][k] + dp[k + 1][j] + cost;
+                    }
+                }
+                dp[i][j] = mn;
+            }
+        }
+        return dp[0][N - 1];
+    }
+\end{Verbatim}
+
+\paragraph*{Complexity.} A complexity of the algorithm can be estimated as the following sum:
+\begin{equation*}
+    \sum_{i=1}^N\sum_{j=i+1}^N {\rm opt}(i + 1,j) - {\rm opt}(i,j - 1) = \sum_{i=1}^N\sum_{j=i}^{N-1} {\rm opt}(i + 1,j + 1) - {\rm opt}(i,j).
+\end{equation*}
+Most of the terms in this expression cancel each other out, except for positive terms with $j = N - 1$ \& negative terms with $i = 1$. Thus, Thus, the whole sum can be estimated as
+\begin{equation*}
+    \sum_{i=1}^N {\rm opt}(i,N) - {\rm opt}(1,i) = O(n^2),
+\end{equation*}
+rather than $O(n^3)$ as it would be if we were using a regular range DP.
+
+-- Độ phức tạp của thuật toán có thể được ước tính như tổng sau:
+\begin{equation*}
+    \sum_{i=1}^N\sum_{j=i+1}^N {\rm opt}(i + 1,j) - {\rm opt}(i,j - 1) = \sum_{i=1}^N\sum_{j=i}^{N-1} {\rm opt}(i + 1,j + 1) - {\rm opt}(i,j).
+\end{equation*}
+Hầu hết các số hạng trong biểu thức này triệt tiêu lẫn nhau, ngoại trừ các số hạng dương với $j = N - 1$ \& các số hạng âm với $i = 1$. Do đó, tổng thể có thể được ước tính là
+\begin{equation*}
+    \sum_{i=1}^N {\rm opt}(i,N) - {\rm opt}(1,i) = O(n^2),
+\end{equation*}
+thay vì $O(n^3)$ như khi chúng ta sử dụng phạm vi DP thông thường.
+
+\paragraph*{On practice.} The most common application of Knuth's optimization is the Range DP, with the given transition. The only difficulty is in proving that the cost function satisfies the given conditions. The simplest case is when the cost function $C(i,j)$ is simply the sum of the elements of the subarray $S[i,i + 1,\ldots,j]$ for some array (depending on the question). However, they can be more complicated at times.
+
+-- Ứng dụng phổ biến nhất của tối ưu hóa Knuth là Range DP, với phép chuyển đổi đã cho. Khó khăn duy nhất là chứng minh rằng hàm chi phí thỏa mãn các điều kiện đã cho. Trường hợp đơn giản nhất là khi hàm chi phí $C(i,j)$ chỉ đơn giản là tổng các phần tử của mảng con $S[i,i + 1,\ldots,j]$ đối với 1 số mảng (tùy thuộc vào câu hỏi). Tuy nhiên, đôi khi chúng có thể phức tạp hơn.
+
+More than the conditions on the dp transition \& the cost function, the key to this optimization is the inequality on the optimum splitting point. In some problems, e.g. the optimal binary search tree problem (which is, incidentally, the original problem for which this optimization was developed), the transitions \& cost function will be less obvious, however, one can still prove that ${\rm opt}(i,j - 1)\le{\rm opt}(i,j)\le{\rm opt}(i + 1,j)$, \& thus, use this optimization.
+
+-- Hơn cả các điều kiện trên chuyển đổi dp \& hàm chi phí, chìa khóa cho quá trình tối ưu hóa này là bất đẳng thức trên điểm chia tách tối ưu. Trong 1 số bài toán, e.g. như bài toán cây tìm kiếm nhị phân tối ưu (tình cờ là bài toán ban đầu mà quá trình tối ưu hóa này được phát triển), hàm chi phí chuyển đổi \& sẽ ít rõ ràng hơn, tuy nhiên, người ta vẫn có thể chứng minh rằng ${\rm opt}(i,j - 1)\le{\rm opt}(i,j)\le{\rm opt}(i + 1,j)$, \& do đó, hãy sử dụng quá trình tối ưu hóa này.
+
+\begin{proof}[Proof of correctness]
+    To prove the correctness of this algorithm in terms of $C(i,j)$ conditions, it suffices to prove that ${\rm opt}(i,j - 1)\le{\rm opt}(i,j)\le{\rm opt}(i + 1,j)$ assuming the given conditions are satisfied.
+
+    -- Để chứng minh tính đúng đắn của thuật toán này theo các điều kiện $C(i,j)$, chỉ cần chứng minh rằng ${\rm opt}(i,j - 1)\le{\rm opt}(i,j)\le{\rm opt}(i + 1,j)$ giả sử các điều kiện đã cho được thỏa mãn.
+
+    \begin{lemma}
+        ${\rm dp}(i,j)$ also satisfies the quadrangle inequality, given the conditions of the problem are satisfied.
+    \end{lemma}
+    ***
+\end{proof}
 
 %------------------------------------------------------------------------------%
 

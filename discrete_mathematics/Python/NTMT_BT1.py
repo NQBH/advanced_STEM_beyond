@@ -1,0 +1,7 @@
+x=int(input('x= '))
+y=int(input('y= '))
+z=int(input('z= '))
+p=(x+1==2)
+q=(x+y==z)
+print('x+1=2 ',p)
+print('x+y=z ',q)

@@ -6,7 +6,7 @@ using namespace std;
 vector<int> decimalToBinaryString(int n) {
 	vector<int> ret;
 	while (n > 0) {
-		ret.push_back(n % 2 == 0 ? '0' : '1');
+		ret.push_back(n % 2 == 0 ? 0 : 1);
 		n /= 2;
 	}
 	// reverse(binaryString.begin(), binaryString.end()); // Reverse the string as bits are collected in reverse order
@@ -52,9 +52,7 @@ int main() {
 					cout << 2 << '\n' << x1 << ' ' << x2 << '\n';
 					continue;
 				}
-				cout << -1 << '\n';
 			}
 		}
 	}
 }
-// WA test 2 CF

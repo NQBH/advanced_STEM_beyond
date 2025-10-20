@@ -20,6 +20,7 @@ int dijkstra(int n, vector<vector<vector<int>>> &adj, int src, int des) {
 				dist[v] = dist[u] + weight;
 				pq.push({dist[v], v});
 			}
+			if (v == des) return dist[v];
 		}
 	}
 	return dist[des];
@@ -30,8 +31,6 @@ int main() {
 	cin.tie(nullptr);
 	int n, m, q;
 	cin >> n >> m >> q;
-	// vector<int> V(n);
-	// for (int i = 0; i < n; ++i) V[i] = i;
 	vector<vector<vector<int>>> adj(n);
 	for (int i = 1; i <= m; ++i) {
 		int u, v, t;

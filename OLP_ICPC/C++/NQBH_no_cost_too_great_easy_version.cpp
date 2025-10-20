@@ -9,7 +9,7 @@ int main() {
 	int t;
 	cin >> t;
 	while (t--) {
-		int n, num_even = 0, ans = 0;
+		int n, num_even = 0;
 		cin >> n;
 		vector<int> a(n), b(n);
 		for (int &x : a) {
@@ -21,39 +21,33 @@ int main() {
 			cout << 0 << '\n';
 			continue;
 		}
-		bool ok = false;
+		bool ok0 = false, ok1 = false;
 		for (int i = 0; i < n; ++i) {
-			for (int j = i + 1; j < n; ++j)
+			for (int j = i + 1; j < n; ++j) {
 				if (gcd(a[i], a[j]) > 1) {
-					ok = true;
+					ok0 = true;
 					break;
 				}
-			if (ok) break;
+				if (gcd(a[i] + 1, a[j]) > 1 || gcd(a[i], a[j] + 1) > 1) ok1 = true;
+			}
+			if (ok0) break;
 		}
-		if (ok) {
-			cout << ans << '\n';
+		if (ok0) {
+			cout << 0 << '\n';
 			continue;
 		}
-		for (int i = 0; i < n; ++i) {
-			for (int j = i + 1; j < n; ++j)
-				if (gcd(a[i] + 1, a[j]) > 1 || gcd(a[i], a[j] + 1) > 1) {
-					ok = true;
-					ans = 1;
-					break;
-				}
-			if (ok) break;
+		if (ok1) {
+			cout << 1 << '\n';
+			continue;
 		}
-		if (ok) cout << ans << '\n';
-		else {
-			if (num_even == 0) {
-				cout << 2 << '\n';
-				continue;
-			}
-			else { // num_even = 1
-				cout << 1 << '\n';
-				continue;
-			}
+		if (num_even == 1) {
+			cout << 1 << '\n';
+			continue;
+		}
+		else { // num_even = 1
+			cout << 2 << '\n';
+			continue;
 		}
 	}
 }
-// TLE test 6
+// TLE test 6 CF

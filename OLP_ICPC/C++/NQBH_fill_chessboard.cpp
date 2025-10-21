@@ -35,3 +35,4 @@ int main() {
 		}
 	}
 }
+// AC but too greedy, wrong in a case for n = 4 found by DPAK

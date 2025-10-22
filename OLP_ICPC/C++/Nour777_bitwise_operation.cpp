@@ -9,10 +9,10 @@ int main() {
 	// bitset<32> means we represent the number using 32 bits.
 
 	// turn bits on/off/flip
-	int x = 1;
-	a = a | (1 << x); // turn on bit x: make sure bit x = 1 (keep others unchanged)
-	a = a & ~(1 << x); // turn off bit x: make sure bit x = 0.
-	a = a ^ (1 << x); // flip bit x: 1 -> 0, 0 -> 1
+	int k = 1;
+	a = a | (1 << k); // turn on bit k: make sure bit k = 1 (keep others unchanged)
+	a = a & ~(1 << k); // turn off bit k: make sure bit k = 0.
+	a = a ^ (1 << k); // flip bit k: 1 -> 0, 0 -> 1
 
 	// check if bit x is on
 	if (a & (1 << x)) cout << "ON";

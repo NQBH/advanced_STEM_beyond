@@ -10,8 +10,8 @@ int main() {
 	while (t--) {
 		int n, q;
 		cin >> n;
-		vector<int> a(n);
-		for (int &x : a) cin >> x;
+		vector<int> a(n + 1);
+		for (int i = 1; i <= n; ++i) cin >> a[i];
 		string s;
 		cin >> s;
 		int S = stoi(s, nullptr, 2);
@@ -29,10 +29,10 @@ int main() {
 				cin >> g;
 				if (g == 1) {
 					for (int i = 0; i < n; ++i)
-						if (S & (1 << i)) ans ^= a[n - 1 - i];
+						if (S & (1 << i)) ans ^= a[n - i];
 				} else {
 					for (int i = 0; i < n; ++i)
-						if ((S & (1 << i)) == 0) ans ^= a[n - 1 - i];
+						if ((S & (1 << i)) == 0) ans ^= a[n - i];
 				}
 				cout << ans << ' ';
 			}

@@ -37,7 +37,7 @@ int main() {
 	__builtin_popcount(x): count 1s in integer
 	__builtin_popcountll(x): count 1s in long long
 	__builtin_clz(x): count leading 0s = count how many 0s come before the 1st 1 from the left.
-	__builtin_ctz(x): count trailing 0s= count how many 0s come after the last 1 from the right. These are useful to find the position of the 1st or last set bit quickly
+	__builtin_ctz(x): count trailing 0s = count how many 0s come after the last 1 from the right. These are useful to find the position of the 1st or last set bit quickly
 	__lg(x): position of highest bit (approximately floor(log2(x)))
 	*/
 	x = 8;

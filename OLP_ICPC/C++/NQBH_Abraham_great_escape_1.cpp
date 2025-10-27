@@ -3,6 +3,8 @@
 using namespace std;
 
 int main() {
+	ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
 	int t, n, k;
 	cin >> t;
 	while (t--) {
@@ -20,16 +22,15 @@ int main() {
 			int num_unescape_cell = n * n - k;
 			for (int i = 0; i < n; ++i) {
 				for (int j = 0; j < n; ++j) {
-					if (num_unescape_cell == 1) {
-						if (j == 0) s[i][j] = 'U';
-						
-					}
-					if (num_unescape_cell) {
-						if (j == n - 1) s[i][j] = 'L';
-						else if (j & 1) s[i][j] = 'L';
-						else s[i][j] = 'R';
+					if (!num_unescape_cell) break;
+					if (num_unescape_cell == 1 && j == 0) {
+						s[i][j] = 'U';
 						--num_unescape_cell;
-					} else break;
+						break;
+					}
+					if (j == 0) s[i][j] = 'R';
+					else s[i][j] = 'L';
+					--num_unescape_cell;
 				}
 				if (!num_unescape_cell) break;
 			}

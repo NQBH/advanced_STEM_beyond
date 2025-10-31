@@ -47,27 +47,29 @@ int main() {
 			cout << "YES\n";
 			continue;
 		}
-		
+		/* debug
 		for (int i = 0; i < num_black_pos; ++i) cout << black_x[i] << ' ';
 		cout << '\n';
 		for (int i = 0; i < num_black_pos; ++i) cout << black_y[i] << ' ';
 		cout << '\n';
-		
-		int diff0 = black_y[0] - black_x[0];
+		*/
+		int sum0 = black_x[0] + black_y[0], diff0 = black_y[0] - black_x[0];
 		bool type1 = true, type2 = true, type3 = true, type4 = true;
 		if (black_y[0] < black_y[num_black_pos - 1]) { // zigzag top-left -> bot-right
 			type3 = false, type4 = false;
 			for (int i = 1; i < num_black_pos; ++i ) {
 				int diff = black_y[i] - black_x[i] - diff0;
-				if (diff != 0 && diff != 1) type1 = false;
-				if (diff != 0 && diff != -1) type2 = false;
+				if (diff == 0) continue;
+				if (diff != 1) type1 = false;
+				if (diff != -1) type2 = false;
 			}
 		} else { // zigzag top-right -> bot-left
 			type1 = false, type2 = false;
 			for (int i = 1; i < num_black_pos; ++i ) {
-				int diff = black_y[i] - black_x[i] - diff0;
-				if (diff != 0 && diff != 1) type4 = false;
-				if (diff != 0 && diff != -1) type3 = false;
+				int diff = black_x[i] + black_y[i] - sum0;
+				if (diff == 0) continue;
+				if (diff != 1) type4 = false;
+				if (diff != -1) type3 = false;
 			}
 		}
 		if (type1 || type2 || type3 || type4) cout << "YES\n";

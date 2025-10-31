@@ -13,11 +13,7 @@ int main() {
 		int n, k, x;
 		cin >> n >> k >> x;
 		vector<int> a(n);
-		set<int> s;
-		for (int &x : a) {
-			cin >> x;
-			s.insert(x);
-		}
+		for (int &x : a) cin >> x;
 		if (k - x == 1) { // if there is no empty position
 			for (int i = 0; i <= x; ++i) cout << i << ' ';
 			cout << '\n';
@@ -26,11 +22,10 @@ int main() {
 				if (!s.count(i)) cout << i << ' ';
 			cout << '\n';
 		} else {
-			int max_dist = 0;
+			vector<int> min_dist(x + 1);
 			sort(a.begin(), a.end());
 			for (int i = 1; i < n; ++i) {
 				int dist = a[i] - a[i - 1];
-				max_dist = max(max_dist, dist);
 			}
 			
 

@@ -39,7 +39,7 @@ int main() {
 					black_x.push_back(i);
 					black_y.push_back(j);
 				}
-		if (!num_black_pos) { // just color 1 white -> black
+		if (num_black_pos <= 1) { // just color 1 white -> black
 			cout << "YES\n";
 			continue;
 		}
@@ -76,3 +76,4 @@ int main() {
 		else cout << "NO\n";
 	}
 }
+// WA test 2 CF

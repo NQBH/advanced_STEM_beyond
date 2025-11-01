@@ -4,15 +4,12 @@ using namespace std;
 void solve() {
 	int k;
 	cin >> k;
-	if (k % 3 == 1) {
-		cout << "Yes\n";
-	} else {
-		cout << "No\n";
-	}
+	if (k % 3 == 1) cout << "Yes\n";
+	else cout << "No\n";
 }
 int main() {
 	ios::sync_with_stdio(0), cin.tie(0);
-	int tt = 1;
-	cin >> tt;
-	while (tt--) solve();
+	int t = 1;
+	cin >> t;
+	while (t--) solve();
 }

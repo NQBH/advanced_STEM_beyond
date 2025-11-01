@@ -7,12 +7,21 @@ int main() {
 	int t;
 	cin >> t;
 	while (t--) {
-		int n, m;
+		int n, m, a;
 		cin >> n >> m;
 		vector<string> s(n);
-		for (int i = 0; i < n; ++i) cin >> s[i];
-		
-
-		
+		int r = 0, c = 0;
+		for (int i = 0; i < n; ++i) {
+			cin >> s[i];
+			a = 0;
+			for (int j = 0; j < m; ++j) a ^= (s[i][j] == '1'? 1 : 0);
+			if (a) ++r;
+		}		
+		for (int j = 0; j < m; ++j) {
+			a = 0;
+			for (int i = 0; i < n; ++i) a ^= (s[i][j] == '1'? 1 : 0);
+			if (a) ++c;
+		}
+		cout << max(r, c) << '\n';
 	}
 }

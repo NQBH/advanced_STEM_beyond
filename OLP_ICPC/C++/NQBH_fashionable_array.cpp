@@ -22,9 +22,7 @@ int main() {
 		if ((a[0] ^ a[n - 1]) & 1) {
 			int l = 1, r = n - 2;
 			while (!((a[l] ^ a[l - 1]) & 1)) ++l;
-			// cout << "l = " << l << '\n';
 			while (!((a[r] ^ a[r + 1]) & 1)) --r;
-			// cout << "r = " << r << '\n';
 			cout << min(l, n - 1 - r) << '\n';
 		} 
 		else cout << "0\n";

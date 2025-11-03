@@ -7,11 +7,12 @@ int main() {
 	int t;
 	cin >> t;
 	while (t--) {
-		int n;
-		cin >> n;
-		vector<int> a(n);
-		for (int &x : a) cin >> x;
-
-		
+		int x, y = 10;
+		cin >> x;
+		while (x) {
+			y = min(y, x % 10);
+			x /= 10;
+		}
+		cout << y << '\n';
 	}
 }

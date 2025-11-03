@@ -7,11 +7,13 @@ int main() {
 	int t;
 	cin >> t;
 	while (t--) {
-		int n;
+		int n, ans = 1;
 		cin >> n;
-		vector<int> a(n);
+		vector<int> a(n), b(n);
 		for (int &x : a) cin >> x;
-
-		
+		for (int &x : b) cin >> x;
+		for (int i = 0; i < n; ++i)
+			if (a[i] > b[i]) ans += a[i] - b[i];
+		cout << ans << '\n';
 	}
 }

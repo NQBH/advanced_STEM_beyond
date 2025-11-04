@@ -7,13 +7,12 @@ int main() {
 	int t;
 	cin >> t;
 	while (t--) {
-		int n, x, sum = 0, n0 = 0;
+		int n;
 		cin >> n;
-		for (int i = 0; i < n; ++i) {
-			cin >> x;			
-			if (!x) ++n0;
-			else sum += x;
-		}
-		cout << sum + n0 << '\n';
+		string s;
+		cin >> s;
+		
+
+		
 	}
 }

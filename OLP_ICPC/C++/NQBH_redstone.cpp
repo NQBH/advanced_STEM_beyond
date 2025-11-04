@@ -7,13 +7,15 @@ int main() {
 	int t;
 	cin >> t;
 	while (t--) {
-		int n, x, sum = 0, n0 = 0;
+		int n, x;
 		cin >> n;
+		set<int> a;
+		bool ok = false;
 		for (int i = 0; i < n; ++i) {
-			cin >> x;			
-			if (!x) ++n0;
-			else sum += x;
+			cin >> x;
+			if (!ok && a.count(x)) ok = true;
+			else a.insert(x);
 		}
-		cout << sum + n0 << '\n';
+		cout << (ok ? "YES\n" : "NO\n");
 	}
 }

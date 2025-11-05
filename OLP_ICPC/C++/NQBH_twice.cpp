@@ -7,14 +7,16 @@ int main() {
 	int t;
 	cin >> t;
 	while (t--) {
-		int n, n0 = 0, ans = 0;
+		int n, ans = 0;
 		cin >> n;
-		string s;
-		cin >> s;
-		for (int i = 0; i < n; ++i)
-			if (s[i] == '0') ++n0;
-		for (int i = 0; i < n0; ++i)
-			if (s[i] == '1') ++ans;
+		vector<int> a(n);
+		map<int, int> f;
+		for (int &x : a) {
+			cin >> x;
+			++f[x];
+		}
+		for (int i = 1; i <= n; ++i) 
+			ans += f[i] / 2;
 		cout << ans << '\n';
 	}
 }

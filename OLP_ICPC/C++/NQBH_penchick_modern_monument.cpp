@@ -7,14 +7,12 @@ int main() {
 	int t;
 	cin >> t;
 	while (t--) {
-		int n, n0 = 0, ans = 0;
+		int n, ans = 0;
 		cin >> n;
-		string s;
-		cin >> s;
-		for (int i = 0; i < n; ++i)
-			if (s[i] == '0') ++n0;
-		for (int i = 0; i < n0; ++i)
-			if (s[i] == '1') ++ans;
+		vector<int> h(n);
+		for (int &x : h) cin >> x;
+		for (int i = 0; i < n - 1; ++i)
+			if (h[i] > h[i + 1]) ++ans;
 		cout << ans << '\n';
 	}
 }

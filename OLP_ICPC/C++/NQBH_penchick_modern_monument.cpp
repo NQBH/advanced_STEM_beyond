@@ -7,12 +7,15 @@ int main() {
 	int t;
 	cin >> t;
 	while (t--) {
-		int n, ans = 0;
+		int n, k = 0;
 		cin >> n;
 		vector<int> h(n);
-		for (int &x : h) cin >> x;
-		for (int i = 0; i < n - 1; ++i)
-			if (h[i] > h[i + 1]) ++ans;
-		cout << ans << '\n';
+		map<int, int> f;
+		for (int &x : h) {
+			cin >> x;
+			++f[x];
+		}
+		for (auto e : f) k = max(k, e.second);
+		cout << n - k << '\n';
 	}
 }

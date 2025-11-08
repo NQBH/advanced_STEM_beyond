@@ -15,6 +15,6 @@ int main() {
 		}
 		int nw = k1 + k2, nb = 2 * n - k1 - k2;
 		if (nw >= 2 * w && nb >= 2 * b) cout << "YES\n";
-		else cout << "NO\n";		
+		else cout << "NO\n";
 	}
 }

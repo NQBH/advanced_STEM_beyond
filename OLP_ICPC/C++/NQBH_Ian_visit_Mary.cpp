@@ -10,8 +10,6 @@ int main() {
 		int a, b;
 		cin >> a >> b;
 		if (gcd(a, b) == 1) cout << "1\n" << a << ' ' << b << '\n';
-		else if (gcd(a, b - 1) == 1) cout << "2\n" << a << ' ' << b - 1 << '\n' << a << ' ' << b << '\n';
-		else cout << "2\n" << a - 1 << ' ' << b << '\n' << a << ' ' << b << '\n';
+		else cout << "2\n" << 1 << ' ' << b - 1 << '\n' << a << ' ' << b << '\n';
 	}
 }
-// WA CF

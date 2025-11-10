@@ -1,0 +1,67 @@
+#include<bits/stdc++.h>
+#pragma GCC optimize ("O3")
+#pragma GCC optimize ("unroll-loops")
+#define Sanic_speed ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL);
+#define Ret return 0;
+#define ret return;
+#define all(x) x.begin(), x.end()
+#define el "\n";
+#define elif else if
+#define ll long long
+#define fi first
+#define se second
+#define mp make_pair
+#define pf push_front
+#define pb push_back
+#define popf pop_front
+#define popb pop_back
+#define cYES cout << "YES" << "\n";
+#define cNO cout << "NO" << "\n";
+#define cYes cout << "Yes" << "\n";
+#define cNo cout << "No" << "\n";
+#define cel cout << "\n";
+#define frs(i, a, b) for(int i = a; i < b; ++i)
+#define fre(i, a, b) for(int i = a; i <= b; ++i)
+#define wh(t) while (t--)
+#define SORAI int main()
+using namespace std;
+typedef unsigned long long ull;
+
+void solve() {
+    int n, in;
+    cin >> n;
+    vector<int> love(n + 1);
+    fre(i, 1, n) {
+        cin >> in;
+        love[i] = in;
+    }
+    fre(i, 1, n) {
+        int exist = 0, step = 2, cur = love[i];
+        if (step == 2) {
+            cur = love[cur];
+            if (cur == i) {continue;}
+            step = 3;
+        }
+        if (step == 3) {
+            cur = love[cur];
+            if (cur == i) {exist = 1;}
+        }
+        if (exist == 1) {
+            cYES
+            ret
+        }
+    }
+    cNO
+}
+ 
+SORAI {
+    Sanic_speed
+    int t = 1; //cin >> t;
+    wh(t) {solve();}
+}
+
+/**
+     /\__/\
+    ( • 3• )
+    / >♥️<\
+**/

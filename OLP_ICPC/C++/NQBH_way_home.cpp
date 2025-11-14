@@ -5,21 +5,15 @@ int main() {
 	ios_base::sync_with_stdio(false);
 	cin.tie(nullptr);
 	int n, d;
-	cin >> n >> d;
 	string s;
-	cin >> s;
-	int last = 0, ans = 0;
-	bool ok = true;
-	for (int i = 1; i < n; ++i)
-
+	cin >> n >> d >> s;
+	vector<int> dp(n, 1000); // min num jumps to reach pos i
+	dp[0] = 0;
+	for (int i = 0; i < n; ++i) {
 		if (s[i] == '1') {
-			if (i - last > d) ok = false;
-			else {
-				last = i;
-				++ans;
-			}
+			for (int j = max(i - d, 0); j < i; ++j)
+				if (s[j] == '1') dp[i] = min(dp[i], dp[j] + 1);
 		}
-	if (!ok) cout << "-1\n";
-	else cout << ans << '\n';
+	}
+	cout << (dp[n - 1] < 1000 ? dp[n - 1] : -1);
 }
-// unfinished

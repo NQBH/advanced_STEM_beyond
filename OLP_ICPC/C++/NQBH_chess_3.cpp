@@ -1,4 +1,4 @@
-#include <bits/stdc++.h>
+#include <iostream>
 using namespace std;
 
 int main() {
@@ -10,9 +10,7 @@ int main() {
 		int a, b, c;
 		cin >> a >> b >> c;
 		if ((a + b + c) & 1) cout << "-1\n";
-		else cout 
-		
-
-		
+		else if (a + b <= c) cout << a + b << '\n';
+		else cout << (a + b + c) / 2 << '\n';
 	}
 }

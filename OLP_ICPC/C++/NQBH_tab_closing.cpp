@@ -7,13 +7,9 @@ int main() {
 	int t;
 	cin >> t;
 	while (t--) {
-		int n;
-		cin >> n;
-		vector<int> a(n);
-		for (int &x : a) cin >> x;
-		sort(a.begin(), a.end());
-		
-		
+		long long a, b, n;
+		cin >> a >> b >> n;
+		if (b * n <= a || b == a) cout << "1\n";
+		else cout << "2\n";
 	}
 }
-// unfinished

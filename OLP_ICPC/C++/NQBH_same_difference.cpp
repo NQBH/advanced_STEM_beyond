@@ -7,13 +7,11 @@ int main() {
 	int t;
 	cin >> t;
 	while (t--) {
-		int n;
-		cin >> n;
-		vector<int> a(n);
-		for (int &x : a) cin >> x;
-		sort(a.begin(), a.end());
-		
-		
+		int n, ans = 0;
+		string s;
+		cin >> n >> s;
+		for (int i = n - 2; i >= 0; --i)
+			if (s[i] != s[n - 1]) ++ans;
+		cout << ans << '\n';
 	}
 }
-// unfinished

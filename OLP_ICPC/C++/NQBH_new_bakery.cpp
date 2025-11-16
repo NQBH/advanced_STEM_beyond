@@ -1,5 +1,6 @@
 #include <iostream>
 using namespace std;
+using ll = long long;
 
 int main() {
 	ios_base::sync_with_stdio(false);
@@ -7,14 +8,12 @@ int main() {
 	int t;
 	cin >> t;
 	while (t--) {
-		long long n, a, b;
+		ll n, a, b;
 		cin >> n >> a >> b;
-		long long ans = n * a;
-		if (a >= b) cout << ans << '\n';
+		if (a >= b) cout << n * a << '\n';
 		else {
-			for (int k = 1; k <= min(n, b); ++k)
-				ans = max(ans, b * k - (k - 1) * k / 2 + (n - k) * a);
-			cout << ans << '\n';
+			ll k = min(b - a, n);
+			cout << k * b - (k - 1) * k / 2 + (n - k) * a << '\n';
 		}
 	}
 }

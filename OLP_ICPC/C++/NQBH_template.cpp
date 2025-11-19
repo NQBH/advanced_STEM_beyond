@@ -1,8 +1,11 @@
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
+using cd = complex<double>;
 
 const int MOD = 1e9 + 7;
+const int base = 1000*1000*1000;
+const double PI = acos(-1);
 
 // #define macros
 #define F first;
@@ -14,6 +17,7 @@ const int MOD = 1e9 + 7;
 typedef long long ll;
 typedef pair pp;
 typedef vector vec;
+typdef vector<int> lnum;
 
 //-----------------------------------------------------------------------------//
 // binary exponentiation: calculate a^n using O(log n) multiplications
@@ -98,6 +102,49 @@ int last_true(int lo, int hi, function<bool(int)> f) {
 	for (int dif = hi - lo; dif > 0; dif /= 2)
 		while (lo + dif <= hi && f(lo + dif)) lo += dif;
 	return lo;
+}
+
+//-----------------------------------------------------------------------------//
+// bitwise operation
+//-----------------------------------------------------------------------------//
+
+// check if a bit is set
+bool is_set(unsigned int n, int x) {
+	return (n >> x) & 1;
+}
+
+// check if a number is divisible by a power of 2: n is divisible by 2^k exactly when n & (2^k - 1) = 0
+bool is_divisible_by_power_of_2(int n, int k) {
+	int pow_of_2 = 1 << k;
+	return (n & (pow_of_2 - 1)) == 0;
+}
+
+// check if an integer is a powr of 2
+
+bool is_power_of_2(unsigned int n) {
+	return n && !(n & (n - 1));
+}
+
+// Brian Kernighan's algorithm: count the number of bits set
+int count_set_bit(int n) {
+	int cnt = 0;
+	while (n) {
+		n &= (n - 1);
+		++cnt;
+	}
+	return cnt;
+}
+
+// count set bits upto n: For numbers upto 2^x, i.e., [1, 2^x - 1], there are x * 2^{x - 1} set bits.
+int count_set_bit(int n) {
+	int cnt = 0;
+	while (n) {
+		int x = bit_width(n) - 1;
+		cnt += x << (x - 1);
+		n -= 1 << x;
+		cnt += n + 1;
+	}
+	return cnt;
 }
 
 //-----------------------------------------------------------------------------//
@@ -425,6 +472,147 @@ int multiplicity_factorial(int n, int p) {
 		cnt += n;
 	} while (n);
 	return cnt;
+}
+
+//-----------------------------------------------------------------------------//
+// Fast Fourier transform FFT: multiply 2 polynomials of length n in O(n log n) time, better than trivial multiplication O(n^2) time
+//-----------------------------------------------------------------------------//
+
+// a simple recursive implementation of FFT & inverse FFT
+void fft(vector<cd> &a, bool invert) {
+	int n = a.size();
+	if (n == 1) return;
+	vector<cd> a0(n / 2), a1(n / 2);
+	for (int i = 0; 2 * i < n; ++i) {
+		a0[i] = a[2 * i];
+		a1[i] = a[2 * i + 1];
+	}
+	fft(a0, invert);
+	fft(a1, invert);
+	double ang = 2 * PI / n * (invert ? -1 : 1);
+	cd w(1), wn(cos(ang), sin(ang));
+	for (int i = 0; 2 * i < n; ++i) {
+		a[i] = a0[i] + w * a1[i];
+		a[i + n / 2] = a0[i] - w * a1[i];
+		if (invert) {
+			a[i] /= 2;
+			a[i + n / 2] /= 2;
+		}
+		w *= wn;
+	}
+}
+
+// multiply 2 polynomials
+vector<int> multiply(vector<int> const& a, vector<int> const& b) {
+	vector<cd> fa(a.begin(), a.end()), fb(b.begin(), b.end());
+	int n = 1;
+	while (n < a.size() + b.size()) n <<= 1;
+	fa.resize(n);
+	fb.resize(n);
+	fft(fa, false);
+	fft(fb, false);
+	for (int i = 0; i < n; ++i) fa[i] *= fb[i];
+	fft(fa, true);
+	vector<int> ans(n);
+	for (int i = 0; i < n; ++i) ans[i] = round(fa[i].real());
+	return ans;
+}
+
+// multiply 2 long numbers
+int carry = 0;
+for (int i = 0; i < n; ++i) {
+	ans[i] += carry;
+	carry = ans[i] / 10;
+	ans[i] %= 10;
+}
+
+// improved implementation: in-place computation
+int reverse(int n, int lg_n) {
+	int res = 0;
+	for (int i = 0; i < lg_n; ++i)
+		if (n & (1 << i)) res |= 1 << (lg_n - 1 - i);
+	return res;
+}
+
+void fft(vector<cd> &a, bool invert) {
+	int n = a.size(), lg_n = 0;
+	while ((1 << lg_n) < n) ++lg_n;
+	for (int i = 0; i < n; ++i)
+		if (i < reverse(i, lg_n)) swap(a[i], a[reverse(i, lg_n)]);
+	for (int len = 2; len <= n; len <<= 1) {
+		double ang = 2 * PI / len * (invert ? -1 : 1);
+		cd wlen(cos(ang), sin(ang));
+		for (int i = 0; i < n; i += len) {
+			cd w(1);
+			for (int j = 0; j < len / 2; ++j) {
+				cd u = a[i + j], v = a[i + j + len / 2] * w;
+				a[i + j] = u + v;
+				a[i + j + len / 2] = u - v;
+				w *= wlen;
+			}
+		}
+	}
+	if (invert)
+		for (cd &x : a) x /= n;
+}
+
+void fft(vector<>cd> &a, bool invert) {
+	int n = a.size();
+	for (int i = 1, j = 0; i < n; ++i) {
+		int bit = n >> 1;
+		for (; j & bit; bit >>= 1) j ^= bit;
+		j ^= bit;
+		if (i < j) swap(a[i], a[j]);
+	}
+	for (int len = 2; len <= n; len <<= 1) {
+		double ang = 2 * PI / len * (invert ? -1 : 1);
+        cd wlen(cos(ang), sin(ang));
+        for (int i = 0; i < n; i += len) {
+        	cd w(1);
+        	for (int j = 0; j < len / 2; ++j) {
+        		cd u = a[i + j], v = a[i + j + len / 2] * w;
+        		a[i + j] = u + v;
+        		a[i + j + len / 2] = u - v;
+        		w *= wlen;
+        	}
+        }
+	}
+	if (invert)
+		for (cd &x : a) x /= n;
+}
+
+// number theoretic transform
+const int mod = 7340033;
+const int root = 5;
+const int root_1 = 4404020;
+const int root_pw = 1 << 20;
+
+void fft(vector<int> & a, bool invert) {
+	int n = a.size();
+	for (int i = 1, j = 0; i < n; ++i) {
+		int bit = n >> 1;
+		for (; j & bit; bit >>= 1) j ^= bit;
+		j ^= bit;
+		if (i < j) swap(a[i], a[j]);
+	}
+	for (int len = 2; len <= n; len <<= 1) {
+		int wlen = invert ? root_1 : root;
+		for (int i = len; i < root_pw; i <<= 1)
+			wlen = (int)(1ll * wlen * wlen % mod);
+		for (int i = 0; i < n; i += len) {
+			int w = 1;
+			for (int j = 0; j < len / 2; ++j) {
+				int u = a[i + j], v = (int)(1ll * a[i + j + len / 2] * w % mod);
+				a[i + j] = u + v < mod ? u + v : u + v - mod;
+				a[i + j + len / 2] = u - v >= 0 ? u - v : u - v + mod;
+				w = (int)(1ll * w * wlen % mod);
+			}
+		}
+	}
+	if (invert) {
+		int n_1 = inverse(n, mod); // function inverse computes the modular inverse
+		for (int &x : a) x = (int)(1ll * x * n_1 % mod);
+	}
 }
 
 //-----------------------------------------------------------------------------//
@@ -943,6 +1131,71 @@ int main() {
 	}
 
 	//-----------------------------------------------------------------------------//
+	// arbitrary-precision arithmetic/bignum/long arithmetic
+	//-----------------------------------------------------------------------------//
+	// output bignum
+	printf ("%d", a.empty() ? 0 : a.back());
+	for (int i = (int)a.size() - 2; i >= 0; --i) printf ("%09d", a[i]);
+
+	// input bignum: to read a long integer, read its notation into a string & then convert it to "digits"
+	for (int i = (int)s.length(); i > 0; i -= 9)
+		if (i < 9) a.push_back(atoi(s.substr(0, i).c_str()));
+		else a.push_back(atoi(s.substr(i - 9, 9).c_str()));
+	// if we use an array of char instead of a string, shorter code:
+	for (int i = (int)strlen(s); i > 0; i -= 9) {
+		s[i] = 0;
+		a.push_back(atoi(i >= 9 ? s + i - 9 : s));
+	}
+	// if the input can contain leading 0s, they can be removed as follows:
+	while (a.size() > 1 && !a.back()) a.pop_back();
+
+	// add bignums: increment long integer a by b & store result in a
+	int carry = 0;
+	for (size_t i = 0; i < max(a.size(), b.size()) || carry; ++i) {
+		if (i == a.size()) a.push_back(0);
+		a[i] += carry + (i < b.size() ? b[i] : 0);
+		carry = a[i] >= base;
+		if (carry) a[i] -= base;
+	}
+
+	// subtract bignums: decrement long integer a by b & store result in a
+	int carry = 0;
+	for (size_t i = 0; i < b.size() || carry; ++i) {
+		a[i] -= carry + (i < b.size() ? b[i] : 0);
+		carry = a[i] < 0;
+		if (carry) a[i] += base;
+	}
+	while (a.size() > 1 && !a.back()) a.pop_back();
+
+	// multiply by short integer: multiply long integer a by short integer b < base & store result in a
+	int carry = 0;
+	for (size_t i = 0; i < a.size() || carry; ++i) {
+		if (i == a.size()) a.push_back(0);
+		ll cur = carry + a[i] * 1ll * b;
+		a[i] = int(cur % base);
+		carry = int(cur / base);
+	}
+	while (a.size() > 1 && !a.back()) a.pop_back();
+
+	// multiply by long integer: multiply long integers a & b & store result in c
+	lnum c (a.size() + b.size());
+	for (size_t i = 0; i < a.size(); ++i)
+		for (int j = 0; carry = 0; j < (int)b.size() || carry; ++j) {
+			ll cur = c[i + j] + a[i] * 1ll + (j < (int)b.size() ? b[j] : 0) + carry;
+			c[i + j] = int(cur % base);
+			carry = int(cur / base);
+		}
+	while (c.size() > 1 && !c.back()) c.pop_back();
+	// division by short integer: divide long integer a by short integer b < base, store integer result in a & remainder in carry
+	int carry = 0;
+	for (int i = (int)a.size() - 1; i >= 0; --i) {
+		ll cur = a[i] + carry * 1ll * base;
+		a[i] = int(cur / b);
+		carry = int(cur % b);
+	}
+	while (a.size() > 1 && !a.back()) a.pop_back();
+
+	//-----------------------------------------------------------------------------//
 	// discrete root: given a prime n & 2 integers a, k, find all x for which x^k = a (mod n)
 	//-----------------------------------------------------------------------------//
 	// find all numbers x s.t. x^k = a (mod n)
@@ -1096,6 +1349,10 @@ int main() {
 	a = a | (1 << k); // turn on bit k: make sure bit k = 1 (keep others unchanged)
 	a = a & ~(1 << k); // turn off bit k: make sure bit k = 0.
 	a = a ^ (1 << k); // flip bit k: 1 -> 0, 0 -> 1
+	n &= (n - 1); // clear the right-most set bit
+	n & (n + 1); // clear all trailing 1s: 00110111 -> 00110000
+	n | (n + 1); // set the last cleared bit: 00110101 -> 00110111
+	n & -n; // extracts the last set bit: 00110100 -> 00000100
 
 	// check if bit x is on
 	if (a & (1 << x)) cout << "ON";
@@ -1117,11 +1374,23 @@ int main() {
 	else cout << "NO";
 
 	/* build-in bit functions (gcc)
-	__builtin_popcount(x): count 1s in integer
+	__builtin_popcount(unsigned int): count 1s in integer = returns the number of set bits (__builtin_popcount(0b0001'0010'1100) == 4)
 	__builtin_popcountll(x): count 1s in long long
-	__builtin_clz(x): count leading 0s = count how many 0s come before the 1st 1 from the left.
-	__builtin_ctz(x): count trailing 0s = count how many 0s come after the last 1 from the right. These are useful to find the position of the 1st or last set bit quickly
+	__builtin_clz(unsigned int): count leading 0s = count how many 0s come before the 1st 1 from the left. (__builtin_clz(0b0001'0010'1100) == 23)
+	__builtin_ctz(x): count trailing 0s = count how many 0s come after the last 1 from the right. These are useful to find the position of the 1st or last set bit quickly. __builtin_ctz(unsigned int) the count of trailing zeros (__builtin_ctz(0b0001'0010'1100) == 2)
 	__lg(x): position of highest bit (approximately floor(log2(x)))
+	__builtin_ffs(int) finds the index of the first (most right) set bit (__builtin_ffs(0b0001'0010'1100) == 3)
+	__builtin_parity(x) the parity (even or odd) of the number of 1s in the bit representation
+
+	Note that some of the operations (both the C++20 functions and the Compiler Built-in ones) might be quite slow in GCC if you don't enable a specific compiler target with #pragma GCC target("popcnt").
+
+	C++ supports some of those operations since C++20 via the bit standard library:
+	
+	has_single_bit checks if the number is a power of 2
+	bit_ceil/bit_floor round up/down to the next power of 2
+	rotl/rotr rotate the bits in the number
+	countl_zero/countr_zero/countl_one/countr_one count the leading/trailing 0s/1s
+	popcount count the number of set bits
 	*/
 	x = 8;
 	cout << __builtin_popcount(x) << endl; // 1
@@ -1148,14 +1417,25 @@ int main() {
 	inv[1] = 1;
 	for (int a = 2; a < m; ++a) inv[a] = m - (ll)(m / a) * inv[m % a] % m;
 
+	//-----------------------------------------------------------------------------//
+	// submask enumeration
+	//-----------------------------------------------------------------------------//
+	
+	// enumerating all submasks of a given mask
+	int s = m;
+	while (s) {
+		// can use s ...
+		s = (s - 1) & m;
+	} // or, using a more compact for statement
+	for (int s = m; s; s = (s - 1) & m) // can use s ...
+	// or use a less elegant design
+	for (int s = m; ; s = (s - 1) & m) {
+		// can use s ...
+		if (!s) break;
+	}
+
+	// iterate through all masks with their submasks O(3^n), especially problems using bitmask DP, we want to iterate through all bitmasks & for each mask, iterate through all of its submasks
+	for (int m = 0; m < (1 << n); ++m)
+		for (int s = m; s; s = (s - 1) & m) // s & m ...
 
 }
-/*
-CP TRICKS
-
-# bitwise operations
-	- __builtin_popcount(x), __builtin_popcountl(x) & __builtin_popcountll(x) for long and long long data types: count number of 1s (set bits) in integer variable x
-
-
-
-*/

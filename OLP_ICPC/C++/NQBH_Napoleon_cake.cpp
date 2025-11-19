@@ -9,18 +9,14 @@ int main() {
 	while (t--) {
 		int n;
 		cin >> n;
-		vector<int> a(n + 1), ans(n + 1, 0);
-		for (int i = 1; i <= n; ++i) {
-			cin >> a[i];
-			
+		int mn = n;
+		vector<int> a(n + 1, 0), ans(n + 1, 0);
+		for (int i = 1; i <= n; ++i) cin >> a[i];
+		for (int i = n; i >= 1; --i) {
+			mn = min(mn, i - a[i]);
+			if (mn < i) ans[i] = 1;
 		}
-		for (int i = n - 1; i >= 0; --i) {
-			if (a[i]) {
-				for (int j = i; j >= max(0, i - a[i] + 1); --j)
-					if (!ans[j]) ans[j] = 1;
-			}
-		}
-		for (int x : ans) cout << x << ' ';
+		for (int i = 1; i <= n; ++i) cout << ans[i] << ' ';
 		cout << '\n';
 	}
 }

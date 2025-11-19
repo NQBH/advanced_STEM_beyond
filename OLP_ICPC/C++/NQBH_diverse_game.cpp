@@ -10,8 +10,9 @@ int main() {
 		int n, m;
 		cin >> n >> m;
 		vector<vector<int>> a(n, vector<int>(m)), b(n, vector<int>(m));
-		for (int i = 0; i < n; ++i) cin >> a[i];
-		if (n == 1) {
+		for (int i = 0; i < n; ++i)
+			for (int j = 0; j < m; ++j) cin >> a[i][j];
+		if (n == 1 && m == 1) {
 			cout << "-1\n";
 			continue;
 		}

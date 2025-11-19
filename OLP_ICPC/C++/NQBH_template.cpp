@@ -1404,6 +1404,75 @@ int main() {
 	for (auto it : s) cout << it << ' ';
 
 	//-----------------------------------------------------------------------------//
+	// minimum stack/minimum queue
+	//-----------------------------------------------------------------------------//
+	
+	// -- stack modification
+	stack<pair<int, int>> st;
+
+	// add an element
+	int new_min = st.empty() ? new_elem : min(new_elem, st.top().second);
+	st.push({new_elem, new_min});
+
+	// remove an element O(1)
+	int removed_element = st.top().first;
+	st.pop();
+
+	// find minimum O(1)
+	int minimum = st.top().second;
+
+	// -- queue modification 1
+	deque<int> q;
+
+	// find the minimum O(1)
+	int minimum = q.front();
+
+	// add an element O(1)
+	while (!q.empty() && q.back() > new_element) q.pop_back();
+	q.push_back(new_element);
+
+	// remove an element
+	if (!q.empty() && q.front() == remove_element) q.pop_front();
+	
+	// -- queue modification 2
+	deque<pair<int, int>> q;
+	int cnt_added = 0, cnt_removed = 0;
+
+	// find the minimum
+	int minimum = q.front().first;
+
+	// add an element
+	while (!q.empty() && q.back().first > new_element) q.pop_back();
+	q.push_back({new_element, cnt_added});
+	++cnt_added;
+	
+	// remove an element
+	if (!q.empty() && q.front().second == cnt_removed) q.pop_front();
+	++cnt_removed;
+
+	// -- queue modification 3
+	stack<pair<int, int>> s1, s2;
+
+	// find the minimum
+	if (s1.empty() || s2.empty()) minimum = s1.empty() ? s2.top().second : s1.top().second;
+	else minimum = min(s1.top().second, s2.top().second);
+
+	// add element
+	int minimum = s1.empty() ? new_element : min(new_element, s1.top().second);
+	s1.push({new_element, minimum});
+
+	// remove an element
+	if (s2.empty())
+		while (!s1.empty()) {
+			int element = s1.top().first;
+			s1.pop();
+			int minimum = s2.empty() ? element : min(element, s2.top().second);
+			s2.push({element, minimum});
+		}
+	int remove_element = s2.top().first;
+	s2.pop();
+	
+	//-----------------------------------------------------------------------------//
 	// modular multiplicative inverse
 	//-----------------------------------------------------------------------------//
 	int x, y, g = egcd(a, m, x, y);

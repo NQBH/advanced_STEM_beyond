@@ -119,7 +119,7 @@ bool is_divisible_by_power_of_2(int n, int k) {
 	return (n & (pow_of_2 - 1)) == 0;
 }
 
-// check if an integer is a powr of 2
+// check if an integer is a power of 2
 
 bool is_power_of_2(unsigned int n) {
 	return n && !(n & (n - 1));

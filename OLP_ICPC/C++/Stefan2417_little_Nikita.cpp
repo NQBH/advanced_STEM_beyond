@@ -8,6 +8,6 @@ int main() {
 	while (t--) {
 		int n, m;
 		cin >> n >> m;
-		cout << (n >= m && (n%2) == (m%2) ? "Yes" : "No") << '\n';
+		cout << (n >= m && (n % 2) == (m % 2) ? "Yes" : "No") << '\n';
 	}
 }

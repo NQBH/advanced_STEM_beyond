@@ -19,7 +19,7 @@ int main() {
 	vector<bool> rm(n + 1, false);
 	for (int i = 1; i <= n; ++i)
 		if (deg[i] < 2) {
-			q.push(v);
+			q.push(i);
 			rm[i] = true;
 		}
 	while (!q.empty()) {

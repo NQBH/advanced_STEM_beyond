@@ -30,7 +30,7 @@ int main() {
 	y = (n + 1) / 2;
 	if (a[x][y] == -1) a[x][y] = 1;
 	ll val = a[x][y];
-	for (ll i = 0; i < n * n; ++i) { // move to next cell
+	for (ll i = 0; i < n * n - 1; ++i) { // move to next cell
 		if (s[i] == 'R') ++y;
 		else if (s[i] == 'D') ++x;
 		else if (s[i] == 'L') --y;

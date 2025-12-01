@@ -4,7 +4,7 @@ using ll = long long;
 using cd = complex<double>;
 
 const int MOD = 1e9 + 7;
-const int base = 1000*1000*1000;
+const int base = 1000 * 1000 * 1000;
 const double PI = acos(-1);
 
 // #define macros
@@ -316,16 +316,16 @@ int solve(int a, int b, int m) {
 // return minimum x for which a ^ x % m = b % m: when a & m are not coprime: O(sqrt(m))
 int solve(int a, int b, int m) {
 	a %= m, b %= m;
-    int k = 1, add = 0, g;
-    while ((g = gcd(a, m)) > 1) {
-    	if (b == k) return add;
-    	if (b % g) return -1;
-    	b /= g, m /= g, ++add;
-    	k = (k * 1ll * a / g) % m;
-    }
-    int n = sqrt(m) + 1, an = 1;
-    for (int i = 0; i < n; ++i) an = (an * 1ll * a) % m;
-    unordered_map<int, int> vals;
+	int k = 1, add = 0, g;
+	while ((g = gcd(a, m)) > 1) {
+		if (b == k) return add;
+		if (b % g) return -1;
+		b /= g, m /= g, ++add;
+		k = (k * 1ll * a / g) % m;
+	}
+	int n = sqrt(m) + 1, an = 1;
+	for (int i = 0; i < n; ++i) an = (an * 1ll * a) % m;
+	unordered_map<int, int> vals;
 	for (int q = 0, cur = b; q <= n; ++q) {
 		vals[cur] = q;
 		cur = (cur * 1ll * a) % m;
@@ -556,7 +556,7 @@ void fft(vector<cd> &a, bool invert) {
 		for (cd &x : a) x /= n;
 }
 
-void fft(vector<>cd> &a, bool invert) {
+void fft(vector<>cd > &a, bool invert) {
 	int n = a.size();
 	for (int i = 1, j = 0; i < n; ++i) {
 		int bit = n >> 1;
@@ -566,16 +566,16 @@ void fft(vector<>cd> &a, bool invert) {
 	}
 	for (int len = 2; len <= n; len <<= 1) {
 		double ang = 2 * PI / len * (invert ? -1 : 1);
-        cd wlen(cos(ang), sin(ang));
-        for (int i = 0; i < n; i += len) {
-        	cd w(1);
-        	for (int j = 0; j < len / 2; ++j) {
-        		cd u = a[i + j], v = a[i + j + len / 2] * w;
-        		a[i + j] = u + v;
-        		a[i + j + len / 2] = u - v;
-        		w *= wlen;
-        	}
-        }
+		cd wlen(cos(ang), sin(ang));
+		for (int i = 0; i < n; i += len) {
+			cd w(1);
+			for (int j = 0; j < len / 2; ++j) {
+				cd u = a[i + j], v = a[i + j + len / 2] * w;
+				a[i + j] = u + v;
+				a[i + j + len / 2] = u - v;
+				w *= wlen;
+			}
+		}
 	}
 	if (invert)
 		for (cd &x : a) x /= n;
@@ -1114,6 +1114,68 @@ int generator(int p) {
 }
 
 //-----------------------------------------------------------------------------//
+// segment tree
+//-----------------------------------------------------------------------------//
+
+// Truy vấn: A(i) = v
+// Hàm cập nhật trên cây ST, cập nhật cây con gốc id quản lý đọan [l, r]
+void update(int id, int l, int r, int i, int v) {
+	if (i < l || r < i) return; // i nằm ngoài đoạn [l, r], ta bỏ qua nút i
+	if (l == r) { // Đoạn chỉ gồm 1 phần tử, không có nút con
+		ST[id] = v;
+		return;
+	}
+	// Gọi đệ quy để xử lý các nút con của nút id
+	int mid = (l + r) / 2;
+	update(2 * id, 1, mid, i, v);
+	update(2 * id + 1, mid + 1, r, i, v);
+	// Cập nhật lại giá trị max của đoạn [l, r] theo 2 nút con:
+	ST[id] = max(ST[id * 2], ST[id * 2 + 1]);
+}
+// Truy vấn: tìm max đoạn [u, v]
+// Hàm tìm max các phần tử trên cây ST nằm trong cây con gốc id - quản lý đoạn [l, r]
+int get(int id, int l, int r, int u, int v) {
+	if (v < l || r < u) return -INFINITY; // Đoạn [u, v] không giao với đoạn [l, r], ta bỏ qua đoạn này
+	if (u <= 1 && r <= v) return ST[id]; // Đoạn [l, r] nằm hoàn toàn trong đoạn [u, v] mà ta đang truy vấn, ta trả lại thông tin lưu ở nút id
+	int mid = (l + r) / 2;
+	// Gọi đệ quy với các con của nút id
+	return max(get(id * 2, l, mid, u, v), get(id * 2 + 1, mid + 1, r, u, v));
+}
+
+// 2nd impementation
+int n, t[4 * MAXN];
+
+void build(int a[], int v, int tl, int tr) {
+	if (tl == tr) t[v] = a[tl];
+	else {
+		int tm = (tl + tr) / 2;
+		build(a, v * 2, tl, tm);
+		build(a, v * 2 + 1, tm + 1, tr);
+		t[v] = t[v * 2] + t[v * 2 + 1];
+	}
+}
+
+int sum(int v, int  tl, int tr, int l, int r) {
+	if (l > r) return 0;
+	if (l == tl && r == tr) return t[v];
+	int tm = (tl + tr) / 2;
+	return sum(v * 2, tl, tm, l, min(r, tm)) + sum(v * 2 + 1, tm + 1, tr, max(l, tm + 1), r);
+}
+
+void update(int v, int  tl, int tr, int pos, int new_val) {
+	if (tl == tr) t[v] == new_val;
+	else {
+		int tm = (tl + tr) / 2;
+		if (pos <= tm) update(v * 2, tl, tm, pos, new_val);
+		else update(v * 2 + 1, tm + 1, tr, pos, new_val);
+		t[v] = t[v * 2] + t[v * 2 + 1];
+	}
+}
+
+// advanced versions of segment trees
+// https://cp-algorithms.com/data_structures/segment_tree.html
+
+//-----------------------------------------------------------------------------//
 // main
 //-----------------------------------------------------------------------------//
 
@@ -1201,39 +1263,39 @@ int main() {
 	// find all numbers x s.t. x^k = a (mod n)
 	int n, k, a;
 	int n, k, a;
-    scanf("%d %d %d", &n, &k, &a);
-    if (!a) {
-    	puts("1\n0");
-        return 0;
-    }
-    int g = generator(n);
-    // baby-step giant-step discrete logarithm algorithm
-    int sq = (int) sqrt(n + .0) + 1;
-    vector<pair<int, int>> dec(sq);
-    for (int i = 1; i <= sq; ++i)
-    	dec[i - 1] = {powmod(g, i * sq * k % (n - 1), n), i};
-    sort(dec.begin(), dec.end());
-    int any_ans = -1;
-    for (int i = 0; i < sq; ++i) {
-    	int my = powmod(g, i * k % (n - 1), n) * a % n;
-    	auto it = lower_bound(dec.begin(), dec.end(), make_pair(my, 0));
-    	if (it != dec.end() && it->first == my) {
-    		any_ans = it->second * sq - i;
-    		break;
-    	}
-    }
-    if (any_ans == -1) {
-    	puts("0");
-    	return 0;
-    }
-    // print all possible answers
-    int delta = (n - 1) / gcd(k, n - 1);
-    vector<int> ans;
-    for (int cur = any_ans % delta; cur < n - 1; cur += delta)
-    	ans.push_back(powmod(g, cur, n));
-    sort(ans.begin(), ans.end());
-    printf("%d\n", ans.size());
-    for (int answer : ans) printf("%d ", answer);
+	scanf("%d %d %d", &n, &k, &a);
+	if (!a) {
+		puts("1\n0");
+		return 0;
+	}
+	int g = generator(n);
+	// baby-step giant-step discrete logarithm algorithm
+	int sq = (int) sqrt(n + .0) + 1;
+	vector<pair<int, int>> dec(sq);
+	for (int i = 1; i <= sq; ++i)
+		dec[i - 1] = {powmod(g, i * sq * k % (n - 1), n), i};
+	sort(dec.begin(), dec.end());
+	int any_ans = -1;
+	for (int i = 0; i < sq; ++i) {
+		int my = powmod(g, i * k % (n - 1), n) * a % n;
+		auto it = lower_bound(dec.begin(), dec.end(), make_pair(my, 0));
+		if (it != dec.end() && it->first == my) {
+			any_ans = it->second * sq - i;
+			break;
+		}
+	}
+	if (any_ans == -1) {
+		puts("0");
+		return 0;
+	}
+	// print all possible answers
+	int delta = (n - 1) / gcd(k, n - 1);
+	vector<int> ans;
+	for (int cur = any_ans % delta; cur < n - 1; cur += delta)
+		ans.push_back(powmod(g, cur, n));
+	sort(ans.begin(), ans.end());
+	printf("%d\n", ans.size());
+	for (int answer : ans) printf("%d ", answer);
 
 	//-----------------------------------------------------------------------------//
 	// sieve of Eratosthenes: find all primes in [1, n] using O(n log log n) operations
@@ -1336,7 +1398,7 @@ int main() {
 		for (int v : path) cout << v << ' ';
 	}
 
-	/* bitwise operations:	
+	/* bitwise operations:
 	https://cp-algorithms.com/algebra/bit-manipulation.html
 	*/
 	int a = 5;
@@ -1385,7 +1447,7 @@ int main() {
 	Note that some of the operations (both the C++20 functions and the Compiler Built-in ones) might be quite slow in GCC if you don't enable a specific compiler target with #pragma GCC target("popcnt").
 
 	C++ supports some of those operations since C++20 via the bit standard library:
-	
+
 	has_single_bit checks if the number is a power of 2
 	bit_ceil/bit_floor round up/down to the next power of 2
 	rotl/rotr rotate the bits in the number
@@ -1406,7 +1468,7 @@ int main() {
 	//-----------------------------------------------------------------------------//
 	// minimum stack/minimum queue
 	//-----------------------------------------------------------------------------//
-	
+
 	// -- stack modification
 	stack<pair<int, int>> st;
 
@@ -1433,7 +1495,7 @@ int main() {
 
 	// remove an element
 	if (!q.empty() && q.front() == remove_element) q.pop_front();
-	
+
 	// -- queue modification 2
 	deque<pair<int, int>> q;
 	int cnt_added = 0, cnt_removed = 0;
@@ -1445,7 +1507,7 @@ int main() {
 	while (!q.empty() && q.back().first > new_element) q.pop_back();
 	q.push_back({new_element, cnt_added});
 	++cnt_added;
-	
+
 	// remove an element
 	if (!q.empty() && q.front().second == cnt_removed) q.pop_front();
 	++cnt_removed;
@@ -1471,7 +1533,7 @@ int main() {
 		}
 	int remove_element = s2.top().first;
 	s2.pop();
-	
+
 	//-----------------------------------------------------------------------------//
 	// modular multiplicative inverse
 	//-----------------------------------------------------------------------------//
@@ -1489,7 +1551,7 @@ int main() {
 	//-----------------------------------------------------------------------------//
 	// submask enumeration
 	//-----------------------------------------------------------------------------//
-	
+
 	// enumerating all submasks of a given mask
 	int s = m;
 	while (s) {
@@ -1497,14 +1559,14 @@ int main() {
 		s = (s - 1) & m;
 	} // or, using a more compact for statement
 	for (int s = m; s; s = (s - 1) & m) // can use s ...
-	// or use a less elegant design
-	for (int s = m; ; s = (s - 1) & m) {
-		// can use s ...
-		if (!s) break;
-	}
+		// or use a less elegant design
+		for (int s = m; ; s = (s - 1) & m) {
+			// can use s ...
+			if (!s) break;
+		}
 
 	// iterate through all masks with their submasks O(3^n), especially problems using bitmask DP, we want to iterate through all bitmasks & for each mask, iterate through all of its submasks
 	for (int m = 0; m < (1 << n); ++m)
 		for (int s = m; s; s = (s - 1) & m) // s & m ...
 
-}
+		}

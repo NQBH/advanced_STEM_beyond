@@ -56,17 +56,15 @@ int main() {
 	int n, k;
 	cin >> n >> k;
 	ll ans = 0;
-	/*
-	if (k == 0) cout << binpow(2, n, m);
-	else if (k == n - 1) cout << n + 1;
+	if (k == n - 1) cout << n + 1;
 	else if (k == n) cout << 1;
 	else { // a = number of A
-	*/
-	factorial(m);
-	inverses(m);
-	for (int a = k; a <= n; ++a) { // Euler's candy problem
-		ans += C(a + 1, n - a, m);
-		ans %= m;
+		factorial(m);
+		inverses(m);
+		for (int a = k; a <= n; ++a) { // Euler's candy problem
+			ans += C(a + 1, n - a, m);
+			ans %= m;
+		}
+		cout << ans;
 	}
-	cout << ans;
 }

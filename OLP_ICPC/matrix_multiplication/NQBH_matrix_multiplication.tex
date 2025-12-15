@@ -70,7 +70,75 @@
 
 %------------------------------------------------------------------------------%
 
-\section{Introduction}
+\section{Linear Recurrences -- Hồi Quy Tuyến Tính}
+\textbf{\textsf{Resources -- Tài nguyên.}}
+\begin{enumerate}
+    \item \cite{Laaksonen2024} {\sc Antti Laaksonen}. {\it Guide to Competitive Programming: Learning \& Improving Algorithms Through Contests}.
+\end{enumerate}
+
+\begin{definition}[Linear recurrence]
+    A {\rm linear recurrence} is a function $f:\mathbb{N}\to\mathbb{C}$ whose initial values are $f(0),f(1),\ldots,f(k - 1)$ \& larger values are calculated recursively using the formula
+    \begin{equation*}
+        f(n) = \sum_{i=1}^k c_if(n - i) = c_1f(n - 1) + c_2f(n - 2) + \cdots + c_kf(n - k),
+    \end{equation*}
+    where $\{c_i\}_{i=1}^k\subset\mathbb{C}$ are constant coefficients.
+\end{definition}
+Dynamic programming can be used to calculate any value of $f(n)$ in $O(kn)$ time by calculating all value sof $f(0),f(1),\ldots,f(n)$ one after another (bottom up) as follows:
+
+\begin{baitoan}
+    Cho dãy $\{a_i\}_{i=0}^\infty\subset\mathbb{Z}$, với $k$ giá trị đầu $a_0,a_1,\ldots,a_{k - 1}$ \& $k$ số $c_1,c_2,\ldots,c_k\in\mathbb{Z}$ được cho trước, được định nghĩa thông qua quan hệ truy hồi tuyến tính có dạng
+    \begin{equation*}
+        a_n = \sum_{i=1}^k c_ia_{n - i} = c_1a_{n - 1} + c_2a_{n - 2} + \cdots + c_ka_{n - k},
+    \end{equation*}
+    Tính $a_n$.
+    \item {\sf Input.} Mỗi bộ test có 3 dòng. Dòng 1 chứa 2 số nguyên dương $n,k$, $1\le n\le 10^5$, $1\le k\le n$. Dòng 2 chứa $k$ số nguyên $a_0,a_1,\ldots,a_{k - 1}$. Dòng 3 chứa $k$ số nguyên $c_1,c_2,\ldots,c_k$.
+    \item {\sf Output.} In ra $a_n$.
+\end{baitoan}
+\noindent{\sf C++ implementation.}
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n, k;
+    cin >> n >> k;
+    vector<int> a(n + 1), c(k + 1);
+    for (int i = 0; i < k; ++i) cin >> a[i]; // input initial values a_0, a_1,..., a_{k - 1}
+    for (int i = 1; i <= k; ++i) cin >> c[i]; // input constant coefficients c_1, c_2,..., c_k
+    for (int i = k; i <= n; ++i)
+        for (int j = 1; j <= k; ++j) a[i] += c[j] * a[i - j];
+    cout << a[n] << '\n';
+}
+\end{Verbatim}
+Nếu cần tính theo modulo $m$ (được nhập vào hoặc định nghĩa sẵn như 1 hằng số, e.g., {\tt const int m = 1e9 + 7}) để ngăn tràn số thì:
+\begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n, k, m;
+    cin >> n >> k >> m;
+    vector<ll> a(n + 1), c(k + 1);
+    for (int i = 0; i < k; ++i) cin >> a[i]; // input initial values a_0, a_1,..., a_{k - 1}
+    for (int i = 1; i <= k; ++i) cin >> c[i]; // input constant coefficients c_1, c_2,..., c_k
+    for (int i = k; i <= n; ++i) {
+        for (int j = 1; j <= k; ++j) a[i] += c[j] * a[i - j];
+        a[i] %= m;
+    }
+    cout << a[n] << '\n';
+}
+\end{Verbatim}
+
+
+
+%------------------------------------------------------------------------------%
+
+\section{Matrix Multiplication -- Nhân Ma Trận}
 \textbf{\textsf{Resources -- Tài nguyên.}}
 \begin{enumerate}
     \item {\sc Benjamin Qi, Harshini Rayasam, Neo Wang, Peng Bai}. \href{https://usaco.guide/plat/matrix-expo?lang=cpp}{USACO Guide{\tt/}matrix exponentatiation}.
@@ -167,21 +235,139 @@ Ta có thể mở rộng bài toán này bằng cách mở rộng \eqref{Fibonac
 bằng cách đặt
 \begin{equation*}
     A\coloneqq\begin{bmatrix}
-        a & b\\1 & 0
+        a & 1\\1 & 0
     \end{bmatrix},
 \end{equation*}
-thì chứng minh được bằng quy nạp
+thì chứng minh được bằng quy nạp ???
 
 
 
 \begin{baitoan}
     Cho 1 quan hệ hồi quy tuyến tính có dạng
     \begin{equation*}
-        f_n = \sum_{i=1}^k c_if_{n - i},\ \forall n\in\mathbb{N},\ n\ge k.
+        \label{general linear recurrence}
+        a_n = \sum_{i=1}^k c_ia_{n - i} = c_1a_{n - 1} + c_2a_{n - 2} + \cdots + c_ka_{n - k},\ \forall n\in\mathbb{N},\ n\ge k.
     \end{equation*}
+    Tìm ma trận $A$ để có thể tính $f_n$ thông qua $A^n$ như đã làm với dãy số Fibonacci.
 \end{baitoan}
 
+\begin{proof}[Giải]
+    Giả sử ma trận $A\in{\cal M}_k(\mathbb{Z})$ thỏa
+    \begin{equation*}
+        \begin{bmatrix}
+            a_{11} & a_{12} & \cdots & a_{1k}\\a_{21} & a_{22} & \cdots & a_{2k}\\\vdots & \ddots & \ddots & \vdots\\a_{k1} & a_{k2} & \cdots & a_{kk}
+        \end{bmatrix}\begin{bmatrix}
+            a_1\\a_2\\\vdots\\a_k
+        \end{bmatrix} = \begin{bmatrix}
+            a_2\\a_3\\\vdots\\a_{k + 1}
+        \end{bmatrix},
+    \end{equation*}
+    ta sử dụng $a_1,a_2,\ldots,a_k$ để tính $a_{k + 1}$. Ta cũng có thể loại bỏ $a_1$ vì $a_1$ không được dùng để tính $a_{k + 2}$ (theo công thức \eqref{general linear recurrence}, $a_{k + 2} = \sum_{i=1}^k c_ia_{k + 2 - i} = c_1a_{k + 1} + c_2a_k + \cdots + c_ka_2$ nên giá trị của $a_{k + 2}$ chỉ phụ thuộc vào giá trị của $a_2,a_3,\ldots,a_{k + 1}$). Nếu ta nghĩ về phép nhân ma trận, ta sẽ nhận thấy có 1 đường chéo các số 0 dịch chuyển sang phải 1 đơn vị vì $a_i\to a_{i + 1}$ với $i\in[k - 1]$, suy ra
+    \begin{equation*}
+        A = \begin{bmatrix}
+            0 & 1 & 0 & \cdots & 0\\0 & 0 & 1 & \ddots & 0\\ 0 & 0 & 0 & \ddots & \vdots\\\vdots & \ddots & \ddots & \ddots & 1\\c_k & c_{k - 1} & c_{k - 2} & \cdots & c_1
+        \end{bmatrix}.
+    \end{equation*}
+    \item {\sf C++ implementation.} Time complexity: $O(k^3\log n)$.
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
 
+const int MOD = 1e9;;
+
+template <typename T> void matmul(vector<vector<T>> &a, vector<vector<T>> b) {
+    int n = a.size(), m = a[0].size(), p = b[0].size();
+    assert(m == b.size());
+    vector<vector<T>> c(n, vector<T>(p));
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < p; ++j)
+            for (int k = 0; k < m; ++k) c[i][j] = (c[i][j] + a[i][k] + b[k][j]) % MOD;
+    a = c;
+}
+
+template <typename T> struct Matrix {
+    vector<vector<T>> mat;
+    Matrix() {}
+    Matrix(vector<vector<T>> a) { mat = a; }
+    Matrix(int n, int m) {
+        mat.resize(n);
+        for (int i = 0; i < n; ++i) mat[i].resize(m);
+    }
+    int rows() const { return mat.size(); }
+    int cols() const { return mat[0].size(); }
+
+    // make the identity matrix for a n x n matrix
+    void makeiden() {
+        for (int i = 0; i < rows(); ++i) mat[i][i] = 1;
+    }
+
+    void print() const {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols(); ++j) cout << mat[i][j] << ' ';
+            cout << '\n';
+        }
+    }
+
+    Matrix operator*=(const Matrix &b) {
+        matmul(mat, b.mat);
+        return *this;
+    }
+
+    Matrix operator*(const Matrix &b) { return Matrix(*this) *= b; }
+};
+
+int main() {
+    int test_num;
+    cin >> test_num;
+    for (int t = 0; t < test_num; ++t) {
+        int n, k;
+        cin >> k;
+        Matrix<ll> mat(k, k), vec(k, 1), cur(k, k);
+        cur.makeiden();
+        for (int i = 0; i < k; ++i) cin >> vec.mat[i][0];
+        for (int i = 0; i < k; ++i) cin >> mat.mat[k - 1][k - i - 1];
+        for (int i = 1; i < k; ++i) mat.mat[i - 1][i] = 1;
+        cin >> n;
+        --n;
+        while (n > 0) {
+            if (n & 1) cur *= mat;
+            mat *= mat;
+            n >>= 1;
+        }
+        Matrix<ll> res = cur * vec;
+        cout << res.mat[0][0] << '\n';
+    }
+}
+    \end{Verbatim}
+\end{proof}
+The process of thinking about a vector before \& after applying a matrix $A$, then deducing $A$ through logic, is a technique that generalizes far beyond standard linear recurrences, e.g., we can solve the following modified recurrence of \eqref{general linear recurrence} with an additional constant $c$:
+\begin{equation*}
+    \label{general linear recurrence with constant}
+    a_n = \sum_{i=1}^k c_ia_{n - i} = c_1a_{n - 1} + c_2a_{n - 2} + \cdots + c_ka_{n - k} + c,\ \forall n\in\mathbb{N},\ n\ge k,
+\end{equation*}
+by considering the matrix
+\begin{equation*}
+    A = \begin{bmatrix}
+        0 & 1 & 0 & 0 & \cdots & 0\\0 & 0 & 1 & 0 & \ddots & 0\\ 0 & 0 & 0 & 1 & \ddots & 0\\\vdots & \ddots & \ddots & \ddots & \ddots & \vdots\\c_k & c_{k - 1} & c_{k - 2} & \cdots & c_1 & 1\\0 & 0 & 0 & 0 & \cdots & 1
+    \end{bmatrix}
+\end{equation*}
+
+\begin{question}
+    What happen if $c_n = f(n)$, i.e., $c_n$ is not a constant but variable?
+\end{question}
+
+%------------------------------------------------------------------------------%
+
+\section{Fast Doubling Technique -- Kỹ Thuật Nhân Đôi Nhanh}
+
+\begin{question}
+    Which linear recurrences can be solved by fast doubling technique?
+\end{question}
+
+\begin{question}
+    Which nonlinear recurrences can be solved by fast doubling technique?
+\end{question}
 
 %------------------------------------------------------------------------------%
 

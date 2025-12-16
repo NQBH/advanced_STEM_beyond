@@ -383,6 +383,565 @@ we now use the formula
 \end{equation*}
 for matrix multiplication, so we calculate minima instead of sums, \& sums of elements instead of products. After this modification, matrix powers minimize path lengths in the graph. Then $(A^e)_{ij}$ is the minimum length of a path of $e$ edges from node $i$ to node $j$.
 
+\begin{problem}[\href{https://cses.fi/problemset/task/1723}{CSES Problem Set{\tt/}graph paths I}]
+    Consider a directed graph that has $n$ nodes \& $m$ edges. Count the number of paths from node $1$ to node $n$ with exactly $k$ edges.
+    \item {\sf Input.} The 1st input line contains 3 integers $n,m,k$: the number of nodes \& edges, \& the length of the path. The nodes are numbered $1,2,\ldots,n$. Then, there are $m$ lines describing the edges. Each line contains 2 integers $a,b$: there is an edge from node $a$ to node $b$.
+    \item {\sf Output.} Print the number of paths modulo $10^9 + 7$.
+    \item {\sf Constraints.} $n\in[100],m\in[n(n - 1)],k\in[10^9],a,b\in[n]$.
+\end{problem}
+
+\begin{proof}[Solution]
+    Let $A\in{\cal M}_n(\mathbb{Z})$ be the adjacency matrix of this graph. The answer is $(A^k)_{1n}$.
+    \item {\sf C++ implementation.}
+    \begin{enumerate}
+        \item Olympia's:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+#pragma GCC target ("avx2")
+#pragma GCC optimization ("O3")
+#pragma GCC optimization ("unroll-loops")
+
+using namespace std;
+const int MOD = 1e9 + 7;
+
+class Matrix {
+public:
+    vector<vector<int64_t>> v;
+    void print() {
+        for (int i = 0; i < v.size(); ++i) {
+            for (int j : v[i]) cout << j << ' ';
+            cout << '\n';
+        }
+    }
+    Matrix operator* (Matrix m1) const {
+        Matrix ans(v);
+        for (int i = 0; i < m1.v.size(); ++i)
+            for (int j = 0; j < m1.v.size(); ++j) ans.v[i][j] = 0;
+        for (int i = 0; i < m1.v.size(); ++i)
+            for (int j = 0; j < m1.v.size(); ++j)
+                for (int k = 0; k < m1.v.size(); ++k) {
+                    ans.v[i][j] += (v[i][k] * m1.v[k][j]) % MOD;
+                    ans.v[i][j] %= MOD;
+                }
+        return ans;
+    }
+    Matrix identity (int64_t n) {
+        vector<vector<int64_t>> vec(n);
+        for (int i = 0; i < n; ++i) {
+            vec[i].resize(n);
+            for (int j = 0; j < n; ++j) vec[i][j] = (i == j);
+        }
+        return Matrix(vec);
+    }
+    Matrix operator^ (int64_t x) {
+        Matrix ans = identity(v.size()), res = *this;
+        while (x > 0) {
+            if (x & 1) ans = res * ans;
+            res = res * res;
+            x /= 2;
+        }
+        return ans;
+    }
+    Matrix (vector<vector<int64_t>> v) {
+        this->v = v;
+    }
+};
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n, m, k;
+    cin >> n >> m >> k;
+    vector<vector<int64_t>> v(n);
+    for (int i = 0; i < n; ++i) v[i].assign(n, 0);
+    while (m--) {
+        int x, y;
+        cin >> x >> y;
+        --x, --y;
+        ++v[x][y];
+    }
+    Matrix fib = Matrix(v);
+    fib = fib^(k);
+    cout << fib.v[0][n - 1];
+}
+        \end{Verbatim}
+        \item TodomoTachi's:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+const long long MOD = 1e9 + 7;
+
+#define MAX_SIZE 100
+#define ll long long
+
+struct Matrix {
+    int m, n; // m = số hàng, n = số cột
+    ll d[MAX_SIZE][MAX_SIZE];
+    Matrix (int _m = 0, int _n = 0) {
+        m = _m; n = _n;
+        memset(d, 0, sizeof d);
+    }
+
+    Matrix operator + (const Matrix &a) const { // phép cộng ma trận
+        Matrix res(m, n);
+        for (int i = 0; i < m; ++i)
+        for (int j = 0; j < n; ++j) {
+            res.d[i][j] = d[i][j] + a.d[i][j];
+            if (res.d[i][j] >= MOD) res.d[i][j] -= MOD;
+        }
+        return res;
+    }
+
+    Matrix operator * (const Matrix &a) const { // phép nhân ma trận
+        ll x = m, y = n, z = a.n;
+        Matrix res(x, z);
+        for (int i = 0; i < x; ++i)
+            for (int j = 0; j < y; ++j)
+                for (int k = 0; k < z; ++k) res.d[i][k] = (res.d[i][k] + 1LL * d[i][j] * a.d[j][k]) % MOD;
+        return res;
+    }
+
+    Matrix operator ^ (ll k) const { // phép luỹ thừa ma trận
+        Matrix res(n, n);
+        for (int i = 0; i < n; ++i) res.d[i][i] = 1;
+        Matrix mul = *this;
+        while (k > 0) {
+            if (k & 1) res = res * mul;
+            mul = mul * mul;
+            k >>= 1;
+        }
+        return res;
+    }
+};
+
+int main() {
+    cin.tie(0) -> sync_with_stdio(0);
+    int n, m, k;
+    cin >> n >> m >> k;
+    Matrix t(n, n);
+    for (int i = 0, x, y; i < m; ++i) {
+        cin >> x >> y;
+        ++t.d[x - 1][y - 1]; // attention: maybe have duplicate edge
+    }
+    t = t ^ k;
+    cout << t.d[0][n - 1];
+}
+        \end{Verbatim}
+        \item Pilla Venkata Sekhar's:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const ll MOD = 1e9 + 7;
+
+vector<vector<ll>> mat(101, vector<ll>(101, 0));
+vector<vector<ll>> mat_mul(vector<vector<ll>> mat1, vector<vector<ll>> mat2, ll sz) {
+    vector<vector<ll>> mul(sz, vector<ll>(sz, 0));
+    for (int i = 0; i < sz; ++i)
+        for (int j = 0; j < sz; ++j) {
+            int cur = 0;
+            for (int k = 0; k < sz; ++k) {
+                cur += (mat1[i][k] * mat2[k][j]) % MOD;
+                cur %= MOD;
+            }
+            mul[i][j] = cur;
+        }
+    return mul;
+}
+
+ll mat_expo(vector<vector<ll>> pow, ll sz, ll n) {
+    vector<vector<ll>> ans(sz, vector<ll>(sz, 0));
+    for (int i = 0; i < sz; ++i) ans[i][i] = 1;
+    while (n) {
+        if (n & 1) ans = mat_mul(ans, pow, sz);
+        pow = mat_mul(pow, pow, sz);
+        n /= 2;
+    }
+    return ans[1][sz - 1];
+}
+
+int main() {
+    int a, b, n, m, k;
+    cin >> n >> m >> k;
+    for (int i = 0; i < m; ++i) {
+        cin >> a >> b;
+        ++mat[a][b];
+    }
+    cout << mat_expo(mat, n + 1, k);
+}
+        \end{Verbatim}
+        \item Dan4Life's:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+const int MOD = 1e9 + 7;
+int n, m, k, x, y;
+
+struct Matrix {
+    ll a[110][110];
+    Matrix() {
+        for (int i = 0; i < 110; ++i) fill(a[i], a[i] + 110, 0ll);
+    }
+};
+
+Matrix M, I;
+
+Matrix mult(Matrix x, Matrix y) {
+    Matrix z;
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+            for (int k = 0; k < n; ++k) z.a[i][j] += x.a[i][k] * y.a[k][j], z.a[i][j] %= MOD;
+    return z;
+}
+
+Matrix pow(Matrix x, int b) {
+    if (!b) return I;
+    Matrix y = pow(x, b / 2);
+    y = mult(y, y);
+    if (b & 1) y = mult(y, x);
+    return y;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cin >> n >> m >> k;
+    for (int i = 0; i < n; ++i) I.a[i][i] = 1;
+    while (m--) {
+        cin >> x >> y;
+        --x, --y;
+        ++M.a[x][y];
+    }
+    cout << pow(M, k).a[0][n - 1];
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{problem}[\href{https://cses.fi/problemset/task/1724}{CSES Problem Set{\tt/}graph paths II}]
+    Consider a directed weighted graph having $n$ nodes \& $m$ edges. Calculate the minimum path length from node $1$ to node $n$ with exactly $k$ edges.
+    \item {\sf Input.} The 1st input line contains 3 integers $n,m,k$: the number of nodes \& edges, \& the length of the path. The nodes are numbered $1,2,\ldots,n$. Then, there are $m$ lines describing the edges. Each line contains 3 integers $a,b,c$: there is an edge from node $a$ to node $b$ with weight $c$.
+    \item {\sf Output.} Print the minimum path length. If there are no such paths, print $-1$.
+    \item {\sf Constraints.} $n\in[100],m\in[n(n - 1)],k\in[10^9],a,b\in[n],c\in[10^9]$.
+\end{problem}
+
+\begin{proof}[Solution]
+
+    \item {\sf C++ implementation.}
+    \begin{enumerate}
+        \item Pilla Venkata Sekhar's:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+const ll MOD = 1e9 + 7;
+vector<vector<ll>> mat(101, vector<ll>(101, 0));
+
+vector<vector<ll>> mat_mul(vector<vector<ll>> mat1, vector<vector<ll>> mat2, ll sz) {
+    vector<vector<ll>> mul(sz, vector<ll>(sz, 0));
+    for (int i = 0; i < sz; ++i)
+        for (int j = 0; j < sz; ++j) {
+            ll cur = 0;
+            for (int k = 0; k < sz; ++k)
+                if (mat1[i][k] > 0 && mat2[k][j] > 0) {
+                    if (cur) cur = min(cur, (mat1[i][k] + mat2[k][j]));
+                    else cur = mat1[i][k] + mat2[k][j];
+                }
+            mul[i][j] = cur;
+        }
+    return mul;
+}
+
+ll mat_expo(vector<vector<ll>> pow, ll sz, ll n) {
+    vector<vector<ll>> ans(sz, vector<ll>(sz, 0));
+    int check = 0;
+    while (n) {
+        if (n & 1) {
+            if (check) ans = mat_mul(ans, pow, sz);
+            else {
+                check = 1;
+                for (int i = 0; i < sz; ++i)
+                    for (int j = 0; j < sz; ++j) ans[i][j] = pow[i][j];
+            }
+        }
+        pow = mat_mul(pow, pow, sz);
+        n >>= 1;
+    }
+    if (ans[1][sz - 1]) return ans[1][sz - 1];
+    return -1;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n, m, k;
+    cin >> n >> m >> k;
+    ll a, b, c;
+    for (int i = 0; i < m; ++i) {
+        cin >> a >> b >> c;
+        if (!mat[a][b]) mat[a][b] = c;
+        else mat[a][b] = min(mat[a][b], c);
+    }
+    cout << mat_expo(mat, n + 1, k);
+}
+        \end{Verbatim}
+        \item Dan4Life's:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+const int MOD = 1e9 + 7;
+const ll LINF = 4e18;
+int n, m, k, x, y, z;
+
+struct Matrix {
+    ll a[110][110];
+    Matrix (ll v = 0) {
+        for (int i = 0; i < 110; ++i) fill(a[i], a[i] + 110, v);
+    }
+};
+
+Matrix M(LINF), I(LINF);
+
+Matrix mult(Matrix x, Matrix y) {
+    Matrix z(LINF);
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+            for (int k = 0; k < n; ++k) z.a[i][j] = min(z.a[i][j], x.a[i][k] + y.a[k][j]);
+    return z;
+}
+
+Matrix pow(Matrix x, int b) {
+    if (!b) return I;
+    if (b == 1) return x;
+    Matrix y = pow(x, b / 2);
+    y = mult(y, y);
+    if (b & 1) y = mult(y, x);
+    return y;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    cin >> n >> m >> k;
+    while (m--) {
+        cin >> x >> y >> z;
+        --x, --y;
+        M.a[x][y] = min(M.a[x][y], (ll)z);
+    }
+    cout << (pow(M, k).a[0][n - 1] < LINF ? pow(M, k).a[0][n - 1] : -1);
+}
+        \end{Verbatim}
+        \item Bùi Trung Hiếu's:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+#define FOR(i, a, b) for (int i = (a), _b = (b); i <= _b; ++i)
+#define FORD(i, b, a) for (int i = (b), _a = (a); i >= _a; --i)
+#define REP(i, n) for (int i = 0, _n = (n); i < _n; ++i)
+#define FORE(i, v) for (__typeof((v).begin()) i = (v).begin(); i != (v).end(); ++i)
+using namespace std;
+using ll = long long;
+
+const int MAXN = 106;
+const ll INF = 4e18;
+int n, m, k;
+
+struct Matrix {
+    int n, m;
+    ll d[MAXN][MAXN];
+
+    Matrix (int _n, int _m) {
+        n = _n, m = _m;
+        REP(i, MAXN) REP(j, MAXN) d[i][j] = INF;
+    }
+
+    Matrix operator * (const Matrix &a) const {
+        int x = n, y = m, z = a.m;
+        Matrix res(x, z);
+        REP(i, x) REP(j, y) REP(k, z) res.d[i][k] = min(res.d[i][k], d[i][j] + a.d[j][k]);
+        return res;
+    }
+
+    Matrix operator ^ (int k) const {
+        Matrix res(n, n), mul = *this;
+        REP(i, n) res.d[i][i] = 0;
+        while (k > 0) {
+            if (k & 1) res = res * mul;
+            mul = mul * mul;
+            k >>= 1;
+        }
+        return res;
+    }
+};
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    cin >> n >> m >> k;
+    Matrix trans(n, n);
+    FOR(i, 1, m) {
+        int x, y, w;
+        cin >> x >> y >> w;
+        --x, --y;
+        trans.d[x][y] = min(trans.d[x][y], (ll)w);
+    }
+    trans = trans ^ k;
+    if (trans.d[0][n - 1] < INF) cout << trans.d[0][n - 1];
+    else cout << -1;
+}
+        \end{Verbatim}
+        \item Viktor Maksimoski's:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+struct Mat {
+    int n, m;
+    vector<vector<ll>> mat;
+
+    Mat (int _n, int _m) {
+        n = _n, m = _m;
+        mat.resize(n, vector<ll>(m));
+    }
+
+    Mat(vector<vector<ll>> v) {
+        mat = v;
+        n = (int)v.size(), m = (int)v[0].size();
+    }
+};
+
+Mat ID (int n) {
+    Mat ans(n, n);
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j) ans.mat[i][j] = 2e18;
+    return ans;
+}
+
+Mat mul(Mat a, Mat b) {
+    Mat ans = ID(a.n);
+    for (int i = 0; i < a.n; ++i)
+        for (int j = 0; j < b.m; ++j)
+            for (int k = 0; k < a.m; ++k) ans.mat[i][j] = min(ans.mat[i][j], a.mat[i][k] + b.mat[k][j]);
+    return ans;
+}
+
+Mat exp(Mat a, ll b) {
+    Mat ans = ID(a.n);
+    for (int i = 0; i < a.n; ++i) ans.mat[i][i] = 0;
+    while (b) {
+        if (b & 1) ans = mul(ans, a);
+        a = mul(a, a);
+        b >>= 1;
+    }
+    return ans;
+}
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(NULL);
+    int n, m, k;
+    cin >> n >> m >> k;
+    Mat a = ID(n);
+    while (m--) {
+        int x, y, z;
+        cin >> x >> y >> z;
+        a.mat[x - 1][y - 1] = min(a.mat[x - 1][y - 1], (ll)z);
+    }
+    a = exp(a, k);
+    cout << (a.mat[0][n - 1] > 1e18 ? -1 : a.mat[0][n - 1]) << '\n';
+}
+        \end{Verbatim}
+        \item Olympia's:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+#pragma GCC target ("avx2")
+#pragma GCC optimization ("O3")
+#pragma GCC optimization ("unroll-loops")
+using namespace std;
+const int MOD = 1e9 + 7;
+
+int64_t chmin(int64_t x, int64_t y) {
+    if (x == -1) return y;
+    if (y == -1) return x;
+    return min(x, y);
+}
+
+class Matrix {
+    public:
+    vector<vector<int64_t>> v;
+
+    void print() {
+        for (int i = 0; i < v.size(); ++i) {
+            for (int j : v[i]) cout << j << ' ';
+            cout << '\n';
+        }
+    }
+
+    Matrix operator * (Matrix m1) const {
+        Matrix ans(v);
+        for (int i = 0; i < m1.v.size(); ++i)
+            for (int j = 0; j < m1.v.size(); ++j) ans.v[i][j] = -1;
+        for (int i = 0; i < m1.v.size(); ++i)
+            for (int j = 0; j < m1.v.size(); ++j) {
+                ans.v[i][j] = -1;
+                for (int k = 0; k < m1.v.size(); ++k) {
+                    if (v[i][k] == -1 || m1.v[k][j] == -1) continue;
+                    ans.v[i][j] = chmin(v[i][k] + m1.v[k][j], ans.v[i][j]);
+                }
+            }
+        return ans;
+    }
+
+    Matrix identity (int64_t n) {
+        vector<vector<int64_t>> vec(n);
+        for (int i = 0; i < n; ++i) {
+            vec[i].resize(n);
+            for (int j = 0; j < n; ++j) vec[i][j] = (i == j);
+        }
+        return Matrix(vec);
+    }
+
+    Matrix operator^ (int64_t x) {
+        Matrix ans = *this, res = *this;
+        while (x > 0) {
+            if (x & 1) ans = res * ans;
+            res = res * res;
+            x >>= 1;
+        }
+        return ans;
+    }
+
+    Matrix (vector<vector<int64_t>> v) {
+        this->v = v;
+    }
+};
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int n, m, k;
+    cin >> n >> m >> k;
+    vector<vector<int64_t>> v(n);
+    for (int i = 0; i < n; ++i) v[i].assign(n, -1);
+    while (m--) {
+        int x, y, w;
+        cin >> x >> y >> w;
+        --x, --y;
+        v[x][y] = chmin(v[x][y], w);
+    }
+    Matrix fib = Matrix(v);
+    fib = fib ^ (k - 1);
+    cout << fib.v[0][n - 1];
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
 
 %------------------------------------------------------------------------------%
 

@@ -78,9 +78,10 @@
 
 \begin{definition}[Linear recurrence]
     A {\rm linear recurrence} is a function $f:\mathbb{N}\to\mathbb{C}$ whose initial values are $f(0),f(1),\ldots,f(k - 1)$ \& larger values are calculated recursively using the formula
-    \begin{equation*}
+    \begin{equation}
+        \label{linear recurrence}
         f(n) = \sum_{i=1}^k c_if(n - i) = c_1f(n - 1) + c_2f(n - 2) + \cdots + c_kf(n - k),
-    \end{equation*}
+    \end{equation}
     where $\{c_i\}_{i=1}^k\subset\mathbb{C}$ are constant coefficients.
 \end{definition}
 Dynamic programming can be used to calculate any value of $f(n)$ in $O(kn)$ time by calculating all value sof $f(0),f(1),\ldots,f(n)$ one after another (bottom up) as follows:
@@ -134,8 +135,6 @@ int main() {
 }
 \end{Verbatim}
 
-
-
 %------------------------------------------------------------------------------%
 
 \section{Matrix Multiplication -- Nhân Ma Trận}
@@ -144,9 +143,8 @@ int main() {
     \item {\sc Benjamin Qi, Harshini Rayasam, Neo Wang, Peng Bai}. \href{https://usaco.guide/plat/matrix-expo?lang=cpp}{USACO Guide{\tt/}matrix exponentatiation}.
 
     \item \href{https://codeforces.com/blog/entry/67776}{CodeForces{\tt/}lazyneuron{\tt/}a complete guide on matrix exponentiation}.
-
-    \item
 \end{enumerate}
+We can also calculate the value of $f(n)$ defined by \eqref{linear recurrence} in $O(k^3\log n)$ time using matrix operations, which is an important improvement if $k$ is small \& $n$ is large.
 
 \begin{problem}[\href{https://cses.fi/problemset/task/1722}{CSES Problem Set{\tt/}Fibonacci numbers}]
     The Fibonacci numbers can be defined as follows:
@@ -356,6 +354,35 @@ by considering the matrix
 \begin{question}
     What happen if $c_n = f(n)$, i.e., $c_n$ is not a constant but variable?
 \end{question}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Graphs \& matrices}
+
+\begin{theorem}
+    If $A$ is an adjacency matrix of an unweighted graph, then the matrix $A^n$ gives for each node pair $(a,b)$ the number of paths that begin at node $a$, end at node $b$ \& contain exactly $n$ edges, which is allowed that a node appears on a path several times.
+\end{theorem}
+
+\begin{proof}
+
+\end{proof}
+Using a similar idea in a weighted graph, we can calculate for each node pair $(a,b)$ the shortest length of a path that goes from node $a$ to node $b$ \& contains exactly $n$ edges by defining matrix multiplication in the following way such that we do not calculate numbers of paths but minimize lengths of paths. We define an adjacency matrix where $\infty$ means that an edge does not exist, \& other values correspond to edge weights:
+\begin{equation*}
+    A_{ij} = \left\{\begin{split}
+        &\infty&&\mbox{if }i\to j\notin{\cal E},\\
+        &w_{ij}&&\mbox{if }i\to j\in{\cal E},
+    \end{split}\right.,\ \forall i,j\in[n].
+\end{equation*}
+Instead of the formula
+\begin{equation*}
+    (AB)_{ij} = \sum_{k=1}^n A_{ik}B_{kj},
+\end{equation*}
+we now use the formula
+\begin{equation*}
+    (AB)_{ij} = \min_{k=1}^n A_{ik} + B_{kj}
+\end{equation*}
+for matrix multiplication, so we calculate minima instead of sums, \& sums of elements instead of products. After this modification, matrix powers minimize path lengths in the graph. Then $(A^e)_{ij}$ is the minimum length of a path of $e$ edges from node $i$ to node $j$.
+
 
 %------------------------------------------------------------------------------%
 

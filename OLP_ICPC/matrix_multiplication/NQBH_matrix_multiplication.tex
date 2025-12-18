@@ -59,11 +59,6 @@
         PDF: {\sc url}: \url{.pdf}.
 
         \TeX: {\sc url}: \url{.tex}.
-        \item {\it }.
-
-        PDF: {\sc url}: \url{.pdf}.
-
-        \TeX: {\sc url}: \url{.tex}.
     \end{itemize}
 \end{abstract}
 \tableofcontents
@@ -943,6 +938,565 @@ int main() {
     \end{enumerate}
 \end{proof}
 
+\begin{problem}[\href{https://codeforces.com/contest/691/problem/E}{Codeforces{\tt/}Educational Codeforces Round 14{\tt/}E. Xor-sequences}]
+    You are given $n$ integers $a_1,a_2,\ldots,a_n$. A sequence of integers $x_1,x_2,\ldots,x_k$ is called a {\rm xor-sequence} if for every $i\in[k - 1]$ the number of ones in the binary representation of the number $x_i\otimes x_{i+1}$'s is a multiple of $3$ \& $x_i\in\{a_1,a_2,\ldots,a_n\}$ for all $i\in[k]$. The symbol $\otimes$ is used for the binary exclusive or operation. How many xor-sequences of length $k$ exist? Output the answer modulo $10^9 + 7$. Note if $a = [1,1]$ \& $k = 1$ then the answer is $2$, because you should consider the ones from $a$ as different.
+    \item {\sf Input.} The 1st line contains 2 integers $n\in[100],k\in[10^{18}]$ -- the number of given integers \& the length of the xor-sequences. The 2nd line contains $n$ integers $0\le a_i\le10^{18}$, $\forall i\in[n]$.
+    \item {\sf Output.} Print the only integer $c$ -- the number of xor-sequences of length $k$ modulo $10^9 + 7$.
+\end{problem}
+
+\begin{proof}[1st solution]
+    Source: \href{https://codeforces.com/blog/entry/46075}{Codeforces{\tt/}Edvard's blog{\tt/}editorial of Educational Codeforces round 14}. Let $b_{ij}$ be the number of xor-sequences of length $i$ with the last element equal to $a_j$. Let $g_{ij} = 1$ if $a_i\otimes a_j$ contains the number of 1s in binary representation that is multiple of 3. Otherwise let $g_{ij} = 0$. Consider a vectors $b_i = \{b_{ij}\},b_{i-1} = \{b_{i-1,j}\}$ \& a matrix $G = \{g_{ij}\}$. One has $b_i = Gb_{i-1}$. So $b_n = G^nb_0$. Using the associative property of matrix multiplication: at 1st, we calculate $G^n$ with binary matrix exponentiation \& then multiply it to the vector $z_0$.
+    \item {\sf C++ implementation.}
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+const int N = 101, mod = 1000000007;
+int n;
+ll k, a[N];
+
+bool read() {
+    if (!(cin >> n >> k)) return false;
+    for (int i = 0; i < n; ++i) assert(cin >> a[i]);
+    return true;
+}
+
+inline int add(int a, int b) { return a + b >= mod ? a + b - mod : a + b; }
+inline void inc(int& a, int b) { a = add(a, b); }
+inline int mul(int a, int b) { return int(a * 1ll * b % mod); }
+
+int count(ll x) {
+    int ans = 0;
+    while (x) {
+        ++ans;
+        x &= x - 1;
+    }
+    return ans;
+}
+
+void mul(int a[N][N], int b[N][N], int n) {
+    static int c[N][N];
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j) {
+            c[i][j] = 0;
+            for (int k = 0; k < n; ++k) inc(c[i][j], mul(a[i][k], b[k][j]));
+        }
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j) a[i][j] = c[i][j];
+}
+
+void bin_pow(int a[N][N], ll b, int n) {
+    static int ans[N][N];
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j) ans[i][j] = i == j;
+    while (b) {
+        if (b & 1) mul(ans, a, n);
+        mul(a, a, n);
+        b >>= 1;
+    }
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j) a[i][j] = ans[i][j];
+}
+
+void solve() {
+    static int a[N][N];
+    memset(a, 0, sizeof(a));
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j)
+            a[i][j] = count(::a[i] ^ ::a[j]) % 3 == 0;
+        a[i][n] = 1;
+    }
+    bin_pow(a, k, n + 1);
+    int ans = 0;
+    for (int i = 0; i <= n; ++i) inc(ans, a[i][n]);
+    cout << ans << '\n';
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    if (read()) solve();
+}
+    \end{Verbatim}
+\end{proof}
+
+\begin{proof}[2nd solution]
+    Source: {\sc Neo Wang}. \url{https://usaco.guide/problems/cf-xor-sequences/solution}. We are asked to count the total number of paths, so we can store the graph as an adjacency matrix by setting $a_{ij} = 1$ if the number of bits $x_i\oplus x_j$ is divisible by 3. After constructing these edges, this is the same problem as \href{https://cses.fi/problemset/task/1723}{CSES Problem Set{\tt/}graph paths I}, except we query the sum of all the paths. Then, we can calculate $A^k$ in $O(n^3\log k)$ using matrix exponentiation. The final answer is
+    \begin{equation*}
+        \sum_{i=0}^n\sum_{j=0}^n a_{ij}^k.
+    \end{equation*}
+    \item {\sf C++ implementation.}
+    \begin{enumerate}
+        \item Neo Wang's:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+const ll MOD = 1e9 + 7;
+
+template <class T> struct Matrix {
+    vector<vector<T>> v;
+    void init(int n, int m) { v = vector<vector<T>>(n, vector<T>(m)); }
+
+    Matrix operator* (Matrix b) {
+        int x = v.size(), y = v[0].size(), z = b.v[0].size();
+        assert(y == size(b.v));
+        Matrix<T> ret;
+        ret.init(x, z);
+        for (int i = 0; i < x; ++i)
+            for (int j = 0; j < y; ++j)
+                for (int k = 0; k < z; ++k) {
+                    ret.v[i][k] += v[i][j] * b.v[j][k];
+                    ret.v[i][k] %= MOD;
+                }
+        return ret;
+    }
+};
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(NULL);
+    ll n, k;
+    cin >> n >> k;
+    --k;
+    vector<ll> a(n);
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    Matrix<ll> A, B;
+    A.init(n, n);
+    B.init(n, n);
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j)
+            if (__builtin_popcountll(a[i] ^ a[j]) % 3 == 0) A.v[i][j] = 1;
+    Matrix<ll> ret;
+    ret.init(n, n);
+    for (int i = 0; i < n; ++i) ret.v[i][i] = 1;
+    for (ll b = k; b > 0; b >>= 1) {
+        if (b & 1) ret = ret * A;
+        A = A * A;
+    }
+    ll ans = 0;
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j) {
+            ans += ret.v[i][j];
+            ans %= MOD;
+        }
+    cout << ans << '\n';
+}
+        \end{Verbatim}
+        \item Olympia's:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+const int MOD = 1e9 + 7;
+
+struct Matrix {
+    vector<vector<ll>> mat1;
+    Matrix operator *(const Matrix& other) {
+        vector<vector<ll>> mat2 = other.mat1;
+        vector<vector<ll>> ans(mat1.size());
+        for (int i = 0; i < ans.size(); ++i) {
+            ans[i].resize(mat2[0].size());
+            for (int j = 0; j < ans[i].size(); ++j) {
+                ans[i][j] = 0;
+                for (int k = 0; k < mat1[0].size(); ++k) {
+                    ans[i][j] += mat1[i][k] * mat2[k][j];
+                    ans[i][j] %= MOD;
+                }
+            }
+        }
+        Matrix m;
+        m.mat1 = ans;
+        return m;
+    }
+
+    Matrix identity (int n) {
+        Matrix ans;
+        ans.mat1.resize(n);
+        for (int i = 0; i < n; ++i) {
+            ans.mat1[i].resize(n);
+            for (int j = 0; j < n; ++j) ans.mat1[i][j] = (i == j);
+        }
+        return ans;
+    }
+
+    Matrix binpow (ll powr) {
+        Matrix res = {mat1}, ans = identity(mat1.size());
+        while (powr > 0) {
+            if (powr & 1) ans = ans * res;
+            res = res * res;
+            powr >>= 1;
+        }
+        return ans;
+    }
+};
+
+bool valid (ll x, ll y) {
+    return !((__builtin_popcountll(x ^ y)) % 3);
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    ll n, k;
+    cin >> n >> k;
+    vector<ll> a(n);
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    Matrix adj;
+    adj.mat1.resize(n);
+    for (int i = 0; i < n; ++i) {
+        adj.mat1[i].resize(n);
+        for (int j = 0; j < n; ++j) adj.mat1[i][j] = valid(a[i], a[j]);
+    }
+    Matrix ans = adj.binpow(k - 1);
+    ll res = 0;
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j) {
+            res += ans.mat1[i][j];
+            res %= MOD;
+        }
+    cout << res;
+}
+        \end{Verbatim}
+        \item Pilla Venkata Sekhar's:
+        \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+const ll MOD = 1e9+7;
+
+vector<vector<ll>> mat_mul(vector<vector<ll>> mat1, vector<vector<ll>> mat2, int sz) {
+    vector<vector<ll>> mul(sz, vector<ll>(sz, 0));
+    for (int i = 0; i < sz; ++i)
+        for (int j = 0; j < sz; ++j)
+            for (int k = 0; k < sz; ++k) {
+                mul[i][j] += mat1[i][k] * mat2[k][j];
+                mul[i][j] %= MOD;
+            }
+    return mul;
+}
+
+int mat_expo(vector<vector<ll>> p, int sz, ll pow) {
+    vector<vector<ll>> ans(sz, vector<ll>(sz, 0));
+    for (int i = 0; i < sz; ++i) ans[i][i] = 1;
+    if (!pow) return sz;
+    else {
+        while (pow) {
+            if (pow & 1) ans = mat_mul(ans, p, sz);
+            p = mat_mul(p, p, sz);
+            pow >>= 1;
+        }
+    }
+    ll cnt = 0;
+    for (int i = 0; i < sz; ++i)
+        for (int j = 0; j < sz; ++j)
+            if (ans[i][j]) {
+                cnt += ans[i][j];
+                cnt %= MOD;
+            }
+    return cnt;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int n;
+    cin >> n;
+    ll k, a[n];
+    cin >> k;
+    for (int i = 0; i < n; ++i) cin >> a[i];
+    vector<vector<ll>> mat(n, vector<ll>(n, 0));
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; ++j) {
+            ll cnt = 0, x = a[i] ^ a[j];
+            while (x) {
+                if (x & 1) ++cnt;
+                x >>= 1;
+            }
+            if (cnt % 3 == 0) mat[i][j] = 1, mat[j][i] = 1;
+        }
+    cout << mat_expo(mat, n, k - 1);
+}
+        \end{Verbatim}
+    \end{enumerate}
+\end{proof}
+
+\begin{problem}[\href{https://codeforces.com/problemset/problem/718/C}{Codeforces{\tt/}Codeforces Round 373 (Div. 1){\tt/}C. Sasha \& array}]
+    Sasha has an array of integers $a_1,a_2,\ldots,a_n$. You have to perform $m$ queries. There might be queries of 2 types:
+    \begin{enumerate}
+        \item {\tt1 l r x}: increase all integers on the segment from $l$ to $r$ by values $x$;
+        \item {\tt2 l r}: find $\sum_{i=l}^r f(a_i)$, where $f(x)$ is the $x$th Fibonacci number. As this number may be large, you only have to find it modulo $10^9 + 7$.
+    \end{enumerate}
+    In this problem we define Fibonacci numbers as follows: $f(1) = 1,f(2) = 1,f(x) = f(x - 1) + f(x - 2)$ for all $x > 2$. Sasha is a very talented boy \& he managed to perform all queries in $5$ seconds. Will you be able to write the program that performs as well as Sasha?
+    \item {\sf Input.} The 1st line of the input contains 2 integers $n,m\in[10^5]$ -- the number of elements in the array \& the number of queries respectively. The next line contains $n$ integers $a_1,a_2,\ldots,a_n\in[10^9]$. Then follow $m$ lines with queries descriptions. Each of them contains integers $tp_i,l_i,r_i$ \& may be $x_i$ ($1\le tp_i\le2,1\le l_i\le r_i\le n,x_i\in[10^9]$). Here $tp_i = 1$ corresponds to he queries of the 1st type \& $tp_i$ corresponds to the queries of the 2nd type. It is guaranteed that the input will contain at least 1 query of the 2nd type.
+    \item {\sf Output.} For each query of the 2nd type print the answer modulo $10^9 + 7$.
+\end{problem}
+
+\begin{proof}[1st solution]
+    Source: {\sc Dustin Miao}. \href{https://usaco.guide/problems/cf-sasha-and-array/solution}{CF -- Sasha \& array}. Let $F_i$ denote the $i$th Fibonacci number. In this problem, we will build a segment tree over the array. For a leaf node in the segment tree with value $v$, we will store a pair of values $(F_{v-1},F_v)$. For all non-leaf nodes, we will store a pair of values equal to the pair-sum of its children. I.e., if a node $u$ has children $v,w$, then $u = (v_0 + w_0,v_1 + w_1)$. We will use the term {\it cycle by $k$} to denote transforming some pair $(F_{i-1},F_i)$ to $(F_{i-1+k},F_{i+k})$. By default, the term {\it cycle} refers to {\it cycle by $1$}. For each update, we need to cycle each leaf node by some amount $x$ such that the value in a node affected goes from $(F_{v-1},F_v)$ to $(F_{v-1+x},F_{v+x})$. We can do this using matrix exponentiation. 1st note that for a matrix $(F_{i-1}\ F_i)$, we can cycle it by multiplying by $A = \begin{pmatrix}
+        0 & 1\\1 & 1
+    \end{pmatrix}$, i.e.,
+    \begin{equation*}
+        (F_i\ F_{i+1}) = (F_{i-1}\ F_i)\begin{pmatrix}
+            0 & 1\\1 & 1
+        \end{pmatrix}.
+    \end{equation*}
+    Inductively, we can cycle by $k$ by multiplying multiple times:
+    \begin{equation*}
+        (F_{i-1+k}\ F_{i+k}) = (F_{i-1}\ F_i)\begin{pmatrix}
+            0 & 1\\1 & 1
+        \end{pmatrix}^k.
+    \end{equation*}
+    We can use binary exponentiation to quickly compute powers of the $2\times2$ matrix.
+
+    Secondly, we need to utilize the distributive property of matrix multiplication to same-size matrices, i.e., if $m_k$ is a $1\times1$ matrix, i.e., a scalar, for $k\in[n]$, then the following property is satisfied:
+    \begin{equation*}
+        (\sum_{i=1}^n m_i)\begin{pmatrix}
+            0 & 1\\1 & 1
+        \end{pmatrix} = \sum_{i=1}^n m_i\begin{pmatrix}
+            0 & 1\\1 & 1
+        \end{pmatrix}.
+    \end{equation*}
+    In that way, we can utilize lazy propagation on the segment tree. We will store an integer tag in each node denoting the lazy update, which denotes that we must cycle every node in its subtree by the value of the tag. When propagating, we can simply update the node by binary exponentiating \& then multiplying, then storing it in the lazy tag. Querying works as normal on the segment tree.
+    \item {\sf C++ implementation.}
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using pll = pair<ll, ll>;
+using Matrix = array<array<ll, 2>, 2>;
+#define f first
+#define s second
+
+const int MAXN = 1e5 + 1;
+const ll MOD = 1e9 + 7;
+
+// multiply 2 2 x 2 matrices
+Matrix multiply(const Matrix &a, const Matrix &b) {
+    return {(a[0][0] * b[0][0] + a[0][1] * b[1][0]) % MOD,
+        (a[0][0] * b[0][1] + a[0][1] * b[1][1]) % MOD,
+        (a[1][0] * b[0][0] + a[1][1] * b[1][0]) % MOD,
+        (a[1][0] * b[0][1] + a[1][1] * b[1][1]) % MOD};
+}
+
+// multiply a 1 x 1 matrix with a 2 x 2 matrix
+pll multiply(const pll &a, const Matrix &b) {
+    return {(a.f * b[0][0] + a.s * b[1][0]) % MOD,
+        (a.f * b[0][1] + a.s * b[1][1]) % MOD};
+}
+
+// returns {0, 1, 1, 1,} to the power of n
+Matrix pow(ll n) {
+    Matrix res = {1, 0, 0, 1}; // identity matrix
+    Matrix base = {0, 1, 1, 1}; // Fibonacci matrix
+    for ( ; n; n >>= 1) { // binary exponentiation (log n)
+        if (n & 1) res = multiply(res, base);
+        base = multiply(base, base);
+    }
+    return res;
+}
+
+int n, q;
+pll tree[MAXN * 4];
+ll lazy[MAXN * 4];
+
+// return the pair-sum of a & b
+pll merge(const pll &a, const pll &b) { return {(a.first + b.first) % MOD, (a.second + b.second) % MOD}; }
+
+// push lazy update in t to its children
+void pushdown(int t) {
+    if (!lazy[t]) return;
+    tree[t << 1] = multiply(tree[t << 1], pow(lazy[t]));
+    lazy[t << 1] += lazy[t];
+    tree[t << 1 | 1] = multiply(tree[t << 1 | 1], pow(lazy[t]));
+    lazy[t << 1 | 1] += lazy[t];
+    lazy[t] = 0;
+}
+
+// cycle range from l to r by v
+void update(int l, int r, ll v, int t = 1, int tl = 1, int tr = n) {
+    if (r < tl || tr < l) return;
+    if (l <= tl && tr <= r) {
+        tree[t] = multiply(tree[t], pow(v));
+        lazy[t] += v;
+        return;
+    }
+    pushdown(t);
+    int tm = (tl + tr) >> 1;
+    update(l, r, v, t << 1, tl, tm);
+    update(l, r, v, t << 1 | 1, tm + 1, tr);
+    tree[t] = merge(tree[t << 1], tree[t << 1 | 1]);
+}
+
+// query sum from l to r
+ll query(int l, int r, int t = 1, int tl = 1, int tr = n) {
+    if (r < tl || tr < l) return 0;
+    if (l <= tl && tr <= r) return tree[t].first;
+    pushdown(t);
+    int tm = (tl + tr) >> 1;
+    return (query(l, r, t << 1, tl, tm) + query(l, r, t << 1 | 1, tm + 1, tr)) % MOD;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cin >> n >> q;
+    fill_n(tree, MAXN * 4, pll{0, 1});
+    for (int i = 1; i <= n; ++i) {
+        ll a;
+        cin >> a;
+        update(i, i, a);
+    }
+    while (q--) {
+        int t;
+        cin >> t;
+        if (t == 1) {
+            int l, r;
+            ll v;
+            cin >> l >> r >> v;
+            update(l, r, v);
+        } else if (t == 2) {
+            int l, r;
+            cin >> l >> r;
+            cout << query(l, r) << '\n';
+        }
+    }
+}
+    \end{Verbatim}
+    \item Olympia aka. Maria Chrysafis's:
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+#pragma GCC optimize("O1")
+#pragma GCC optimize("Ofast") // if drop this, TLE on test 18 Codeforces
+using namespace std;
+using ll = long long;
+const int MOD = 1e9 + 7;
+
+struct Matrix {
+    ll arr[2][2];
+    Matrix operator*(Matrix m1) {
+        Matrix ans;
+        for (int i = 0; i < 2; ++i)
+        for (int j = 0; j < 2; ++j) {
+            ans.arr[i][j] = 0;
+            for (int k = 0; k < 2; ++k) ans.arr[i][j] += (arr[i][k] * m1.arr[k][j]) % MOD;
+            ans.arr[i][j] %= MOD;
+        }
+        return ans;
+    }
+
+    Matrix operator + (Matrix m1) {
+        Matrix ans;
+        for (int i = 0; i < 2; ++i)
+        for (int j = 0; j < 2; ++j) {
+            ans.arr[i][j] = arr[i][j] + m1.arr[i][j];
+            if (ans.arr[i][j] >= MOD) ans.arr[i][j] -= MOD;
+        }
+        return ans;
+    }
+};
+
+Matrix powr(Matrix m, ll powr) {
+    Matrix ans = {{{1, 0}, {0, 1}}}, res = m;
+    while (powr > 0) {
+        if (powr & 1) ans = ans * res;
+        res = res * res;
+        powr >>= 1;
+    }
+    return ans;
+}
+
+vector<Matrix> vec;
+vector<ll> addLater;
+Matrix fib = {{{0, 1}, {1, 1}}};
+
+void push(ll v) {
+    addLater[2 * v + 1] += addLater[v];
+    vec[2 * v + 1] = vec[2 * v + 1] * powr(fib, addLater[v]);
+    addLater[2 * v] += addLater[v];
+    vec[2 * v] = vec[2 * v] * powr(fib, addLater[v]);
+    addLater[v] = 0;
+}
+
+void upd(int dum, ll tl, int tr, int l, int r, ll val) {
+    if (tr < l || tl > r) return;
+    if (tl >= l && tr <= r) {
+        addLater[dum] += val;
+        vec[dum] = vec[dum] * powr(fib, val);
+        return;
+    }
+    push(dum);
+    int mid = (tl + tr) >> 1;
+    upd(2 * dum, tl, mid, l, r, val);
+    upd(2 * dum + 1, mid + 1, tr, l, r, val);
+    vec[dum] = vec[2 * dum] + vec[2 * dum + 1];
+}
+
+void upd(int l, int r, ll val) {
+    upd(1, 0, (int)vec.size() / 2 - 1, l, r, val);
+}
+
+Matrix get(int dum, int tl, int tr, int &l, int &r) {
+    if (tl > r || tr < l) return {{{0, 0}, {0, 0}}};
+    if (tl >= l && tr <= r) return vec[dum];
+    push(dum);
+    int tm = (tl + tr) >> 1;
+    return get(dum * 2, tl, tm, l, r) + get(dum * 2 + 1, tm + 1, tr, l, r);
+}
+
+Matrix get(int l, int r) {
+    return get(1, 0, (int)vec.size() / 2 - 1, l, r);
+}
+
+void resz(ll n) {
+    ll sz = ((1 << (ll)ceil(log2(n))));
+    vec.assign(sz * 2, {{{1, 0}, {0, 1}}});
+    addLater.assign(sz * 2, 0);
+}
+
+class CSashaArray {
+    public:
+    void solve(std::istream &in, std::ostream &out) {
+        ios_base::sync_with_stdio(false);
+        cin.tie(NULL);
+        int n, m;
+        in >> n >> m;
+        resz(n);
+        for (int i = 0; i < n; ++i) {
+            int x;
+            in >> x;
+            upd(i, i, x);
+        }
+        while (m--) {
+            int t;
+            in >> t;
+            if (t == 2) {
+                int u, v;
+                in >> u >> v;
+                --u, --v;
+                out << get(u, v).arr[0][1] << '\n';
+            } else {
+                int l, r, x;
+                in >> l >> r >> x;
+                --l, --r;
+                upd(l, r, x);
+            }
+        }
+    }
+};
+
+int main() {
+    CSashaArray solver;
+    std::istream& in(std::cin);
+    std::ostream& out(std::cout);
+    solver.solve(in, out);
+}
+    \end{Verbatim}
+\end{proof}
+
+
+
 %------------------------------------------------------------------------------%
 
 \section{Fast Doubling Technique -- Kỹ Thuật Nhân Đôi Nhanh}
@@ -954,6 +1508,172 @@ int main() {
 \begin{question}
     Which nonlinear recurrences can be solved by fast doubling technique?
 \end{question}
+
+\begin{baitoan}[Biểu thức lượng giác, author: Prof. {\sc Trần Đan Thư}]
+    Với mỗi $n\in\mathbb{N}$, đặt $S_n\coloneqq4^n(\sin^{2n}15^\circ + \cos^{2n}15^\circ)$. Ta cần tính giá trị $S_n\mod m$, i.e., số dư khi chia $S_n$ cho $m$ khi $S_n$ có giá trị nguyên; quy ước giá trị này là $-1$ nếu xảy ra trường hợp $S_n$ không phải là số nguyên.
+    \item {\sf Input.}  Mỗi test chứa nhiều test cases. Dòng đầu tiên chứa số test cases $t$ ($1\le t\le10^4$). Mỗi test case gồm 1 dòng chứa 2 số nguyên $n,m$ cách nhau bởi 1 khoảng trắng ($1\le m,n\le10^8$).
+    \item {\sf Output.} In ra kết quả $S_n\mod m$.
+    \item {\sf Sample.}
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{|l|l|}
+            \hline
+            \verb|trigonometric_expression.inp| & \verb|trigonometric_expression.out| \\
+            \hline
+            5 & 0\\
+            2 2 & 0\\
+            3 4 & 2\\
+            4 8 & 0\\
+            5 2 & 52\\
+            3 100 & \\
+            \hline
+        \end{tabular}
+    \end{table}
+    \item {\sf Lưu ý.} Biết $\sin15^\circ$ và $\cos15^\circ$ là 2 số vô tỷ, nhưng $S_n$ được thiết kế để tạo ra dãy số nguyên, i.e., $S_n\in\mathbb{Z}$, $\forall n\in\mathbb{N}$ (ngoại trừ một số giá trị $S_n$ không nguyên nếu có mà ta đã quy ước dùng $-1$ thay cho biểu thức $S_n\mod m$). Các kiểu số thực thông thường của các ngôn ngữ lập trình hiện nay có hiệu ứng sai số không thể chấp nhận được khi làm tròn số thực thành số nguyên. Thuật toán của bạn cần nguyên hóa các công thức, bởi vì việc tính toán không chấp nhận sai sót dù chỉ 1-bit.
+\end{baitoan}
+
+\begin{proof}[1st solution: recurrence]
+    TLE.
+    \item {\sf C++ implementation.}
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <iostream>
+using namespace std;
+using ll = long long;
+
+void solve() {
+    ll n, m;
+    cin >> n >> m;
+    if (m == 1) {
+        cout << "0\n";
+        return;
+    }
+    if (n == 0) {
+        cout << 2 % m << '\n';
+        return;
+    }
+    if (n == 1) {
+        cout << 4 % m << '\n';
+        return;
+    }
+    ll S_prev2 = 2 % m, S_prev1 = 4 % m, S_curr = 0;
+    for (int i = 2; i <= n; ++i) {
+        S_curr = (4 * S_prev1 - S_prev2) % m;
+        if (S_curr < 0) S_curr += m;
+        S_prev2 = S_prev1;
+        S_prev1 = S_curr;
+    }
+    cout << S_curr << '\n';
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int t;
+    cin >> t;
+    while (t--) solve();
+}
+    \end{Verbatim}
+\end{proof}
+
+\begin{proof}[2nd solution: fast doubling]
+
+    \item {\sf C++ implementation.}
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+pair<ll, ll> S(int n, int m) {
+    if (!n) return {2 % m, 4 % m}; // base case: S_0 = 2, S_1 = 4
+    auto [Sk, Sk1] = S(n >> 1, m); // S_k & S_{k + 1}
+    // S_{2k} = (S_k)^2 - 2, S_{2k+1} = S_k * S_{k+1} - 4
+    ll S2k = (Sk * Sk - 2) % m, S2k1 = (Sk * Sk1 - 4) % m;
+    if (S2k < 0) S2k += m;
+    if (S2k1 < 0) S2k1 += m;
+    if (n & 1) { // return {S_{2k+1}, S_{2k+2}}
+        ll S2k2 = (4 * S2k1 - S2k) % m;
+        if (S2k2 < 0) S2k2 += m;
+        return {S2k1, S2k2};
+    } else return {S2k, S2k1}; // return {S_{2k}, S_{2k+1}}
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int t;
+    cin >> t;
+    while (t--) {
+        int n, m;
+        cin >> n >> m;
+        pair<ll, ll> ans = S(n, m);
+        cout << ans.first << '\n';
+    }
+}
+    \end{Verbatim}
+\end{proof}
+
+\begin{proof}[3rd solution: matrix multiplication]
+    \item {\sf C++ implementation.}
+    \begin{Verbatim}[numbers=left,xleftmargin=0mm]
+#include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+
+struct Matrix {
+    ll mat[2][2];
+    Matrix() {
+        mat[0][0] = mat[0][1] = mat[1][0] = mat[1][1] = 0;
+    }
+};
+
+Matrix multiply(Matrix A, Matrix B, ll m) {
+    Matrix C;
+    for (int i = 0; i < 2; ++i)
+        for (int j = 0; j < 2; ++j)
+            for (int k = 0; k < 2; ++k)
+                C.mat[i][j] = (C.mat[i][j] + (A.mat[i][k] * B.mat[k][j]) % m + m) % m;
+    return C;
+}
+
+Matrix power(Matrix A, ll p, ll m) {
+    Matrix res;
+    res.mat[0][0] = 1, res.mat[1][1] = 1; // identity matrix
+    A.mat[0][1] %= m;
+    while (p > 0) {
+        if (p & 1) res = multiply(res, A, m);
+        A = multiply(A, A, m);
+        p >>= 1;
+    }
+    return res;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int t;
+    cin >> t;
+    while (t--) {
+        int n, m;
+        cin >> n >> m;
+        if (!n) cout << 2 % m << '\n';
+        else if (n == 1) cout << 4 % m << '\n';
+        else {
+            Matrix A;
+            A.mat[0][0] = 4, A.mat[0][1] = -1, A.mat[1][0] = 1, A.mat[1][1] = 0;
+            A = power(A, n - 1, m); // compute A^{n - 1}
+            ll S0 = 2, S1 = 4; // base case
+            ll ans = ((A.mat[0][0] * S1) % m + (A.mat[0][1] * S0) % m) % m;
+            if (ans < 0) ans += m;
+            cout << ans << '\n';
+        }
+    }
+}
+    \end{Verbatim}
+\end{proof}
+
+\begin{remark}
+    Bài toán trên có thể mở rộng cho các công thức truy hồi có dạng: ???
+\end{remark}
 
 %------------------------------------------------------------------------------%
 

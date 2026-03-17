@@ -1,0 +1,25 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+double f(double a, double x, double n);
+double Df(double a, double x, double n);
+double D2f(double a, double x, double n);
+
+int main() {
+    double a, x, n; cin >> a >> x >> n;
+    cout << f(a, x, n) << endl;
+    cout << Df(a, x, n) << endl;
+    cout << D2f(a, x, n) << endl;
+}
+
+double f(double a, double x, double n) {
+    return a * pow(x, n);
+}
+
+double Df(double a, double x, double n) {
+    return a * n * pow(x, n - 1);
+}
+
+double D2f(double a, double x, double n) {
+    return a * n * (n - 1) * pow(x, n - 2);
+}

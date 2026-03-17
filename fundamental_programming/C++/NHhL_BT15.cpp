@@ -25,20 +25,20 @@ void BT3(int a, int b, int c) {
             cout << "HLP\n";
             double Sxq = 4 * pow(a, 2);
             cout << " Diện Tích xung quanh = " << Sxq << '\n';
-            
+
             double Sxp = 6 * pow(a, 2);
             cout << " Diện Tích toàn phần = " << Sxp << '\n';
-            
+
             double TheTich = pow(a, 3);
             cout << " Thể Tích = " << TheTich << '\n';
         } else {
             cout << "HHCN\n";
             double Sxq = 2 * (a + b) * c;
             cout << " Diện Tích xung quanh = " << Sxq << '\n';
-            
-            double Sxp = 2 * (a*b + b*c + c*a);
+
+            double Sxp = 2 * (a * b + b * c + c * a);
             cout << " Diện Tích toàn phần = " << Sxp << '\n';
-            
+
             double TheTich = (double)a * b * c;
             cout << " Thể Tích = " << TheTich << '\n';
         }
@@ -53,7 +53,7 @@ void BT4(double x, double y) {
 void BT5(double a, double b) {
     if (a == 0) {
         if (b == 0) cout << "Vô Số Nghiệm\n";
-        else cout << "Vô Nghiệm\n";    
+        else cout << "Vô Nghiệm\n";
     } else cout << "x = " << -b / a << '\n';
 }
 
@@ -64,10 +64,10 @@ void BT6(double a, double b, double c) {
             else cout << "Không Giải Pháp \n";
         } else cout << "x = " << -c / b << '\n';
     } else {
-        double delta = b*b - 4*a*c;
+        double delta = b * b - 4 * a * c;
         if (delta > 0) {
-            cout << "x1 = " << (-b + sqrt(delta)) / (2*a) << "\nx2 = " << (-b - sqrt(delta)) / (2*a) << '\n';
-        } else if (delta == 0) cout << "Nghiệm Kép: x = " << -b / (2*a) << '\n';
+            cout << "x1 = " << (-b + sqrt(delta)) / (2 * a) << "\nx2 = " << (-b - sqrt(delta)) / (2 * a) << '\n';
+        } else if (delta == 0) cout << "Nghiệm Kép: x = " << -b / (2 * a) << '\n';
         else cout << "Nghiệm Phức (delta < 0)\n";
     }
 }
@@ -109,11 +109,11 @@ void BT9(int n) {
 void BT10(int n) {
     string str;
     switch (n) {
-        case 0: str="Zero"; break; case 1: str="One"; break; case 2: str="Two"; break;
-        case 3: str="Three"; break; case 4: str="Four"; break; case 5: str="Five"; break;
-        case 6: str="Six"; break; case 7: str="Seven"; break; case 8: str="Eight"; break;
-        case 9: str="Nine"; break; case 10: str="Ten"; break;
-        default: str = (n < 0) ? "Negative" : "Greater than ten";
+    case 0: str = "Zero"; break; case 1: str = "One"; break; case 2: str = "Two"; break;
+    case 3: str = "Three"; break; case 4: str = "Four"; break; case 5: str = "Five"; break;
+    case 6: str = "Six"; break; case 7: str = "Seven"; break; case 8: str = "Eight"; break;
+    case 9: str = "Nine"; break; case 10: str = "Ten"; break;
+    default: str = (n < 0) ? "Negative" : "Greater than ten";
     }
     cout << "Result: " << str << '\n';
 }
@@ -171,11 +171,11 @@ int main() {
 
     int n, m, x_int;
     double a, b, c, A, B, C;
-    double gioi_han_M; 
+    double gioi_han_M;
     long long so_du;
-    
 
-    cout << "~Bài tập 1~\nNhập Cảnh hình Vuông: ";
+
+    cout << "~Bài tập 1~\nNhập Cạnh hình Vuông: ";
     cin >> n;
     BT1(n);
 
@@ -220,9 +220,9 @@ int main() {
     cout << "\n~Bài tập 12 & 13~\nNhập N (số pt) va m (số mũ): ";
     cin >> n >> m;
     BT12(n, m);
-    
+
     cout << "Nhập giới Hạn tổng M: ";
-    cin >> gioi_han_M; 
+    cin >> gioi_han_M;
     BT13(n, m, gioi_han_M);
 
     cout << "\n~Bài tập 14 (NOVA BANK)~\nNhập số dư ban đầu: ";

@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage[backend=biber,natbib=true,style=alphabetic,maxbibnames=50]{biblatex}
 \addbibresource{/home/nqbh/reference/bib.bib}
+\addbibresource{/home/nqbh/reference/NQBH_bib.bib}
 \usepackage[utf8]{vietnam}
 \usepackage{tocloft}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
@@ -10,6 +11,7 @@
 \allowdisplaybreaks
 \newtheorem{assumption}{Assumption}
 \newtheorem{baitoan}{Bài toán}
+\newtheorem{bode}{Bổ đề}
 \newtheorem{cauhoi}{Câu hỏi}
 \newtheorem{conjecture}{Conjecture}
 \newtheorem{corollary}{Corollary}
@@ -76,9 +78,113 @@
 \section{Algebra -- Đại Số}
 Gồm 2 phần: Đại số tuyến tính (Linear Algebra) \& Đại số trừu tượng (Abstract Algebra). Olympic Toán Sinh Viên thường nghiêng về Đại số tuyến tính nhiều hơn.
 
-\paragraph{Notation -- Ký hiệu.} Ta sử dụng ký hiệu $\mathbb{F}$ để chỉ 1 {\it trường} (field). Với sinh viên các ngành không phải Toán \& cận Toán thì chỉ cần quan tâm trường hợp $\mathbb{F} = \mathbb{R}$, còn các ngành cận Toán như Khoa học Máy tính, Công nghệ thông tin, Vật lý, etc., thì chỉ cần quan tâm các trường hợp $\mathbb{F}\in\{\mathbb{R},\mathbb{C}\}$, với sinh viên các ngành Toán, Toán--Tin, Toán--Cơ--Tin, nên quan tâm $\mathbb{F}\in\{\mathbb{R},\mathbb{C},\mathbb{Z}_p\mbox{ với } p \mbox{ nguyên tố}\}$ vì $\mathbb{Z}_p$ với $p$ nguyên tố, để làm các bài Đa thức \& Số học trong đề Đại số.
+\paragraph{Notation -- Ký hiệu.} $\mathbb{N},\mathbb{N}^\star,\mathbb{Z},\mathbb{Q},\mathbb{R}$ lần lượt là các tập số tự nhiên, số nguyên dương, số nguyên, số hữu tỷ, số thực, $\overline{\mathbb{R}} = \mathbb{R}\cup\{\pm\infty\}$ là tập số thực mở rộng. Với $A$ là 1 trong các tập số này thì $A_{\ge a} = \{x\in A;x\ge a\}$, các tập $A_{> a},A_{\le a},A_{< a}$ được định nghĩa tương tự.
 
-Với 1 ma trận $A\in M_{m\times n}(\mathbb{F})$, gọi $r_i(A),c_j(A)$ lần lượt là dòng (row) thứ $i\in[m]$, cột (column) thứ $j\in[n]$ của ma trận $A$.
+Ta sử dụng ký hiệu $F$ để chỉ 1 {\it trường} (field). Với sinh viên các ngành không phải Toán \& cận Toán thì chỉ cần quan tâm trường hợp $F = \mathbb{R}$, còn các ngành cận Toán như Khoa học Máy tính, Công nghệ thông tin, Vật lý, etc., thì chỉ cần quan tâm các trường hợp $F\in\{\mathbb{R},\mathbb{C}\}$, với sinh viên các ngành Toán, Toán--Tin, Toán--Cơ--Tin, nên quan tâm $F\in\{\mathbb{R},\mathbb{C},\mathbb{Z}_p\mbox{ với } p \mbox{ nguyên tố}\}$ \& trường hữu hạn gồm $q$ phần tử $F_q$, vì $\mathbb{Z}_p$ với $p$ nguyên tố, để làm các bài Đa thức \& Số học trong đề Đại số.
+
+Với 1 ma trận $A\in M_{m\times n}(F)$, gọi ${\bf r}_i(A),{\bf c}_j(A)$ lần lượt là dòng (row) thứ $i\in[m]$, cột (column) thứ $j\in[n]$ của ma trận $A$:
+\begin{align*}
+	{\bf r}_i(A)&\coloneqq(a_{i1},a_{i2},\ldots,a_{in})\in M_{1\times n}(F),\ \forall i\in[m],\\
+	{\bf c}_j(A)&\coloneqq(a_{1j},a_{2j},\ldots,a_{mj})^\top = \begin{pmatrix}
+		a_{1j}\\a_{2j}\\\vdots\\a_{mj}
+	\end{pmatrix}\in M_{m\times1}(F) = F^m,\ \forall j\in[n].
+\end{align*}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Vector space -- Không gian vector}
+
+\paragraph{Resources.} \cite[Chương 1]{Hoa_linear_algebra}, \cite{Hung_linear_algebra}, \cite{Trung_linear_algebra}.
+
+\begin{dinhnghia}[Không gian vector]
+	\label{def: vector space}
+	Tập hợp $V\ne\emptyset$ cùng với {\rm phép cộng vector} $+:V\times V\to V:(x,y)\mapsto x + y$ \& {\rm phép nhân vô hướng} $\cdot:F\times V\to V:(\alpha,x)\mapsto\alpha x$ được gọi là {\rm không gian vector} trên trường $F$ nếu các điều kiện sau thỏa mãn:
+	\item(i) Tính chất kết hợp của phép cộng vector: $(x + y) + z = x + (y + z)$, $\forall x,y,z\in V$.
+	\item(ii) Tính chất giao hoán của phép cộng vector: $x + y = y + x$, $\forall x,y,z\in V$.
+	\item(iii) Tồn tại vector $0_V$, gọi là {\rm vector không}, đóng vai trò là phần tử trung hòa của phép cộng vector trên $V$, có tính chất $0_V + x = x + 0_V = x$, $\forall x\in V$.
+	\item(iv) Tồn tại vector $-x\in V$, gọi là {\rm vector đối} của vector $x\in V$, sao cho $x + (-x) = (-x) + x = 0_V$, $\forall x\in V$.
+	\item(v) $(\alpha\beta)x = \alpha(\beta x)$, $\forall\alpha,\beta\in F$, $\forall x\in V$.
+	\item(vi) $(\alpha + \beta)x = \alpha x + \beta x$, $\forall\alpha,\beta\in F$, $\forall x\in V$.
+	\item(vii) $\alpha(x + y) = \alpha x + \alpha y$, $\forall\alpha\in F$, $\forall x,y\in V$.
+	\item(viii) $1x = x$, $\forall x\in V$.\footnote{$x1$ không có nghĩa vì ta chỉ mới định nghĩa phép toán nhân vô hướng với vector, còn phép toán nhân vector với vô hướng chưa được định nghĩa: thứ tự các biến của 1 phép toán rất quan trọng.}
+	
+	Ta gọi phần tử của $V$ là {\rm vector}, phần tử của $K$ là {\rm phần tử vô hướng}.
+\end{dinhnghia}
+
+\begin{bode}[\cite{Hoa_linear_algebra}, Bổ đề 1.2, p. 16]
+	Cho $U$  là 1 tập con khác rỗng của không gian vector $V$ trên trường $F$. 2 điều kiện sau là tương đương:
+	\item(i) $U$ là không gian con của $V$, i.e., $U$ đóng với phép cộng vector \& phép nhân vô hướng, \& cùng với 2 phép toán cảm sinh, bản thân nó là 1 không gian vector trên trường $F$.
+	\item(ii) $U$ đóng với phép cộng vector \& phép nhân vô hướng.
+\end{bode}
+
+\begin{hequa}[\cite{Hoa_linear_algebra}, Hệ quả 1.3, p. 16]
+	Nếu $U$ là không gian con của không gian vector $V$, thì $0_V\in U$.
+\end{hequa}
+Để chứng minh 1 tập hợp $X$ là 1 không gian vector (trên trường $F$), có 2 phương pháp chính:
+\begin{enumerate}
+	\item Sử dụng định nghĩa \ref{def: vector space} của không gian vector.
+	\item Kiểm tra xem $X$ có là không gian con của 1 không gian vector $V$ nào đó không, nhờ vào \cite[Bổ đề 1.2, p. 16]{Hoa_linear_algebra}.
+\end{enumerate}
+
+\paragraph{Exercises.} Đọc hiểu các ví dụ \cite[Chương 1]{Hoa_linear_algebra} \& làm \cite[Bài 1.1--1.18]{Hoa_linear_algebra}.
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Linear independence \& spanning set -- Độc lập tuyến tính \& hệ sinh}
+
+\begin{dinhnghia}[Phụ thuộc tuyến tính, độc lập tuyến tính, tổ hợp tuyến tính, \cite{Hoa_linear_algebra}, ĐN2.1, p. 20]
+	Cho $V$ là 1 không gian vector trên trường $F$. Các vector $\{v_i\}_{i=1}^n$ được gọi là {\rm phụ thuộc tuyến tính} nếu tồn tại $\alpha_1,\ldots,\alpha_n\in F$ không đồng thời bằng $0_F$ (i.e., $(\alpha_1,\ldots,\alpha_n)\ne(0_F,\ldots,0_F)\in F^n$) sao cho
+	\begin{equation*}
+		\sum_{i=1}^n \alpha_iv_i = \alpha_1v_1 + \cdots + \alpha_nv_n = 0_V.
+	\end{equation*}
+	Tập vector $S$ được gọi là {\rm phụ thuộc tuyến tính} nếu nó chứa 1 hệ hữu hạn vector phụ thuộc tuyến tính.
+	
+	Tập vector không phụ thuộc tuyến tính được gọi là {\rm độc lập tuyến tính}.
+	
+	Biểu thức $\sum_{i=1}^n \alpha_iv_i = \alpha_1v_1 + \cdots + \alpha_nv_n$ được gọi là 1 {\rm tổ hợp tuyến tính} của các phần tử $v_1,\ldots,v_n$. Nếu $v$ là 1 tổ hợp tuyến tính của $v_1,\ldots,v_n$ thì ta cũng nói $v$ {\rm biểu diễn tuyến tính} qua $v_1,\ldots,v_n$.
+\end{dinhnghia}
+
+\begin{hequa}[\cite{Hoa_linear_algebra}, HQ2.2, p. 22]
+	(i) Tập con của 1 tập độc lập tuyến tính là độc lập tuyến tính.
+	\item(ii) 1 tập chứa 1 tập phụ thuộc tuyến tính là phụ thuộc tuyến tính.
+\end{hequa}
+
+\begin{bode}[\cite{Hoa_linear_algebra}, BĐ2.3, p. 22]
+	Tập $S$ phụ thuộc tuyến tính khi nó chứa 1 vector biểu diễn tuyến tính qua các vector còn lại.
+\end{bode}
+
+\begin{hequa}[\cite{Hoa_linear_algebra}, HQ2.4, p. 22]
+	Nếu $\dim V = n$ thì mọi tập từ $n + 1$ phần tử trở lên đều phụ thuộc tuyến tính, còn tập có tối đa $n - 1$ phần tử không thể là hệ sinh.
+\end{hequa}
+{\bf Intuition.} Hiểu theo kiểu tập có $\le n - 1$ phần tử thì không đủ khả năng mô tả (expressivity) hay biểu diễn tuyến tính của tất cả các vector trong không gian vector $V$ $n$ chiều, còn tập có $n + 1$ phần tử thì theo lại bị bão hòa nên sẽ phải có phần tử biểu diễn tuyến tính được qua các phần tử còn lại.
+
+\begin{dinhly}[\cite{Hoa_linear_algebra}, ĐL2.5, p. 22]
+	1 ma trận vuông có định thức khác $0$ $\Leftrightarrow$ các vector dòng (tương ứng các vector cột) của nó độc lập tuyến tính.
+\end{dinhly}
+
+\begin{dinhnghia}[\cite{Hoa_linear_algebra}, ĐN2.6, p. 23]
+	Cho $S$ là 1 tập con của không gian vector $V$. Ta gọi tập hợp các tổ hợp tuyến tính của các phần tử thuộc $S$ là {\rm bao tuyến tính} của $S$ \& ký hiệu là $E(S)$ hay $\operatorname{span}(S)$. $S$ được gọi là {\rm hệ sinh} của $V$ nếu $E(S) = V$. Ta nói hệ sinh $S$ là {\rm tối tiểu} nếu $S$ không chứa 1 tập con thực sự cũng là hệ sinh.
+\end{dinhnghia}
+{\bf Intuition.} Hệ sinh có thể hiểu theo kiểu là khung xương sống của 1 không gian vector.
+
+\begin{bode}[\cite{Hoa_linear_algebra}, BĐ2.7, p. 23]
+	$E(S)$ là không gian con nhỏ nhất của $V$ chứa $S$.
+\end{bode}
+
+%------------------------------------------------------------------------------%
+
+\subsubsection{Cơ sở, chiều, \& hạng của 1 hệ vector}
+
+\begin{dinhnghia}[\cite{Hoa_linear_algebra}, ĐN3.1, p. 29]
+	Hệ vector $S\subset V$ được gọi là {\rm cơ sở (base)}  của $V$ nếu mỗi vector của $V$ có thể được biểu diễn tuyến tính duy nhất qua hệ $S$.
+	
+	Nếu tập được sắp hoàn toàn $S = \{v_i\}_{i\in I}$là cơ sở của $V$ \& $v\in V$, thì bộ phần tử $\{\alpha_i\}_{i\in I}$ được gọi là {\rm tọa độ (coordinate)} của $v$ theo $S$ khi $v = \sum_{i\in I} \alpha_iv_i$.
+\end{dinhnghia}
+
+\begin{dinhly}[Định lý đánh tráo Steinitz, \cite{Hoa_linear_algebra}, ĐL3.2, p. 29]
+	Số vector trong mọi cơ sở của không gian vector $V$ hữu hạn sinh là như nhau. Số này được gọi là chiều của $V$, \& được ký hiệu là $\dim V$.
+\end{dinhly}
+Khi cố định 1 cở sở $B = \{b_1,\ldots,b_n\}\subset V$ với $\dim V = n$, thì mỗi vector $v\in V$ được xác định duy nhất bằng tọa độ của nó trong $B$, thường được ký hiệu bởi $[v]_B\coloneqq(\alpha_1,\ldots,\alpha_n)^\top$ (1 vector cột $n$ chiều) với $v = \sum_{i=1}^n \alpha_ib_i$.
 
 %------------------------------------------------------------------------------%
 
@@ -94,11 +200,11 @@ Với 1 ma trận $A\in M_{m\times n}(\mathbb{F})$, gọi $r_i(A),c_j(A)$ lần 
 		(A + B)^2 &= (A + B)(A + B) = A^2 + AB + BA + B^2 = A^2 + AB + AB + B^2 = A^2 + 2AB + B^2,\\
 		(A - B)^2 &= (A - B)(A - B) = A^2 - AB - BA + B^2 = A^2 - AB - AB + B^2 = A^2 - 2AB + B^2. 
 	\end{align*}
-	Chú ý đẳng thức $AB = BA$ đã hàm ý luôn việc $A,B\in M_n(\mathbb{R})$ (i.e., 2 ma trận $A,B$ phải vuông \& cùng cấp). Thật vậy, giả sử $A\in  M_{m\times n}(\mathbb{F}),B\in M_{p\times q}(\mathbb{F})$, để tích $AB$ xác định thì $n = p$, \& để tích $BA$ xác định thì $q = m$. Khi đó $AB\in M_m(\mathbb{F}),BA\in M_n(\mathbb{F})$, đẳng thức $AB = BA$ suy ra $m = n$. Vậy $A,B\in M_n(\mathbb{R})$.
+	Chú ý đẳng thức $AB = BA$ đã hàm ý luôn việc $A,B\in M_n(\mathbb{R})$ (i.e., 2 ma trận $A,B$ phải vuông \& cùng cấp). Thật vậy, giả sử $A\in  M_{m\times n}(F),B\in M_{p\times q}(F)$, để tích $AB$ xác định thì $n = p$, \& để tích $BA$ xác định thì $q = m$. Khi đó $AB\in M_m(F),BA\in M_n(F)$, đẳng thức $AB = BA$ suy ra $m = n$. Vậy $A,B\in M_n(\mathbb{R})$.
 \end{remark}
 Tương tự, ta có kết quả sau:
 
-\begin{lemma}[Các hằng đẳng thức cho 2 ma trận giao hoán]
+\begin{bode}[Các hằng đẳng thức cho 2 ma trận giao hoán]
 	Cho 2 ma trận $A,B\in M_n(\mathbb{C})$ giao hoán, i.e., $AB = BA$, \& 1 hằng đẳng thức đại số 2 biến có dạng $f(x,y) = 0$. Khi đó $f(A,B) = 0_n$.
 	
 	Nói riêng, ta có công thức nhị thức Newton sau cho 2 ma trận $A,B$:
@@ -108,7 +214,7 @@ Tương tự, ta có kết quả sau:
 		A^n - B^n &= (A - B)\sum_{i=0}^{n-1} A^{n - 1 - i}B^i,\ \forall n\in\mathbb{N}^\star\\
 		A^{2n + 1} - B^{2n + 1} &= (A + B)\sum_{i=0}^{2n} (-1)^iA^{2n - i}B^i,\ \forall n\in\mathbb{N}^\star
 	\end{align*}
-\end{lemma}
+\end{bode}
 
 %------------------------------------------------------------------------------%
 
@@ -128,32 +234,32 @@ E.g.:
 	\end{equation*}
 	\item(a) Tính $\operatorname{rank}M(2022)$.
 	\item(b) Tính $\det M(a)$ theo $a$.
-	\item(c) Xét hệ phương trình tuyến tính thuần nhất $M(a)X = {\bf0}$, trong đó $X = (x_1,x_2,x_3,x_4)^\top$ là vector cột gồm 4 tọa độ $x_1,x_2,x_3,x_4\in\mathbb{R}$. Tìm số chiều của không gian nghiệm của hệ phương trình tuyến tính thuần nhất $M(2022)X = {\bf0}$. Khi nào hệ phương trình tuyến tính thuần nhất $M(a)X = {\bf0}$ chỉ có hữu hạn nghiệm?
+	\item(c) Xét hệ phương trình tuyến tính thuần nhất $M(a)X = {\bf0}_4$, trong đó $X = (x_1,x_2,x_3,x_4)^\top$ là vector cột gồm 4 tọa độ $x_1,x_2,x_3,x_4\in\mathbb{R}$. Tìm số chiều của không gian nghiệm của hệ phương trình tuyến tính thuần nhất $M(2022)X = {\bf0}_4$. Khi nào hệ phương trình tuyến tính thuần nhất $M(a)X = {\bf0}_4$ chỉ có hữu hạn nghiệm?
 \end{baitoan}
 
 \begin{proof}[Phân tích]
 	Đập ngay vào mắt, $M(a)$ có mỗi dòng \& mỗi cột đều chứa đúng 4 số $a,2023,2024,2025$ nên nếu thực hiện phép biến đổi sơ cấp 3 trên dòng{\tt/}cột bằng cách gán tổng của 4 dòng{\tt/}cột cho 1 dòng, e.g., dòng cuối $r_4$, thì sẽ thu được:
 	\begin{equation*}
-		r_4\coloneqq r_1 + r_2 + r_3 + r_4 = (a + 2023 + 2024 + 2025)(1,1,1,1),
+		{\bf r}_4(M(a))\coloneqq\sum_{i=1}^4 {\bf r}_i(M(a)) = (a + 2023 + 2024 + 2025)(1,1,1,1),
 	\end{equation*}
 	nên nếu $a = -(2023 + 2024 + 2025)$ thì dòng $r_4$ này bằng $(0,0,0,0)$, nên đa thức đặc trưng $p_A(x)$ sẽ có 1 nghiệm là $x = -(2023 + 2024 + 2025) = -6072$.
 \end{proof}
 
-\begin{lemma}
+\begin{bode}
 	Nếu tồn tại 1 tổ hợp tuyến tính của các hàng hoặc các cột của 1 ma trận vuông $A\in M_n(\mathbb{C})$ thì $\det A = 0$.
-\end{lemma}
+\end{bode}
 
-\begin{lemma}
+\begin{bode}
 	Nếu $A\in M_n(\mathbb{R})$ giao hoán với mọi ma trận $B\in M_n(\mathbb{R})$ thì $A$ có dạng $A = cI_n$ với $c\in\mathbb{R}$.
-\end{lemma}
+\end{bode}
 
-\begin{lemma}
+\begin{bode}
 	Cho $A = {\rm diag}(a_1,a_2,\ldots,a_n),B = {\rm diag}(b_1,b_2,\ldots,b_n)$ thì
 	\begin{align*}
 		AB &= {\rm diag}(a_1b_1,a_2b_2,\ldots,a_nb_n),\\
 		A^m &= {\rm diag}(a_1^m,a_2^m,\ldots,a_n^m),\ \forall m\in\mathbb{N}.
 	\end{align*}
-\end{lemma}
+\end{bode}
 
 \begin{tip}
 	Nếu bài Đại số yêu cầu tính $\det(A - \alpha I_n)$ thì phải xét đa thức đặc trưng $p_A(t) = \det(A - tI_n)$.
@@ -165,18 +271,18 @@ E.g.:
 Khái niệm {\it vết} (trace) chỉ được xác định với ma trận vuông, ma trận chữ nhật không vuông thì không có khái niệm vết.
 
 \begin{dinhnghia}[Vết của ma trận]
-	{\rm Vết} của 1 ma trận vuông $A = (a_{ij})_{i,j=1}^n\in M_n(\mathbb{F})$ được đặt bởi
+	{\rm Vết} của 1 ma trận vuông $A = (a_{ij})_{i,j=1}^n\in M_n(F)$ được đặt bởi
 	\begin{equation*}
-		\operatorname{tr}(A) = \sum_{i=1}^n a_{ii}\in\mathbb{F}.
+		\operatorname{tr}(A) = \sum_{i=1}^n a_{ii}\in F.
 	\end{equation*}
 \end{dinhnghia}
 See, e.g., \href{https://en.wikipedia.org/wiki/Trace_(linear_algebra)}{Wikipedia{\tt/}trace (linear algebra)}.
 
 \begin{definition}[Trace of a matrix]
-	The {\rm trace} of a square matrix $A = (a_{ij})_{i,j=1}^n\in M_n(\mathbb{F})$, denoted by $\operatorname{tr}(A)$, is the sum of
+	The {\rm trace} of a square matrix $A = (a_{ij})_{i,j=1}^n\in M_n(F)$, denoted by $\operatorname{tr}(A)$, is the sum of
 \end{definition}
 
-\paragraph{Lấy vết 2 vế của 1 phương trình ma trận.} Với 1 phương trình ma trận có dạng $f(A) = g(A)\in M_n(\mathbb{F})$
+\paragraph{Lấy vết 2 vế của 1 phương trình ma trận.} Với 1 phương trình ma trận có dạng $f(A) = g(A)\in M_n(F)$. Lấy trace 2 vế được $\operatorname{tr}(f(A)) = \operatorname{tr}(g(A))\in F$.
 
 %------------------------------------------------------------------------------%
 
@@ -317,8 +423,19 @@ See, e.g., \href{https://en.wikipedia.org/wiki/Trace_(linear_algebra)}{Wikipedia
 		\item {\bf Trường hợp $A$ không chéo hóa được.} Hy vọng $n$ đủ nhỏ hoặc có vài tính chất đơn giản để đơn giản được tính toán. Còn nếu không, trong trường hợp tổng quát, thì phải sử dụng binary exponentiation for square matrices bên Competitive Programming \& lập trình thì mới mong cứu nổi, see, e.g.
 		
 		NQBH. {\it Matrix Multiplication \& Fast Doubling Techniques in Competitive Programming}. \url{https://github.com/NQBH/advanced_STEM_beyond/blob/main/OLP_ICPC/matrix_multiplication/NQBH_matrix_multiplication.pdf}.
-	\end{enumerate}
-	
+	\end{enumerate}	
+\end{remark}
+
+\begin{remark}[Bài toán chuyển trạng thái tổng quát]
+	Sơ đồ chung của bài toán chuyển trạng thái hoặc thông tin tổng quát thường có dạng sau:
+	\begin{equation*}
+		{\bf s}_0\in F^{d_0}\xrightarrow{\phi_1}{\bf s}_1\in F^{d_1}\xrightarrow{\phi_2}{\bf s}_2\in F^{d_2}\xrightarrow{\phi_3}\cdots\xrightarrow{\phi_{n-1}}{\bf s}_{n-1}\in F^{d_{n-1}}\xrightarrow{\phi_n}{\bf s}_n\in F^{d_n}\xrightarrow{\phi_{n+1}}\cdots,
+	\end{equation*}
+	với $\{{\bf s}_n\}_{n=1}^\infty$ là dãy các trạng thái hoặc thông tin được mã hóa thành các vector, ${\bf s}_n$ là trạng thái hoặc vector thông tin ở thời điểm{\tt/}giai đoạn thứ $n$, \& $\{\phi_n\}_{n=1}^\infty$ là các ánh xạ, tuyến tính hoặc phi tuyến, e.g., ánh xạ tuyến tính, (artificial) neural networks (mạng thần kinh nhân tạo) (e.g., feedforward neural networks, recurrent neural networks, graph neural networks, etc., see, e.g., \cite{Jentzen_Kuckuck_Wurstemberger_DL}), etc., mang vai trò biến đổi trạng thái (state transform) hoặc vận chuyển thông tin (information transport) từ trạng thái đang xét (current state) sang trạng thái tiếp theo (next state). Bằng lặp hoặc quy nạp:
+	\begin{equation*}
+		{\bf s}_n = \phi_n({\bf s}_{n-1}) = \phi_n(\phi_{n-1}({\bf s}_{n-2})) = \cdots = (\phi_n\circ\phi_{n-1}\circ\cdots\phi_1)({\bf s}_0),\ \forall n\in\mathbb{N},
+	\end{equation*}
+	nên nếu muốn xác định vector trạng thái ${\bf s}_n$ thông qua vector trạng thái ban đầu ${\bf s}_0$, ta cần tính $\phi_n\circ\phi_{n-1}\circ\cdots\phi_1$.
 \end{remark}
 
 %------------------------------------------------------------------------------%
@@ -352,7 +469,7 @@ See, e.g., \href{https://en.wikipedia.org/wiki/Trace_(linear_algebra)}{Wikipedia
 	\begin{equation*}
 		A = \begin{pmatrix}
 			2 & 2\\2 & 2
-		\end{pmatrix}
+		\end{pmatrix}.
 	\end{equation*}
 	Nhận thấy $\det A = 2\times2 - 2\times2 = 0$, nên ta có thể lấy $\det$ 2 vế để tận dụng tính chất $\det A = 0$. Hơn nữa,
 	\begin{equation*}
@@ -373,9 +490,13 @@ See, e.g., \href{https://en.wikipedia.org/wiki/Trace_(linear_algebra)}{Wikipedia
 \end{tip}
 
 \begin{baitoan}
-	1 tổng quát hóa của ý (b) bài toán trên có dạng: Giải phương trình ma trận
+	Cho $p\in\mathbb{C}[x]$. Tìm cách giải phương trình ma trận $p(A) = 0_n$ với biến ma trận $A\in M_n(\mathbb{C})$.
+\end{baitoan}
+
+\begin{baitoan}
+	1 tổng quát hóa của ý (b) bài toán trên có dạng: Cho $p\in\mathbb{C}[x]$. Giải phương trình ma trận
 	\begin{equation*}
-		p(A,B)\coloneqq\sum_{i=1}^n a_iA^i + B = 0_n
+		P(A,B)\coloneqq\sum_{i=1}^n a_iA^i + B = 0_n
 	\end{equation*}
 	với biến ma trận $A\in M_n(\mathbb{R})$, còn ma trận $B\in M_n(\mathbb{R})$ được cho trước (với vai trò như hệ số tự do trong 1 đa thức 1 biến $p\in\mathbb{R}[x]$).
 \end{baitoan}
@@ -396,7 +517,7 @@ See, e.g., \href{https://en.wikipedia.org/wiki/Trace_(linear_algebra)}{Wikipedia
 
 %------------------------------------------------------------------------------%
 
-\section{Analysis}
+\section{Analysis -- Giải Tích}
 
 %------------------------------------------------------------------------------%
 
@@ -408,9 +529,9 @@ Cho 1 dãy số $\{a_n\}_{n=1}^\infty$. Đề Olympic Toán Sinh viên thường
 	\item Tính giới hạn $\lim_{n\to\infty} a_n$.
 \end{enumerate}
 
-\begin{theorem}
+\begin{dinhly}
 	Nếu 1 dãy tăng ngặt (hoặc không giảm) \& bị chặn trên thì hội tụ. Nếu 1 dãy giảm ngặt (hoặc không tăng) thì hội tụ.
-\end{theorem}
+\end{dinhly}
 
 \begin{tip}
 	Nếu dãy số có số hạng $u_n$ có công thức tổng quát là 1 tích, thì có thể dùng hàm $ln$ để biến tích thành tổng bằng cách đặt $v_n\coloneqq\ln u_n$.
@@ -424,6 +545,15 @@ Cho 1 dãy số $\{a_n\}_{n=1}^\infty$. Đề Olympic Toán Sinh viên thường
 	vì $\pi$ là số vô tỷ, khá khó chịu, nên làm trội bởi $\pi < 4$ với $4$ là 1 số chính phương gần nhất.
 \end{tip}
 
+\begin{baitoan}[VMC2025GTA1B1]
+	Cho $\{a_n\}_{n=1}^\infty$ là 1 dãy số thực được xác định bởi
+	\begin{equation*}
+		a_n = \prod_{i=1}^n \left(1 - \frac{\pi}{(i + 1)^2}\right) = \left(1 - \frac{\pi}{2^2}\right)\cdots\left(1 - \frac{\pi}{(n + 1)^2}\right),\ \forall n\in\mathbb{N}^\star.
+	\end{equation*}
+	\item(a) Chứng minh $\{a_n\}_{n=1}^\infty$ hội tụ.
+	\item(b) Giới hạn của dãy số $\{a_n\}_{n=1}^\infty$ có bằng $0$ được không? Vì sao?
+\end{baitoan}
+
 \begin{tip}
 	Nếu cần xét dấu đạo hàm $f'(x)$, có thể phải sử dụng bất đẳng thức Cauchy--Schwartz:
 	\begin{equation*}
@@ -435,10 +565,6 @@ Cho 1 dãy số $\{a_n\}_{n=1}^\infty$. Đề Olympic Toán Sinh viên thường
 	\end{equation*}
 	Nhưng cần phải nhớ kỹ công thức hằng đẳng thức Lagrange, không thì cứ sử dụng bất đẳng thức Cauchy--Schwartz.
 \end{tip}
-
-\begin{example}
-	
-\end{example}
 
 \begin{tip}
 	Nếu dính bài cần đánh giá $\cos$ thì sử dụng bất đẳng thức
@@ -461,12 +587,26 @@ I.e.,
 
 %------------------------------------------------------------------------------%
 
+\subsection{Series -- Chuỗi số}
+
+\begin{baitoan}[UIT, \cite{VMS_VMC2025}, 17., p. 40]
+	Cho dãy số $\{x_n\}_{n=1}^\infty$ với $x_1 = a\in(1,\infty)$, $x_{n+1} = x_n^2 - x_n + 1$, $\forall n\in\mathbb{N}^\star$. Chứng minh chuỗi
+	\begin{equation*}
+		S = \sum_{n=1}^\infty \frac{(-1)^{n-1}}{x_n}
+	\end{equation*}
+	hội tụ \& tính tổng $S$.
+\end{baitoan}
+
+\begin{baitoan}[Trigonometrical series -- chuỗi lượng giác]
+	Khảo sát hàm số: (a) $S(x) = \sum_{i=0}^n a_i\sin ix$, $C(x) = \sum_{i=0}^n a_i\cos ix$, $T(x) = \sum_{i=0}^n a_i\tan ix$, $CT(x) = \sum_{i=0}^n a_i\cot ix$.
+\end{baitoan}
+
+%------------------------------------------------------------------------------%
+
 \subsection{Continuous function -- Hàm số liên tục}
 {\it Intuition.} Hàm số liên tục là hàm mà khi ta vẽ đồ thị của hàm đó, thì ta không được phép nhấc cây viết lên. Nếu nhấc lên thì hàm số sẽ bị gián đoạn (discontinuities) tại điểm nhấc lên đó, nên hàm số đó không liên tục (discontinuous function).
 
-Gọi $F_{\rm elm}(\mathbb{F})$ là tập hợp các {\it hàm số sơ cấp (elementary function)} trên trường $\mathbb{F}$, see, e.g., \href{https://en.wikipedia.org/wiki/Elementary_function}{Wikipedia{\tt/}elementary functions}.
-
-
+Gọi $F_{\rm elm}(F)$ là tập hợp các {\it hàm số sơ cấp (elementary function)} trên trường $F$, see, e.g., \href{https://en.wikipedia.org/wiki/Elementary_function}{Wikipedia{\tt/}elementary functions}.
 
 \begin{dinhnghia}[Hàm số liên tục tại điểm]
 	
@@ -476,9 +616,9 @@ Gọi $F_{\rm elm}(\mathbb{F})$ là tập hợp các {\it hàm số sơ cấp (e
 	
 \end{dinhnghia}
 
-\begin{lemma}[Định lý kẹp cho giới hạn hàm số]
+\begin{bode}[Định lý kẹp cho giới hạn hàm số]
 	Cho $f,g:D\to\mathbb{R}$ là 2 hàm số thỏa mãn $|f(x)|\le g(x)$, $\forall x\in D$, $x_0\in D$, \& $\lim_{x\to x_0} g(x) = 0$. Khi đó $\lim_{x\to x_0} f(x) = 0$.
-\end{lemma}
+\end{bode}
 
 \begin{tip}
 	Để chứng minh hàm số $f(x)$ không liên tục tại $x = x_0$, có thể tìm 2 dãy số $\{x_n\}_{n=1}^\infty,\{y_n\}_{n=1}^\infty$ cùng hội tụ về $x_0$ nhưng giới hạn của 2 dãy $\{f(x_n)\}_{n=1}^\infty,\{f(y_n)\}_{n=1}^\infty$lại khác nhau, i.e.,
@@ -491,34 +631,380 @@ Gọi $F_{\rm elm}(\mathbb{F})$ là tập hợp các {\it hàm số sơ cấp (e
 	Khi đó, theo định nghĩa liên tục điểm của hàm số, $f$ không liên tục (gián đoạn) tại $x = x_0$.
 \end{tip}
 
+\begin{baitoan}[ĐH Đồng Tháp, 6., \cite{VMS_VMC2025}, p. 38]
+	Cho hàm số $f$ xác định bởi
+	\begin{equation*}
+		f(x) = \left\{\begin{split}
+			&ax^3 + b&&\mbox{if }|x|\le 1,\\
+			&\frac{2025\sin(x - 1)}{|x - 1|}&&\mbox{if }|x| > 1.
+		\end{split}\right.
+	\end{equation*}
+	Tìm $a,b$ để $f\in C(\mathbb{R})$.
+\end{baitoan}
+
 %------------------------------------------------------------------------------%
 
 \subsection{Derivatives of differentiable functions -- Các đạo hàm của các hàm số khả vi}
 
+\paragraph{Notations.} Với $\Omega\subset\mathbb{R}^d$ là 1 tập mở, Ký hiệu ${\cal D}(\Omega)$ là tập tất cả các hàm số $f\in C(\overline{\Omega})$, i.e., $f$ liên tục trên $\overline{\Omega}$ \& khả vi trên $\Omega$, i.e., đạo hàm $f'(x)$ tồn tại \& xác định tại mọi điểm $x\in\Omega$ nhưng chưa chắc $f'\in C(\Omega)$, i.e., $f'(x)$ có thể liên tục trên $\Omega$ hoặc không liên tục.
+
+\begin{dinhnghia}[Đạo hàm]
+	
+\end{dinhnghia}
+
+\begin{example}
+	A common example of a function that is differentiable but not $C^1$ is
+	\begin{equation*}
+		f(x) = \left\{\begin{split}
+			&x^2\sin\frac{1}{x}&&\mbox{if }x\ne0,\\
+			&0&&\mbox{if }x = 0,
+		\end{split}\right.
+	\end{equation*}
+	where the derivative exists everywhere but is not continuous at $x = 0$.
+\end{example}
+Bài toán sau hoàn toàn tương tự ví dụ vừa nêu:
+
+\begin{baitoan}[ĐHGTVT, \cite{VMS_VMC2025}, 11., p. 39]
+	Cho hàm số
+	\begin{equation*}
+		f(x) = \left\{\begin{split}
+			&x^2\sin\frac{1}{x^2}&&\mbox{if }x\ne0,\\
+			&a&&\mbox{if }x = 0,
+		\end{split}\right.
+	\end{equation*}
+	\item(a) Tìm $a\in\mathbb{R}$ để $f$ liên tục tại $x = 0$.
+	\item(b) Với $a$ vừa tìm được, tính $f'(x)$.
+	\item(c) Xét tính liên tục của hàm số $f'(x)$.
+\end{baitoan}
+
+\begin{baitoan}[ĐHGTVT, \cite{VMS_VMC2025}, 12., p. 39]
+	Giả sử hàm số $f:\mathbb{R}\to\mathbb{R}$ thỏa
+	\begin{equation*}
+		f(x + y) = f(x) + f(y),\ \forall x,y\in\mathbb{R}.
+	\end{equation*}
+	Chứng minh:
+	\item(a) $f(nx) = nf(x)$, $\forall n\in\mathbb{Z}$.
+	\item(b) $f$ liên tục tại 1 điểm $\Leftrightarrow$ $f$ liên tục trên $\mathbb{R}$.
+	\item(c) $f$ liên tục $\Leftrightarrow f(x) = ax$ với $a\in\mathbb{R}$.
+\end{baitoan}
+
+\begin{proof}[Giải]
+	(a) Gọi $S(a,b)$ là phép thay (substitution) $x = a,y = b$ vào phương trình hàm đang xét. $S(0,0)\Rightarrow f(0) = f(0 + 0) = f(0) + f(0)\Rightarrow f(0) = 0$. $S(x,x)\Rightarrow f(2x) = f(x + x) = f(x) + f(x) = 2f(x)$. $S(2x,x)\Rightarrow f(3x) = f(2x + x) = f(2x) + f(x) = 2f(x) + f(x) = 3f(x)$, quy nạp được $S((n - 1)x,x)\Rightarrow  f(nx) = f((n - 1)x + x) = f((n - 1)x) + f(x) = (n - 1)f(x) + f(x) = nf(x)$, $\forall n\in\mathbb{N}$, $\forall x\in\mathbb{R}$. Hơn nữa, $S(x,-x)\Rightarrow f(0) = f(x + (-x)) = f(x) + f(-x)\Rightarrow f(-x) = -f(x)$, $\forall x\in\mathbb{R}$. Nên $f(nx) = nf(x)$, $\forall n\in\mathbb{Z}$, $\forall x\in\mathbb{R}$.
+	\item(b) Chiều đảo: $f$ liên tục trên $\mathbb{R}\Rightarrow f$ liên tục tại 1 điểm là hiển hiển (tổng quát $\Rightarrow$ cụ thể). Ta cần chứng minh chiều thuận: $f$ liên tục tại 1 điểm $\Rightarrow f$ liên tục trên $\mathbb{R}$. Giả sử $f$ liên tục tại 1 điểm $c\in\mathbb{R}$ cố định, suy ra $\lim_{x\to c} f(x) = f(c)$, i.e., $\forall\varepsilon\in(0,\infty)$, $\exists\delta(\varepsilon)\in(0,\infty)$ thỏa $|x - c| < \delta(\varepsilon)\Rightarrow|f(x) - f(c)| < \varepsilon$. Khi đó, $\forall x,x_0\in\mathbb{R}$ thỏa $|x - x_0| < \delta(\varepsilon)$ thì $|(x - x_0 + c) - c| < \delta(\varepsilon)$, suy ra $|f(x) - f(x_0)| = |f(x - x_0)| = |f(x - x_0) + f(c) - f(c)| = |f(X - x_0 + c) - f(c)| < \varepsilon$, nên $\lim_{x\to x_0} f(x) = f(x_0)$, i.e., $f$ liên tục tại $x_0\in\mathbb{R}$ bất kỳ, i.e., $f$ liên tục trên $\mathbb{R}$.
+	\item(c) Chứng minh mở rộng từ tập $\mathbb{Z}$ lên $\mathbb{Q}$, rồi nâng lên $\mathbb{R}$ nhờ việc $\mathbb{Q}$ trù mật trong $\mathbb{R}$, see, e.g., \cite{Chung_day_so, Chung_pth_da_thuc}.
+\end{proof}
+
+\begin{remark}[Phương trình hàm Cauchy]
+	Bài toán yêu cầu tìm tất cả các hàm cộng tính, i.e., $f(x + y) = f(x) + f(y)$ là phương trình hàm Cauchy quen thuộc với học sinh chuyên Toán.
+\end{remark}
+
 \begin{tip}
 	Đối với các hàm số không phải là hàm sơ cấp, đặc biệt là hàm ghép lại của các hàm sơ cấp, i.e.,
 	\begin{equation*}
-		f(x) = \sum_{i=1}^{n-1} f_i(x){\bf1}_{(a_i,a_{i+1}]}(x) = \left\{\begin{split}
+		f(x) = \sum_{i=1}^{n-1} f_i(x){\bf1}_{(a_i,a_{i+1}]}(x) + f_n(x){\bf1}_{(a_n,a_{n+1})}(x) = \left\{\begin{split}
 			&f_1(x)&&\mbox{if } x\in(a_1,a_2],\\
 			&f_2(x)&&\mbox{if } x\in(a_2,a_3],\\
 			&\ldots\\
-			&f_n(x)&&\mbox{if } x\in(a_{n-1},a_n],
+			&f_{n-1}(x)&&\mbox{if } x\in(a_{n-1},a_n],\\
+			&f_n(x)&&\mbox{if } x\in(a_n,a_{n+1}),
 		\end{split}\right.
 	\end{equation*}
-	với $f_i\in F_{\rm elm}(\mathbb{R})$, $\forall i\in[n]$, $a_1,a_n\in\overline{\mathbb{R}}$, $a_i\in\mathbb{R},\ \forall i\in[[2,n-1]]$ thỏa $a_i < a_{i+1}$, $\forall i\in[n - 1]$, thì nên dùng định nghĩa của đạo hàm thông qua giới hạn để tính $f'(x)$.
+	với $f_i\in F_{\rm elm}(\mathbb{R})$, $\forall i\in[n]$, $a_1,a_{n+1}\in\overline{\mathbb{R}}$, $a_i\in\mathbb{R},\ \forall i\in[[2,n]]$ thỏa $a_i < a_{i+1}$, $\forall i\in[n]$, thì nên dùng định nghĩa của đạo hàm thông qua giới hạn để tính $f'(x)$.
 \end{tip}
 
+\begin{tip}[Đặt số thành biến]
+	Đặt các số cụ thể (thường dính tới tháng \& năm của lần thi Olympic đó) không có ảnh hưởng đến bản chất bài toán bằng cách thay chúng bằng các biến $a,b,c,x,y,z,\ldots$ cho gọn, để đỡ rối, tiện tính toán, \& dễ thấy được bản chất hoặc quy luật trong bài toán hơn.
+\end{tip}
+
+\begin{tip}
+	Khi khảo sát 1 hàm số khả vi $f(x)$ bằng các xét dấu đạo hàm $f'(x)$, ta có thể bỏ đi các nhân tử đã chắc chắc không âm, vì chúng không làm ảnh hưởng tới dấu của $f'(x)$, \& nếu phải cần tính tiếp $f''(x)$ để khảo sát đạo hàm $f'(x)$ có thể nhân $x^{2n}$ vào nếu $f'(x)$ chứa nhân tử $x^m$ dưới mẫu, nhằm mục đích triệt tiêu các nhân tử khó đạo hàm ở mẫu để tiện đạo hàm tiếp 1 lần nữa.
+\end{tip}
+
+\begin{baitoan}[VMC2025GTB2]
+	Cho $f:(0,\infty)\to\mathbb{R}$ là 1 hàm số được xác định bởi
+	\begin{equation*}
+		f(x) = \left(\frac{30^x + 4^x}{3}\right)^{\frac{1}{x}},\ \forall x\in(0,\infty).
+	\end{equation*}
+	Khảo sát tính đơn điệu của hàm $f$ trên $(0,\infty)$.
+\end{baitoan}
+
+\begin{baitoan}[VMC2025GTA2]
+	Cho $f:(0,\infty)\to\mathbb{R}$ là 1 hàm số được xác định bởi
+	\begin{equation*}
+		f(x) = \left(\frac{30^x + 4^x + 2025^x}{3}\right)^{\frac{1}{x}},\ \forall x\in(0,\infty).
+	\end{equation*}
+	Khảo sát tính đơn điệu của hàm $f$ trên $(0,\infty)$.
+\end{baitoan}
 
 %------------------------------------------------------------------------------%
 
 \subsection{Integral of integrable functions -- Tích phân của các hàm khả tích}
 
+\paragraph{Notations.} $C(X,Y)\coloneqq\{f:X\to Y;f\mbox{ is continuous}\}$ là tập hợp tất cả các hàm số liên tục $f:X\to Y$.
+
+\begin{baitoan}[VMC2025GTA5]
+	Cho $f\in C([0,1],\mathbb{R})$.
+	\item(a) Chứng minh rằng tồn tại 1 điểm $c\in(0,1)$ thỏa $\int_0^1 f\,{\rm d}x = f(c)$.
+	\item(b) Chứng minh rằng tồn tại 2 điểm phân biệt $a,b\in(0,1)$ thỏa
+	\begin{equation*}
+		\left(\int_0^1 f\,{\rm d}x\right)^2 = f(a)f(b).
+	\end{equation*}
+	\item(c) Cho trước $n\in\mathbb{N}_{\ge3}$, có tồn tại hay không $n$ điểm phân biệt $a_i\in(0,1)$, $\forall i\in[n]$ thỏa
+	\begin{equation*}
+		\left(\int_0^1 f\,{\rm d}x\right)^n = \prod_{i=1}^n f(a_i)?
+	\end{equation*}
+\end{baitoan}
+
+\begin{proof}
+	(a) Vì $f\in C([0,1],\mathbb{R})$ nên hàm $F:[0,1]\to\mathbb{R}$ xác định bởi $F(x)\coloneqq\int_0^x f(t)\,{\rm d}t$ xác định trên $[0,1]$ \& khả vi trong $(0,1)$. Theo định lý Lagrange \ref{dl: Lagrange}, tồn tại $c\in(0,1)$ thỏa $F(1) - F(0) = F'(c)$, i.e., $\int_0^1 f\,{\rm d}x = f(c)$.
+	\item(b) Với hàm $F$ được định nghĩa ở (a),  đẳng thức cần chứng minh cần chứng minh trở thành $(F'(c))^2 = F'(a)F'(b)$ với $a,b\in(0,1)$ phân biệt cần xác định. Xét 2 trường hợp:
+	\begin{itemize}
+		\item {\it Trường hợp $c$ là điểm cực trị (toàn cục) của $F'$.} W.l.o.g., giả sử $c$ là điểm cực đại, i.e., $F'(x)\le F'(c) = F(1) - F(0)$, $\forall x\in(0,1)$. Xét hàm $g:[0,1]\to\mathbb{R}$ được cho bởi
+		\begin{equation*}
+			g(x)\coloneqq F(x) - F(0) - (F(1) - F(0))x,\ \forall x\in[0,1],
+		\end{equation*}
+		có $g'(x) = F'(x) - (F(1) - F(0))\le0$, $\forall x\in(0,1)$ nên $g$ không tăng trên $[0,1]$, mà $g(0) = g(1) = 0$ nên suy ra $g$ là hàm hằng. 
+	\end{itemize}
+\end{proof}
+
+\begin{baitoan}[VMC2025GTB5]
+	Cho $f\in C([0,1],\mathbb{R})$.
+	\item(a) Chứng minh rằng tồn tại 1 điểm $c\in(0,1)$ thỏa $\int_0^1 f\,{\rm d}x = f(c)$.
+	\item(b) Trong trường hợp hàm $f$ được xác định bởi
+	\begin{equation*}
+		f(x) = \frac{e^x}{\sqrt{e} + e^x},\ \forall x\in[0,1],
+	\end{equation*}
+	xác định 1 giá trị của $c$ thỏa yêu cầu trong ý (a).
+	\item(c) Hàm $f$ cần thỏa điều kiện gì để luôn tồn tại $c\in[0,1]$ thỏa đồng thời
+	\begin{equation*}
+		\int_0^1 f\,{\rm d}x = f(c),\ \int_0^1 f^2\,{\rm d}x = f^2(c)?
+	\end{equation*}	
+\end{baitoan}
+
+\begin{baitoan}[ĐHGTVT, 13., \cite{VMS_VMC2025}, p. 39]
+	(a) Chứng minh
+	\begin{equation*}
+		\int_0^\pi xf(\sin x)\,{\rm d}x = \frac{\pi}{2}\int_0^\pi f(\sin x)\,{\rm d}x,\ \forall f\in C([0,1]).
+	\end{equation*}
+	\item(b) Tính tích phân
+	\begin{equation*}
+		I = \int_0^\pi \frac{x\sin x}{1 + \sin^2x}\,{\rm d}x.
+	\end{equation*}
+\end{baitoan}
+
+%------------------------------------------------------------------------------%
+
+\subsection{Mean-valued theorems -- Các định lý giá trị trung bình}
+
+\begin{dinhly}[Fermat]
+	\label{dl: Fermat}
+	Cho $f(x)$ xác định trên $(a,b)$. Nếu $f(x)$ đạt cực trị tại $x_0$ \& khả vi tại $x_0$ thì $f'(x_0) = 0$.
+\end{dinhly}
+
+\begin{remark}
+	Chiều ngược lại không đúng. Gọi tập nghiệm của $f'$ là
+	\begin{equation*}
+		Z(f')\coloneqq(f')^{-1}(\{0\}) = \{x\in(a,b);f'(x) = 0\},
+	\end{equation*}
+	\& tập các điểm cực trị của $f$ là
+	\begin{equation*}
+		E(f) = \{x\in D_f;x\mbox{ is an extreme point of } f\},
+	\end{equation*}
+	thì định lý Fermat \ref{dl: Fermat} chỉ khẳng định rằng nếu $f(x)$ đạt cực trị tại $x_0$ \& khả vi tại $x_0$ thì $f'(x_0) = 0$, i.e., $x_0\in Z(f')$.***
+\end{remark}
+
+\begin{dinhly}[Rolle]
+	\label{dl: Rolle}
+	Giả sử $f(x)$ xác định \& liên tục trên $[a,b]$ hữu hạn, khả vi trên $(a,b)$ \& $f(a) = f(b)$. Khi đó tồn tại $c\in(a,b)$ sao cho $f'(c) = 0$.
+\end{dinhly}
+
+\begin{dinhly}[Lagrange]
+	\label{dl: Lagrange}
+	Cho $f(x)$ xác định \& liên tục trên $[a,b]$, khả vi trên $(a,b)$. Khi đó tồn tại $c\in(a,b)$ sao cho
+	\begin{equation}
+		\label{Lagrange}
+		f'(c) = \dfrac{f(b) - f(a)}{b - a}.
+	\end{equation}
+\end{dinhly}
+
+\begin{remark}
+	Định lý \ref{dl: Lagrange} chỉ đảm bảo sự tồn tại (existence) của ít nhất 1 số $c\in(a,b)$ thỏa mãn \eqref{Lagrange}, không đảm bảo tính duy nhất (uniqueness), nên không thể định nghĩa $c$ như 1 hàm $g(f,a,b)$ \& thỏa mãn \eqref{Lagrange}, mà chỉ có thể định nghĩa tập hợp
+	\begin{equation*}
+		C_{\rm Lagrange}(f,x,y)\coloneqq\left\{c\in(x,y);f'(c) = \dfrac{f(x) - f(y)}{x - y}\right\},\ \forall f\in D([a,b]),\ \forall x,y\in[a,b], x\ne y.
+	\end{equation*}
+	Định lý Lagrange \ref{dl: Lagrange} chỉ đảm bảo rằng $C_{\rm Lagrange}(f,x,y)\ne\emptyset$, không hề nói tập $C_{\rm Lagrange}(f,x,y)$ chỉ có 1 phần tử duy nhất.
+\end{remark}
+
+\begin{dinhly}[Cauchy]
+	Cho $f(x),g(x)$ liên tục trên $[a,b]$, khả vi trên $(a,b)$, $g'(x)\ne0$, $\forall x\in(a,b)$. Khi đó tồn tại $c\in(a,b)$ sao cho
+	\begin{equation*}
+		\dfrac{f(b) - f(a)}{g(b) - g(a)} = \dfrac{f'(c)}{g'(c)}.
+	\end{equation*}
+\end{dinhly}
+
+\begin{dinhly}[Darboux]
+	\label{dl: Darboux}
+	Nếu hàm số $f(x)$ khả vi trên $(a,b)$, $\alpha,\beta\in(a,b)$ thì $f'(x)$ nhận mọi giá trị trung gian giữa $f'(\alpha)$ \& $f'(\beta)$.
+\end{dinhly}
+I.e., định lý Darboux có thể được viết như sau:
+\begin{equation*}
+	(\min\{f'(\alpha),f'(\beta)\},\max\{f'(\alpha),f'(\beta)\})\subset f'((a,b)),\ \forall f(x)\mbox{ differentiable on }(a,b),\ \forall\alpha,\beta\in(a,b).
+\end{equation*}
+
+\begin{baitoan}[\cite{Quoc_Long_Dat_Nam_VMC}, 3.14., p. 152]
+	Cho $f:\left[-\frac{\pi}{2},\frac{\pi}{2}\right]\to[-1,1]$ là 1 hàm khả vi có đạo hàm liên tục \& không âm ($f'\ge0$). Chứng minh tồn tại $x_0\in\left(-\frac{\pi}{2},\frac{\pi}{2}\right)$ sao cho $(f(x_0))^2 + (f'(x_0))^2\le1$.
+\end{baitoan}
+
+\begin{tip}[Giải các bài toán về các định lý giá trị trung bình]
+	Đối với các bài toán về các định lý giá trị trung bình, chọn đúng hàm cần xét, thường có thể đoán dựa vào (các) giả thiết của bài toán, để áp dụng đúng định lý giá trị trung bình là mấu chốt để giải. Nên các bài toán áp dụng (các) giá trị định lý trung bình (vài lần) dạng này khá thiên về kiểu đánh đố.
+\end{tip}
+
+\begin{baitoan}[UIT, 15., \cite{VMS_VMC2025}, p. 39]
+	Cho hàm $f\in C([0,1])$ thỏa $\int_0^1 f(x)\,{\rm d}x = \int_0^1 xf(x)\,{\rm d}x$. Chứng minh tồn tại $c\in(0,1)$ thỏa
+	\begin{equation*}
+		(1 - c)f(c) + c\int_0^c f(x)\,{\rm d}x = 0.
+	\end{equation*}
+\end{baitoan}
+
+\begin{proof}
+	Đặt
+	\begin{equation*}
+		g(x)\coloneqq x\int_0^x f(t)\,{\rm d}t - \int_0^x tf(t)\,{\rm d}t,\ \forall x\in[0,1],
+	\end{equation*}
+	thì
+	\begin{equation*}
+		g'(x) = \int_0^x f(t)\,{\rm d}t + xf(x) - xf(x) = \int_0^x f(t)\,{\rm d}t,\ \forall x\in(0,1).
+	\end{equation*}
+	Từ giả thiết, có $g(0) = 0$, $g(1) = \int_0^1 f(t)\,{\rm d}t  - \int_0^1 tf(t)\,{\rm d}t = 0$, theo định lý Rolle \ref{dl: Rolle}, tồn tại $\alpha\in(0,1)$ thỏa $g'(\alpha) = 0$, i.e., $\int_0^\alpha f(t)\,{\rm d}t = 0$. Xét hàm
+	\begin{equation*}
+		h(x)\coloneqq\frac{e^{-x}}{1 - x}\int_0^x f(t)\,{\rm d}t,\ \forall x\in[0,\alpha],
+	\end{equation*}
+	thì $h(0) = h(\alpha) = 0$ \&
+	\begin{equation*}
+		h'(x) = \frac{xe^{-x}}{(1 - x)^2}\int_0^x f(t)\,{\rm d}t + \frac{e^{-x}}{1 - x}f(x) = \frac{e^{-x}}{(1 - x)^2}\left[x\int_0^x f(t)\,{\rm d}t + (1 - x)f(x)\right],\ \forall x\in(0,1),
+	\end{equation*}
+	nên theo định lý Rolle \ref{dl: Rolle}, tồn tại $c\in(0,\alpha)\subset(0,1)$ thỏa $h'(c) = 0$, i.e., đpcm.
+\end{proof}
+
+\begin{nhanxet}
+	Lời giải trên áp dụng 2 lần định lý Rolle lần lượt cho 2 hàm $g(x),h(x)$. Công thức của hàm $g(x)$ khá tự nhiên nhờ vào giả thiết $\int_0^1 f(x)\,{\rm d}x = \int_0^1 xf(x)\,{\rm d}x$, nhưng công thức của hàm $h$ thì phức tạp hơn, \& phải dựa vào phương trình cần chứng minh để dự đoán nhân tử $\frac{e^{-x}}{1 - x}$ của $h(x)$.
+\end{nhanxet}
+
+\begin{baitoan}
+	Mở rộng phạm vi áp dụng của các lý luận \& kỹ thuật trong lời giải trên.
+\end{baitoan}
+
+\begin{proof}
+	Xét 2 hàm $f,g\in C([a,b])$ với $a,b\in\mathbb{R}$, $a < b$, thỏa
+	\begin{equation*}
+		g(b)\int_a^b f(x)\,{\rm d}x = \int_a^b f(x)g(x)\,{\rm d}x.
+	\end{equation*}
+	Xét hàm:
+	\begin{align*}
+		h(x)\coloneqq g(x)\int_a^x f(t)\,{\rm d}t - \int_a^x f(t)g(t)\,{\rm d}t,\ \forall x\in[0,1],
+	\end{align*}
+	có $h(a) = 0$ (nhờ tích phân $\int_a^a F(x)\,{\rm d}x = 0$ với mọi hàm $F\in R([a,b])$) \& $h(b) = g(b)\int_a^b f(t)\,{\rm d}t - \int_a^b f(t)g(t)\,{\rm d}t = 0$ nhờ vào giả thiết, \& có đạo hàm
+	\begin{equation*}
+		h'(x) = g'(x)\int_a^x f(t)\,{\rm d}t + g(x)f(x) - f(x)g(x) = g'(x)\int_a^x f(t)\,{\rm d}t,\ \forall x\in(a,b),
+	\end{equation*}
+	theo định lý Rolle \ref{dl: Rolle}, tồn tại $c\in(a,b)$ thỏa $h'(c) = 0$, i.e., $g'(c)\int_a^c f(t)\,{\rm d}t = 0$. Xét 2 trường hợp:
+	\begin{itemize}
+		\item {\it Trường hợp $g,a,b$ thỏa $g'(x)\ne0$, $\forall x\in(a,b)$:} Có $g'(c)\ne0$, nên $h'(c) = 0\Leftrightarrow\int_a^c f(t)\,{\rm d}t = 0$. Xét tiếp hàm
+		\begin{equation*}
+			l(x)\coloneqq k(x)\int_a^x f(t)\,{\rm d}t,\ \forall x\in[a,c],
+		\end{equation*}
+		có $l(a) = l(c) = 0$, \&
+		\begin{equation*}
+			l'(x) = k'(x)\int_a^x f(t)\,{\rm d}t + k(x)f(x),\ \forall x\in(a,c),
+		\end{equation*}
+		nên theo định lý Rolle \ref{dl: Rolle}, tồn tại $d\in(a,c)$ thỏa $l'(d) = 0$, i.e.,
+		\begin{equation*}
+			k'(d)\int_a^d f(t)\,{\rm d}t + k(d)f(d) = 0.
+		\end{equation*}
+		Tùy theo phương trình cần phải chứng minh
+		\begin{equation*}
+			A_{\rm free}(d)f(d) + A_{\rm int}(d)\int_a^d f(x)\,{\rm d}x = 0,
+		\end{equation*}
+		cụ thể là 2 hệ số mà ta sẽ chọn được hàm số $k(x)$ phù hợp, bằng cách giải hoặc chỉ cần tìm 1 nghiệm thỏa mãn phương trình vi phân bậc nhất
+		\begin{equation*}
+			\frac{k'(x)}{A_{\rm int}(x)} = \frac{k(x)}{A_{\rm free}(x)},
+		\end{equation*}
+		hay
+		\begin{equation*}
+			A_{\rm free}(x)k'(x) = A_{\rm int}(x)k(x),\ \forall x\in(a,b).
+		\end{equation*}
+		\item {\it Trường hợp $g,a,b$ chưa chắc thỏa $g'(x)\ne0$, $\forall x\in(a,b)$:} Ta phải xét hàm
+		\begin{equation*}
+			l(x)\coloneqq k(x)g'(x)\int_a^x f(t)\,{\rm d}t,\ \forall x\in[a,c],
+		\end{equation*}
+		có $l(a) = l(c) = 0$, \&
+		\begin{equation*}
+			l'(x) = (k'(x)g'(x) + k(x)g''(x))\int_a^x f(t)\,{\rm d}t + k(x)g'(x)f(x),\ \forall x\in(a,c),
+		\end{equation*}
+		nên theo định lý Rolle \ref{dl: Rolle}, tồn tại $d\in(a,c)$ thỏa $l'(d) = 0$, i.e.,
+		\begin{equation*}
+			(k'(d)g'(d) + k(d)g''(d))\int_a^d f(t)\,{\rm d}t + k(d)g'(d)f(d) = 0.
+		\end{equation*}
+		Tùy theo phương trình cần phải chứng minh
+		\begin{equation*}
+			A_{\rm free}(d)f(d) + A_{\rm int}(d)\int_a^d f(x)\,{\rm d}x = 0,
+		\end{equation*}
+		cụ thể là 2 hệ số mà ta sẽ chọn được hàm số $k(x)$ phù hợp, bằng cách giải hoặc chỉ cần tìm 1 nghiệm thỏa mãn phương trình vi phân bậc nhất
+		\begin{equation*}
+			\frac{k'(x)g'(x) + k(x)g''(x)}{A_{\rm int}(x)} = \frac{k(x)g'(x)}{A_{\rm free}(x)},\ \forall x\in(a,b),
+		\end{equation*}
+		hay
+		\begin{equation*}
+			A_{\rm free}(x)g'(x)k'(x) = \left(A_{\rm int}(x)g'(x) - A_{\rm free}(x)g''(x)\right)k(x),\ \forall x\in(a,b).
+		\end{equation*}
+	\end{itemize}
+	Ta cũng có thể mở rộng giả thiết \& kết luận cho bài toán gốc bằng cách xét hàm
+	\begin{align*}
+		h_1(x)\coloneqq g(x)\int_a^x f(t)\,{\rm d}t + \int_a^x f(t)g(t)\,{\rm d}t,\ \forall x\in[0,1],
+	\end{align*}
+	có đạo hàm
+	\begin{equation*}
+		h_1'(x) = 2f(x)g(x) + g'(x)\int_a^x f(t)\,{\rm d}t,\ \forall x\in(a,b),
+	\end{equation*}
+	nên tính toán sẽ phức tạp hơn, đặc biệt là phương trình vi phân ở bước cuối, nhưng lý luận chính dựa vào việc áp dụng 2 lần định lý Rolle vẫn tương tự như quá trình xử lý đối với hàm $h(x)$ ở trên.
+\end{proof}
+
+\begin{baitoan}[UIT, 16., \cite{VMS_VMC2025}, p. 39]
+	Với mỗi $x\in[0,\infty)$, gọi $z = z(x)$ là nghiệm dương của phương trình $z^4 + xz^2 = 2025$. Tính $\int_0^{2024} z^3\,{\rm d}x$.
+\end{baitoan}
+
 %------------------------------------------------------------------------------%
 
 \section{Combinatorics -- Tổ Hợp}
-Các bài thi Tổ hợp thì hên xui, nên bắt đầu thử các trường hợp nhỏ của $n$ nếu đề yêu cầu giải quyết cho trường hợp $n$ tổng quát, để tạo ``cảm giác'' đối với cấu trúc của bài toán Tổ hợp.
+Các bài thi Tổ hợp thì nói chung hên xui, nên bắt đầu thử các trường hợp nhỏ của $n$ nếu đề yêu cầu giải quyết cho trường hợp $n$ tổng quát, để tạo ``cảm giác'' đối với cấu trúc của bài toán Tổ hợp.
 
-Nếu bài toán Tổ hợp yêu cầu tìm các giá trị lớn nhất hoặc nhỏ nhất, thì thường đó sẽ là bài toán Tổ hợp Cực biên, nên thử các cấu hình ở biên để có thêm thông tin.
+\begin{tip}[Extremal combinatorics -- Tổ hợp cực hạn]
+	Nếu bài toán Tổ hợp yêu cầu tìm các giá trị lớn nhất hoặc nhỏ nhất, thì thường đó sẽ là bài toán Tổ hợp Cực biên, nên thử các cấu hình ở biên để có thêm thông tin.
+\end{tip}
+
+\begin{baitoan}[VMC2025ĐSA3B4]
+	Điền 9 số $1,2,\ldots,9$ vào 9 ô đơn vị của 1 bảng $3\times3$, mỗi ô 1 số khác nhau. Xét 6 số có 3 chữ số được tạo thành từ các hàng (đọc từ trái qua phải) \& các cột (đọc từ trên xuống dưới).
+	\item(a) Có thể điền sao cho $6$ số nhận được đều chia hết cho $9$ không?
+	\item(b) Gọi $M$ là số lớn nhất trong $6$ số nhận được bằng 1 cách điền bất kỳ. Tìm $\min M$.
+\end{baitoan}
+
+\begin{tip}
+	Bắt đầu từ các phần tử cực biên, nhỏ nhất \& lớn nhất để thu hẹp các trường hợp có thể xảy ra.
+\end{tip}
+
+\begin{proof}[Giải]
+	(a) Tìm 1 cấu hình thỏa mãn là xong, e.g.,
+	\begin{equation*}
+		\begin{bmatrix}
+			3 & 5 & 1\\4 & 6 & 8\\2 & 7 & 9
+		\end{bmatrix}.
+	\end{equation*}
+	Cấu hình này có thể tìm bằng cách bắt đầu điền số $9$ vào 1 ô trong 4 góc.
+\end{proof}
+
+\begin{baitoan}
+	Mở rộng bài VMC2025ĐSA3B4 khi điền $[n^2]$ vào $n^2$ ô đơn vị của 1 bảng $n\times n$.
+\end{baitoan}
 
 %------------------------------------------------------------------------------%
 
@@ -529,9 +1015,11 @@ Nếu bài toán Tổ hợp yêu cầu tìm các giá trị lớn nhất hoặc 
 \section{Miscellaneous -- Linh Tinh}
 Trong thời đại AI hiện nay, đa số học sinh, sinh viên sẽ sử dụng AI rất nhiều. Tác giả hy vọng các bài viết truyền thống kiểu này sẽ vẫn giữ vững giá trị.
 
+\paragraph{Advices.} An Olympiad is just a game. Mỗi kỳ thi Olympiad bản chất vẫn chỉ là 1 trò chơi thể thao trí óc, không phải Tử Diệt Hồi Du (Culling Game), nên đừng vì thua ai, ganh ghét mà phá tài liệu hay làm hại tương lai của bạn bè đồng trang lứa. Đồng nghiệp tương lai, cộng sự tiềm năng thì mất, mà nhân cách của mình khi chơi dơ xong cũng khó mà phát triển 1 cách hoàn thiện. Cỡ nào cũng thành 1 lose-lose game về lâu dài cho cả 2.
+
 %------------------------------------------------------------------------------%
 
-\paragraph{Acknowledgments.} Tác giả NQBH xin cảm ơn thầy{\tt/}anh {\sc Lê Phúc Lữ} đã tặng quyển sách \cite{Vinh_Lu_Olympic_Toan} để làm 1 nguồn tài liệu tham khảo quý báo trong việc biên soạn các tài liệu Olympic, cảm ơn sinh viên {\sc Phan Vĩnh Tiến}, cùng CLB Học thuật STAC UMT đã biên soạn các đề thi chọn đội tuyển cấp trường được chia sẽ trên Group Hướng tới Olympic Toán, cảm ơn trường UMT đã tạo điều kiện tốt nhất để lớp bồi dưỡng Toán, dù với thời lượng ngắn ngủi, đã đạt được chất lượng như mong đợi.
+\paragraph{Acknowledgments.} Tác giả NQBH xin cảm ơn thầy{\tt/}anh {\sc Lê Phúc Lữ} đã tặng quyển sách \cite{Vinh_Lu_Olympic_Toan} để làm 1 nguồn tài liệu tham khảo quý báo trong việc biên soạn các tài liệu Olympic, cảm ơn sinh viên {\sc Phan Vĩnh Tiến}, cùng CLB Học thuật STAC UMT đã biên soạn các đề thi chọn đội tuyển cấp trường được chia sẽ trên Group Hướng tới Olympic Toán, cảm ơn thầy {\sc Trần Đan Thư}, thầy {\sc Nguyễn Tấn Trung}, cùng trường Đại học UMT đã tạo điều kiện tốt nhất để lớp bồi dưỡng Toán, dù với thời lượng ngắn ngủi, đã đạt được chất lượng như mong đợi.
 
 %------------------------------------------------------------------------------%
 

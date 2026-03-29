@@ -289,11 +289,64 @@ E.g.:
 		\end{pmatrix}.
 	\end{equation*}
 	Tìm $x\in\mathbb{R}$ để $A(x)$ có hạng lớn nhất.
-	\item(b) Cho $A,B\in M_n(\mathbb{R}$ sao cho tổng tất cả các phần tử trên mỗi cột của $A$ luôn bằng $2$, tổng tất cả các phần tử trên mỗi cột của $B$ luôn bằng $3$. Đặt $M\coloneqq(AB)^{2025} - 12A^{2023}B^{2024}$. Tính $\det M$.
+	\item(b) Cho $A,B\in M_n(\mathbb{R})$ sao cho tổng tất cả các phần tử trên mỗi cột của $A$ luôn bằng $2$, tổng tất cả các phần tử trên mỗi cột của $B$ luôn bằng $3$. Đặt $M\coloneqq(AB)^{2025} - 12A^{2023}B^{2024}$. Tính $\det M$.
 \end{baitoan}
 
 \begin{proof}[Giải]
-	***
+	(a) Biến đổi sơ cấp trên dòng được:
+	\begin{equation*}
+		A(x)\to\begin{pmatrix}
+			3 & 3 & 3 & 3\\0 & x - 2 & 0 & x - 2\\0 & 0 & x + 1 & x + 1\\0 & 0 & 0 & 0
+		\end{pmatrix},
+	\end{equation*}
+	nên $\max\operatorname{rank}A(x) = 3$, \& $\operatorname{rank}A(x) = 3\Leftrightarrow x\in\mathbb{R}\backslash\{-1,2\}$.\footnote{Hơn nữa, từ dạng bậc thang của ma trận $A$, ta còn biết thêm $\min\operatorname{rank}A(x) = 2$, nên suy ra $\operatorname{rank}A(x)\in[[\min\operatorname{rank}A(x),\max\operatorname{rank}A(x)]] = \{2,3\}$.}
+	\item(b) Đặt ${\bf u}\coloneqq{\bf1}_n\coloneqq(1,1,\ldots,1)^\top\in\mathbb{R}^n$. Từ giả thiết, có $A^\top{\bf u} = 2{\bf u},B^\top{\bf u} = 3{\bf u}$. Có
+	\begin{equation*}
+		(A^\top)^k{\bf u} = (A^\top)^{k-1}A^\top{\bf u} = (A^\top)^{k-1}(2{\bf u}) = 2(A^\top)^{k-1}{\bf u},
+	\end{equation*}
+	nên $(A^\top)^k{\bf u} = 2(A^\top)^{k-1}{\bf u} = 2^2(A^\top)^{k-2}{\bf u} = \cdots = 2^k{\bf u}$, $\forall k\in\mathbb{N}^\star$. Tương tự, $(B^\top)^k{\bf u} = 3^k{\bf u}$, $\forall k\in\mathbb{N}^\star$. Có $B^\top A^\top{\bf u} = B^\top(2{\bf u}) = 6{\bf u}$, bằng quy nạp, $(B^\top A^\top)^k{\bf u} = 6^k{\bf u}$, $\forall k\in\mathbb{N}^\star$. Suy ra
+	\begin{align*}
+		M^\top{\bf u} &= \left[(B^\top A^\top)^{2025} - 12(B^\top)^{2024}(A^\top)^{2023}\right]{\bf u} = (B^\top A^\top)^{2025}{\bf u} - 12(B^\top)^{2024}(A^\top)^{2023}{\bf u}\\
+		&= 6^{2025}{\bf u} - 3\cdot2^{2025}(B^\top)^{2024}{\bf u} = 6^{2025}{\bf u} - 3\cdot2^{2025}3^{2024}{\bf u} = {\bf0}_d,
+	\end{align*}
+	nên ${\bf u}$ là 1 vector riêng của $M^\top$ ứng với giá trị riêng $\lambda = 0$ nên $\det M^\top = 0$ (hoặc có thể lý luận: hệ phương trình tuyến tính thuần nhất $M^\top{\bf x} = {\bf0}$ có nghiệm không tầm thường là ${\bf x} = {\bf u} = {\bf1}_n\ne{\bf0}_n$ nên $\det M^\top = 0$), suy ra $\det M = \det M^\top = 0$.
+\end{proof}
+Có thể dễ dàng mở rộng bài toán trên thành kết quả sau (thói quen mở rộng, tổng quát hóa bài toán giúp định hướng sinh viên làm nghiên cứu khoa học cho các đề tài cần nhiều đại số tuyến tính nói riêng \& toán nói chung, e.g., AI, Machine Learning, Deep Learning, etc.):
+
+\begin{dinhly}
+	(a) Nếu $A,B\in M_n(\mathbb{C})$ có tổng tất cả các phần tử trên mỗi hàng của $A$ luôn bằng $\alpha_{\rm r}\in\mathbb{C}$ \& tổng tất cả các phần tử trên mỗi hàng của $B$ luôn bằng $\beta_{\rm r}\in\mathbb{C}$ thì với mọi $k\in\mathbb{N}^\star$, mọi $m_i\in\mathbb{N}^\star$, $\forall i\in[k]$, mọi cặp dãy vector $\{{\bf a}_i\}_{i\in[k]},\{{\bf b}_i\}_{i\in[k]}\in\bigtimes_{i=1}^n \mathbb{N}^{m_i}$ \& dãy số $\{c_i\}_{i\in[k]}\subset\mathbb{C}$ thỏa
+	\begin{equation*}
+		\sum_{i=1}^k c_i\alpha_{\rm r}^{\sum_{j=1}^{m_i} a_{i,j}}\beta_{\rm r}^{\sum_{j=1}^{m_i} b_{i,j}} = 0,
+	\end{equation*}
+	\& ma trận được xác định bởi
+	\begin{equation*}
+		f\left(A,B,\{{\bf a}_i\}_{i\in[k]},\{{\bf b}_i\}_{i\in[k]},\{c_i\}_{i\in[k]}\right) = \sum_{i=1}^k c_iA^{a_{i,1}}B^{b_{i,1}}A^{a_{i,2}}B^{b_{i,2}}\cdots A^{a_{i,m_i}}B^{b_{i,m_i}}\in M_n(\mathbb{C}),
+	\end{equation*}
+	đều có 1 trị riêng $\lambda = 0$ \& 1 vector riêng ${\bf u} = {\bf1}_n$ ứng với trị riêng $\lambda = 0$, \& do đó, $\det f\left(A,B,\{{\bf a}_i\}_{i\in[k]},\{{\bf b}_i\}_{i\in[k]},\{c_i\}_{i\in[k]}\right) = \det f\left(A,B,\{{\bf a}_i\}_{i\in[k]},\{{\bf b}_i\}_{i\in[k]},\{c_i\}_{i\in[k]}\right)^\top = 0$.	
+\end{dinhly}
+
+\begin{proof}
+	(a) Đặt ${\bf u}\coloneqq{\bf1}_n\coloneqq(1,1,\ldots,1)^\top\in\mathbb{R}^n$. Từ giả thiết, có $A{\bf u} = \alpha_{\rm r}{\bf u},B{\bf u} = \beta_{\rm r}{\bf u}$. Có
+	\begin{equation*}
+		A^k{\bf u} = A^{k-1}(A{\bf u}) = A^{k-1}(\alpha_{\rm r}{\bf u}) = \alpha_{\rm r}A^{k-1}{\bf u},
+	\end{equation*}
+	nên $A^k{\bf u} = \alpha_{\rm r}A^{k-1}{\bf u} = \alpha_{\rm r}^2A^{k-2}{\bf u} = \cdots = \alpha_{\rm r}^k{\bf u}$, $\forall k\in\mathbb{N}^\star$. Tương tự, $B^k{\bf u} = \beta_{\rm r}^k{\bf u}$, $\forall k\in\mathbb{N}^\star$. Kết hợp 2 điều này, suy ra
+	\begin{equation*}
+		A^{a_1}B^{b_1}A^{a_2}B^{b_2}\cdots A^{a_m}B^{b_m}{\bf u} = \alpha_{\rm r}^{a_1}\beta_{\rm r}^{b_1}\alpha_{\rm r}^{a_2}\beta_{\rm r}^{b_2}\cdots\alpha_{\rm r}^{a_m}\beta_{\rm r}^{b_m}{\bf u} = \alpha_{\rm r}^{\sum_{i=1}^m a_i}\beta_{\rm r}^{\sum_{i=1}^m b_i}{\bf u},\ \forall{\bf a}\coloneqq(a_1,\ldots,a_m),{\bf b}\coloneqq(b_1,\ldots,b_m)\in\mathbb{N}^m.
+	\end{equation*}
+	Khi đó, với bất kỳ ma trận có dạng:
+	\begin{equation*}
+		f\left(A,B,\{{\bf a}_i\}_{i\in[k]},\{{\bf b}_i\}_{i\in[k]},\{c_i\}_{i\in[k]}\right) = \sum_{i=1}^k c_iA^{a_{i,1}}B^{b_{i,1}}A^{a_{i,2}}B^{b_{i,2}}\cdots A^{a_{i,m_i}}B^{b_{i,m_i}}\in M_n(\mathbb{C}),
+	\end{equation*}
+	với ${\bf a}_i = (a_{i,1},\ldots,a_{i,m_i}),{\bf b}_i = (b_{i,1},\ldots,b_{i,m_i})\in\mathbb{N}^{m_i}$, $c_i\in\mathbb{C}$, $\forall i\in[k]$, thì
+	\begin{equation*}
+		f\left(A,B,\{{\bf a}_i\}_{i\in[k]},\{{\bf b}_i\}_{i\in[k]},\{c_i\}_{i\in[k]}\right){\bf u} = \left(\sum_{i=1}^k c_i\alpha_{\rm r}^{\sum_{j=1}^{m_i} a_{i,j}}\beta_{\rm r}^{\sum_{j=1}^{m_i} b_{i,j}}\right){\bf u},
+	\end{equation*}
+	nên nếu 2 dãy vector chứa số mũ $\{{\bf a}_i\}_{i\in[k]},\{{\bf b}_i\}_{i\in[k]}$ \& dãy số chứa hệ số $\{c_i\}_{i\in[k]}$ thỏa
+	\begin{equation*}
+		\sum_{i=1}^k c_i\alpha_{\rm r}^{\sum_{j=1}^{m_i} a_{i,j}}\beta_{\rm r}^{\sum_{j=1}^{m_i} b_{i,j}} = 0,
+	\end{equation*}
+	thì $f\left(A,B,\{{\bf a}_i\}_{i\in[k]},\{{\bf b}_i\}_{i\in[k]},\{c_i\}_{i\in[k]}\right){\bf u} = {\bf0}_d$, nên ${\bf u}$ là 1 vector riêng của $f\left(A,B,\{{\bf a}_i\}_{i\in[k]},\{{\bf b}_i\}_{i\in[k]},\{c_i\}_{i\in[k]}\right)$ ứng với trị riêng $\lambda = 0$ nên $\det f\left(A,B,\{{\bf a}_i\}_{i\in[k]},\{{\bf b}_i\}_{i\in[k]},\{c_i\}_{i\in[k]}\right) = \det f\left(A,B,\{{\bf a}_i\}_{i\in[k]},\{{\bf b}_i\}_{i\in[k]},\{c_i\}_{i\in[k]}\right)^\top = 0$.
 \end{proof}
 
 \begin{baitoan}[ĐH Đồng Tháp, \cite{VMS_VMC2025}, 12., p. 35]
@@ -305,10 +358,39 @@ E.g.:
 	\begin{equation*}
 		A = \begin{pmatrix}
 			\lambda_1{\bf v}\\\lambda_2{\bf v}\\\ddots\\\lambda_n{\bf v}
-		\end{pmatrix}.
+		\end{pmatrix} = (\lambda_iv_j)_{i,j=1}^n,
 	\end{equation*}
-	RECHECK. SEEM FUCKING WRONG.
+	nên $[A^2]_{ij} = \sum_{k=1}^n \lambda_iv_k\lambda_kv_j = \lambda_iv_j\sum_{k=1}^n \lambda_kv_k = a_{ij}\sum_{k=1}^n \lambda_kv_k$, suy ra $A^2 = \lambda A$ với $\lambda\coloneqq\sum_{i=1}^n \lambda_iv_i$ được xác định duy nhất.\footnote{Lời giải trong kỷ yếu chỉ ra $\lambda = \sum_{i=1}^n \lambda_i$ để $A^2 = \lambda A$ là sai.} Thật vậy, giả sử tồn tại 2 cách biểu diễn $(\boldsymbol{\lambda},{\bf v}) = ((\lambda_1,\ldots,\lambda_n),(v_1,\ldots,v_n))$ \& $(\boldsymbol{\lambda}',{\bf v}') = ((\lambda_1',\ldots,\lambda_n'),(v_1',\ldots,v_n'))$ thỏa $A = (\lambda_iv_j)_{i,j=1}^n = (\lambda_i'v_j')_{i,j=1}^n$ thì $a_{ij} = \lambda_iv_j = \lambda_i'v_j'$ nên $\lambda = \sum_{i=1}^n \lambda_iv_i = \lambda'\coloneqq\sum_{i=1}^n \lambda_i'v_i'$ nên $\lambda$ được xác định duy nhất.
 \end{proof}
+
+\begin{remark}
+	(a) Chỉ có ma trận không (zero matrix, null matrix) $0_{m\times n} = (0)_{i,j=1}^{m,n}\in M_{m\times n}(K)$ là có hạng bằng $0$, i.e.,
+	\begin{equation*}
+		(A\in M_{m\times n}(K)\land\operatorname{rank}A = 0)\Leftrightarrow A = 0_{m\times n}.
+	\end{equation*}
+	Bất cứ ma trận $A$ khác ma trận không đều có hạng dương, i.e.:
+	\begin{equation*}
+		\forall A = (a_{ij})_{i,j=1}^{m,n}\in M_{m\times n}(K):\ \exists i\in[m],j\in[n],\ a_{ij}\ne0\Leftrightarrow\operatorname{rank}A\ne0\Leftrightarrow\operatorname{rank}A\in[\min\{m,n\}].
+	\end{equation*}
+	\item(b) Ý toán quan trọng trong chứng minh trên là với $A\in M_{m\times n}(\mathbb{R})$, nếu $\operatorname{rank}A = 1$, i.e., tồn tại $i\in[m]$ để vector dòng ${\bf r}_i(A)\ne{\bf0}_n^\top = (0,0,\ldots,0)$ (nếu không thì $\operatorname{rank}A = 0$, mâu thuẫn giả thiết $\operatorname{rank}A = 1$), sau đó, $m - 1$ dòng còn lại đều có thể biểu diễn tuyến tính qua dòng ${\bf r}_i(A)$ này (do có thể chọn 1 cơ sở cho không gian vector ${\rm span}(\{{\bf r}_i(A)\}_{i\in[m]})$ sinh bởi các dòng của $A$ là $B\coloneqq\{{\bf r}_i\}$), i.e., $\exists c_j\in\mathbb{R}$ để ${\bf r}_j(A) = c_j{\bf r}_i(A)$, $\forall j\in[m]\backslash\{i\}$. Đây là cơ sở logic cho lập luận trong chứng minh trên rằng tồn tại vector dòng ${\bf v} = (v_1,v_2,\ldots,v_n)\in\mathbb{R}^{1\times n}$ thỏa mọi dòng của $A$ là bội của ${\bf v}$, i.e., $A$ có dạng $A = (\lambda_iv_j)_{i,j=1}^n$.
+	
+	Tương tự, nếu $\operatorname{rank}A = 2$, thì tồn tại $i,j\in[m]$, $i\ne j$ để ${\bf r}_i(A)\ne{\bf0}_n^\top,{\bf r}_j(A)\ne{\bf0}_n^\top$ \& đặc biệt là ${\bf r}_i(A)\ne c{\bf r}_j(A)$, $\forall c\in\mathbb{R}$, khi đó ta có thể chọn $B\coloneqq\{{\bf r}_i(A),{\bf r}_j(A)\}$ để làm cơ sở cho không gian vector ${\rm span}(\{{\bf r}_i(A)\}_{i\in[m]})$ sinh bởi các dòng của $A$, i.e., $m - 2$ dòng còn lại đều có thể biểu diễn tuyến tính thông qua 2 dòng này:
+	\begin{equation*}
+		\forall k\in[m]\backslash\{i,j\},\ \exists a_k,b_k\in\mathbb{R},\ {\bf r}_k(A) = a_k{\bf r}_i(A) + b_k{\bf r}_j(A).
+	\end{equation*}
+	Tổng quát, nếu $\operatorname{rank}A = r\in[\min\{m,n\}]$, thì tồn tại $r$ chỉ số $i_1,\ldots,i_r\in[m]$ đôi một phân biệt để ${\bf r}_{i_j}(A)\ne{\bf0}_n^\top$, $\forall j\in[r]$, \& tập hợp $B\coloneqq\{{\bf r}_{i_j}\}_{j\in[r]}$ độc lập tuyến tính, khi đó ta có thể chọn $B$ làm 1 cơ sở cho không gian vector ${\rm span}(\{{\bf r}_i(A)\}_{i\in[m]})$ sinh bởi các vector dòng của $A$, i.e., $m - r$ dòng còn lại đều có thể biểu diễn tuyến tính thông qua $r$ dòng này:
+	\begin{equation*}
+		\forall k\in[m]\backslash\{i_j\}_{j\in[r]},\ \exists\{c_{k,j}\}_{j\in[r]}\subset\mathbb{R},\ {\bf r}_k(A) = \sum_{j=1}^r c_{k,j}{\bf r}_{i_j}(A).
+	\end{equation*}
+	Lập luận này cũng đúng cho các vector cột $\{{\bf c}_j(A)\}_{j=1}^n$ do số chiều của không gian vector sinh bởi các vector dòng của $A$ bằng với số chiều của không gian vector sinh bởi các vector cột của $A$ \& cùng bằng hạng của $A$, i.e.:
+	\begin{equation*}
+		\dim{\rm span}(\{{\bf r}_i(A)\}_{i=1}^m) = \dim{\rm span}(\{{\bf c}_j(A)\}_{j=1}^n) = \operatorname{rank}A\in[\min\{m,n\}]_0,\ \forall A\in M_{m\times n}(\mathbb{R}).
+	\end{equation*}
+	Cụ thể, nếu $\operatorname{rank}A = r\in[n]$, thì tồn tại $r$ chỉ số $i_1,\ldots,i_r\in[n]$ đôi một phân biệt để ${\bf c}_{i_j}(A)\ne{\bf0}_m\in\mathbb{R}^m$, $\forall j\in[r]$, \& tập hợp $B\coloneqq\{{\bf c}_{i_j}\}_{j\in[r]}$ độc lập tuyến tính, khi đó ta có thể chọn $B$ làm 1 cơ sở cho không gian vector ${\rm span}(\{{\bf c}_j(A)\}_{j=1}^n)$ sinh bởi các vector cột của $A$, i.e., $n - r$ cột còn lại đều có thể biểu diễn tuyến tính thông qua $r$ cột này:
+	\begin{equation*}
+		\forall k\in[n]\backslash\{i_j\}_{j\in[r]},\ \exists\{c_{k,j}\}_{j\in[r]}\subset\mathbb{R},\ {\bf c}_k(A) = \sum_{j=1}^r c_{k,j}{\bf c}_{i_j}(A).
+	\end{equation*}
+\end{remark}
 
 %------------------------------------------------------------------------------%
 

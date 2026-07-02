@@ -1,4 +1,4 @@
-\documentclass[12pt]{article}
+\documentclass{article}
 \usepackage[backend=biber,natbib=true,style=alphabetic,maxbibnames=50]{biblatex}
 \addbibresource{/home/nqbh/reference/bib.bib}
 \usepackage[utf8]{vietnam}
@@ -42,7 +42,7 @@
 \setlist[enumerate]{leftmargin=*}
 
 \author{Nguyễn Quản Bá Hồng}
-\title{Đề Thi Cuối Kỳ Nhập Môn Giải Tích Hè 2026\\Final Exam: Introduction to Mathematical Analysis Summer 2026}
+\title{Final Exam {\it\&} Solution: Introduction to Mathematical Analysis Summer 2026\\Đề Thi Cuối Kỳ {\it\&} Lời Giải Nhập Môn Giải Tích Hè 2026}
 \date{\today}
 
 \begin{document}
@@ -68,6 +68,10 @@
 	f_2:\mathbb{R}\to\mathbb{R},\quad f_2(x) &= ax^2 + bx + c,\ a\in\mathbb{R}_{\ne0},\ b,c\in\mathbb{R}\\
 	f_3:\mathbb{R}\to\mathbb{R},\quad f_3(x) &= ax^3 + bx^2 + cx + d,\ a\in\mathbb{R}_{\ne0},\ b,c,d\in\mathbb{R}.
 \end{align*}
+\textit{Bonus ($\star$)}: Làm bài toán với hàm số đa thức bậc $n$:
+\begin{equation*}
+	f_n:\mathbb{R}\to\mathbb{R},\quad f_n(x) = \sum_{i = 0}^n a_ix^i\in\mathbb{R}[x],\ a_n\in\mathbb{R}_{\ne0},a_i\in\mathbb{R},\ \forall i\in[n - 1]_0.
+\end{equation*}
 
 \begin{baitoan}[Limit of sequences -- Giới hạn của dãy số]
 	Với mỗi $i\in[3]_0$:
@@ -80,6 +84,42 @@
 		\end{equation*}
 	\end{enumerate}
 \end{baitoan}
+\textsf{Nhận xét}: Bài toán này được thiết kế với một ý đồ sư phạm rất xuất sắc để dạy cho sinh viên (đặc biệt là dân Khoa học Máy tính) phân biệt được 2 tư duy cốt lõi trong giải thuật:
+\begin{enumerate}
+	\item \textit{Đánh giá tiệm cận (Loose bound ở câu b)}: Dùng Bất đẳng thức tam giác để ``chặn thô'', tìm ra 1 ngưỡng $N_\varepsilon$ đủ tốt để chứng minh tính hội tụ một cách cực kỳ nhanh chóng và ít tốn chi phí tính toán $\mathcal{O}(1)$.
+	\item \textit{Tối ưu hóa tuyệt đối (tight bound ở câu (c))}: Phải giải chính xác bất phương trình để tìm ra $N$ nhỏ nhất có thể $N_\varepsilon^{\rm opt}$. Đánh đổi lại, chi phí tính toán rất đắt đỏ do phải giải phương trình bậc cao.
+\end{enumerate}
+
+\begin{proof}[Giải]
+	Ta xét lần lượt các dãy $a_n\coloneqq f_i(n)$ \& $b_n\coloneqq f_i(\frac{1}{n})$. Khi $n\to\infty$, ta có $\frac{1}{n}\to0$. Do các hàm đa thức đều liên tục trên $\mathbb{R}$, ta luôn có $\lim_{n\to\infty} b_n = \lim_{n\to\infty} f_i(\frac{1}{n}) = f_i(0)$. Cụ thể:
+	\begin{itemize}
+		\item Trường hợp $i = 0$, $f_0(x) = a$: Dãy $a_n = a$ nên $\lim_{n\to\infty} a_n = a$. Dãy $b_n = a$ nên $\lim_{n\to\infty} b_n = a$. Cả 2 dãy đều có giới hạn hữu hạn $l_0 = a$.
+		\item Trường hợp $i = 1$, $f_1(x) = ax + b$ với $a\ne0$:
+		\begin{align*}
+			\lim_{n\to\infty} a_n &= \lim_{n\to\infty} (an + b) = \infty\cdot\text{sgn}(a),\\
+			\lim_{n\to\infty} b_n &= \lim_{n\to\infty} \left(\frac{a}{n} + b\right) = b.
+		\end{align*}
+		Chỉ có dãy $b_n$ có giới hạn hữu hạn $l_1 = b$.
+		\item Trường hợp $i = 2$, $f_2(x) = ax^2 + bx + c$, với $a\ne0$:
+			\begin{align*}
+			\lim_{n\to\infty} a_n &= \lim_{n\to\infty} (an^2 + bn + c) = \infty\cdot\text{sgn}(a),\\
+			\lim_{n\to\infty} b_n &= \lim_{n\to\infty} \left(\frac{a}{n^2} + \frac{b}{n} + c\right) = c.
+		\end{align*}
+		Chỉ có dãy $b_n$ có giới hạn hữu hạn $l_2 = c$.
+		\item Trường hợp $i = 3$, $f_2(x) = ax^3 + bx^2 + cx + d$, với $a\ne0$:
+		\begin{align*}
+			\lim_{n\to\infty} a_n &= \lim_{n\to\infty} (an^3 + bn^2 + cn + d) = \infty\cdot\text{sgn}(a),\\
+			\lim_{n\to\infty} b_n &= \lim_{n\to\infty} \left(\frac{a}{n^3} + \frac{b}{n^2} + \frac{c}{n} + d\right) = d.
+		\end{align*}
+		Chỉ có dãy $b_n$ có giới hạn hữu hạn $l_3 = d$.
+	\end{itemize}
+	(b) \textit{Phương pháp}: Cho trước $\varepsilon\in\mathbb{R}_{> 0}$ tùy ý, ta cần tìm 1 số $N_\varepsilon\in\mathbb{Z}_{\ge1}$ sao cho $\forall n\ge N_\varepsilon\implies|b_n - l_i| < \varepsilon$. Vì không yêu cầu $N_\varepsilon$ phải nhỏ nhất (không cần tối ưu), ta sử dụng bất đẳng thức tam giác để ``chặn thô'' (loose bound) giúp việc tìm $N$ trở nên đơn giản.
+	\begin{itemize}
+		\item Với $i = 0$, $l_0 = a$: Xét $|b_n - l_0| = |a - a| = 0 < \varepsilon$. Bất đẳng thức này luôn đúng với mọi $\varepsilon\in\mathbb{R}_{> 0}$ \& $\forall n\in\mathbb{Z}_{\ge1}$. Ta chọn $N_\varepsilon = 1$.
+		\item Với $i = 1$, $l_1 = b$: Xét $|b_n - l_1| = \left|\left(\frac{a}{n} + b\right) - b\right| = \frac{|a|}{n}$. Ta cần ép cho $\frac{|a|}{n} < \varepsilon\iff n > \frac{|a|}{n}$. Chọn $N_\varepsilon = \lfloor\frac{|a|}{\varepsilon}\rfloor + 1$. Khi đó, $\forall n\ge N_\varepsilon\implies n > \frac{|a|}{\varepsilon}\implies|b_n - l_1| < \varepsilon$.
+		\item 
+	\end{itemize}
+\end{proof}
 
 \begin{baitoan}[Limit of functions -- Giới hạn của hàm số]
 	Với mỗi $i\in[3]_0$:

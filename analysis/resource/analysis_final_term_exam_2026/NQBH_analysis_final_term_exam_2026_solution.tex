@@ -1,6 +1,6 @@
 \documentclass{article}
 \usepackage[backend=biber,natbib=true,style=alphabetic,maxbibnames=50]{biblatex}
-\addbibresource{/home/nqbh/reference/bib.bib}
+% \addbibresource{/home/nqbh/reference/bib.bib} % Commented out to prevent local path error
 \usepackage[utf8]{vietnam}
 \usepackage{tocloft}
 \renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
@@ -73,6 +73,7 @@
 	f_n:\mathbb{R}\to\mathbb{R},\quad f_n(x) = \sum_{i = 0}^n a_ix^i\in\mathbb{R}[x],\ a_n\in\mathbb{R}_{\ne0},a_i\in\mathbb{R},\ \forall i\in[n - 1]_0.
 \end{equation*}
 
+%======================== BÀI 1 ========================%
 \begin{baitoan}[Limit of sequences -- Giới hạn của dãy số]
 	Với mỗi $i\in[3]_0$:
 	\begin{enumerate}[label=(\alph*)]
@@ -84,43 +85,47 @@
 		\end{equation*}
 	\end{enumerate}
 \end{baitoan}
-\textsf{Nhận xét}: Bài toán này được thiết kế với một ý đồ sư phạm rất xuất sắc để dạy cho sinh viên (đặc biệt là dân Khoa học Máy tính) phân biệt được 2 tư duy cốt lõi trong giải thuật:
+
+\textsf{Nhận xét}: Bài toán này được thiết kế với một ý đồ sư phạm rất xuất sắc để dạy cho sinh viên phân biệt được 2 tư duy cốt lõi trong giải tích số:
 \begin{enumerate}
-	\item \textit{Đánh giá tiệm cận (Loose bound ở câu b)}: Dùng Bất đẳng thức tam giác để ``chặn thô'', tìm ra 1 ngưỡng $N_\varepsilon$ đủ tốt để chứng minh tính hội tụ một cách cực kỳ nhanh chóng và ít tốn chi phí tính toán $\mathcal{O}(1)$.
-	\item \textit{Tối ưu hóa tuyệt đối (tight bound ở câu (c))}: Phải giải chính xác bất phương trình để tìm ra $N$ nhỏ nhất có thể $N_\varepsilon^{\rm opt}$. Đánh đổi lại, chi phí tính toán rất đắt đỏ do phải giải phương trình bậc cao.
+	\item \textit{Đánh giá tiệm cận (Loose bound ở câu b)}: Dùng Bất đẳng thức tam giác để ``chặn thô'', tìm ra một ngưỡng $N_\varepsilon$ đủ tốt để chứng minh tính hội tụ một cách cực kỳ nhanh chóng và ít tốn chi phí tính toán $\mathcal{O}(1)$.
+	\item \textit{Tối ưu hóa tuyệt đối (Tight bound ở câu c)}: Phải giải chính xác bất phương trình để tìm ra $N$ nhỏ nhất có thể ($N_\varepsilon^{\rm opt}$). Sự đánh đổi ở đây là chi phí tính toán rất đắt đỏ do phải giải phương trình đa thức bậc cao.
 \end{enumerate}
 
 \begin{proof}[Giải]
+	\textbf{(a) Tính giới hạn:}
 	Ta xét lần lượt các dãy $a_n\coloneqq f_i(n)$ \& $b_n\coloneqq f_i(\frac{1}{n})$. Khi $n\to\infty$, ta có $\frac{1}{n}\to0$. Do các hàm đa thức đều liên tục trên $\mathbb{R}$, ta luôn có $\lim_{n\to\infty} b_n = \lim_{n\to\infty} f_i(\frac{1}{n}) = f_i(0)$. Cụ thể:
 	\begin{itemize}
-		\item Trường hợp $i = 0$, $f_0(x) = a$: Dãy $a_n = a$ nên $\lim_{n\to\infty} a_n = a$. Dãy $b_n = a$ nên $\lim_{n\to\infty} b_n = a$. Cả 2 dãy đều có giới hạn hữu hạn $l_0 = a$.
-		\item Trường hợp $i = 1$, $f_1(x) = ax + b$ với $a\ne0$:
-		\begin{align*}
-			\lim_{n\to\infty} a_n &= \lim_{n\to\infty} (an + b) = \infty\cdot\text{sgn}(a),\\
-			\lim_{n\to\infty} b_n &= \lim_{n\to\infty} \left(\frac{a}{n} + b\right) = b.
-		\end{align*}
-		Chỉ có dãy $b_n$ có giới hạn hữu hạn $l_1 = b$.
-		\item Trường hợp $i = 2$, $f_2(x) = ax^2 + bx + c$, với $a\ne0$:
-			\begin{align*}
-			\lim_{n\to\infty} a_n &= \lim_{n\to\infty} (an^2 + bn + c) = \infty\cdot\text{sgn}(a),\\
-			\lim_{n\to\infty} b_n &= \lim_{n\to\infty} \left(\frac{a}{n^2} + \frac{b}{n} + c\right) = c.
-		\end{align*}
-		Chỉ có dãy $b_n$ có giới hạn hữu hạn $l_2 = c$.
-		\item Trường hợp $i = 3$, $f_2(x) = ax^3 + bx^2 + cx + d$, với $a\ne0$:
-		\begin{align*}
-			\lim_{n\to\infty} a_n &= \lim_{n\to\infty} (an^3 + bn^2 + cn + d) = \infty\cdot\text{sgn}(a),\\
-			\lim_{n\to\infty} b_n &= \lim_{n\to\infty} \left(\frac{a}{n^3} + \frac{b}{n^2} + \frac{c}{n} + d\right) = d.
-		\end{align*}
-		Chỉ có dãy $b_n$ có giới hạn hữu hạn $l_3 = d$.
+		\item $i = 0$: $a_n = a \implies \lim a_n = a$; $b_n = a \implies \lim b_n = a$. Cả hai dãy đều có giới hạn hữu hạn $l_0 = a$.
+		\item $i = 1$: Do $a \ne 0$, $\lim a_n = \lim (an+b) = \infty \cdot \text{sgn}(a)$ (phân kỳ); $\lim b_n = \lim (a/n + b) = b$. Giới hạn hữu hạn $l_1 = b$.
+		\item $i = 2$: $\lim a_n = \infty \cdot \text{sgn}(a)$ (phân kỳ); $\lim b_n = \lim (a/n^2 + b/n + c) = c$. Giới hạn hữu hạn $l_2 = c$.
+		\item $i = 3$: $\lim a_n = \infty \cdot \text{sgn}(a)$ (phân kỳ); $\lim b_n = \lim (a/n^3 + b/n^2 + c/n + d) = d$. Giới hạn hữu hạn $l_3 = d$.
 	\end{itemize}
-	(b) \textit{Phương pháp}: Cho trước $\varepsilon\in\mathbb{R}_{> 0}$ tùy ý, ta cần tìm 1 số $N_\varepsilon\in\mathbb{Z}_{\ge1}$ sao cho $\forall n\ge N_\varepsilon\implies|b_n - l_i| < \varepsilon$. Vì không yêu cầu $N_\varepsilon$ phải nhỏ nhất (không cần tối ưu), ta sử dụng bất đẳng thức tam giác để ``chặn thô'' (loose bound) giúp việc tìm $N$ trở nên đơn giản.
+	
+	\textbf{(b) Chứng minh bằng ngôn ngữ $\varepsilon$ (Chặn thô):}\\
+	Cho $\varepsilon\in\mathbb{R}_{> 0}$ tùy ý. Ta tìm $N_\varepsilon\in\mathbb{N}^*$ sao cho $\forall n\ge N_\varepsilon\implies|b_n - l_i| < \varepsilon$. 
 	\begin{itemize}
-		\item Với $i = 0$, $l_0 = a$: Xét $|b_n - l_0| = |a - a| = 0 < \varepsilon$. Bất đẳng thức này luôn đúng với mọi $\varepsilon\in\mathbb{R}_{> 0}$ \& $\forall n\in\mathbb{Z}_{\ge1}$. Ta chọn $N_\varepsilon = 1$.
-		\item Với $i = 1$, $l_1 = b$: Xét $|b_n - l_1| = \left|\left(\frac{a}{n} + b\right) - b\right| = \frac{|a|}{n}$. Ta cần ép cho $\frac{|a|}{n} < \varepsilon\iff n > \frac{|a|}{n}$. Chọn $N_\varepsilon = \lfloor\frac{|a|}{\varepsilon}\rfloor + 1$. Khi đó, $\forall n\ge N_\varepsilon\implies n > \frac{|a|}{\varepsilon}\implies|b_n - l_1| < \varepsilon$.
-		\item 
+		\item Với $i = 0$: $|b_n - l_0| = |a - a| = 0 < \varepsilon$. BĐT luôn đúng. Chọn $N_\varepsilon = 1$.
+		\item Với $i = 1$: $|b_n - l_1| = |\frac{a}{n} + b - b| = \frac{|a|}{n}$. Cần $\frac{|a|}{n} < \varepsilon \iff n > \frac{|a|}{\varepsilon}$. Chọn $N_\varepsilon = \lfloor\frac{|a|}{\varepsilon}\rfloor + 1$.
+		\item Với $i = 2$: Áp dụng BĐT tam giác và $n \ge 1 \implies \frac{1}{n^2} \le \frac{1}{n}$, ta chặn thô:
+		$$ |b_n - l_2| = \left| \frac{a}{n^2} + \frac{b}{n} \right| \le \frac{|a|}{n^2} + \frac{|b|}{n} \le \frac{|a| + |b|}{n} $$
+		Ta cần $\frac{|a|+|b|}{n} < \varepsilon \iff n > \frac{|a|+|b|}{\varepsilon}$. Chọn $N_\varepsilon = \lfloor \frac{|a|+|b|}{\varepsilon} \rfloor + 1$.
+		\item Với $i = 3$: Tương tự, do $\frac{1}{n^3} \le \frac{1}{n^2} \le \frac{1}{n}$, ta chặn thô:
+		$$ |b_n - l_3| = \left| \frac{a}{n^3} + \frac{b}{n^2} + \frac{c}{n} \right| \le \frac{|a| + |b| + |c|}{n} $$
+		Chọn $N_\varepsilon = \lfloor \frac{|a|+|b|+|c|}{\varepsilon} \rfloor + 1$.
+	\end{itemize}
+	
+	\textbf{(c) Tìm $N_\varepsilon^{\rm opt}$ tối ưu (Chặn ngặt):}\\
+	Chỉ số tối ưu đòi hỏi giải chính xác bất phương trình $|b_n - l_i| < \varepsilon$. Đặt $t = \frac{1}{n} \in (0, 1]$.
+	\begin{itemize}
+		\item $i=0$: $|a-a| = 0 < \varepsilon$ luôn đúng. Do đó $N_\varepsilon^{\rm opt} = 1$.
+		\item $i=1$: Chặn thô ở hàm bậc nhất cũng là chặn ngặt. $N_\varepsilon^{\rm opt} = \lfloor \frac{|a|}{\varepsilon} \rfloor + 1$.
+		\item $i=2$: BPT tương đương $|at^2+bt| < \varepsilon$. Gọi $t_\varepsilon > 0$ là nghiệm thực dương nhỏ nhất của các phương trình $at^2+bt \pm \varepsilon = 0$. Khi đó $\frac{1}{N} < t_\varepsilon \implies N > \frac{1}{t_\varepsilon}$. Ta có $N_\varepsilon^{\rm opt} = \lfloor \frac{1}{t_\varepsilon} \rfloor + 1$.
+		\item $i=3$: BPT tương đương $|at^3+bt^2+ct| < \varepsilon$. Gọi $t_\varepsilon > 0$ là nghiệm thực dương nhỏ nhất của các phương trình $at^3+bt^2+ct \pm \varepsilon = 0$. Suy ra $N_\varepsilon^{\rm opt} = \lfloor \frac{1}{t_\varepsilon} \rfloor + 1$.
 	\end{itemize}
 \end{proof}
 
+%======================== BÀI 2 ========================%
 \begin{baitoan}[Limit of functions -- Giới hạn của hàm số]
 	Với mỗi $i\in[3]_0$:
 	\begin{enumerate}[label=(\alph*)]
@@ -133,6 +138,35 @@
 	\end{enumerate}
 \end{baitoan}
 
+\textsf{Nhận xét}: Bài toán này giúp sinh viên hiểu sâu sắc bản chất hình học của lân cận giới hạn. Ở câu (b), kỹ thuật thu hẹp lân cận (ví dụ $\delta \le 1$) giúp tuyến tính hóa bài toán đánh giá một cách khéo léo. Ở câu (c), việc tìm supremum của $\delta$ bản chất là việc tìm khoảng cách theo phương hoành độ từ $x_0$ đến giao điểm gần nhất của đồ thị với hai đường ranh giới sai số $y = l \pm \varepsilon$.
+
+\begin{proof}[Giải]
+	\textbf{(a) Tính giới hạn:}
+	Do các đa thức liên tục trên toàn $\mathbb{R}$, giới hạn của hàm số tại $x_0$ chính là giá trị hàm tại đó: $l_i = f_i(x_0)$.
+	Cụ thể: $l_0 = a$; $l_1 = ax_0 + b$; $l_2 = ax_0^2 + bx_0 + c$; $l_3 = ax_0^3 + bx_0^2 + cx_0 + d$.
+	
+	\textbf{(b) Chứng minh bằng $\varepsilon-\delta$:}\\
+	Đặt $\Delta x = x - x_0 \implies x = x_0 + \Delta x$. Điều kiện $0 < |x-x_0| < \delta$ tương đương $0 < |\Delta x| < \delta$. Cho $\varepsilon > 0$ tùy ý.
+	\begin{itemize}
+		\item $i=0$: $|f_0(x) - l_0| = 0 < \varepsilon$. Chọn $\delta = 1$ (hoặc tùy ý).
+		\item $i=1$: $|a(x-x_0)| = |a||\Delta x| < \varepsilon \iff |\Delta x| < \frac{\varepsilon}{|a|}$. Chọn $\delta = \frac{\varepsilon}{|a|}$.
+		\item $i=2$: $|f_2(x) - l_2| = |\Delta x \big( a(x+x_0) + b \big)| = |\Delta x| \cdot |a\Delta x + 2ax_0 + b|$.\\
+		Giả sử $\delta \le 1 \implies |\Delta x| < 1$. Ta có $|a\Delta x + 2ax_0 + b| \le |a| + |2ax_0+b| \coloneqq M_2$. Để $|f_2(x)-l_2| < \varepsilon$, ta cần $M_2 |\Delta x| \le \varepsilon$. Do đó chọn $\delta = \min\left(1, \frac{\varepsilon}{M_2}\right)$.
+		\item $i=3$: $|f_3(x) - l_3| = |\Delta x \big( a(\Delta x)^2 + (3ax_0+b)\Delta x + 3ax_0^2+2bx_0+c \big)|$.\\
+		Giả sử $\delta \le 1 \implies |\Delta x|^2 < |\Delta x| < 1$. Dùng BĐT tam giác chặn nhân tử bậc 2: $|a(\Delta x)^2 + \ldots| \le |a| + |3ax_0+b| + |3ax_0^2+2bx_0+c| \coloneqq M_3$. Cần $M_3 |\Delta x| \le \varepsilon$. Chọn $\delta = \min\left(1, \frac{\varepsilon}{M_3}\right)$.
+	\end{itemize}
+	
+	\textbf{(c) Tìm $\delta_\varepsilon^{\rm opt}$ tối ưu:}\\
+	$\delta_\varepsilon^{\rm opt}(x_0)$ là trị tuyệt đối của độ lệch nhỏ nhất $\Delta x$ thỏa mãn phương trình biên $|f_i(x_0+\Delta x) - l_i| = \varepsilon$.
+	\begin{itemize}
+		\item $i=0$: BĐT luôn đúng $\forall x \in \mathbb{R}$. Do đó $\delta_\varepsilon^{\rm opt} = \sup(\mathbb{R}_{>0}) = +\infty$.
+		\item $i=1$: Hàm bậc nhất đơn điệu ngặt, $\delta_\varepsilon^{\rm opt} = \frac{\varepsilon}{|a|}$.
+		\item $i=2$: Gọi $S_2$ là tập các nghiệm thực của hai phương trình $a(\Delta x)^2 + (2ax_0+b)\Delta x \pm \varepsilon = 0$. Khi đó $\delta_\varepsilon^{\rm opt}(x_0) = \min_{\Delta x \in S_2} |\Delta x|$.
+		\item $i=3$: Gọi $S_3$ là tập các nghiệm thực của hai phương trình $a(\Delta x)^3 + (3ax_0+b)(\Delta x)^2 + (3ax_0^2+2bx_0+c)\Delta x \pm \varepsilon = 0$. Khi đó $\delta_\varepsilon^{\rm opt}(x_0) = \min_{\Delta x \in S_3} |\Delta x|$.
+	\end{itemize}
+\end{proof}
+
+%======================== BÀI 3 ========================%
 \begin{baitoan}[Derivative, differentiability \& numerical differentiation -- Đạo hàm, tính khả vi, \& xấp xỉ đạo hàm]
 	Với mỗi $i\in[3]_0$:
 	\begin{enumerate}[label=(\alph*)]
@@ -142,6 +176,44 @@
 	\end{enumerate}
 \end{baitoan}
 
+\textsf{Nhận xét}: Qua bài toán này, sinh viên thấu hiểu vì sao phương pháp Sai phân trung tâm (Stirling) luôn được ưu tiên trong thực tiễn tối ưu và Machine Learning. Đối với đa thức bậc 2, Stirling mang lại kết quả chính xác tuyệt đối; với đa thức bậc 3, Stirling tự động khử hoàn toàn thành phần sai số $\mathcal{O}(h)$, chỉ còn lại $\mathcal{O}(h^2)$, thể hiện tốc độ hội tụ và độ ổn định vượt trội so với Forward/Backward.
+
+\begin{proof}[Giải]
+	\textbf{(a) Tính đạo hàm (bằng quy tắc):}\\
+	$f_0'(x_0) = 0$; $\quad f_1'(x_0) = a$; $\quad f_2'(x_0) = 2ax_0 + b$; $\quad f_3'(x_0) = 3ax_0^2 + 2bx_0 + c$.
+	
+	\textbf{(b) Đạo hàm bằng định nghĩa ($\lim_{x \to x_0} \frac{f_i(x) - f_i(x_0)}{x - x_0}$):}\\
+	Thay trực tiếp vào khai triển:
+	\begin{itemize}
+		\item $i=0$: $\lim \frac{a - a}{x - x_0} = 0$.
+		\item $i=1$: $\lim \frac{a(x - x_0)}{x - x_0} = a$.
+		\item $i=2$: $\lim \frac{a(x-x_0)(x+x_0) + b(x-x_0)}{x - x_0} = \lim \big(a(x+x_0)+b\big) = 2ax_0 + b$.
+		\item $i=3$: $\lim \frac{(x-x_0)[a(x^2+xx_0+x_0^2) + b(x+x_0) + c]}{x - x_0} = 3ax_0^2 + 2bx_0 + c$.
+	\end{itemize}
+	
+	\textbf{(c) Xấp xỉ đạo hàm bằng phương pháp số:}
+	Ký hiệu Forward ($D_F$), Backward ($D_B$), Stirling ($D_S$).
+	\begin{itemize}
+		\item $i=0$: $D_F = D_B = D_S = 0$. (Chính xác tuyệt đối).
+		\item $i=1$: $D_F = D_B = D_S = a$. (Chính xác tuyệt đối).
+		\item $i=2$: 
+		\begin{align*}
+			D_F &= \frac{a(x_0+h)^2+b(x_0+h)+c - (ax_0^2+bx_0+c)}{h} = 2ax_0 + b + ah \\
+			D_B &= \frac{ax_0^2+bx_0+c - (a(x_0-h)^2+b(x_0-h)+c)}{h} = 2ax_0 + b - ah \\
+			D_S &= \frac{a(x_0+h)^2+b(x_0+h) - [a(x_0-h)^2+b(x_0-h)]}{2h} = 2ax_0 + b
+		\end{align*}
+		(Stirling chính xác tuyệt đối, Forward/Backward có sai số $\pm ah$).
+		\item $i=3$: Khai triển tương tự ta có:
+		\begin{align*}
+			D_F &= 3ax_0^2 + 2bx_0 + c + h(3ax_0 + b) + ah^2 \\
+			D_B &= 3ax_0^2 + 2bx_0 + c - h(3ax_0 + b) + ah^2 \\
+			D_S &= 3ax_0^2 + 2bx_0 + c + ah^2
+		\end{align*}
+		(Stirling đã triệt tiêu hoàn toàn lượng sai lệch bậc nhất $h(3ax_0+b)$, chỉ còn sai số bậc hai $ah^2$).
+	\end{itemize}
+\end{proof}
+
+%======================== BÀI 4 ========================%
 \begin{baitoan}[Antiderivative, integral, \& numerical integration{\tt/}quadrature -- Nguyên hàm, tích phân, \& xấp xỉ tích phân]
 	Với mỗi $i\in[3]_0$ và $\alpha, \beta \in \mathbb{R}$ sao cho $\alpha < \beta$:
 	\begin{enumerate}[label=(\alph*)]
@@ -157,16 +229,66 @@
 	\end{enumerate}
 \end{baitoan}
 
+\textsf{Nhận xét}: Quy tắc hình thang (Trapezoidal Rule) là thuật toán nội suy nền tảng. Khi áp dụng lên đa thức bậc 0 và 1, sai số xấp xỉ bằng $0$ do đạo hàm bậc 2 triệt tiêu. Việc đánh giá cận trên của sai số tuyệt đối (Error Bound Estimation) cho hàm bậc cao là kỹ năng sống còn giúp tối ưu hoá các thư viện số học.
+
+\begin{proof}[Giải]
+	Đặt $H = \beta - \alpha$.
+	\begin{itemize}
+		\item \textbf{Trường hợp $i = 0$:}
+		\begin{enumerate}[label=(\alph*)]
+			\item Nguyên hàm: $\int a \,{\rm d}x = ax + C$.
+			\item Tích phân xác định: $\int_\alpha^\beta a \,{\rm d}x = a(\beta-\alpha) = aH$.
+			\item Xấp xỉ \& Sai số: $\mathcal{T}_0 = \frac{H}{2}(a+a) = aH$. Đạo hàm $f_0''(\xi) = 0 \implies E = 0$.
+		\end{enumerate}
+		\item \textbf{Trường hợp $i = 1$:}
+		\begin{enumerate}[label=(\alph*)]
+			\item Nguyên hàm: $\int (ax+b)\,{\rm d}x = \frac{1}{2}ax^2+bx+C$.
+			\item Tích phân: $\left[\frac{1}{2}ax^2+bx\right]_\alpha^\beta = H \left(\frac{a}{2}(\alpha+\beta)+b\right)$.
+			\item Xấp xỉ \& Sai số: $\mathcal{T}_1 = \frac{H}{2}(a\alpha+b+a\beta+b) = H \left(\frac{a}{2}(\alpha+\beta)+b\right)$. Sai số $E = 0$.
+		\end{enumerate}
+		\item \textbf{Trường hợp $i = 2$:}
+		\begin{enumerate}[label=(\alph*)]
+			\item Nguyên hàm: $\int (ax^2+bx+c)\,{\rm d}x = \frac{1}{3}ax^3+\frac{1}{2}bx^2+cx+C$.
+			\item Tích phân: $\frac{a}{3}(\beta^3-\alpha^3) + \frac{b}{2}(\beta^2-\alpha^2) + cH$.
+			\item Xấp xỉ \& Sai số: $\mathcal{T}_2 = \frac{H}{2}(f_2(\alpha)+f_2(\beta))$. Vì $f_2''(x) = 2a \implies E = -\frac{H^3}{12}(2a) = -\frac{aH^3}{6}$ (là một hằng số cố định, không phụ thuộc vào vị trí $\xi$).
+		\end{enumerate}
+		\item \textbf{Trường hợp $i = 3$:}
+		\begin{enumerate}[label=(\alph*)]
+			\item Nguyên hàm: $\frac{1}{4}ax^4+\frac{1}{3}bx^3+\frac{1}{2}cx^2+dx+C$.
+			\item Tích phân: $\frac{a}{4}(\beta^4-\alpha^4) + \frac{b}{3}(\beta^3-\alpha^3) + \frac{c}{2}(\beta^2-\alpha^2) + dH$.
+			\item Xấp xỉ \& Sai số: $\mathcal{T}_3 = \frac{H}{2}(f_3(\alpha)+f_3(\beta))$. Vì $f_3''(x) = 6ax+2b \implies E = -\frac{H^3}{12}(6a\xi+2b)$. Sai số tuyệt đối tối đa trên đoạn đạt tại một trong hai biên: $|E| \le \frac{H^3}{12}\max\big(|6a\alpha+2b|, |6a\beta+2b|\big)$.
+		\end{enumerate}
+	\end{itemize}
+\end{proof}
+
+%======================== BÀI 5 ========================%
 \begin{baitoan}[Bonus: Tổng hợp kiến thức]
-    {\rm(20 điểm)} Cho 1 dãy số $\{a_n\}_{n=1}^\infty$ với số hạng được xác định bởi
-    \begin{equation*}
-        a_n = f(n) + g'(n) + \int_{a(n)}^{b(n)} h(x)\,{\rm d}x,\ \forall n\in\mathbb{N}^\star.
-    \end{equation*}
-    Tìm điều kiện để dãy số: (a) hội tụ. (b) bị chặn. (c) đơn điệu.
+	{\rm(20 điểm)} Cho 1 dãy số $\{a_n\}_{n=1}^\infty$ với số hạng được xác định bởi
+	\begin{equation*}
+		a_n = f(n) + g'(n) + \int_{a(n)}^{b(n)} h(x)\,{\rm d}x,\ \forall n\in\mathbb{N}^\star.
+	\end{equation*}
+	Tìm điều kiện để dãy số: (a) hội tụ. (b) bị chặn. (c) đơn điệu.
 \end{baitoan}
+
+\textsf{Nhận xét}: Đây là bài toán Capstone xâu chuỗi toàn diện kiến thức Giải tích từ rời rạc đến liên tục. Dưới góc độ giải thuật, việc tìm điều kiện hội tụ/bị chặn của dãy $a_n$ tương đương với việc tìm điều kiện để mô hình phân tích chi phí thời gian của thuật toán đạt độ phức tạp hằng số $\mathcal{O}(1)$.
+
+\begin{proof}[Giải]
+	Theo Định lý cơ bản của Giải tích, tích phân xác định của hàm liên tục $h(x)$ là $\int_{a(n)}^{b(n)} h(x)\,{\rm d}x = H(b(n)) - H(a(n))$ với $H'(x) = h(x)$.
+	Ta xét hàm số thực liên tục $A(x) \coloneqq f(x) + g'(x) + H(b(x)) - H(a(x))$. Khi đó số hạng tổng quát $a_n = A(n)$. 
+	Trong bối cảnh bài toán, nếu $f, g, h, a, b$ đều là các đa thức, thì $A(x)$ cũng là một hàm đa thức.
+	
+	\textbf{(a) Điều kiện hội tụ \& (b) Điều kiện bị chặn:}
+	Một dãy số sinh bởi đa thức $A(n) = c_k n^k + c_{k-1}n^{k-1} + \dots + c_0$ sẽ phân kỳ ra vô cực nếu bậc $k \ge 1$, đồng thời không bị chặn.
+	Do đó, đối với đa thức, điều kiện bị chặn và hội tụ là tương đương nhau. Điều kiện cần và đủ là $A(n)$ phải là đa thức bậc 0 (hàm hằng) hoặc đa thức không. Tức là sau khi khai triển $A(x)$, tất cả các hệ số của $x^p$ (với $p \ge 1$) phải đồng thời bằng 0.
+	
+	\textbf{(c) Điều kiện đơn điệu:}
+	Sử dụng Quy tắc Leibniz (Leibniz Integral Rule) để lấy đạo hàm, ta có:
+	$$ A'(x) = f'(x) + g''(x) + h(b(x))b'(x) - h(a(x))a'(x) $$
+	Để dãy số luôn đơn điệu bắt đầu từ $n=1$, đa thức $A'(x)$ không được phép đổi dấu trên miền $[1, +\infty)$. Tức là mọi nghiệm thực $x_0$ của phương trình $A'(x) = 0$ (nếu có nghiệm làm đổi dấu) đều phải nằm ngoài vùng quan tâm, hay $x_0 < 1$.
+\end{proof}
 
 %------------------------------------------------------------------------------%
 
 \printbibliography[heading=bibintoc]
-
+	
 \end{document}
